@@ -76,4 +76,4 @@ To run Nashm locally, follow these guidelines:
 
 ## 📝 License
 
-Nashm is licensed under the [MIT License](LICENSE).
+Nashm is licensed under a proprietary license. See the [LICENSE](LICENSE) file for more details.
