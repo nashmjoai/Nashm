@@ -4,11 +4,9 @@ Thank you to all the contributors who have helped make this project possible! We
 
 ## Contributing Guidelines
 
-If the feature you would like to contribute has not already received prior approval from the project maintainers (i.e., the feature is currently on the [roadmap](https://github.com/users/danny-avila/projects/2)), please submit a request in the [Feature Requests & Suggestions category](https://github.com/danny-avila/LibreChat/discussions/new?category=feature-requests-suggestions) of the discussions board before beginning work on it. The requests should include specific implementation details, including areas of the application that will be affected by the change (including designs if applicable), and any other relevant information that might be required for a speedy review. However, proposals are not required for small changes, bug fixes, or documentation improvements. Small changes and bug fixes should be tied to an [issue](https://github.com/danny-avila/LibreChat/issues) and included in the corresponding pull request for tracking purposes.
+If you have a feature or improvement you would like to contribute, please submit a request on our GitHub [Discussions](https://github.com/aabuzaid1/Nashm/discussions) or open an [Issue](https://github.com/aabuzaid1/Nashm/issues) first before beginning work. The requests should include specific implementation details, including areas of the application that will be affected by the change (including designs if applicable), and any other relevant information that might be required for a speedy review. However, proposals are not required for small changes, bug fixes, or documentation improvements. Small changes and bug fixes should be tied to an [issue](https://github.com/aabuzaid1/Nashm/issues) and included in the corresponding pull request for tracking purposes.
 
 Please note that a pull request involving a feature that has not been reviewed and approved by the project maintainers may be rejected. We appreciate your understanding and cooperation.
-
-If you would like to discuss the changes you wish to make, join our [Discord community](https://discord.librechat.ai), where you can engage with other contributors and seek guidance from the community.
 
 ## Our Standards
 
@@ -38,7 +36,7 @@ Project maintainers have the right and responsibility to remove, edit, or reject
     - Install [MongoDB Community Edition](https://www.mongodb.com/docs/manual/administration/install-community/), ensure that `mongosh` connects to your local instance.
     - Run: `npx install playwright`, then `npx playwright install`.
     - Copy `config.local`: `cp e2e/config.local.example.ts e2e/config.local.ts`.
-    - Copy `librechat.yaml`: `cp librechat.example.yaml librechat.yaml`.
+    - Copy `nashm.yaml`: `cp librechat.example.yaml nashm.yaml`.
     - Run: `npm run e2e`.
 
 ## 2. Development Notes
@@ -80,15 +78,7 @@ feat: add hat wobble
 
 ### Commit Guidelines
 - Do your best to reduce the number of commits, organizing them as much possible. Look into [squashing commits](https://www.freecodecamp.org/news/git-squash-commits/) in order to keep a neat history.
-- For those that care about maximizing commits for stats, adhere to the above as I 'squash and merge' an unorganized and/or unformatted commit history, which reduces the number of your commits to 1,:
-```
-* Update Br.tsx
-
-* Update Es.tsx
-
-* Update Br.tsx
-```
-
+- For those that care about maximizing commits for stats, adhere to the above as we 'squash and merge' an unorganized and/or unformatted commit history, which reduces the number of commits to 1.
 
 ## 5. Pull Request Process
 
@@ -121,9 +111,7 @@ For detailed coding conventions, workspace boundaries, and architecture guidance
 ## 8. TypeScript Conversion
 
 1. **Original State**: The project was initially developed entirely in JavaScript (JS).
-
 2. **Frontend**: Fully transitioned to TypeScript.
-
 3. **Backend**:
    - The legacy Express.js server remains in `/api` as JavaScript.
    - All new backend code is written in TypeScript under `/packages/api`, which is compiled and consumed by `/api`.
@@ -149,8 +137,6 @@ Imports are organized into three sections (in order):
 
 - Consolidate value imports from the same module as much as possible.
 - Always use standalone `import type { ... }` for type imports; never use inline `type` keyword inside value imports (e.g., `import { Foo, type Bar }` is wrong).
-
-**Note:** ESLint will automatically enforce these import conventions when you run `npm run lint --fix` or through pre-commit hooks.
 
 For the full set of coding standards, see [`AGENTS.md`](../AGENTS.md).
 
