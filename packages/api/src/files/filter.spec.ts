@@ -1,7 +1,7 @@
 import { Types } from 'mongoose';
 import { Providers } from '@librechat/agents';
-import { EModelEndpoint } from 'librechat-data-provider';
-import type { IMongoFile } from '@librechat/data-schemas';
+import { EModelEndpoint } from 'nashm-data-provider';
+import type { IMongoFile } from '@nashm/data-schemas';
 import type { ServerRequest } from '~/types';
 import { filterFilesByEndpointConfig } from './filter';
 

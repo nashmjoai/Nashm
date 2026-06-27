@@ -8,8 +8,8 @@ import {
   OGDialogHeader,
   OGDialogContent,
   useToastContext,
-} from '@librechat/client';
-import type { TChatProject } from 'librechat-data-provider';
+} from '@nashm/client';
+import type { TChatProject } from 'nashm-data-provider';
 import { useAssignConversationToProjectMutation, useProjectsInfiniteQuery } from '~/data-provider';
 import { useLocalize } from '~/hooks';
 import { NotificationSeverity } from '~/common';

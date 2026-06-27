@@ -1,11 +1,11 @@
 /**
- * @import { TUpdateResourcePermissionsRequest, TUpdateResourcePermissionsResponse } from 'librechat-data-provider'
+ * @import { TUpdateResourcePermissionsRequest, TUpdateResourcePermissionsResponse } from 'nashm-data-provider'
  */
 
 const mongoose = require('mongoose');
-const { logger, getTenantId, SYSTEM_TENANT_ID } = require('@librechat/data-schemas');
-const { ResourceType, PrincipalType, PermissionBits } = require('librechat-data-provider');
-const { enrichRemoteAgentPrincipals, backfillRemoteAgentPermissions } = require('@librechat/api');
+const { logger, getTenantId, SYSTEM_TENANT_ID } = require('@nashm/data-schemas');
+const { ResourceType, PrincipalType, PermissionBits } = require('nashm-data-provider');
+const { enrichRemoteAgentPrincipals, backfillRemoteAgentPermissions } = require('@nashm/api');
 const {
   bulkUpdateResourcePermissions,
   ensureGroupPrincipalExists,

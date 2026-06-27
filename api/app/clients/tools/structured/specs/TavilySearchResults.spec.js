@@ -1,9 +1,9 @@
 const { fetch } = require('undici');
 const TavilySearchResults = require('../TavilySearchResults');
-const { getEnvProxyDispatcher } = require('@librechat/api');
+const { getEnvProxyDispatcher } = require('@nashm/api');
 
 jest.mock('undici');
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   getEnvProxyDispatcher: jest.fn(),
 }));
 

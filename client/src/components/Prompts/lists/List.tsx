@@ -1,6 +1,6 @@
 import { FileText } from 'lucide-react';
-import { Skeleton } from '@librechat/client';
-import type { TPromptGroup } from 'librechat-data-provider';
+import { Skeleton } from '@nashm/client';
+import type { TPromptGroup } from 'nashm-data-provider';
 import ChatGroupItem from './ChatGroupItem';
 import { useLocalize } from '~/hooks';
 

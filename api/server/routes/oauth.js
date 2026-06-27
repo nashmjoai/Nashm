@@ -2,15 +2,15 @@
 const express = require('express');
 const passport = require('passport');
 const { randomState } = require('openid-client');
-const { logger } = require('@librechat/data-schemas');
-const { ErrorTypes } = require('librechat-data-provider');
+const { logger } = require('@nashm/data-schemas');
+const { ErrorTypes } = require('nashm-data-provider');
 const {
   buildOAuthFailureLog,
   createOpenIDCallbackAuthenticator,
   createSetBalanceConfig,
   getOAuthFailureMessage,
   redirectToAuthFailure,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const { checkDomainAllowed, loginLimiter, logHeaders } = require('~/server/middleware');
 const { createOAuthHandler } = require('~/server/controllers/auth/oauth');
 const { findBalanceByUser, upsertBalanceFields } = require('~/models');

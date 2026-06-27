@@ -1,7 +1,7 @@
 import React, { memo, useMemo, useRef, useEffect } from 'react';
 import { useRecoilValue } from 'recoil';
-import { useToastContext } from '@librechat/client';
-import { PermissionTypes, Permissions, apiBaseUrl } from 'librechat-data-provider';
+import { useToastContext } from '@nashm/client';
+import { PermissionTypes, Permissions, apiBaseUrl } from 'nashm-data-provider';
 import Mermaid, { MermaidErrorBoundary } from '~/components/Messages/Content/Mermaid';
 import CodeBlock from '~/components/Messages/Content/CodeBlock';
 import useHasAccess from '~/hooks/Roles/useHasAccess';

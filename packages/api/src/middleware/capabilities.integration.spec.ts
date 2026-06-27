@@ -1,22 +1,22 @@
 import mongoose, { Types } from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { PrincipalType, SystemRoles } from 'librechat-data-provider';
+import { PrincipalType, SystemRoles } from 'nashm-data-provider';
 import {
   createModels,
   createMethods,
   SystemCapabilities,
   CapabilityImplications,
-} from '@librechat/data-schemas';
-import type { SystemCapability } from '@librechat/data-schemas';
-import type { AllMethods } from '@librechat/data-schemas';
+} from '@nashm/data-schemas';
+import type { SystemCapability } from '@nashm/data-schemas';
+import type { AllMethods } from '@nashm/data-schemas';
 import {
   generateCapabilityCheck,
   capabilityStore,
   capabilityContextMiddleware,
 } from './capabilities';
 
-jest.mock('@librechat/data-schemas', () => ({
-  ...jest.requireActual('@librechat/data-schemas'),
+jest.mock('@nashm/data-schemas', () => ({
+  ...jest.requireActual('@nashm/data-schemas'),
   logger: {
     error: jest.fn(),
     warn: jest.fn(),

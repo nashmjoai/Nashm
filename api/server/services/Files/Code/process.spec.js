@@ -1,9 +1,9 @@
 // Configurable file size limit for tests - use a getter so it can be changed per test
 const fileSizeLimitConfig = { value: 20 * 1024 * 1024 }; // Default 20MB
 
-// Mock librechat-data-provider with configurable file size limit
-jest.mock('librechat-data-provider', () => {
-  const actual = jest.requireActual('librechat-data-provider');
+// Mock nashm-data-provider with configurable file size limit
+jest.mock('nashm-data-provider', () => {
+  const actual = jest.requireActual('nashm-data-provider');
   return {
     ...actual,
     mergeFileConfig: jest.fn((config) => {
@@ -29,14 +29,14 @@ jest.mock('librechat-data-provider', () => {
   };
 });
 
-const { FileContext } = require('librechat-data-provider');
+const { FileContext } = require('nashm-data-provider');
 
 // Mock uuid
 jest.mock('uuid', () => ({
   v4: jest.fn(() => 'mock-uuid-1234'),
 }));
 
-// Mock axios — process.js now uses createAxiosInstance() from @librechat/api
+// Mock axios — process.js now uses createAxiosInstance() from @nashm/api
 const mockAxios = jest.fn();
 mockAxios.post = jest.fn();
 mockAxios.isAxiosError = jest.fn(() => false);
@@ -53,7 +53,7 @@ const mockHasOfficeHtmlPath = jest.fn(() => false);
 /* Pass-through `withTimeout`: tests don't drive timeouts here (those live
  * in promise.spec.ts and the finalizePreview unit tests below). */
 const passthroughWithTimeout = async (promise) => promise;
-jest.mock('@librechat/api', () => {
+jest.mock('@nashm/api', () => {
   const http = require('http');
   const https = require('https');
   return {
@@ -101,7 +101,7 @@ jest.mock('@librechat/api', () => {
   };
 });
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     warn: jest.fn(),
     debug: jest.fn(),
@@ -153,13 +153,13 @@ const { getRetentionExpiry } = require('~/server/services/Files/retention');
 const { getStrategyFunctions } = require('~/server/services/Files/strategies');
 const { convertImage } = require('~/server/services/Files/images/convert');
 const { determineFileType } = require('~/server/utils');
-const { logger } = require('@librechat/data-schemas');
+const { logger } = require('@nashm/data-schemas');
 const {
   codeServerHttpAgent,
   codeServerHttpsAgent,
   getCodeApiAuthHeaders,
   getStorageMetadata,
-} = require('@librechat/api');
+} = require('@nashm/api');
 
 const {
   processCodeOutput,
@@ -261,7 +261,7 @@ describe('Code Process', () => {
           method: 'get',
           headers: expect.objectContaining({
             Authorization: 'Bearer codeapi-token',
-            'User-Agent': 'LibreChat/1.0',
+            'User-Agent': 'Nashm/1.0',
           }),
         }),
       );
@@ -459,7 +459,7 @@ describe('Code Process', () => {
 
       it('preserves nested directory paths in the DB record while flattening the storage key', async () => {
         /* Regression test for the silent-data-loss path: when codeapi reports a
-         * file with a nested name like "test_folder/test_file.txt", LibreChat
+         * file with a nested name like "test_folder/test_file.txt", Nashm
          * used to feed it through `sanitizeFilename` (basename-only), which
          * persisted "test_file.txt" to the DB and made the file un-locatable on
          * the next prime() (cat /mnt/data/test_folder/test_file.txt would
@@ -507,7 +507,7 @@ describe('Code Process', () => {
         const mockSaveBuffer = jest.fn().mockResolvedValue('/uploads/saved.bin');
         getStrategyFunctions.mockReturnValue({ saveBuffer: mockSaveBuffer });
 
-        const flattenSpy = require('@librechat/api').flattenArtifactPath;
+        const flattenSpy = require('@nashm/api').flattenArtifactPath;
         flattenSpy.mockClear();
 
         await processCodeOutput({ ...baseParams, name: 'a/b/c.csv' });
@@ -1067,7 +1067,7 @@ describe('Code Process', () => {
             method: 'get',
             headers: expect.objectContaining({
               Authorization: 'Bearer freshness-token',
-              'User-Agent': 'LibreChat/1.0',
+              'User-Agent': 'Nashm/1.0',
             }),
           }),
         );
@@ -1542,7 +1542,7 @@ describe('Code Process', () => {
             method: 'post',
             headers: expect.objectContaining({
               Authorization: 'Bearer sandbox-token',
-              'User-Agent': 'LibreChat/1.0',
+              'User-Agent': 'Nashm/1.0',
             }),
           }),
         );
@@ -1603,7 +1603,7 @@ describe('Code Process', () => {
       });
 
       it('rethrows axios transport errors after logging via logAxiosError', async () => {
-        const { logAxiosError } = require('@librechat/api');
+        const { logAxiosError } = require('@nashm/api');
         const transportError = Object.assign(new Error('connect ECONNREFUSED'), {
           code: 'ECONNREFUSED',
         });
@@ -1765,7 +1765,7 @@ describe('Code Process', () => {
 
     it('seed receives FRESH (storage_session_id, file_id) from the reupload response', async () => {
       const dbFile = {
-        file_id: 'librechat-file-id',
+        file_id: 'Nashm-file-id',
         filename: 'sentinel.txt',
         filepath: '/uploads/sentinel.txt',
         source: 'local',
@@ -1787,7 +1787,7 @@ describe('Code Process', () => {
       const result = await primeFiles({
         req: { user: { id: 'user-123', role: 'USER' } },
         tool_resources: {
-          execute_code: { file_ids: ['librechat-file-id'], files: [] },
+          execute_code: { file_ids: ['Nashm-file-id'], files: [] },
         },
         agentId: 'agent-id',
       });
@@ -1815,7 +1815,7 @@ describe('Code Process', () => {
      * shareable. */
     it('reupload forwards kind/id (and version when skill) from the existing ref', async () => {
       const dbFile = {
-        file_id: 'librechat-file-id',
+        file_id: 'Nashm-file-id',
         filename: 'sentinel.txt',
         filepath: '/uploads/sentinel.txt',
         source: 'local',
@@ -1840,7 +1840,7 @@ describe('Code Process', () => {
       await primeFiles({
         req: { user: { id: 'user-123', role: 'USER' } },
         tool_resources: {
-          execute_code: { file_ids: ['librechat-file-id'], files: [] },
+          execute_code: { file_ids: ['Nashm-file-id'], files: [] },
         },
         agentId: 'agent-id',
       });
@@ -1854,7 +1854,7 @@ describe('Code Process', () => {
 
     it('persists fresh codeEnvRef (kind/id preserved) on the DB record after reupload', async () => {
       const dbFile = {
-        file_id: 'librechat-file-id',
+        file_id: 'Nashm-file-id',
         filename: 'sentinel.txt',
         filepath: '/uploads/sentinel.txt',
         source: 'local',
@@ -1875,14 +1875,14 @@ describe('Code Process', () => {
       await primeFiles({
         req: { user: { id: 'user-123', role: 'USER' } },
         tool_resources: {
-          execute_code: { file_ids: ['librechat-file-id'], files: [] },
+          execute_code: { file_ids: ['Nashm-file-id'], files: [] },
         },
         agentId: 'agent-id',
       });
 
       expect(updateFile).toHaveBeenCalledWith(
         expect.objectContaining({
-          file_id: 'librechat-file-id',
+          file_id: 'Nashm-file-id',
           metadata: expect.objectContaining({
             codeEnvRef: {
               kind: 'user',
@@ -1897,7 +1897,7 @@ describe('Code Process', () => {
 
     it('reads codeEnvRef directly when present (skipping reupload)', async () => {
       const dbFile = {
-        file_id: 'librechat-file-id',
+        file_id: 'Nashm-file-id',
         filename: 'sentinel.txt',
         filepath: '/uploads/sentinel.txt',
         source: 'local',
@@ -1919,7 +1919,7 @@ describe('Code Process', () => {
       const result = await primeFiles({
         req: { user: { id: 'user-123', role: 'USER' } },
         tool_resources: {
-          execute_code: { file_ids: ['librechat-file-id'], files: [] },
+          execute_code: { file_ids: ['Nashm-file-id'], files: [] },
         },
         agentId: 'agent-id',
       });

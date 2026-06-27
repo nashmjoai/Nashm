@@ -8,7 +8,7 @@
  */
 const { HumanMessage } = require('@langchain/core/messages');
 const { Run, Providers, GraphEvents } = require('@librechat/agents');
-const { GenerationJobManager } = require('@librechat/api');
+const { GenerationJobManager } = require('@nashm/api');
 const { getDefaultHandlers } = require('~/server/controllers/agents/callbacks');
 
 jest.mock('nanoid', () => ({

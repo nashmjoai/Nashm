@@ -1,7 +1,7 @@
 // Mock all dependencies - define mocks before imports
 const mockGetTenantId = jest.fn();
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     debug: jest.fn(),
     error: jest.fn(),
@@ -24,8 +24,8 @@ const mockIsMCPDomainAllowed = jest.fn(() => Promise.resolve(true));
 
 const mockGetAppConfig = jest.fn(() => Promise.resolve({}));
 
-jest.mock('@librechat/api', () => {
-  const actual = jest.requireActual('@librechat/api');
+jest.mock('@nashm/api', () => {
+  const actual = jest.requireActual('@nashm/api');
   return {
     ...actual,
     sendEvent: jest.fn(),
@@ -38,9 +38,9 @@ jest.mock('@librechat/api', () => {
   };
 });
 
-const { logger } = require('@librechat/data-schemas');
-const { MCPOAuthHandler } = require('@librechat/api');
-const { CacheKeys, Constants, Permissions, PermissionTypes } = require('librechat-data-provider');
+const { logger } = require('@nashm/data-schemas');
+const { MCPOAuthHandler } = require('@nashm/api');
+const { CacheKeys, Constants, Permissions, PermissionTypes } = require('nashm-data-provider');
 const D = Constants.mcp_delimiter;
 const {
   createMCPTool,
@@ -1422,7 +1422,7 @@ describe('User parameter passing tests', () => {
 
       mockRegistryInstance.getServerConfig.mockResolvedValue({
         type: 'streamable-http',
-        url: 'https://{{LIBRECHAT_BODY_CONVERSATIONID}}.example.com/sse',
+        url: 'https://{{Nashm_BODY_CONVERSATIONID}}.example.com/sse',
         source: 'yaml',
       });
 
@@ -1752,7 +1752,7 @@ describe('User parameter passing tests', () => {
 
       mockRegistryInstance.getServerConfig.mockResolvedValue({
         type: 'streamable-http',
-        url: 'https://api.example.com/{{LIBRECHAT_BODY_MESSAGEID}}/mcp',
+        url: 'https://api.example.com/{{Nashm_BODY_MESSAGEID}}/mcp',
         source: 'yaml',
       });
 

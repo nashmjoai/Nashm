@@ -11,14 +11,14 @@ const {
   updateSharedLinkPermissionsExpiration,
   isActiveExpirationDate,
   getSharedLinkExpiration,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const {
   logger,
   runAsSystem,
   tenantStorage,
   createTempChatExpirationDate,
-} = require('@librechat/data-schemas');
-const { FileSources, PermissionTypes, Permissions } = require('librechat-data-provider');
+} = require('@nashm/data-schemas');
+const { FileSources, PermissionTypes, Permissions } = require('nashm-data-provider');
 const {
   getFiles,
   updateFile,

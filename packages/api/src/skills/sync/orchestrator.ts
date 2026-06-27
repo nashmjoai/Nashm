@@ -1,5 +1,5 @@
-import { skillSyncConfigSchema } from 'librechat-data-provider';
-import type { SkillSyncConfig } from 'librechat-data-provider';
+import { skillSyncConfigSchema } from 'nashm-data-provider';
+import type { SkillSyncConfig } from 'nashm-data-provider';
 import type { GitHubSkillSyncRunner } from './github';
 
 const REQUEST_SYNC_MIN_INTERVAL_MS = 5 * 60 * 1000;

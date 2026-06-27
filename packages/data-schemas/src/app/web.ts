@@ -1,5 +1,5 @@
-import { RerankerTypes, SafeSearchTypes } from 'librechat-data-provider';
-import type { TCustomConfig } from 'librechat-data-provider';
+import { RerankerTypes, SafeSearchTypes } from 'nashm-data-provider';
+import type { TCustomConfig } from 'nashm-data-provider';
 import type { TWebSearchKeys, TWebSearchCategories } from '~/types/web';
 
 export const webSearchAuth = {

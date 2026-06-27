@@ -7,7 +7,7 @@ import {
   type MutableRefObject,
   type ReactNode,
 } from 'react';
-import type { TChatProject } from 'librechat-data-provider';
+import type { TChatProject } from 'nashm-data-provider';
 import {
   Button,
   Input,
@@ -16,7 +16,7 @@ import {
   OGDialogTemplate,
   Spinner,
   useToastContext,
-} from '@librechat/client';
+} from '@nashm/client';
 import { useCreateProjectMutation } from '~/data-provider';
 import { useLocalize } from '~/hooks';
 

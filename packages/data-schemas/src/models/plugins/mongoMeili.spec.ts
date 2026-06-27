@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { EModelEndpoint } from 'librechat-data-provider';
+import { EModelEndpoint } from 'nashm-data-provider';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoMeili, { type SchemaWithMeiliMethods } from '~/models/plugins/mongoMeili';
 import { createConversationModel } from '~/models/convo';

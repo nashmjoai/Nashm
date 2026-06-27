@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Copy, CopyCheck } from 'lucide-react';
-import { useGetSharedLinkQuery } from 'librechat-data-provider/react-query';
-import { OGDialogTemplate, Button, Spinner, OGDialog, Checkbox, Label } from '@librechat/client';
+import { useGetSharedLinkQuery } from 'nashm-data-provider/react-query';
+import { OGDialogTemplate, Button, Spinner, OGDialog, Checkbox, Label } from '@nashm/client';
 import { useLatestMessage } from '~/hooks/Messages/useLatestMessage';
 import { useLocalize, useCopyToClipboard } from '~/hooks';
 import { useGetStartupConfig } from '~/data-provider';

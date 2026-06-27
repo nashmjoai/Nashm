@@ -1,4 +1,4 @@
-import { AuthTypeEnum } from 'librechat-data-provider';
+import { AuthTypeEnum } from 'nashm-data-provider';
 
 import { validateActionOAuthEndpoint, validateActionOAuthMetadata } from './validation';
 

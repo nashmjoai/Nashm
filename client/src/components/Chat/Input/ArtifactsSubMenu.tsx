@@ -1,7 +1,7 @@
 import React from 'react';
 import * as Ariakit from '@ariakit/react';
-import { PinIcon } from '@librechat/client';
-import { ArtifactModes } from 'librechat-data-provider';
+import { PinIcon } from '@nashm/client';
+import { ArtifactModes } from 'nashm-data-provider';
 import { ChevronRight, WandSparkles } from 'lucide-react';
 import { useLocalize } from '~/hooks';
 import { cn } from '~/utils';

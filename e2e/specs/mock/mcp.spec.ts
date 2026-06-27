@@ -15,7 +15,7 @@ const MCP_SERVER_TITLE = 'E2E Memory';
 const MCP_TOOL_NAME = 'remember_fact';
 const MCP_SERVER_TOOL_ID = `sys__server__sys_mcp_${MCP_SERVER_NAME}`;
 const MCP_TOOL_ID = `${MCP_TOOL_NAME}_mcp_${MCP_SERVER_NAME}`;
-const DESCRIPTION = 'Use this agent to verify LibreChat MCP tool selection in mock e2e tests.';
+const DESCRIPTION = 'Use this agent to verify Nashm MCP tool selection in mock e2e tests.';
 const INSTRUCTIONS =
   'Keep the selected MCP server tools available while replying through the mock e2e model.';
 

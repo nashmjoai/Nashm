@@ -2,8 +2,8 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { Types } from 'mongoose';
-import { logger } from '@librechat/data-schemas';
-import type { CodeEnvRef } from 'librechat-data-provider';
+import { logger } from '@nashm/data-schemas';
+import type { CodeEnvRef } from 'nashm-data-provider';
 import type { DeploymentSkillBaseMethods } from '../deployment';
 import {
   DEPLOYMENT_SKILLS_DIR_ENV,
@@ -85,7 +85,7 @@ afterEach(async () => {
 
 describe('resolveDeploymentSkillDirectory', () => {
   it('defaults to project root ./skill', () => {
-    const root = path.join(os.tmpdir(), 'librechat-root');
+    const root = path.join(os.tmpdir(), 'Nashm-root');
     expect(resolveDeploymentSkillDirectory({ projectRoot: root, env: {} })).toEqual({
       directory: path.join(root, 'skill'),
       explicitlyConfigured: false,
@@ -93,7 +93,7 @@ describe('resolveDeploymentSkillDirectory', () => {
   });
 
   it('honors a relative DEPLOYMENT_SKILLS_DIR override', () => {
-    const root = path.join(os.tmpdir(), 'librechat-root');
+    const root = path.join(os.tmpdir(), 'Nashm-root');
     const env = { [DEPLOYMENT_SKILLS_DIR_ENV]: 'config/skills' };
     expect(resolveDeploymentSkillDirectory({ projectRoot: root, env })).toEqual({
       directory: path.join(root, 'config', 'skills'),

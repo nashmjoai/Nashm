@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import * as Ariakit from '@ariakit/react';
-import { TooltipAnchor, DropdownPopup, PinIcon, VectorIcon } from '@librechat/client';
+import { TooltipAnchor, DropdownPopup, PinIcon, VectorIcon } from '@nashm/client';
 import { Globe, ScrollText, Settings, Settings2, TerminalSquareIcon } from 'lucide-react';
 import type { MenuItemProps } from '~/common';
 import {
@@ -9,7 +9,7 @@ import {
   ArtifactModes,
   PermissionTypes,
   defaultAgentCapabilities,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import { useLocalize, useHasAccess, useAgentCapabilities } from '~/hooks';
 import ArtifactsSubMenu from '~/components/Chat/Input/ArtifactsSubMenu';
 import MCPSubMenu from '~/components/Chat/Input/MCPSubMenu';

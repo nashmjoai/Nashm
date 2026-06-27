@@ -1,7 +1,7 @@
-import { logger } from '@librechat/data-schemas';
-import { EModelEndpoint, EToolResources, AgentCapabilities } from 'librechat-data-provider';
-import type { AgentToolResources, TFile, AgentBaseResource } from 'librechat-data-provider';
-import type { IMongoFile, AppConfig, IUser } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
+import { EModelEndpoint, EToolResources, AgentCapabilities } from 'nashm-data-provider';
+import type { AgentToolResources, TFile, AgentBaseResource } from 'nashm-data-provider';
+import type { IMongoFile, AppConfig, IUser } from '@nashm/data-schemas';
 import type { FilterQuery, QueryOptions, ProjectionType } from 'mongoose';
 import type { Request as ServerRequest } from 'express';
 

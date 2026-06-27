@@ -798,16 +798,16 @@ export function emitError(
 }
 
 /* =============================================================================
- * LIBRECHAT EXTENSION EVENTS
- * Custom events prefixed with 'librechat:' per Open Responses spec
+ * Nashm EXTENSION EVENTS
+ * Custom events prefixed with 'Nashm:' per Open Responses spec
  * @see https://openresponses.org/specification#extending-streaming-events
  * ============================================================================= */
 
 /**
- * Attachment data for librechat:attachment events
+ * Attachment data for Nashm:attachment events
  */
 export interface AttachmentData {
-  /** File ID in LibreChat storage */
+  /** File ID in Nashm storage */
   file_id?: string;
   /** Original filename */
   filename?: string;
@@ -847,8 +847,8 @@ export interface AttachmentData {
 }
 
 /**
- * Emit librechat:attachment event for file/image attachments
- * This is a LibreChat extension to the Open Responses streaming protocol.
+ * Emit Nashm:attachment event for file/image attachments
+ * This is a Nashm extension to the Open Responses streaming protocol.
  * External clients can safely ignore these events.
  */
 export function emitAttachment(
@@ -862,7 +862,7 @@ export function emitAttachment(
   const { res, tracker } = config;
 
   writeEvent(res, {
-    type: 'librechat:attachment',
+    type: 'Nashm:attachment',
     sequence_number: tracker.nextSequence(),
     attachment,
     message_id: options?.messageId,
@@ -884,7 +884,7 @@ export function writeAttachmentEvent(
   },
 ): void {
   writeEvent(res, {
-    type: 'librechat:attachment',
+    type: 'Nashm:attachment',
     sequence_number: sequenceNumber,
     attachment,
     message_id: options?.messageId,

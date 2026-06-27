@@ -1,5 +1,5 @@
 import { Providers } from '@librechat/agents';
-import { KnownEndpoints, EModelEndpoint, ReasoningParameterFormat } from 'librechat-data-provider';
+import { KnownEndpoints, EModelEndpoint, ReasoningParameterFormat } from 'nashm-data-provider';
 import type * as t from '~/types';
 import { getLLMConfig as getAnthropicLLMConfig } from '~/endpoints/anthropic/llm';
 import { getOpenAILLMConfig, extractDefaultParams } from './llm';
@@ -173,9 +173,9 @@ export function getOpenAIConfig(
   if (useOpenRouter || isVercel) {
     configOptions.defaultHeaders = Object.assign(
       {
-        'HTTP-Referer': 'https://librechat.ai',
-        'X-Title': 'LibreChat',
-        'X-OpenRouter-Title': 'LibreChat',
+        'HTTP-Referer': 'https://Nashm.ai',
+        'X-Title': 'Nashm',
+        'X-OpenRouter-Title': 'Nashm',
         'X-OpenRouter-Categories': 'general-chat,personal-agent',
       },
       headers,

@@ -3,8 +3,8 @@ const path = require('path');
 const mime = require('mime');
 const axios = require('axios');
 const fetch = require('node-fetch');
-const { logger } = require('@librechat/data-schemas');
-const { getAzureContainerClient, deleteRagFile } = require('@librechat/api');
+const { logger } = require('@nashm/data-schemas');
+const { getAzureContainerClient, deleteRagFile } = require('@nashm/api');
 
 const defaultBasePath = 'images';
 const { AZURE_STORAGE_PUBLIC_ACCESS = 'true', AZURE_CONTAINER_NAME = 'files' } = process.env;

@@ -1,7 +1,7 @@
 import { useContext, useCallback } from 'react';
 import Cookies from 'js-cookie';
 import { useRecoilState } from 'recoil';
-import { ThemeContext } from '@librechat/client';
+import { ThemeContext } from '@nashm/client';
 import type { ComponentType } from 'react';
 import type { TranslationKeys } from '~/hooks';
 import { ThemeSelector, LangSelector } from '../SettingsTabs/General/Selectors';

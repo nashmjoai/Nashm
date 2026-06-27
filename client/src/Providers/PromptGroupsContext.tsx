@@ -1,6 +1,6 @@
 import React, { createContext, useContext, ReactNode, useMemo } from 'react';
-import { PermissionTypes, Permissions } from 'librechat-data-provider';
-import type { TPromptGroup } from 'librechat-data-provider';
+import { PermissionTypes, Permissions } from 'nashm-data-provider';
+import type { TPromptGroup } from 'nashm-data-provider';
 import type { PromptOption } from '~/common';
 import { usePromptGroupsNav, useHasAccess } from '~/hooks';
 import { useGetAllPromptGroups } from '~/data-provider';

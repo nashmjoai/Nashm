@@ -1,4 +1,4 @@
-import { ResourceType, SystemCategories } from 'librechat-data-provider';
+import { ResourceType, SystemCategories } from 'nashm-data-provider';
 import type { Model, Types } from 'mongoose';
 import type { IAclEntry, IPrompt, IPromptGroup, IPromptGroupDocument } from '~/types';
 import { getTenantId, SYSTEM_TENANT_ID } from '~/config/tenantContext';

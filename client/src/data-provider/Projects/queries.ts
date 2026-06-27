@@ -1,11 +1,11 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { dataService, QueryKeys } from 'librechat-data-provider';
+import { dataService, QueryKeys } from 'nashm-data-provider';
 import type {
   UseInfiniteQueryOptions,
   QueryObserverResult,
   UseQueryOptions,
 } from '@tanstack/react-query';
-import type { ProjectListParams, ProjectListResponse, TChatProject } from 'librechat-data-provider';
+import type { ProjectListParams, ProjectListResponse, TChatProject } from 'nashm-data-provider';
 
 export const useProjectsInfiniteQuery = (
   params: ProjectListParams = {},

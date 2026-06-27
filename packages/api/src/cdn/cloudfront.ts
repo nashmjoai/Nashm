@@ -1,5 +1,5 @@
-import { logger } from '@librechat/data-schemas';
-import type { CloudFrontConfig } from 'librechat-data-provider';
+import { logger } from '@nashm/data-schemas';
+import type { CloudFrontConfig } from 'nashm-data-provider';
 import { initializeS3 } from './s3';
 
 export interface CloudFrontFullConfig extends NonNullable<CloudFrontConfig> {

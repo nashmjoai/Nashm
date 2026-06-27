@@ -1,7 +1,7 @@
 import { Types } from 'mongoose';
-import { PrincipalType, PrincipalModel } from 'librechat-data-provider';
+import { PrincipalType, PrincipalModel } from 'nashm-data-provider';
 import type { FilterQuery, Model, ClientSession } from 'mongoose';
-import type { TCustomConfig } from 'librechat-data-provider';
+import type { TCustomConfig } from 'nashm-data-provider';
 import type { IConfig } from '~/types';
 import { BASE_CONFIG_PRINCIPAL_ID } from '~/admin/capabilities';
 import { escapeRegExp } from '~/utils/string';

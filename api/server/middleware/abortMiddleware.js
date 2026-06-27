@@ -1,5 +1,5 @@
-const { logger } = require('@librechat/data-schemas');
-const { isAssistantsEndpoint, ErrorTypes } = require('librechat-data-provider');
+const { logger } = require('@nashm/data-schemas');
+const { isAssistantsEndpoint, ErrorTypes } = require('nashm-data-provider');
 const {
   isEnabled,
   sendEvent,
@@ -8,7 +8,7 @@ const {
   recordCollectedUsage,
   sanitizeMessageForTransmit,
   buildAbortedResponseMetadata,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const { truncateText, smartTruncateText } = require('~/app/clients/prompts');
 const clearPendingReq = require('~/cache/clearPendingReq');
 const { sendError } = require('~/server/middleware/error');

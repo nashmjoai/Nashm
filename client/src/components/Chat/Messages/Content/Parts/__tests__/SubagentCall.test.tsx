@@ -1,7 +1,7 @@
 import React from 'react';
 import { RecoilRoot, useRecoilCallback } from 'recoil';
 import { render, screen, act, fireEvent, waitFor, within } from '@testing-library/react';
-import type { SubagentUpdateEvent } from 'librechat-data-provider';
+import type { SubagentUpdateEvent } from 'nashm-data-provider';
 import type {
   SubagentContentPart,
   SubagentTickerState,
@@ -82,7 +82,7 @@ jest.mock('../Attachment', () => ({
   ),
 }));
 
-jest.mock('@librechat/client', () => ({
+jest.mock('@nashm/client', () => ({
   __esModule: true,
   OGDialog: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   OGDialogContent: ({ children }: { children: React.ReactNode }) => (
@@ -243,7 +243,7 @@ function renderWithState(args: {
 }
 
 /** Open the subagent dialog. Required when another test file in the same Jest
- *  worker has already loaded the real `@librechat/client` module; Radix only
+ *  worker has already loaded the real `@nashm/client` module; Radix only
  *  mounts dialog content while `open` is true. */
 function openSubagentDialog(headerLabel = 'Ran agent') {
   fireEvent.click(screen.getByRole('button', { name: headerLabel }));

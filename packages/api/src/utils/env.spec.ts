@@ -1,7 +1,7 @@
 import { Types } from 'mongoose';
-import { TokenExchangeMethodEnum } from 'librechat-data-provider';
-import type { MCPOptions } from 'librechat-data-provider';
-import type { IUser } from '@librechat/data-schemas';
+import { TokenExchangeMethodEnum } from 'nashm-data-provider';
+import type { MCPOptions } from 'nashm-data-provider';
+import type { IUser } from '@nashm/data-schemas';
 import { resolveHeaders, resolveNestedObject, processMCPEnv, encodeHeaderValue } from './env';
 
 function isStdioOptions(options: MCPOptions): options is Extract<MCPOptions, { type?: 'stdio' }> {
@@ -155,7 +155,7 @@ describe('resolveHeaders', () => {
   it('should process user ID placeholder when user has id', () => {
     const user = { id: 'test-user-123' };
     const headers = {
-      'User-Id': '{{LIBRECHAT_USER_ID}}',
+      'User-Id': '{{Nashm_USER_ID}}',
       'Content-Type': 'application/json',
     };
 
@@ -169,14 +169,14 @@ describe('resolveHeaders', () => {
 
   it('should not process user ID placeholder when user is undefined', () => {
     const headers = {
-      'User-Id': '{{LIBRECHAT_USER_ID}}',
+      'User-Id': '{{Nashm_USER_ID}}',
       'Content-Type': 'application/json',
     };
 
     const result = resolveHeaders({ headers });
 
     expect(result).toEqual({
-      'User-Id': '{{LIBRECHAT_USER_ID}}',
+      'User-Id': '{{Nashm_USER_ID}}',
       'Content-Type': 'application/json',
     });
   });
@@ -184,14 +184,14 @@ describe('resolveHeaders', () => {
   it('should not process user ID placeholder when user has no id', () => {
     const user = { id: '' };
     const headers = {
-      'User-Id': '{{LIBRECHAT_USER_ID}}',
+      'User-Id': '{{Nashm_USER_ID}}',
       'Content-Type': 'application/json',
     };
 
     const result = resolveHeaders({ headers, user });
 
     expect(result).toEqual({
-      'User-Id': '{{LIBRECHAT_USER_ID}}',
+      'User-Id': '{{Nashm_USER_ID}}',
       'Content-Type': 'application/json',
     });
   });
@@ -206,11 +206,11 @@ describe('resolveHeaders', () => {
     });
 
     const headers = {
-      'User-Email': '{{LIBRECHAT_USER_EMAIL}}',
-      'User-Name': '{{LIBRECHAT_USER_NAME}}',
-      'User-Username': '{{LIBRECHAT_USER_USERNAME}}',
-      'User-Role': '{{LIBRECHAT_USER_ROLE}}',
-      'User-Id': '{{LIBRECHAT_USER_ID}}',
+      'User-Email': '{{Nashm_USER_EMAIL}}',
+      'User-Name': '{{Nashm_USER_NAME}}',
+      'User-Username': '{{Nashm_USER_USERNAME}}',
+      'User-Role': '{{Nashm_USER_ROLE}}',
+      'User-Id': '{{Nashm_USER_ID}}',
       'Content-Type': 'application/json',
     };
 
@@ -234,9 +234,9 @@ describe('resolveHeaders', () => {
     });
 
     const headers = {
-      'User-Email': '{{LIBRECHAT_USER_EMAIL}}',
-      'User-Username': '{{LIBRECHAT_USER_USERNAME}}',
-      'Non-Existent': '{{LIBRECHAT_USER_NONEXISTENT}}',
+      'User-Email': '{{Nashm_USER_EMAIL}}',
+      'User-Username': '{{Nashm_USER_USERNAME}}',
+      'Non-Existent': '{{Nashm_USER_NONEXISTENT}}',
     };
 
     const result = resolveHeaders({ headers, user });
@@ -244,7 +244,7 @@ describe('resolveHeaders', () => {
     expect(result).toEqual({
       'User-Email': 'test@example.com',
       'User-Username': '',
-      'Non-Existent': '{{LIBRECHAT_USER_NONEXISTENT}}',
+      'Non-Existent': '{{Nashm_USER_NONEXISTENT}}',
     });
   });
 
@@ -259,7 +259,7 @@ describe('resolveHeaders', () => {
       Authorization: 'Bearer {{CUSTOM_TOKEN}}',
       'X-Region': '{{REGION}}',
       'X-System-Key': '${TEST_API_KEY}',
-      'X-User-Id': '{{LIBRECHAT_USER_ID}}',
+      'X-User-Id': '{{Nashm_USER_ID}}',
     };
 
     const result = resolveHeaders({ headers, user, customUserVars });
@@ -278,11 +278,11 @@ describe('resolveHeaders', () => {
       email: 'user-email@example.com',
     });
     const customUserVars = {
-      LIBRECHAT_USER_EMAIL: 'custom-email@example.com',
+      Nashm_USER_EMAIL: 'custom-email@example.com',
     };
 
     const headers = {
-      'Test-Email': '{{LIBRECHAT_USER_EMAIL}}',
+      'Test-Email': '{{Nashm_USER_EMAIL}}',
     };
 
     const result = resolveHeaders({ headers, user, customUserVars });
@@ -300,8 +300,8 @@ describe('resolveHeaders', () => {
     });
 
     const headers = {
-      'User-Role': '{{LIBRECHAT_USER_ROLE}}',
-      'User-Id': '{{LIBRECHAT_USER_ID}}',
+      'User-Role': '{{Nashm_USER_ROLE}}',
+      'User-Id': '{{Nashm_USER_ID}}',
     };
 
     const result = resolveHeaders({ headers, user });
@@ -319,9 +319,9 @@ describe('resolveHeaders', () => {
     });
 
     const headers = {
-      'Primary-Email': '{{LIBRECHAT_USER_EMAIL}}',
-      'Secondary-Email': '{{LIBRECHAT_USER_EMAIL}}',
-      'Backup-Email': '{{LIBRECHAT_USER_EMAIL}}',
+      'Primary-Email': '{{Nashm_USER_EMAIL}}',
+      'Secondary-Email': '{{Nashm_USER_EMAIL}}',
+      'Backup-Email': '{{Nashm_USER_EMAIL}}',
     };
 
     const result = resolveHeaders({ headers, user });
@@ -344,9 +344,9 @@ describe('resolveHeaders', () => {
 
     const headers = {
       Authorization: 'Bearer {{CUSTOM_TOKEN}}',
-      'X-User-Id': '{{LIBRECHAT_USER_ID}}',
+      'X-User-Id': '{{Nashm_USER_ID}}',
       'X-System-Key': '${TEST_API_KEY}',
-      'X-User-Email': '{{LIBRECHAT_USER_EMAIL}}',
+      'X-User-Email': '{{Nashm_USER_EMAIL}}',
       'Content-Type': 'application/json',
     };
 
@@ -364,7 +364,7 @@ describe('resolveHeaders', () => {
   it('should not modify the original headers object', () => {
     const originalHeaders = {
       Authorization: '${TEST_API_KEY}',
-      'User-Id': '{{LIBRECHAT_USER_ID}}',
+      'User-Id': '{{Nashm_USER_ID}}',
     };
     const user = { id: 'user-123' };
 
@@ -377,7 +377,7 @@ describe('resolveHeaders', () => {
 
     expect(originalHeaders).toEqual({
       Authorization: '${TEST_API_KEY}',
-      'User-Id': '{{LIBRECHAT_USER_ID}}',
+      'User-Id': '{{Nashm_USER_ID}}',
     });
   });
 
@@ -426,23 +426,23 @@ describe('resolveHeaders', () => {
     };
 
     const headers = {
-      'X-User-ID': '{{LIBRECHAT_USER_ID}}',
-      'X-User-Name': '{{LIBRECHAT_USER_NAME}}',
-      'X-User-Username': '{{LIBRECHAT_USER_USERNAME}}',
-      'X-User-Email': '{{LIBRECHAT_USER_EMAIL}}',
-      'X-User-Provider': '{{LIBRECHAT_USER_PROVIDER}}',
-      'X-User-Role': '{{LIBRECHAT_USER_ROLE}}',
-      'X-User-GoogleId': '{{LIBRECHAT_USER_GOOGLEID}}',
-      'X-User-FacebookId': '{{LIBRECHAT_USER_FACEBOOKID}}',
-      'X-User-OpenIdId': '{{LIBRECHAT_USER_OPENIDID}}',
-      'X-User-SamlId': '{{LIBRECHAT_USER_SAMLID}}',
-      'X-User-LdapId': '{{LIBRECHAT_USER_LDAPID}}',
-      'X-User-GithubId': '{{LIBRECHAT_USER_GITHUBID}}',
-      'X-User-DiscordId': '{{LIBRECHAT_USER_DISCORDID}}',
-      'X-User-AppleId': '{{LIBRECHAT_USER_APPLEID}}',
-      'X-User-EmailVerified': '{{LIBRECHAT_USER_EMAILVERIFIED}}',
-      'X-User-TwoFactorEnabled': '{{LIBRECHAT_USER_TWOFACTORENABLED}}',
-      'X-User-TermsAccepted': '{{LIBRECHAT_USER_TERMSACCEPTED}}',
+      'X-User-ID': '{{Nashm_USER_ID}}',
+      'X-User-Name': '{{Nashm_USER_NAME}}',
+      'X-User-Username': '{{Nashm_USER_USERNAME}}',
+      'X-User-Email': '{{Nashm_USER_EMAIL}}',
+      'X-User-Provider': '{{Nashm_USER_PROVIDER}}',
+      'X-User-Role': '{{Nashm_USER_ROLE}}',
+      'X-User-GoogleId': '{{Nashm_USER_GOOGLEID}}',
+      'X-User-FacebookId': '{{Nashm_USER_FACEBOOKID}}',
+      'X-User-OpenIdId': '{{Nashm_USER_OPENIDID}}',
+      'X-User-SamlId': '{{Nashm_USER_SAMLID}}',
+      'X-User-LdapId': '{{Nashm_USER_LDAPID}}',
+      'X-User-GithubId': '{{Nashm_USER_GITHUBID}}',
+      'X-User-DiscordId': '{{Nashm_USER_DISCORDID}}',
+      'X-User-AppleId': '{{Nashm_USER_APPLEID}}',
+      'X-User-EmailVerified': '{{Nashm_USER_EMAILVERIFIED}}',
+      'X-User-TwoFactorEnabled': '{{Nashm_USER_TWOFACTORENABLED}}',
+      'X-User-TermsAccepted': '{{Nashm_USER_TERMSACCEPTED}}',
     };
 
     const result = resolveHeaders({ headers, user });
@@ -469,7 +469,7 @@ describe('resolveHeaders', () => {
   it('should handle multiple placeholders in one value', () => {
     const user = { id: 'abc', email: 'me@example.com' };
     const headers = {
-      'X-Multi': 'User: {{LIBRECHAT_USER_ID}}, Env: ${TEST_API_KEY}, Custom: {{MY_CUSTOM}}',
+      'X-Multi': 'User: {{Nashm_USER_ID}}, Env: ${TEST_API_KEY}, Custom: {{MY_CUSTOM}}',
     };
     const customVars = { MY_CUSTOM: 'custom-value' };
     const result = resolveHeaders({ headers, user, customUserVars: customVars });
@@ -480,7 +480,7 @@ describe('resolveHeaders', () => {
     const user = { id: 'abc' };
     const headers = {
       'X-Unknown': '{{SOMETHING_NOT_RECOGNIZED}}',
-      'X-Known': '{{LIBRECHAT_USER_ID}}',
+      'X-Known': '{{Nashm_USER_ID}}',
     };
     const result = resolveHeaders({ headers, user });
     expect(result['X-Unknown']).toBe('{{SOMETHING_NOT_RECOGNIZED}}');
@@ -495,13 +495,13 @@ describe('resolveHeaders', () => {
       twoFactorEnabled: false,
     };
     const headers = {
-      'X-User': '{{LIBRECHAT_USER_ID}}',
+      'X-User': '{{Nashm_USER_ID}}',
       'X-Env': '${TEST_API_KEY}',
       'X-Custom': '{{MY_CUSTOM}}',
-      'X-Multi': 'ID: {{LIBRECHAT_USER_ID}}, ENV: ${TEST_API_KEY}, CUSTOM: {{MY_CUSTOM}}',
+      'X-Multi': 'ID: {{Nashm_USER_ID}}, ENV: ${TEST_API_KEY}, CUSTOM: {{MY_CUSTOM}}',
       'X-Unknown': '{{NOT_A_REAL_PLACEHOLDER}}',
       'X-Empty': '',
-      'X-Boolean': '{{LIBRECHAT_USER_EMAILVERIFIED}}',
+      'X-Boolean': '{{Nashm_USER_EMAILVERIFIED}}',
     };
     const customVars = { MY_CUSTOM: 'custom-value' };
     const result = resolveHeaders({ headers, user, customUserVars: customVars });
@@ -515,27 +515,27 @@ describe('resolveHeaders', () => {
     expect(result['X-Boolean']).toBe('true');
   });
 
-  it('should process LIBRECHAT_BODY placeholders', () => {
+  it('should process Nashm_BODY placeholders', () => {
     const body = {
       conversationId: 'conv-123',
       parentMessageId: 'parent-456',
       messageId: 'msg-789',
     };
-    const headers = { 'X-Conversation': '{{LIBRECHAT_BODY_CONVERSATIONID}}' };
+    const headers = { 'X-Conversation': '{{Nashm_BODY_CONVERSATIONID}}' };
     const result = resolveHeaders({ headers, body });
     expect(result['X-Conversation']).toBe('conv-123');
   });
 
-  it('should not resolve env vars introduced via LIBRECHAT_BODY placeholders', () => {
+  it('should not resolve env vars introduced via Nashm_BODY placeholders', () => {
     const body = {
       conversationId: '${TEST_API_KEY}',
       parentMessageId: '${TEST_API_KEY}',
       messageId: '${TEST_API_KEY}',
     };
     const headers = {
-      'X-Conv': '{{LIBRECHAT_BODY_CONVERSATIONID}}',
-      'X-Parent': '{{LIBRECHAT_BODY_PARENTMESSAGEID}}',
-      'X-Msg': '{{LIBRECHAT_BODY_MESSAGEID}}',
+      'X-Conv': '{{Nashm_BODY_CONVERSATIONID}}',
+      'X-Parent': '{{Nashm_BODY_PARENTMESSAGEID}}',
+      'X-Msg': '{{Nashm_BODY_MESSAGEID}}',
     };
     const result = resolveHeaders({ headers, body });
 
@@ -544,9 +544,9 @@ describe('resolveHeaders', () => {
     expect(result['X-Msg']).toBe('${TEST_API_KEY}');
   });
 
-  it('should not resolve env vars introduced via LIBRECHAT_USER placeholders', () => {
+  it('should not resolve env vars introduced via Nashm_USER placeholders', () => {
     const user = createTestUser({ name: '${TEST_API_KEY}' });
-    const headers = { 'X-Name': '{{LIBRECHAT_USER_NAME}}' };
+    const headers = { 'X-Name': '{{Nashm_USER_NAME}}' };
     const result = resolveHeaders({ headers, user });
 
     expect(result['X-Name']).toBe('${TEST_API_KEY}');
@@ -599,7 +599,7 @@ describe('resolveHeaders', () => {
       const user = { id: 'user-123' };
       const headers = {
         'X-Number': 42 as unknown as string,
-        'X-String-With-Placeholder': '{{LIBRECHAT_USER_ID}}',
+        'X-String-With-Placeholder': '{{Nashm_USER_ID}}',
       };
       const result = resolveHeaders({ headers, user });
       expect(result['X-Number']).toBe('42');
@@ -646,7 +646,7 @@ describe('resolveHeaders', () => {
       };
       const headers = {
         'X-Number': 999 as unknown as string,
-        'X-Conv': '{{LIBRECHAT_BODY_CONVERSATIONID}}',
+        'X-Conv': '{{Nashm_BODY_CONVERSATIONID}}',
       };
       const result = resolveHeaders({ headers, body });
       expect(result['X-Number']).toBe('999');
@@ -659,7 +659,7 @@ describe('resolveHeaders', () => {
       const headers = {
         'X-Number': 42 as unknown as string,
         'X-Boolean': true as unknown as string,
-        'X-User-Id': '{{LIBRECHAT_USER_ID}}',
+        'X-User-Id': '{{Nashm_USER_ID}}',
         'X-Custom': '{{CUSTOM_TOKEN}}',
         'X-String': 'normal',
       };
@@ -678,7 +678,7 @@ describe('resolveHeaders', () => {
         messageId: 'msg-789',
       };
       const headers = {
-        'X-Conv-Id': '{{LIBRECHAT_BODY_CONVERSATIONID}}',
+        'X-Conv-Id': '{{Nashm_BODY_CONVERSATIONID}}',
         'X-Number': 999 as unknown as string,
       };
       expect(() => resolveHeaders({ headers, body })).not.toThrow();
@@ -729,7 +729,7 @@ describe('resolveNestedObject', () => {
       thinking: {
         type: 'enabled',
         budget_tokens: 2000,
-        user_context: '{{LIBRECHAT_USER_ID}}',
+        user_context: '{{Nashm_USER_ID}}',
       },
       anthropic_beta: ['output-128k-2025-02-19'],
       api_key: '${TEST_API_KEY}',
@@ -753,9 +753,9 @@ describe('resolveNestedObject', () => {
   it('should process strings in arrays', () => {
     const user = { id: 'user-123' };
     const obj = {
-      headers: ['Authorization: Bearer ${TEST_API_KEY}', 'X-User-Id: {{LIBRECHAT_USER_ID}}'],
+      headers: ['Authorization: Bearer ${TEST_API_KEY}', 'X-User-Id: {{Nashm_USER_ID}}'],
       values: [1, 2, 3],
-      mixed: ['string', 42, true, '{{LIBRECHAT_USER_ID}}'],
+      mixed: ['string', 42, true, '{{Nashm_USER_ID}}'],
     };
 
     const result = resolveNestedObject({ obj, user });
@@ -773,7 +773,7 @@ describe('resolveNestedObject', () => {
       level1: {
         level2: {
           level3: {
-            user_id: '{{LIBRECHAT_USER_ID}}',
+            user_id: '{{Nashm_USER_ID}}',
             settings: {
               api_key: '${TEST_API_KEY}',
               enabled: true,
@@ -838,8 +838,8 @@ describe('resolveNestedObject', () => {
     };
     const obj = {
       metadata: {
-        conversation: '{{LIBRECHAT_BODY_CONVERSATIONID}}',
-        parent: '{{LIBRECHAT_BODY_PARENTMESSAGEID}}',
+        conversation: '{{Nashm_BODY_CONVERSATIONID}}',
+        parent: '{{Nashm_BODY_PARENTMESSAGEID}}',
         count: 5,
       },
     };
@@ -886,12 +886,12 @@ describe('resolveNestedObject', () => {
 
     const obj = {
       config: {
-        user_id: '{{LIBRECHAT_USER_ID}}',
+        user_id: '{{Nashm_USER_ID}}',
         custom: '{{CUSTOM_VAR}}',
         api_key: '${TEST_API_KEY}',
-        conversation: '{{LIBRECHAT_BODY_CONVERSATIONID}}',
+        conversation: '{{Nashm_BODY_CONVERSATIONID}}',
         nested: {
-          email: '{{LIBRECHAT_USER_EMAIL}}',
+          email: '{{Nashm_USER_EMAIL}}',
           port: 8080,
         },
       },
@@ -951,8 +951,8 @@ describe('resolveNestedObject', () => {
     const user = { id: 'user-123' };
     const obj = {
       items: [
-        { name: 'item1', user: '{{LIBRECHAT_USER_ID}}', count: 1 },
-        { name: 'item2', user: '{{LIBRECHAT_USER_ID}}', count: 2 },
+        { name: 'item1', user: '{{Nashm_USER_ID}}', count: 1 },
+        { name: 'item2', user: '{{Nashm_USER_ID}}', count: 2 },
       ],
     };
 
@@ -972,14 +972,14 @@ describe('resolveNestedObject', () => {
       thinking: {
         type: 'enabled',
         budget_tokens: 2000,
-        user_id: '{{LIBRECHAT_USER_ID}}',
+        user_id: '{{Nashm_USER_ID}}',
       },
     };
 
     const result = resolveNestedObject({ obj: originalObj, user });
 
     expect(result.thinking.user_id).toBe('user-123');
-    expect(originalObj.thinking.user_id).toBe('{{LIBRECHAT_USER_ID}}');
+    expect(originalObj.thinking.user_id).toBe('{{Nashm_USER_ID}}');
   });
 });
 
@@ -1070,7 +1070,7 @@ describe('processMCPEnv', () => {
       type: 'sse',
       url: '${MCP_SERVER_URL}/sse',
       proxy:
-        'http://proxy.example.com/{{CUSTOM_PROXY_PATH}}/{{LIBRECHAT_USER_ID}}/{{LIBRECHAT_BODY_MESSAGEID}}',
+        'http://proxy.example.com/{{CUSTOM_PROXY_PATH}}/{{Nashm_USER_ID}}/{{Nashm_BODY_MESSAGEID}}',
     };
 
     const result = processMCPEnv({
@@ -1084,7 +1084,7 @@ describe('processMCPEnv', () => {
       type: 'sse',
       url: 'https://mcp.example.com/sse',
       proxy:
-        'http://proxy.example.com/{{CUSTOM_PROXY_PATH}}/{{LIBRECHAT_USER_ID}}/{{LIBRECHAT_BODY_MESSAGEID}}',
+        'http://proxy.example.com/{{CUSTOM_PROXY_PATH}}/{{Nashm_USER_ID}}/{{Nashm_BODY_MESSAGEID}}',
     });
   });
 
@@ -1132,7 +1132,7 @@ describe('processMCPEnv', () => {
       type: 'streamable-http',
       url: 'https://mcp.example.com/api',
       oauth_headers: {
-        'X-User-Id': '{{LIBRECHAT_USER_ID}}',
+        'X-User-Id': '{{Nashm_USER_ID}}',
         'X-Static': 'static-value',
       },
     };
@@ -1151,14 +1151,14 @@ describe('processMCPEnv', () => {
       type: 'streamable-http',
       url: 'https://mcp.example.com/api',
       oauth_headers: {
-        'X-User-Id': '{{LIBRECHAT_USER_ID}}',
+        'X-User-Id': '{{Nashm_USER_ID}}',
       },
     };
 
     const result = processMCPEnv({ options, user, dbSourced: true });
 
     expect('oauth_headers' in result! && result.oauth_headers).toEqual({
-      'X-User-Id': '{{LIBRECHAT_USER_ID}}',
+      'X-User-Id': '{{Nashm_USER_ID}}',
     });
   });
 
@@ -1174,11 +1174,11 @@ describe('processMCPEnv', () => {
       type: 'stdio',
       command: 'mcp-server',
       env: {
-        USER_ID: '{{LIBRECHAT_USER_ID}}',
-        USER_EMAIL: '{{LIBRECHAT_USER_EMAIL}}',
-        USER_ROLE: '{{LIBRECHAT_USER_ROLE}}',
+        USER_ID: '{{Nashm_USER_ID}}',
+        USER_EMAIL: '{{Nashm_USER_EMAIL}}',
+        USER_ROLE: '{{Nashm_USER_ROLE}}',
       },
-      args: ['--user', '{{LIBRECHAT_USER_USERNAME}}', '--id', '{{LIBRECHAT_USER_ID}}'],
+      args: ['--user', '{{Nashm_USER_USERNAME}}', '--id', '{{Nashm_USER_ID}}'],
     };
 
     const result = processMCPEnv({ options, user });
@@ -1231,10 +1231,10 @@ describe('processMCPEnv', () => {
 
     const options: MCPOptions = {
       type: 'streamable-http',
-      url: 'https://api.example.com/conversations/{{LIBRECHAT_BODY_CONVERSATIONID}}',
+      url: 'https://api.example.com/conversations/{{Nashm_BODY_CONVERSATIONID}}',
       headers: {
-        'X-Parent-Message': '{{LIBRECHAT_BODY_PARENTMESSAGEID}}',
-        'X-Message-Id': '{{LIBRECHAT_BODY_MESSAGEID}}',
+        'X-Parent-Message': '{{Nashm_BODY_PARENTMESSAGEID}}',
+        'X-Message-Id': '{{Nashm_BODY_MESSAGEID}}',
       },
     };
 
@@ -1261,8 +1261,8 @@ describe('processMCPEnv', () => {
       type: 'streamable-http',
       url: 'https://api.example.com',
       headers: {
-        'X-Conv': '{{LIBRECHAT_BODY_CONVERSATIONID}}',
-        'X-Parent': '{{LIBRECHAT_BODY_PARENTMESSAGEID}}',
+        'X-Conv': '{{Nashm_BODY_CONVERSATIONID}}',
+        'X-Parent': '{{Nashm_BODY_PARENTMESSAGEID}}',
       },
     };
 
@@ -1313,8 +1313,8 @@ describe('processMCPEnv', () => {
         token_url: 'https://auth.example.com/{{TENANT_ID}}/token',
         client_id: '${OAUTH_CLIENT_ID}',
         client_secret: '${OAUTH_CLIENT_SECRET}',
-        scope: 'user:{{LIBRECHAT_USER_ID}} conversation:{{LIBRECHAT_BODY_CONVERSATIONID}}',
-        redirect_uri: 'http://localhost:3000/user/{{LIBRECHAT_USER_EMAIL}}/callback',
+        scope: 'user:{{Nashm_USER_ID}} conversation:{{Nashm_BODY_CONVERSATIONID}}',
+        redirect_uri: 'http://localhost:3000/user/{{Nashm_USER_EMAIL}}/callback',
       },
     };
 
@@ -1418,7 +1418,7 @@ describe('processMCPEnv', () => {
       args: [],
       env: {
         COMPLEX_VALUE:
-          'User: {{LIBRECHAT_USER_ID}}, Custom: {{CUSTOM_VAR}}, Body: {{LIBRECHAT_BODY_CONVERSATIONID}}, Env: ${TEST_API_KEY}',
+          'User: {{Nashm_USER_ID}}, Custom: {{CUSTOM_VAR}}, Body: {{Nashm_BODY_CONVERSATIONID}}, Env: ${TEST_API_KEY}',
       },
     };
 
@@ -1550,7 +1550,7 @@ describe('processMCPEnv', () => {
         args: [],
         env: {
           PORT: 8080 as unknown as string,
-          USER_ID: '{{LIBRECHAT_USER_ID}}',
+          USER_ID: '{{Nashm_USER_ID}}',
           API_KEY: '${TEST_API_KEY}',
         },
       };
@@ -1596,7 +1596,7 @@ describe('processMCPEnv', () => {
         command: 'mcp-server',
         args: [],
         env: {
-          CONV_ID: '{{LIBRECHAT_BODY_CONVERSATIONID}}',
+          CONV_ID: '{{Nashm_BODY_CONVERSATIONID}}',
           PORT: 8080 as unknown as string,
         },
       };
@@ -1816,28 +1816,28 @@ describe('processMCPEnv', () => {
       }
     });
 
-    it('should NOT resolve {{LIBRECHAT_USER_*}} when dbSourced is true', () => {
+    it('should NOT resolve {{Nashm_USER_*}} when dbSourced is true', () => {
       const user = createTestUser({ id: 'user-123', email: 'test@example.com' });
       const options: MCPOptions = {
         type: 'streamable-http',
         url: 'https://api.example.com',
         headers: {
-          'X-User-Id': '{{LIBRECHAT_USER_ID}}',
-          'X-User-Email': '{{LIBRECHAT_USER_EMAIL}}',
+          'X-User-Id': '{{Nashm_USER_ID}}',
+          'X-User-Email': '{{Nashm_USER_EMAIL}}',
         },
       };
 
       const result = processMCPEnv({ options, user, dbSourced: true });
 
       if (isStreamableHTTPOptions(result)) {
-        expect(result.headers?.['X-User-Id']).toBe('{{LIBRECHAT_USER_ID}}');
-        expect(result.headers?.['X-User-Email']).toBe('{{LIBRECHAT_USER_EMAIL}}');
+        expect(result.headers?.['X-User-Id']).toBe('{{Nashm_USER_ID}}');
+        expect(result.headers?.['X-User-Email']).toBe('{{Nashm_USER_EMAIL}}');
       } else {
         throw new Error('Expected streamable-http options');
       }
     });
 
-    it('should NOT resolve {{LIBRECHAT_OPENID_*}} when dbSourced is true', () => {
+    it('should NOT resolve {{Nashm_OPENID_*}} when dbSourced is true', () => {
       const user = {
         ...createTestUser({ id: 'user-123', provider: 'openid' }),
         federatedTokens: {
@@ -1852,20 +1852,20 @@ describe('processMCPEnv', () => {
         type: 'streamable-http',
         url: 'https://api.example.com',
         headers: {
-          Authorization: 'Bearer {{LIBRECHAT_OPENID_ACCESS_TOKEN}}',
+          Authorization: 'Bearer {{Nashm_OPENID_ACCESS_TOKEN}}',
         },
       };
 
       const result = processMCPEnv({ options, user, dbSourced: true });
 
       if (isStreamableHTTPOptions(result)) {
-        expect(result.headers?.Authorization).toBe('Bearer {{LIBRECHAT_OPENID_ACCESS_TOKEN}}');
+        expect(result.headers?.Authorization).toBe('Bearer {{Nashm_OPENID_ACCESS_TOKEN}}');
       } else {
         throw new Error('Expected streamable-http options');
       }
     });
 
-    it('should NOT resolve {{LIBRECHAT_BODY_*}} when dbSourced is true', () => {
+    it('should NOT resolve {{Nashm_BODY_*}} when dbSourced is true', () => {
       const body = {
         conversationId: 'conv-123',
         parentMessageId: 'parent-456',
@@ -1875,14 +1875,14 @@ describe('processMCPEnv', () => {
         type: 'streamable-http',
         url: 'https://api.example.com',
         headers: {
-          'X-Conversation': '{{LIBRECHAT_BODY_CONVERSATIONID}}',
+          'X-Conversation': '{{Nashm_BODY_CONVERSATIONID}}',
         },
       };
 
       const result = processMCPEnv({ options, body, dbSourced: true });
 
       if (isStreamableHTTPOptions(result)) {
-        expect(result.headers?.['X-Conversation']).toBe('{{LIBRECHAT_BODY_CONVERSATIONID}}');
+        expect(result.headers?.['X-Conversation']).toBe('{{Nashm_BODY_CONVERSATIONID}}');
       } else {
         throw new Error('Expected streamable-http options');
       }
@@ -1897,8 +1897,8 @@ describe('processMCPEnv', () => {
         headers: {
           Authorization: 'Bearer {{MCP_API_KEY}}',
           'X-Env-Leak': '${TEST_API_KEY}',
-          'X-User-Id': '{{LIBRECHAT_USER_ID}}',
-          'X-Body': '{{LIBRECHAT_BODY_CONVERSATIONID}}',
+          'X-User-Id': '{{Nashm_USER_ID}}',
+          'X-Body': '{{Nashm_BODY_CONVERSATIONID}}',
         },
       };
 
@@ -1913,8 +1913,8 @@ describe('processMCPEnv', () => {
       if (isStreamableHTTPOptions(result)) {
         expect(result.headers?.Authorization).toBe('Bearer user-key-value');
         expect(result.headers?.['X-Env-Leak']).toBe('${TEST_API_KEY}');
-        expect(result.headers?.['X-User-Id']).toBe('{{LIBRECHAT_USER_ID}}');
-        expect(result.headers?.['X-Body']).toBe('{{LIBRECHAT_BODY_CONVERSATIONID}}');
+        expect(result.headers?.['X-User-Id']).toBe('{{Nashm_USER_ID}}');
+        expect(result.headers?.['X-Body']).toBe('{{Nashm_BODY_CONVERSATIONID}}');
         expect(result.url).toBe('${DATABASE_URL}');
       } else {
         throw new Error('Expected streamable-http options');
@@ -1929,7 +1929,7 @@ describe('processMCPEnv', () => {
         headers: {
           Authorization: 'Bearer {{MCP_API_KEY}}',
           'X-Env': '${TEST_API_KEY}',
-          'X-User-Id': '{{LIBRECHAT_USER_ID}}',
+          'X-User-Id': '{{Nashm_USER_ID}}',
         },
       };
 
@@ -2109,7 +2109,7 @@ describe('processMCPEnv', () => {
         url: 'https://api.example.com',
         headers: {
           'X-Env': '${TEST_API_KEY}',
-          'X-User': '{{LIBRECHAT_USER_ID}}',
+          'X-User': '{{Nashm_USER_ID}}',
         },
       };
 

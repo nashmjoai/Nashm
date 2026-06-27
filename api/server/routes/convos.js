@@ -7,9 +7,9 @@ const {
   restoreTenantContextFromReq,
   deleteAllSharedLinksWithCleanup,
   deleteConvoSharedLinksWithCleanup,
-} = require('@librechat/api');
-const { logger } = require('@librechat/data-schemas');
-const { CacheKeys, EModelEndpoint } = require('librechat-data-provider');
+} = require('@nashm/api');
+const { logger } = require('@nashm/data-schemas');
+const { CacheKeys, EModelEndpoint } = require('nashm-data-provider');
 const {
   createImportLimiters,
   validateConvoAccess,

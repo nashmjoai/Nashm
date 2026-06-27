@@ -103,7 +103,7 @@
     </script>
     <script>
       (function () {
-        var KEY = 'lc-asset-recovery-at';
+        var KEY = 'nashm-asset-recovery-at';
         function shouldRecover() {
           try {
             var last = Number(sessionStorage.getItem(KEY)) || 0;
@@ -119,7 +119,7 @@
         /** Recovers from stale builds (e.g. an outdated service worker serving old
          * hashed chunks after a deploy) by unregistering workers and reloading once.
          * Returns true when a recovery reload was initiated. */
-        window.__lcRecoverStaleAssets = function () {
+        window.__nashmRecoverStaleAssets = function () {
           if (!shouldRecover()) {
             return false;
           }
@@ -149,12 +149,12 @@
         };
         if (navigator.serviceWorker) {
           navigator.serviceWorker.addEventListener('message', function (event) {
-            if (!event.data || event.data.type !== 'LC_SW_PING') {
+            if (!event.data || event.data.type !== 'NASHM_SW_PING') {
               return;
             }
             var source = event.source || navigator.serviceWorker.controller;
             if (source) {
-              source.postMessage({ type: 'LC_SW_PONG' });
+              source.postMessage({ type: 'NASHM_SW_PONG' });
             }
           });
         }
@@ -169,7 +169,7 @@
             var failedPreload =
               el.tagName === 'LINK' && /preload/.test(el.rel || '') && /\.js$/.test(el.href || '');
             if (failedScript || failedPreload) {
-              window.__lcRecoverStaleAssets();
+              window.__nashmRecoverStaleAssets();
             }
           },
           true,
@@ -181,7 +181,7 @@
             (message.indexOf('dynamically imported module') !== -1 ||
               message.indexOf('Importing a module script failed') !== -1)
           ) {
-            window.__lcRecoverStaleAssets();
+              window.__nashmRecoverStaleAssets();
           }
         });
       })();

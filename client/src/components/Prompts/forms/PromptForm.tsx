@@ -4,14 +4,14 @@ import { useRecoilValue } from 'recoil';
 import { useParams } from 'react-router-dom';
 import { Menu, Rocket, X } from 'lucide-react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { Button, Skeleton, useToastContext, useMediaQuery } from '@librechat/client';
+import { Button, Skeleton, useToastContext, useMediaQuery } from '@nashm/client';
 import {
   Permissions,
   ResourceType,
   PermissionBits,
   PermissionTypes,
-} from 'librechat-data-provider';
-import type { TCreatePrompt, TPrompt, TPromptGroup } from 'librechat-data-provider';
+} from 'nashm-data-provider';
+import type { TCreatePrompt, TPrompt, TPromptGroup } from 'nashm-data-provider';
 import {
   useGetPrompts,
   useGetPromptGroup,

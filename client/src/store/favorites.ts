@@ -1,4 +1,4 @@
-import type { TUserFavorite } from 'librechat-data-provider';
+import type { TUserFavorite } from 'nashm-data-provider';
 import { createTabIsolatedAtom } from './jotai-utils';
 
 export type Favorite = TUserFavorite;

@@ -1,6 +1,6 @@
 const express = require('express');
-const { createMessageFilterPii, generateCheckAccess, skipAgentCheck } = require('@librechat/api');
-const { PermissionTypes, Permissions, PermissionBits } = require('librechat-data-provider');
+const { createMessageFilterPii, generateCheckAccess, skipAgentCheck } = require('@nashm/api');
+const { PermissionTypes, Permissions, PermissionBits } = require('nashm-data-provider');
 const {
   moderateText,
   // validateModel,

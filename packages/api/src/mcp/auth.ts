@@ -1,6 +1,6 @@
-import { logger } from '@librechat/data-schemas';
-import { Constants } from 'librechat-data-provider';
-import type { PluginAuthMethods } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
+import { Constants } from 'nashm-data-provider';
+import type { PluginAuthMethods } from '@nashm/data-schemas';
 import type { GenericTool } from '@librechat/agents';
 import { getPluginAuthMap } from '~/agents/auth';
 

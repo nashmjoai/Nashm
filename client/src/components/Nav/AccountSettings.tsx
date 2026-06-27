@@ -1,7 +1,7 @@
 import { useState, memo, useRef } from 'react';
 import * as Menu from '@ariakit/react/menu';
 import { FileText, Archive, LogOut, Shield } from 'lucide-react';
-import { LinkIcon, GearIcon, DropdownMenuSeparator, Avatar } from '@librechat/client';
+import { LinkIcon, GearIcon, DropdownMenuSeparator, Avatar } from '@nashm/client';
 import { ArchivedChatsModal } from '~/components/Nav/SettingsTabs/General/ArchivedChatsModal';
 import { MyFilesModal } from '~/components/Chat/Input/Files/MyFilesModal';
 import { SupportModal } from './SupportModal';

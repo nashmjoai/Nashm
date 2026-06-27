@@ -1,14 +1,14 @@
 const cookies = require('cookie');
 const jwt = require('jsonwebtoken');
 const openIdClient = require('openid-client');
-const { logger } = require('@librechat/data-schemas');
+const { logger } = require('@nashm/data-schemas');
 const {
   math,
   isEnabled,
   findOpenIDUser,
   getOpenIdIssuer,
   buildOpenIDRefreshParams,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const {
   requestPasswordReset,
   setOpenIDAuthTokens,
@@ -30,7 +30,7 @@ const { getOpenIdConfig, getOpenIdEmail } = require('~/strategies');
 const AUTH_REFRESH_USER_PROJECTION = '-password -__v -totpSecret -backupCodes -federatedTokens';
 const OPENID_REUSE_EXPIRY_BUFFER_SECONDS = 30;
 /**
- * Max age (ms) LibreChat reuses a cached OpenID session token before forcing an IdP refresh.
+ * Max age (ms) Nashm reuses a cached OpenID session token before forcing an IdP refresh.
  * Env-overridable (accepts an arithmetic expression, e.g. `60 * 60 * 24 * 1000`, like
  * `SESSION_EXPIRY`): deployments whose IdP revokes the previous access token on refresh can
  * widen this to the access-token lifetime so a still-valid token is not rotated/revoked out

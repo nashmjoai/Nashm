@@ -1,7 +1,7 @@
-import type { MessageFilterPiiConfig } from 'librechat-data-provider';
+import type { MessageFilterPiiConfig } from 'nashm-data-provider';
 import type { Request, Response, NextFunction } from 'express';
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: { warn: jest.fn(), error: jest.fn(), info: jest.fn(), debug: jest.fn() },
 }));
 import { createMessageFilterPii, findPiiMatchInMessages } from './messageFilterPii';

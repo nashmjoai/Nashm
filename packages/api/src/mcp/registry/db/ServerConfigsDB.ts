@@ -1,12 +1,12 @@
 import { Types } from 'mongoose';
-import { logger, encryptV2, decryptV2, createMethods } from '@librechat/data-schemas';
+import { logger, encryptV2, decryptV2, createMethods } from '@nashm/data-schemas';
 import {
   ResourceType,
   AccessRoleIds,
   PrincipalType,
   PermissionBits,
-} from 'librechat-data-provider';
-import type { AllMethods, MCPServerDocument } from '@librechat/data-schemas';
+} from 'nashm-data-provider';
+import type { AllMethods, MCPServerDocument } from '@nashm/data-schemas';
 
 import type { IServerConfigsRepositoryInterface } from '~/mcp/registry/ServerConfigsRepositoryInterface';
 import type { ParsedServerConfig, AddServerResult } from '~/mcp/types';
@@ -21,10 +21,10 @@ import { AccessControlService } from '~/acl/accessControlService';
  */
 const DANGEROUS_CREDENTIAL_PATTERNS = [
   /\$\{[^}]+\}/g,
-  /\{\{LIBRECHAT_OPENID_[^}]+\}\}/g,
-  /\{\{LIBRECHAT_USER_[^}]+\}\}/g,
-  /\{\{LIBRECHAT_GRAPH_[^}]+\}\}/g,
-  /\{\{LIBRECHAT_BODY_[^}]+\}\}/g,
+  /\{\{Nashm_OPENID_[^}]+\}\}/g,
+  /\{\{Nashm_USER_[^}]+\}\}/g,
+  /\{\{Nashm_GRAPH_[^}]+\}\}/g,
+  /\{\{Nashm_BODY_[^}]+\}\}/g,
 ];
 
 const BLOCKED_USER_OAUTH_ENDPOINT_PARAMS = ['audience', 'resource'] as const;

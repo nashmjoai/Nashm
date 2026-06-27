@@ -1,10 +1,10 @@
-import { PrincipalType } from 'librechat-data-provider';
+import { PrincipalType } from 'nashm-data-provider';
 import {
   logger,
   isValidCapability,
   SystemCapabilities,
   expandImplications,
-} from '@librechat/data-schemas';
+} from '@nashm/data-schemas';
 import type {
   AuditAction,
   AuditContext,
@@ -12,7 +12,7 @@ import type {
   RecordAuditEntryInput,
   RecordAuditEntryOptions,
   SystemCapability,
-} from '@librechat/data-schemas';
+} from '@nashm/data-schemas';
 import type { Response } from 'express';
 import type { Types } from 'mongoose';
 import type { ResolvedPrincipal } from '~/types/principal';

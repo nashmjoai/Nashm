@@ -34,7 +34,7 @@ jest.mock('~/config', () => ({
 }));
 
 jest.mock(
-  '@librechat/api/telemetry',
+  '@nashm/api/telemetry',
   () => ({
     initializeTelemetry: jest.fn(() => ({
       enabled: false,
@@ -122,7 +122,7 @@ describe('Server Configuration', () => {
   beforeAll(() => {
     fs.readFileSync = function (filepath, options) {
       if (filepath.includes('index.html')) {
-        return '<!DOCTYPE html><html><head><title>LibreChat</title></head><body><div id="root"></div></body></html>';
+        return '<!DOCTYPE html><html><head><title>Nashm</title></head><body><div id="root"></div></body></html>';
       }
       return originalReadFileSync(filepath, options);
     };
@@ -147,7 +147,7 @@ describe('Server Configuration', () => {
 
     fs.writeFileSync(
       path.join('/tmp/dist', 'index.html'),
-      '<!DOCTYPE html><html><head><title>LibreChat</title></head><body><div id="root"></div></body></html>',
+      '<!DOCTYPE html><html><head><title>Nashm</title></head><body><div id="root"></div></body></html>',
     );
 
     mongoServer = await MongoMemoryServer.create();
@@ -216,25 +216,25 @@ describe('Server Configuration', () => {
     const defaultResponse = await request(app).get('/this/does/not/exist');
     const debugResponse = await request(app)
       .get('/this/does/not/exist')
-      .set('x-librechat-enable-query-devtools', '1');
+      .set('x-Nashm-enable-query-devtools', '1');
     const directIndexResponse = await request(app)
       .get('/index.html')
-      .set('x-librechat-enable-query-devtools', '1');
+      .set('x-Nashm-enable-query-devtools', '1');
 
     expect(defaultResponse.status).toBe(200);
-    expect(defaultResponse.headers.vary).toContain('x-librechat-enable-query-devtools');
+    expect(defaultResponse.headers.vary).toContain('x-Nashm-enable-query-devtools');
     expect(defaultResponse.text).not.toContain('enableQueryDevtools');
 
     expect(debugResponse.status).toBe(200);
-    expect(debugResponse.headers.vary).toContain('x-librechat-enable-query-devtools');
-    expect(debugResponse.text).toContain('window.__LIBRECHAT_CONFIG__');
-    expect(debugResponse.text).toContain('data-librechat-query-devtools="true"');
+    expect(debugResponse.headers.vary).toContain('x-Nashm-enable-query-devtools');
+    expect(debugResponse.text).toContain('window.__Nashm_CONFIG__');
+    expect(debugResponse.text).toContain('data-Nashm-query-devtools="true"');
     expect(debugResponse.text).toContain('"enableQueryDevtools":true');
 
     expect(directIndexResponse.status).toBe(200);
-    expect(directIndexResponse.headers.vary).toContain('x-librechat-enable-query-devtools');
-    expect(directIndexResponse.text).toContain('window.__LIBRECHAT_CONFIG__');
-    expect(directIndexResponse.text).toContain('data-librechat-query-devtools="true"');
+    expect(directIndexResponse.headers.vary).toContain('x-Nashm-enable-query-devtools');
+    expect(directIndexResponse.text).toContain('window.__Nashm_CONFIG__');
+    expect(directIndexResponse.text).toContain('data-Nashm-query-devtools="true"');
     expect(directIndexResponse.text).toContain('"enableQueryDevtools":true');
   });
 

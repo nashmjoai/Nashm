@@ -1,4 +1,4 @@
-import { apiBaseUrl } from 'librechat-data-provider';
+import { apiBaseUrl } from 'nashm-data-provider';
 
 export const buildShareLinkUrl = (shareId: string): string => {
   const baseURL = apiBaseUrl();

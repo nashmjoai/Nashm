@@ -1,6 +1,6 @@
 import { HumanMessage, AIMessage } from '@langchain/core/messages';
 import { Providers, createTokenCounter, projectAgentContextUsage } from '@librechat/agents';
-import type { TContextProjectionRequest, TContextUsageEvent } from 'librechat-data-provider';
+import type { TContextProjectionRequest, TContextUsageEvent } from 'nashm-data-provider';
 import type { BaseMessage } from '@langchain/core/messages';
 import { mergeQuotedText } from '~/utils/quotes';
 
@@ -79,7 +79,7 @@ function resolveProvider(value?: string): Providers {
  * the agents SDK what the next call's context would be, WITHOUT invoking the
  * model. Provider/model/window come from the (client-resolved) request — no
  * agent or model-spec config is loaded here, so there is no cross-user config
- * exposure. Reuses LibreChat's already-calibrated per-message `tokenCount`s (no
+ * exposure. Reuses Nashm's already-calibrated per-message `tokenCount`s (no
  * re-tokenizing). Returns null when there is no resolvable context window.
  * NOTE: this first cut targets message-windowing accuracy — instruction and
  * tool-schema tokens (agent instructions, `promptPrefix`, model-spec presets,

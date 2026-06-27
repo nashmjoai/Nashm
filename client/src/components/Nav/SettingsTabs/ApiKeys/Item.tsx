@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { Trash2 } from 'lucide-react';
-import { Button } from '@librechat/client';
-import type { TAgentApiKeyListItem } from 'librechat-data-provider';
+import { Button } from '@nashm/client';
+import type { TAgentApiKeyListItem } from 'nashm-data-provider';
 import { formatDate, formatRelativeTime, getExpiryStatus } from './utils';
 import DeleteKeyDialog from './DeleteKeyDialog';
 import { useLocalize } from '~/hooks';

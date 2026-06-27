@@ -1,4 +1,4 @@
-name: Backend Unit Tests
+﻿name: Backend Unit Tests
 on:
   pull_request:
     paths:
@@ -148,10 +148,10 @@ jobs:
       - name: Type check data-schemas
         run: npx tsc --noEmit -p packages/data-schemas/tsconfig.json
 
-      - name: Type check @librechat/api
+      - name: Type check @nashm/api
         run: npx tsc --noEmit -p packages/api/tsconfig.json
 
-      - name: Type check @librechat/client
+      - name: Type check @nashm/client
         run: npx tsc --noEmit -p packages/client/tsconfig.json
 
   circular-deps:
@@ -195,12 +195,12 @@ jobs:
           name: build-data-schemas
           path: packages/data-schemas/dist
 
-      - name: Rebuild @librechat/api and check for circular dependencies
+      - name: Rebuild @nashm/api and check for circular dependencies
         run: |
           output=$(npm run build:api 2>&1)
           echo "$output"
           if echo "$output" | grep -q "Circular depend"; then
-            echo "Error: Circular dependency detected in @librechat/api!"
+            echo "Error: Circular dependency detected in @nashm/api!"
             exit 1
           fi
 
@@ -368,7 +368,7 @@ jobs:
         run: cd packages/data-schemas && npm run test:ci
 
   test-packages-api:
-    name: 'Tests: @librechat/api (shard ${{ matrix.shard }}/4)'
+    name: 'Tests: @nashm/api (shard ${{ matrix.shard }}/4)'
     needs: build
     runs-on: ubuntu-latest
     # Suite typically completes in ~5 min on a warm runner, but tail-latency

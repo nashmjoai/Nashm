@@ -6,7 +6,7 @@ import {
   OGDialogTrigger,
   TooltipAnchor,
   OGDialogTemplate,
-} from '@librechat/client';
+} from '@nashm/client';
 import { useDeletePrompt } from '~/data-provider';
 import { useLocalize } from '~/hooks';
 

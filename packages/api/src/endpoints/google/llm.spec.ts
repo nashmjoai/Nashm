@@ -1,5 +1,5 @@
 import { Providers } from '@librechat/agents';
-import { AuthKeys, ThinkingLevel } from 'librechat-data-provider';
+import { AuthKeys, ThinkingLevel } from 'nashm-data-provider';
 import type { GoogleClientOptions } from '@librechat/agents';
 import type * as t from '~/types';
 import { getGoogleConfig, getSafetySettings, knownGoogleParams } from './llm';
@@ -1515,12 +1515,12 @@ describe('knownGoogleParams', () => {
       const result = getGoogleConfig(credentials, {
         modelOptions: { model: 'gemini-1.5-flash' },
         headers: {
-          'cf-aig-metadata': '{"user_email":"{{LIBRECHAT_USER_EMAIL}}"}',
+          'cf-aig-metadata': '{"user_email":"{{Nashm_USER_EMAIL}}"}',
         },
       });
 
       expect((result.llmConfig as GoogleClientOptions).customHeaders).toEqual({
-        'cf-aig-metadata': '{"user_email":"{{LIBRECHAT_USER_EMAIL}}"}',
+        'cf-aig-metadata': '{"user_email":"{{Nashm_USER_EMAIL}}"}',
       });
     });
 

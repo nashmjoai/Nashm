@@ -63,7 +63,7 @@ async function _patch(url: string, data?: any) {
 
 const AUTH_RECOVERY_EVENT = 'authRecovery';
 const AUTH_REDIRECT_EVENT = 'authRedirectStarted';
-const AUTH_REDIRECT_STORAGE_KEY = 'librechat.auth.redirect.startedAt';
+const AUTH_REDIRECT_STORAGE_KEY = 'Nashm.auth.redirect.startedAt';
 const AUTH_REDIRECT_DEDUPE_MS = 15_000;
 const TOKEN_REFRESH_BUFFER_MS = 2 * 60 * 1000;
 
@@ -75,7 +75,7 @@ type AuthRecoveryState = {
 };
 
 type AuthRecoveryWindow = Window & {
-  __librechatAuthRecovery?: AuthRecoveryState;
+  __NashmAuthRecovery?: AuthRecoveryState;
 };
 
 const refreshToken = (retry?: boolean): Promise<t.TRefreshTokenResponse | undefined> =>
@@ -129,11 +129,11 @@ const dispatchTokenUpdatedEvent = (token: string) => {
 
 const getAuthRecoveryState = (): AuthRecoveryState => {
   const browserWindow = window as AuthRecoveryWindow;
-  browserWindow.__librechatAuthRecovery ??= {
+  browserWindow.__NashmAuthRecovery ??= {
     lastRedirectStartedAt: 0,
     refreshPromise: null,
   };
-  return browserWindow.__librechatAuthRecovery;
+  return browserWindow.__NashmAuthRecovery;
 };
 
 const getAuthRedirectStartedAt = () => {

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { timingSafeEqual } from 'crypto';
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 import { Registry, collectDefaultMetrics, Counter, Gauge, Histogram } from 'prom-client';
 import type { Request, Response, NextFunction, RequestHandler } from 'express';
 import type { Mongoose } from 'mongoose';
@@ -312,7 +312,7 @@ export function recordMongooseQuery(
 export function instrumentMongooseQueryMetrics(mongoose: Mongoose): void {
   if (!isMetricsConfigured()) return;
 
-  const instrumented = Symbol.for('librechat.mongooseQueryMetrics.instrumented');
+  const instrumented = Symbol.for('Nashm.mongooseQueryMetrics.instrumented');
   const queryPrototype = mongoose.Query?.prototype as
     | (typeof mongoose.Query.prototype & { [instrumented]?: boolean })
     | undefined;

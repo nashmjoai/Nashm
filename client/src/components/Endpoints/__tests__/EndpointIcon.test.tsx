@@ -1,8 +1,8 @@
 import React from 'react';
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import { EModelEndpoint } from 'librechat-data-provider';
-import type { Agent, TConversation, TEndpointsConfig } from 'librechat-data-provider';
+import { EModelEndpoint } from 'nashm-data-provider';
+import type { Agent, TConversation, TEndpointsConfig } from 'nashm-data-provider';
 import EndpointIcon from '../EndpointIcon';
 
 jest.mock('~/components/Endpoints/ConvoIconURL', () => ({

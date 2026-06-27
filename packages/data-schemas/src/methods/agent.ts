@@ -5,8 +5,8 @@ import {
   ResourceType,
   actionDelimiter,
   isActionTool,
-} from 'librechat-data-provider';
-import type { AgentToolResources } from 'librechat-data-provider';
+} from 'nashm-data-provider';
+import type { AgentToolResources } from 'nashm-data-provider';
 import type { FilterQuery, Model, Types } from 'mongoose';
 import type { IAgent, IAclEntry } from '~/types';
 import { filterExistingSkillIds } from './skill';
@@ -15,7 +15,7 @@ import logger from '~/config/winston';
 const { mcp_delimiter } = Constants;
 
 /**
- * Mirrors `TOOL_RESOURCE_KEYS` in `@librechat/api` — the subset of
+ * Mirrors `TOOL_RESOURCE_KEYS` in `@nashm/api` — the subset of
  * `EToolResources` that actually carries `file_ids` on an agent document.
  * `code_interpreter` is excluded (it belongs to the Assistants API, not
  * `AgentToolResources`) to avoid emitting dead MongoDB clauses.

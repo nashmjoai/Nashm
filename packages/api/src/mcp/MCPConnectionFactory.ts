@@ -1,6 +1,6 @@
-import { logger, getTenantId, tenantStorage } from '@librechat/data-schemas';
+import { logger, getTenantId, tenantStorage } from '@nashm/data-schemas';
 import type { OAuthClientInformation } from '@modelcontextprotocol/sdk/shared/auth.js';
-import type { TokenMethods, TenantContext } from '@librechat/data-schemas';
+import type { TokenMethods, TenantContext } from '@nashm/data-schemas';
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 import type {
   MCPOAuthTokens,

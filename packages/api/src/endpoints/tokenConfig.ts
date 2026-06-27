@@ -1,6 +1,6 @@
-import { EModelEndpoint, normalizeEndpointName } from 'librechat-data-provider';
-import type { TModelsConfig, TTokenConfigMap, TEndpoint } from 'librechat-data-provider';
-import type { AppConfig } from '@librechat/data-schemas';
+import { EModelEndpoint, normalizeEndpointName } from 'nashm-data-provider';
+import type { TModelsConfig, TTokenConfigMap, TEndpoint } from 'nashm-data-provider';
+import type { AppConfig } from '@nashm/data-schemas';
 import type { EndpointTokenConfig } from '~/types';
 import { buildTokenConfigMap, type TokenomicsDeps } from '~/endpoints/pricing';
 import { getTokenConfigKey } from '~/endpoints/custom/initialize';

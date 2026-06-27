@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid';
 import type { Model, RootFilterQuery, Types } from 'mongoose';
-import type { MCPOptions } from 'librechat-data-provider';
+import type { MCPOptions } from 'nashm-data-provider';
 import type { MCPServerDocument } from '../types';
 import logger from '~/config/winston';
 

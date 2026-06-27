@@ -1,5 +1,5 @@
 import React, { useRef, useState, useMemo, useEffect, useCallback } from 'react';
-import { Tools } from 'librechat-data-provider';
+import { Tools } from 'nashm-data-provider';
 import type { CodeBarProps } from '~/common';
 import FloatingCodeBar from '~/components/Messages/Content/FloatingCodeBar';
 import ResultSwitcher from '~/components/Messages/Content/ResultSwitcher';

@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { MAX_SUBAGENTS, ViolationTypes, ErrorTypes } from 'librechat-data-provider';
-import type { Agent, TModelsConfig } from 'librechat-data-provider';
+import { MAX_SUBAGENTS, ViolationTypes, ErrorTypes } from 'nashm-data-provider';
+import type { Agent, TModelsConfig } from 'nashm-data-provider';
 import type { Request, Response } from 'express';
 
 /**

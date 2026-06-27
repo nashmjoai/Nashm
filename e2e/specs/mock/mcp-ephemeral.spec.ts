@@ -8,7 +8,7 @@ import {
   sendMessage,
 } from './helpers';
 
-/** Non-spec endpoints from e2e/config/librechat.e2e.yaml — switching between
+/** Non-spec endpoints from e2e/config/Nashm.e2e.yaml — switching between
  *  them exercises the no-spec `applyModelSpecEffects` path that previously
  *  wiped the ephemeral agent (MCP selection) for the active conversation. */
 const PROVIDER_C = { label: 'Mock Provider C', model: 'mock-model-c' };

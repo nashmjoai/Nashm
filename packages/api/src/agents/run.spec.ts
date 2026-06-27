@@ -1,6 +1,6 @@
 import { Providers } from '@librechat/agents';
 import { ToolMessage, AIMessage, HumanMessage } from '@librechat/agents/langchain/messages';
-import { ReasoningResponseKey } from 'librechat-data-provider';
+import { ReasoningResponseKey } from 'nashm-data-provider';
 
 import {
   extractDiscoveredToolsFromHistory,

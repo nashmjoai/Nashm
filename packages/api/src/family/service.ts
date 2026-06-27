@@ -1,5 +1,5 @@
 import type { Model } from 'mongoose';
-import type { IFamilyPlan } from '@librechat/data-schemas';
+import type { IFamilyPlan } from '@nashm/data-schemas';
 
 interface FamilyServiceDeps {
   FamilyPlan: Model<IFamilyPlan>;

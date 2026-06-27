@@ -1,9 +1,9 @@
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: { info: jest.fn(), warn: jest.fn(), error: jest.fn(), debug: jest.fn() },
 }));
 
 import { DEFAULT_IMPORT_MAX_FILE_SIZE, resolveImportMaxFileSize } from '../import';
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 
 describe('resolveImportMaxFileSize', () => {
   let originalEnv: string | undefined;

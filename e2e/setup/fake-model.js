@@ -1,6 +1,6 @@
 /**
- * In-process fake LLM for credential-free e2e tests. Loaded by `@librechat/api`'s
- * `createRun` via the `LIBRECHAT_TEST_RUN_HOOK` env var (set by the mock
+ * In-process fake LLM for credential-free e2e tests. Loaded by `@nashm/api`'s
+ * `createRun` via the `Nashm_TEST_RUN_HOOK` env var (set by the mock
  * Playwright config and the `--profile=mock` recorder), it swaps the run's model
  * for the agents package's own `FakeChatModel` through
  * `run.Graph.overrideTestModel(...)`.
@@ -48,9 +48,9 @@ const MODEL_SPEC_MISSING_SKILL = 'e2e-model-spec-missing';
 const MODEL_SPEC_INACCESSIBLE_SKILL = 'e2e-model-spec-inaccessible';
 const ALWAYS_APPLY_BODY_MARKER = 'E2E_ALWAYS_APPLY_BODY_MARKER';
 const SKILL_DESCRIPTION =
-  'Use this skill to verify LibreChat skill file authoring in mock end-to-end tests.';
+  'Use this skill to verify Nashm skill file authoring in mock end-to-end tests.';
 const EDITED_SKILL_DESCRIPTION =
-  'Use this edited skill to verify LibreChat skill file authoring in mock end-to-end tests.';
+  'Use this edited skill to verify Nashm skill file authoring in mock end-to-end tests.';
 const countedReplies = new Map();
 const slowCountedReplies = new Map();
 
@@ -556,7 +556,7 @@ function resolveResponses({ agents, messages, text, toolNames }) {
   return { responses: [MOCK_REPLY] };
 }
 
-/** @type {import('@librechat/api').TestRunHook} */
+/** @type {import('@nashm/api').TestRunHook} */
 module.exports = function fakeModelHook(run, context) {
   const graph = run?.Graph;
   if (!graph || typeof graph.overrideTestModel !== 'function') {

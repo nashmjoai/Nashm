@@ -1,5 +1,5 @@
 import { Schema } from 'mongoose';
-import { Constants } from 'librechat-data-provider';
+import { Constants } from 'nashm-data-provider';
 import type { IPromptGroupDocument } from '~/types';
 
 const promptGroupSchema: Schema<IPromptGroupDocument> = new Schema<IPromptGroupDocument>(

@@ -1,5 +1,5 @@
-import { logger } from '@librechat/data-schemas';
-import type { TokenMethods, IUser } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
+import type { TokenMethods, IUser } from '@nashm/data-schemas';
 import type { MCPOAuthTokens } from './types';
 import { MCPServersRegistry } from '~/mcp/registry/MCPServersRegistry';
 import { OAuthReconnectionTracker } from './OAuthReconnectionTracker';

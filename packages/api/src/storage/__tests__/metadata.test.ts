@@ -1,9 +1,9 @@
-import { logger } from '@librechat/data-schemas';
-import { FileSources } from 'librechat-data-provider';
+import { logger } from '@nashm/data-schemas';
+import { FileSources } from 'nashm-data-provider';
 import { getStorageMetadata } from '../metadata';
 
 // getStorageMetadata uses real S3 key extraction/parsing from crud.ts; no S3 calls are made here.
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     debug: jest.fn(),
     info: jest.fn(),

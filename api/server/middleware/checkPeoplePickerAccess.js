@@ -1,5 +1,5 @@
-const { logger } = require('@librechat/data-schemas');
-const { PrincipalType, PermissionTypes, Permissions } = require('librechat-data-provider');
+const { logger } = require('@nashm/data-schemas');
+const { PrincipalType, PermissionTypes, Permissions } = require('nashm-data-provider');
 const { getRoleByName } = require('~/models');
 
 const VALID_PRINCIPAL_TYPES = new Set([

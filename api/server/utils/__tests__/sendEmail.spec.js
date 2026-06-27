@@ -1,11 +1,11 @@
 const nodemailer = require('nodemailer');
-const { readFileAsString } = require('@librechat/api');
+const { readFileAsString } = require('@nashm/api');
 
 jest.mock('nodemailer');
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: { debug: jest.fn(), warn: jest.fn(), error: jest.fn() },
 }));
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   logAxiosError: jest.fn(),
   isEnabled: jest.fn((val) => val === 'true' || val === true),
   readFileAsString: jest.fn(),
@@ -45,10 +45,10 @@ function loadSendEmail() {
   jest.mock('nodemailer', () => ({
     createTransport: jest.fn().mockReturnValue({ sendMail: mockSendMail }),
   }));
-  jest.mock('@librechat/data-schemas', () => ({
+  jest.mock('@nashm/data-schemas', () => ({
     logger: { debug: jest.fn(), warn: jest.fn(), error: jest.fn() },
   }));
-  jest.mock('@librechat/api', () => ({
+  jest.mock('@nashm/api', () => ({
     logAxiosError: jest.fn(),
     isEnabled: jest.fn((val) => val === 'true' || val === true),
     readFileAsString: jest.fn().mockResolvedValue({ content: '<p>{{name}}</p>' }),
@@ -95,7 +95,7 @@ describe('sendEmail SMTP auth assembly', () => {
     process.env.EMAIL_USERNAME = 'smtp_user';
     const sendEmail = loadSendEmail();
     const { createTransport } = require('nodemailer');
-    const { logger: freshLogger } = require('@librechat/data-schemas');
+    const { logger: freshLogger } = require('@nashm/data-schemas');
 
     await sendEmail(baseParams);
 
@@ -110,7 +110,7 @@ describe('sendEmail SMTP auth assembly', () => {
     process.env.EMAIL_PASSWORD = 'smtp_pass';
     const sendEmail = loadSendEmail();
     const { createTransport } = require('nodemailer');
-    const { logger: freshLogger } = require('@librechat/data-schemas');
+    const { logger: freshLogger } = require('@nashm/data-schemas');
 
     await sendEmail(baseParams);
 
@@ -125,7 +125,7 @@ describe('sendEmail SMTP auth assembly', () => {
     process.env.EMAIL_USERNAME = 'smtp_user';
     process.env.EMAIL_PASSWORD = 'smtp_pass';
     const sendEmail = loadSendEmail();
-    const { logger: freshLogger } = require('@librechat/data-schemas');
+    const { logger: freshLogger } = require('@nashm/data-schemas');
 
     await sendEmail(baseParams);
 
@@ -134,7 +134,7 @@ describe('sendEmail SMTP auth assembly', () => {
 
   it('does not log a warning when both credentials are absent', async () => {
     const sendEmail = loadSendEmail();
-    const { logger: freshLogger } = require('@librechat/data-schemas');
+    const { logger: freshLogger } = require('@nashm/data-schemas');
 
     await sendEmail(baseParams);
 

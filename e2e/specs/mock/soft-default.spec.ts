@@ -2,10 +2,10 @@ import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import { NEW_CHAT_PATH, getAccessToken, mockReply, requestJson, sendMessage } from './helpers';
 
-/** Label of the `softDefault: true` spec in e2e/config/librechat.e2e.yaml. */
+/** Label of the `softDefault: true` spec in e2e/config/Nashm.e2e.yaml. */
 const SOFT_DEFAULT_LABEL = 'E2E Soft Default';
 
-/** Ephemeral endpoint from e2e/config/librechat.e2e.yaml with no mirroring spec. */
+/** Ephemeral endpoint from e2e/config/Nashm.e2e.yaml with no mirroring spec. */
 const EPHEMERAL_ENDPOINT = { label: 'Mock Provider C', model: 'mock-model-c' };
 
 const uniqueName = (prefix: string) => `${prefix} ${Date.now()}-${Math.floor(Math.random() * 1e4)}`;

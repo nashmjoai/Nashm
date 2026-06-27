@@ -1,6 +1,6 @@
-import { logger } from '@librechat/data-schemas';
-import { FileSources, mergeFileConfig } from 'librechat-data-provider';
-import type { IMongoFile } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
+import { FileSources, mergeFileConfig } from 'nashm-data-provider';
+import type { IMongoFile } from '@nashm/data-schemas';
 import type { ServerRequest } from '~/types';
 import { processTextWithTokenLimit } from '~/utils/text';
 import type { TokenCountFn } from '~/utils/text';

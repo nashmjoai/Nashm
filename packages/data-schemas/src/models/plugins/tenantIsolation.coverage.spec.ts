@@ -6,7 +6,7 @@ import { createModels } from '../index';
  * Recreated here via Symbol.for (the global registry) so the guard can detect
  * plugin application without the plugin exporting anything.
  */
-const TENANT_ISOLATION_APPLIED = Symbol.for('librechat:tenantIsolation');
+const TENANT_ISOLATION_APPLIED = Symbol.for('Nashm:tenantIsolation');
 
 /**
  * Models that carry a `tenantId` field but intentionally do NOT use the

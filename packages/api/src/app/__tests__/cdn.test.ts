@@ -1,6 +1,6 @@
-import { FileSources } from 'librechat-data-provider';
+import { FileSources } from 'nashm-data-provider';
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: { error: jest.fn(), warn: jest.fn(), info: jest.fn() },
 }));
 
@@ -20,8 +20,8 @@ jest.mock('~/cdn/cloudfront', () => ({
   initializeCloudFront: jest.fn(),
 }));
 
-import type { AppConfig } from '@librechat/data-schemas';
-import type { CloudFrontConfig } from 'librechat-data-provider';
+import type { AppConfig } from '@nashm/data-schemas';
+import type { CloudFrontConfig } from 'nashm-data-provider';
 import { initializeFileStorage } from '../cdn';
 import { initializeFirebase } from '~/cdn/firebase';
 import { initializeAzureBlobService } from '~/cdn/azure';

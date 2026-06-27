@@ -10,16 +10,16 @@ const mockCheckBan = jest.fn();
 const mockGenerateToken = jest.fn();
 const mockLogger = { info: jest.fn(), error: jest.fn() };
 
-jest.mock('librechat-data-provider', () => ({
+jest.mock('nashm-data-provider', () => ({
   CacheKeys: { ADMIN_OAUTH_EXCHANGE: 'admin-oauth-exchange' },
 }));
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: mockLogger,
   DEFAULT_SESSION_EXPIRY: 60000,
 }));
 
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   isEnabled: (...args) => mockIsEnabled(...args),
   getAdminPanelUrl: (...args) => mockGetAdminPanelUrl(...args),
   isAdminPanelRedirect: (...args) => mockIsAdminPanelRedirect(...args),

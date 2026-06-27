@@ -1,4 +1,4 @@
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 import { cacheConfig as cache } from '~/cache/cacheConfig';
 import { keyvRedisClient } from '~/cache/redisClients';
 import { clusterConfig as cluster } from './config';

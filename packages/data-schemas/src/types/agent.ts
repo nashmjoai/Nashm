@@ -4,7 +4,7 @@ import type {
   AgentToolOptions,
   AgentToolResources,
   AgentSubagentsConfig,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 
 export interface ISupportContact {
   name?: string;

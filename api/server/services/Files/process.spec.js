@@ -1,6 +1,6 @@
 jest.mock('uuid', () => ({ v4: jest.fn(() => 'mock-uuid') }));
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: { warn: jest.fn(), debug: jest.fn(), error: jest.fn(), info: jest.fn() },
   runAsSystem: jest.fn((fn) => fn()),
   createTempChatExpirationDate: jest.fn(() => new Date('2030-01-01T00:00:00.000Z')),
@@ -16,8 +16,8 @@ jest.mock('@librechat/agents', () => ({
   },
 }));
 
-jest.mock('librechat-data-provider', () => {
-  const actual = jest.requireActual('librechat-data-provider');
+jest.mock('nashm-data-provider', () => {
+  const actual = jest.requireActual('nashm-data-provider');
   return {
     ...actual,
     Providers: actual.Providers,
@@ -33,8 +33,8 @@ jest.mock('librechat-data-provider', () => {
   };
 });
 
-jest.mock('@librechat/api', () => {
-  const actualDataProvider = jest.requireActual('librechat-data-provider');
+jest.mock('@nashm/api', () => {
+  const actualDataProvider = jest.requireActual('nashm-data-provider');
   const RetentionMode = actualDataProvider.RetentionMode ?? { ALL: 'all', TEMPORARY: 'temporary' };
   const getRetentionExpiry = jest.fn(() => ({}));
   return {
@@ -130,15 +130,15 @@ const {
   getAgentFileRetentionExpiry,
   sweepExpiredFiles: sweepExpiredFilesWithDeps,
   startExpiredFileSweep: startExpiredFileSweepWithDeps,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const {
   EToolResources,
   FileSources,
   FileContext,
   RetentionMode,
   AgentCapabilities,
-} = require('librechat-data-provider');
-const { mergeFileConfig } = require('librechat-data-provider');
+} = require('nashm-data-provider');
+const { mergeFileConfig } = require('nashm-data-provider');
 const { checkCapability } = require('~/server/services/Config');
 const { getStrategyFunctions } = require('~/server/services/Files/strategies');
 const { uploadVectors } = require('./VectorDB/crud');
@@ -342,7 +342,7 @@ describe('processAgentFileUpload', () => {
         handleFileUpload: jest.fn().mockRejectedValue(new Error('No text found in document')),
       });
       const req = makeReq({ mimetype: PDF_MIME, ocrConfig: null });
-      const { parseText } = require('@librechat/api');
+      const { parseText } = require('@nashm/api');
 
       await expect(
         processAgentFileUpload({ req, res: mockRes, metadata: makeMetadata() }),
@@ -382,7 +382,7 @@ describe('processAgentFileUpload', () => {
         mimetype: PDF_MIME,
         ocrConfig: { strategy: FileSources.mistral_ocr },
       });
-      const { parseText } = require('@librechat/api');
+      const { parseText } = require('@nashm/api');
 
       await expect(
         processAgentFileUpload({ req, res: mockRes, metadata: makeMetadata() }),

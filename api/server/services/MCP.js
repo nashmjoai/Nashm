@@ -1,5 +1,5 @@
 const { tool } = require('@librechat/agents/langchain/tools');
-const { logger, getTenantId } = require('@librechat/data-schemas');
+const { logger, getTenantId } = require('@nashm/data-schemas');
 const { Providers, Constants: AgentConstants } = require('@librechat/agents');
 const {
   sendEvent,
@@ -21,7 +21,7 @@ const {
   checkAccessWithRequestCache,
   requiresEphemeralUserConnection,
   containsGraphTokenPlaceholder,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const {
   Time,
   CacheKeys,
@@ -29,7 +29,7 @@ const {
   Permissions,
   PermissionTypes,
   isAssistantsEndpoint,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 const {
   getOAuthReconnectionManager,
   getMCPServersRegistry,
@@ -115,7 +115,7 @@ async function getAppConfigForUser(userId, user) {
  * Resolves config-source MCP servers from admin Config overrides for the current
  * request context. Returns the parsed configs keyed by server name.
  * @param {import('express').Request} req - Express request with user context
- * @returns {Promise<Record<string, import('@librechat/api').ParsedServerConfig>>}
+ * @returns {Promise<Record<string, import('@nashm/api').ParsedServerConfig>>}
  */
 async function resolveConfigServers(req) {
   try {
@@ -148,7 +148,7 @@ async function resolveMcpConfigNames(req) {
  * for the given user context. Shared helper for controllers needing the full merged config.
  * @param {string} userId
  * @param {{ id?: string, role?: string }} [user]
- * @returns {Promise<Record<string, import('@librechat/api').ParsedServerConfig>>}
+ * @returns {Promise<Record<string, import('@nashm/api').ParsedServerConfig>>}
  */
 async function resolveAllMcpConfigs(userId, user) {
   const registry = getMCPServersRegistry();
@@ -175,7 +175,7 @@ function getServerCustomUserVars(userMCPAuthMap, serverName) {
 
 /**
  * Best-effort early gate; the authoritative check is
- * `assertResolvedRuntimeConfigAllowed` in `@librechat/api`, whose resolution
+ * `assertResolvedRuntimeConfigAllowed` in `@nashm/api`, whose resolution
  * this must mirror. Graph placeholders resolve later (async), so a URL still
  * carrying one defers to the authoritative check instead of rejecting here.
  */
@@ -387,8 +387,8 @@ function createOAuthCallback({ runStepEmitter, runStepDeltaEmitter }) {
  * @param {number} [params.index]
  * @param {string | null} [params.streamId] - The stream ID for resumable mode.
  * @param {Record<string, Record<string, string>>} [params.userMCPAuthMap]
- * @param {import('@librechat/api').RequestScopedMCPConnectionStore} [params.requestScopedConnections]
- * @param {import('@librechat/api').ParsedServerConfig} [params.serverConfig] - Used to bypass reconnect throttling for request-scoped servers.
+ * @param {import('@nashm/api').RequestScopedMCPConnectionStore} [params.requestScopedConnections]
+ * @param {import('@nashm/api').ParsedServerConfig} [params.serverConfig] - Used to bypass reconnect throttling for request-scoped servers.
  * @returns { Promise<Array<typeof tool | { _call: (toolInput: Object | string) => unknown}>> } An object with `_call` method to execute the tool input.
  */
 async function reconnectServer({
@@ -508,9 +508,9 @@ async function reconnectServer({
  * @param {number} [params.index]
  * @param {AbortSignal} [params.signal]
  * @param {string | null} [params.streamId] - The stream ID for resumable mode.
- * @param {import('@librechat/api').ParsedServerConfig} [params.config]
- * @param {import('@librechat/api').RequestBody} [params.requestBody]
- * @param {import('@librechat/api').RequestScopedMCPConnectionStore} [params.requestScopedConnections]
+ * @param {import('@nashm/api').ParsedServerConfig} [params.config]
+ * @param {import('@nashm/api').RequestBody} [params.requestBody]
+ * @param {import('@nashm/api').RequestScopedMCPConnectionStore} [params.requestScopedConnections]
  * @param {Record<string, Record<string, string>>} [params.userMCPAuthMap]
  * @returns { Promise<Array<typeof tool | { _call: (toolInput: Object | string) => unknown}>> } An object with `_call` method to execute the tool input.
  */
@@ -614,10 +614,10 @@ async function createMCPTools({
  * @param {string | null} [params.streamId] - The stream ID for resumable mode.
  * @param {Providers | EModelEndpoint} params.provider - The provider for the tool.
  * @param {LCAvailableTools} [params.availableTools]
- * @param {import('@librechat/api').RequestBody} [params.requestBody]
- * @param {import('@librechat/api').RequestScopedMCPConnectionStore} [params.requestScopedConnections]
+ * @param {import('@nashm/api').RequestBody} [params.requestBody]
+ * @param {import('@nashm/api').RequestScopedMCPConnectionStore} [params.requestScopedConnections]
  * @param {Record<string, Record<string, string>>} [params.userMCPAuthMap]
- * @param {import('@librechat/api').ParsedServerConfig} [params.config]
+ * @param {import('@nashm/api').ParsedServerConfig} [params.config]
  * @param {(availableTools: LCAvailableTools) => void} [params.onAvailableTools]
  * @returns { Promise<typeof tool | { _call: (toolInput: Object | string) => unknown}> } An object with `_call` method to execute the tool input.
  */
@@ -910,12 +910,12 @@ async function getMCPSetupData(userId, options = {}) {
     ? await registry.getAllServerConfigs(userId, configServers, role)
     : await registry.getAllServerConfigs(userId, configServers);
   const mcpManager = getMCPManager(userId);
-  /** @type {Map<string, import('@librechat/api').MCPConnection>} */
+  /** @type {Map<string, import('@nashm/api').MCPConnection>} */
   let appConnections = new Map();
   try {
     // Use getLoaded() instead of getAll() to avoid forcing connection creation.
     // getAll() creates connections for all servers, which is problematic for servers
-    // that require user context (e.g., those with {{LIBRECHAT_USER_ID}} placeholders).
+    // that require user context (e.g., those with {{Nashm_USER_ID}} placeholders).
     appConnections = (await mcpManager.appConnections?.getLoaded()) || new Map();
   } catch (error) {
     logger.error(`[MCP][User: ${userId}] Error getting app connections:`, error);
@@ -1002,9 +1002,9 @@ async function checkOAuthFlowStatus(userId, serverName, tenantId = getTenantId()
  * Get connection status for a specific MCP server
  * @param {string} userId - The user ID
  * @param {string} serverName - The server name
- * @param {import('@librechat/api').ParsedServerConfig} config - The server configuration
- * @param {Map<string, import('@librechat/api').MCPConnection>} appConnections - App-level connections
- * @param {Map<string, import('@librechat/api').MCPConnection>} userConnections - User-level connections
+ * @param {import('@nashm/api').ParsedServerConfig} config - The server configuration
+ * @param {Map<string, import('@nashm/api').MCPConnection>} appConnections - App-level connections
+ * @param {Map<string, import('@nashm/api').MCPConnection>} userConnections - User-level connections
  * @param {Set} oauthServers - Set of OAuth servers
  * @returns {Object} Object containing requiresOAuth and connectionState
  */

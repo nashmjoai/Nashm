@@ -5,8 +5,8 @@ import {
   QueryKeys,
   StepEvents,
   request,
-} from 'librechat-data-provider';
-import type { TMessage, TSubmission } from 'librechat-data-provider';
+} from 'nashm-data-provider';
+import type { TMessage, TSubmission } from 'nashm-data-provider';
 
 type SSEEventListener = (e: Partial<MessageEvent> & { responseCode?: number }) => void;
 
@@ -143,8 +143,8 @@ jest.mock('~/hooks/SSE/useEventHandlers', () => {
   };
 });
 
-jest.mock('librechat-data-provider', () => {
-  const actual = jest.requireActual('librechat-data-provider');
+jest.mock('nashm-data-provider', () => {
+  const actual = jest.requireActual('nashm-data-provider');
   return {
     ...actual,
     createPayload: jest.fn(() => ({

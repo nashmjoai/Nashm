@@ -4,7 +4,7 @@ const {
   addFamilyMember,
   removeFamilyMember,
   getActiveFamilyPlan,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const { requireJwtAuth } = require('../middleware/');
 const { getUserByEmail } = require('~/models');
 const db = require('~/models');

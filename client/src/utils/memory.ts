@@ -1,4 +1,4 @@
-import type { MemoriesResponse, TUserMemory, MemoryArtifact } from 'librechat-data-provider';
+import type { MemoriesResponse, TUserMemory, MemoryArtifact } from 'nashm-data-provider';
 
 type HandleMemoryArtifactParams = {
   memoryArtifact: MemoryArtifact;

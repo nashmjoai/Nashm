@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import { TooltipAnchor } from '@librechat/client';
-import { getConfigDefaults } from 'librechat-data-provider';
+import { TooltipAnchor } from '@nashm/client';
+import { getConfigDefaults } from 'nashm-data-provider';
 import type { ModelSelectorProps } from '~/common';
 import {
   renderModelSpecs,
@@ -21,7 +21,7 @@ function ModelSelectorContent() {
   const localize = useLocalize();
 
   const {
-    // LibreChat
+    // Nashm
     agentsMap,
     modelSpecs,
     mappedEndpoints,

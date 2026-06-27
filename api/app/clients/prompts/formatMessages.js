@@ -1,4 +1,4 @@
-const { EModelEndpoint, ContentTypes } = require('librechat-data-provider');
+const { EModelEndpoint, ContentTypes } = require('nashm-data-provider');
 const {
   AIMessage,
   ToolMessage,

@@ -9,9 +9,9 @@ import {
   type ReactNode,
 } from 'react';
 import throttle from 'lodash/throttle';
-import { Spinner } from '@librechat/client';
+import { Spinner } from '@nashm/client';
 import { AutoSizer, CellMeasurer, CellMeasurerCache, List } from 'react-virtualized';
-import type { TConversation } from 'librechat-data-provider';
+import type { TConversation } from 'nashm-data-provider';
 import type { MeasuredCellParent } from '~/components/Conversations/Conversations';
 import ConversationEndpointIcon from '~/components/Conversations/ConversationEndpointIcon';
 import { areConversationRenderPropsEqual } from '~/components/Conversations/utils';

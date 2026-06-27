@@ -1,5 +1,5 @@
-import { Constants, Providers } from 'librechat-data-provider';
-import type { TMessage, TResponseUsage } from 'librechat-data-provider';
+import { Constants, Providers } from 'nashm-data-provider';
+import type { TMessage, TResponseUsage } from 'nashm-data-provider';
 import {
   buildIndex,
   upsertEntries,

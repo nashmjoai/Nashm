@@ -1,7 +1,7 @@
 import { memo, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
-import { useMediaQuery } from '@librechat/client';
-import { getConfigDefaults, PermissionTypes, Permissions } from 'librechat-data-provider';
+import { useMediaQuery } from '@nashm/client';
+import { getConfigDefaults, PermissionTypes, Permissions } from 'nashm-data-provider';
 import ModelSelector from './Menus/Endpoints/ModelSelector';
 import { useGetStartupConfig } from '~/data-provider';
 import ExportAndShareMenu from './ExportAndShareMenu';

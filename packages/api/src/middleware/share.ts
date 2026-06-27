@@ -1,7 +1,7 @@
-import { logger, ResourceCapabilityMap } from '@librechat/data-schemas';
-import { Permissions, PermissionTypes, PrincipalType, ResourceType } from 'librechat-data-provider';
+import { logger, ResourceCapabilityMap } from '@nashm/data-schemas';
+import { Permissions, PermissionTypes, PrincipalType, ResourceType } from 'nashm-data-provider';
 import type { NextFunction, Response } from 'express';
-import type { IRole } from '@librechat/data-schemas';
+import type { IRole } from '@nashm/data-schemas';
 import type { CapabilityUser, HasCapabilityFn } from './capabilities';
 import type { RequestBody, ServerRequest } from '~/types/http';
 

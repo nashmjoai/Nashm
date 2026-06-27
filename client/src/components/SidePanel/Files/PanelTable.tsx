@@ -10,7 +10,7 @@ import {
   FilterInput,
   TableHeader,
   useToastContext,
-} from '@librechat/client';
+} from '@nashm/client';
 import {
   flexRender,
   getCoreRowModel,
@@ -30,8 +30,8 @@ import {
   isAssistantsEndpoint,
   getEndpointFileConfig,
   fileConfig as defaultFileConfig,
-} from 'librechat-data-provider';
-import type { TFile } from 'librechat-data-provider';
+} from 'nashm-data-provider';
+import type { TFile } from 'nashm-data-provider';
 import { MyFilesModal } from '~/components/Chat/Input/Files/MyFilesModal';
 import { useFileMapContext, useChatContext } from '~/Providers';
 import { useLocalize, useUpdateFiles } from '~/hooks';

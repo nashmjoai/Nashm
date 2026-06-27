@@ -1,8 +1,8 @@
 import { memo, useState, useRef, useEffect } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { AutoSizer, List } from 'react-virtualized';
-import { Spinner, useCombobox } from '@librechat/client';
-import { EModelEndpoint } from 'librechat-data-provider';
+import { Spinner, useCombobox } from '@nashm/client';
+import { EModelEndpoint } from 'nashm-data-provider';
 import type { RecoilState } from 'recoil';
 import type { MentionOption, ConvoGenerator } from '~/common';
 import { useGetConversation, useLocalize, TranslationKeys } from '~/hooks';

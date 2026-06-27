@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { buildLoginRedirectUrl } from 'librechat-data-provider';
+import { buildLoginRedirectUrl } from 'nashm-data-provider';
 import { useAuthContext } from '~/hooks';
 
 export default function useAuthRedirect() {

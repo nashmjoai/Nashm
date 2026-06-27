@@ -1,11 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 const { Calculator } = require('@librechat/agents');
-const { logger } = require('@librechat/data-schemas');
+const { logger } = require('@nashm/data-schemas');
 const { zodToJsonSchema } = require('zod-to-json-schema');
 const { Tool } = require('@librechat/agents/langchain/tools');
-const { Tools, ImageVisionTool } = require('librechat-data-provider');
-const { getToolkitKey, oaiToolkit, geminiToolkit } = require('@librechat/api');
+const { Tools, ImageVisionTool } = require('nashm-data-provider');
+const { getToolkitKey, oaiToolkit, geminiToolkit } = require('@nashm/api');
 const { toolkits } = require('~/app/clients/tools/manifest');
 
 /**

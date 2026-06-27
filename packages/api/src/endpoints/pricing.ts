@@ -1,6 +1,6 @@
-import { EModelEndpoint } from 'librechat-data-provider';
-import type { TModelsConfig, TTokenConfigMap, TModelTokenomics } from 'librechat-data-provider';
-import type { TxMethods } from '@librechat/data-schemas';
+import { EModelEndpoint } from 'nashm-data-provider';
+import type { TModelsConfig, TTokenConfigMap, TModelTokenomics } from 'nashm-data-provider';
+import type { TxMethods } from '@nashm/data-schemas';
 import type { EndpointTokenConfig } from '~/types';
 import { getModelMaxTokens, maxTokensMap } from '~/utils';
 

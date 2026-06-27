@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
-import { Button } from '@librechat/client';
-import { alternateName, getEndpointField } from 'librechat-data-provider';
-import type { TEndpointsConfig } from 'librechat-data-provider';
+import { Button } from '@nashm/client';
+import { alternateName, getEndpointField } from 'nashm-data-provider';
+import type { TEndpointsConfig } from 'nashm-data-provider';
 import { SetKeyDialog } from '~/components/Input/SetKeyDialog';
 import { useUserKey, useLocalize } from '~/hooks';
 import { icons } from '~/hooks/Endpoint/Icons';

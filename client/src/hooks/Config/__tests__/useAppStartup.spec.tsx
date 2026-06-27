@@ -1,8 +1,8 @@
 import React from 'react';
 import { RecoilRoot } from 'recoil';
 import { renderHook } from '@testing-library/react';
-import { PermissionTypes, Permissions } from 'librechat-data-provider';
-import type { TUser } from 'librechat-data-provider';
+import { PermissionTypes, Permissions } from 'nashm-data-provider';
+import type { TUser } from 'nashm-data-provider';
 
 type CloudFrontRetryOptions = { getAuthorizationHeader: () => string | undefined };
 
@@ -16,13 +16,13 @@ const mockInstallCloudFrontImageRetry = jest.fn(
 );
 const mockGetTokenHeader = jest.fn();
 
-jest.mock('@librechat/client', () => ({
+jest.mock('@nashm/client', () => ({
   installCloudFrontImageRetry: (startupConfig: unknown, options: CloudFrontRetryOptions) =>
     mockInstallCloudFrontImageRetry(startupConfig, options),
 }));
 
-jest.mock('librechat-data-provider', () => {
-  const actual = jest.requireActual('librechat-data-provider');
+jest.mock('nashm-data-provider', () => {
+  const actual = jest.requireActual('nashm-data-provider');
   return {
     ...actual,
     getTokenHeader: () => mockGetTokenHeader(),

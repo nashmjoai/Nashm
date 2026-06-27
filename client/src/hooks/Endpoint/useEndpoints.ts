@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback } from 'react';
-import { useGetModelsQuery } from 'librechat-data-provider/react-query';
+import { useGetModelsQuery } from 'nashm-data-provider/react-query';
 import {
   Permissions,
   alternateName,
@@ -7,14 +7,14 @@ import {
   PermissionTypes,
   getEndpointField,
   getConfigDefaults,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type {
   TEndpointsConfig,
   TAssistantsMap,
   TStartupConfig,
   Assistant,
   Agent,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type { Endpoint } from '~/common';
 import { useHasAccess, useShowMarketplace } from '~/hooks';
 import { useGetEndpointsQuery } from '~/data-provider';

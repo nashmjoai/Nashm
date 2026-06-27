@@ -1,4 +1,4 @@
-const { Constants, actionDelimiter, actionDomainSeparator } = require('librechat-data-provider');
+const { Constants, actionDelimiter, actionDomainSeparator } = require('nashm-data-provider');
 const { domainParser, legacyDomainEncode, validateAndUpdateTool } = require('./ActionService');
 
 jest.mock('keyv');

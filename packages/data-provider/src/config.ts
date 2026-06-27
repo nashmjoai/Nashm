@@ -89,7 +89,7 @@ export const fileSourceSchema = z.nativeEnum(FileSources);
  *  - Hostnames pass through; their resolved IP is checked at runtime by
  *    `resolveHostnameSSRF` and only a private resolved IP is meaningful.
  *
- * Mirrors a minimal subset of `isPrivateIP` from `@librechat/api` to avoid a
+ * Mirrors a minimal subset of `isPrivateIP` from `@nashm/api` to avoid a
  * circular package dependency. The runtime helper is the authoritative check;
  * this refinement is a UX guardrail.
  */
@@ -127,9 +127,9 @@ function isPrivateIPv6Literal(value: string): boolean {
 }
 
 /**
- * Mirrors the allowedAddresses parser in `@librechat/api`'s auth helpers.
+ * Mirrors the allowedAddresses parser in `@nashm/api`'s auth helpers.
  * Kept as a local copy because the data-provider package cannot import from
- * `@librechat/api` without creating a circular dependency. Keep the two
+ * `@nashm/api` without creating a circular dependency. Keep the two
  * implementations in sync.
  */
 function normalizePort(port: unknown): string {
@@ -588,8 +588,8 @@ export const baseEndpointSchema = z.object({
   /**
    * Custom request headers forwarded to the provider on every request. Values
    * support the same placeholder resolution as custom endpoints — env vars
-   * (`${VAR}`), user fields (`{{LIBRECHAT_USER_*}}`), and request-body fields
-   * (`{{LIBRECHAT_BODY_CONVERSATIONID}}`). Primarily for routing built-in
+   * (`${VAR}`), user fields (`{{Nashm_USER_*}}`), and request-body fields
+   * (`{{Nashm_BODY_CONVERSATIONID}}`). Primarily for routing built-in
    * providers through an AI gateway / reverse proxy that consumes metadata
    * headers (provider-native request shaping is preserved).
    */
@@ -2484,7 +2484,7 @@ export enum TTSProviders {
 /** Enum for app-wide constants */
 export enum Constants {
   /**
-   * Key for the app's version. The placeholder `__LIBRECHAT_VERSION__` is
+   * Key for the app's version. The placeholder `__Nashm_VERSION__` is
    * swapped in by `@rollup/plugin-replace` during `npm run build:data-provider`
    * using the value of the root `package.json`'s `version` field. Consumers
    * always import this via the built dist bundle (see `main` field in
@@ -2492,8 +2492,8 @@ export enum Constants {
    * substituted value. Only tests that import the TypeScript source directly
    * would observe the raw placeholder.
    */
-  VERSION = '__LIBRECHAT_VERSION__',
-  /** Key for the Custom Config's version (librechat.yaml). */
+  VERSION = '__Nashm_VERSION__',
+  /** Key for the Custom Config's version (Nashm.yaml). */
   CONFIG_VERSION = '1.3.13',
   /** Standard value for the first message's `parentMessageId` value, to indicate no parent exists. */
   NO_PARENT = '00000000-0000-0000-0000-000000000000',

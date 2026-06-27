@@ -1,12 +1,12 @@
-import { webSearchAuth } from '@librechat/data-schemas';
-import { SafeSearchTypes, AuthType } from 'librechat-data-provider';
+import { webSearchAuth } from '@nashm/data-schemas';
+import { SafeSearchTypes, AuthType } from 'nashm-data-provider';
 import type {
   ScraperProviders,
   TWebSearchConfig,
   SearchProviders,
   TCustomConfig,
   RerankerTypes,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import { loadWebSearchAuth, extractWebSearchEnvVars } from './web';
 
 // Mock the extractVariableName function

@@ -1,6 +1,6 @@
 const cookies = require('cookie');
 const passport = require('passport');
-const { isEnabled, tenantContextMiddleware } = require('@librechat/api');
+const { isEnabled, tenantContextMiddleware } = require('@nashm/api');
 
 const hasPassportStrategy = (strategy) =>
   typeof passport._strategy === 'function' && passport._strategy(strategy) != null;

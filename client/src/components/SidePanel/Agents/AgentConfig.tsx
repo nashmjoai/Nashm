@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { X } from 'lucide-react';
 import { useQueries } from '@tanstack/react-query';
-import { Switch, useToastContext } from '@librechat/client';
+import { Switch, useToastContext } from '@nashm/client';
 import { Controller, useWatch, useFormContext } from 'react-hook-form';
 import {
   EModelEndpoint,
@@ -10,7 +10,7 @@ import {
   QueryKeys,
   dataService,
   getEndpointField,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type { AgentForm, IconComponentTypes } from '~/common';
 import {
   removeFocusOutlines,

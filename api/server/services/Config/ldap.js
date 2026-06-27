@@ -1,4 +1,4 @@
-const { isEnabled } = require('@librechat/api');
+const { isEnabled } = require('@nashm/api');
 
 /** @returns {TStartupConfig['ldap'] | undefined} */
 const getLdapConfig = () => {

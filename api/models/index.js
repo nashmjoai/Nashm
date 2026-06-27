@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-const { createMethods } = require('@librechat/data-schemas');
-const { matchModelName, findMatchingPattern } = require('@librechat/api');
+const { createMethods } = require('@nashm/data-schemas');
+const { matchModelName, findMatchingPattern } = require('@nashm/api');
 const getLogStores = require('~/cache/getLogStores');
 
 const methods = createMethods(mongoose, {

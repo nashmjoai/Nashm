@@ -1,5 +1,5 @@
 import { Document, Types } from 'mongoose';
-import type { CodeEnvRef } from 'librechat-data-provider';
+import type { CodeEnvRef } from 'nashm-data-provider';
 
 export interface IMongoFile extends Omit<Document, 'model'> {
   user: Types.ObjectId;

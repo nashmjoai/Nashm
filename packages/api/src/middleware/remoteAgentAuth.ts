@@ -1,16 +1,16 @@
 import jwt from 'jsonwebtoken';
 import jwksRsa from 'jwks-rsa';
 import { fetch as undiciFetch } from 'undici';
-import { getTenantId, logger, tenantStorage } from '@librechat/data-schemas';
-import { SystemRoles, isRemoteOidcUrlAllowed } from 'librechat-data-provider';
-import type { AppConfig, IUser, RoleMethods, UserMethods } from '@librechat/data-schemas';
+import { getTenantId, logger, tenantStorage } from '@nashm/data-schemas';
+import { SystemRoles, isRemoteOidcUrlAllowed } from 'nashm-data-provider';
+import type { AppConfig, IUser, RoleMethods, UserMethods } from '@nashm/data-schemas';
 import type { RequestHandler, Request, Response, NextFunction } from 'express';
 import type { Algorithm, JwtPayload, VerifyOptions } from 'jsonwebtoken';
-import type { TAgentsEndpoint } from 'librechat-data-provider';
+import type { TAgentsEndpoint } from 'nashm-data-provider';
 import type { RequestInit } from 'undici';
 import type { GetAppConfigOptions } from '../app/service';
 import {
-  getLibreChatRolesForOpenIdSync,
+  getNashmRolesForOpenIdSync,
   getOpenIdRolesForOpenIdSync,
   getOpenIdRoleSyncOptions,
   selectOpenIdRole,
@@ -489,8 +489,8 @@ async function selectOpenIdRoleForOpenIdSync(
     return;
   }
 
-  const loadLibreChatRoles = async () =>
-    getLibreChatRolesForOpenIdSync({
+  const loadNashmRoles = async () =>
+    getNashmRolesForOpenIdSync({
       getRolesByNames,
       rolePriority: options.rolePriority,
       fallbackRole: options.fallbackRole,
@@ -498,8 +498,8 @@ async function selectOpenIdRoleForOpenIdSync(
     });
   const { rolePriority, fallbackRole } =
     user.tenantId && getTenantId() !== user.tenantId
-      ? await tenantStorage.run({ tenantId: user.tenantId }, loadLibreChatRoles)
-      : await loadLibreChatRoles();
+      ? await tenantStorage.run({ tenantId: user.tenantId }, loadNashmRoles)
+      : await loadNashmRoles();
   const result = selectOpenIdRole({
     currentRole: user.role,
     openIdRoleValues,
@@ -639,7 +639,7 @@ export function createRemoteAgentAuth({
       }
 
       if (userResolution.status === 'missing') {
-        logger.warn('[remoteAgentAuth] OIDC token valid but no matching LibreChat user');
+        logger.warn('[remoteAgentAuth] OIDC token valid but no matching Nashm user');
         if (apiKeyEnabled) {
           await runApiKeyAuth(req, res, next, apiKeyMiddleware, getAppConfig);
           return;

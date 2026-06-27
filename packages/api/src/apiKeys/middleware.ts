@@ -1,7 +1,7 @@
-import { logger } from '@librechat/data-schemas';
-import { ResourceType, PermissionBits, hasPermissions } from 'librechat-data-provider';
+import { logger } from '@nashm/data-schemas';
+import { ResourceType, PermissionBits, hasPermissions } from 'nashm-data-provider';
 import type { Request, Response, NextFunction } from 'express';
-import type { IUser } from '@librechat/data-schemas';
+import type { IUser } from '@nashm/data-schemas';
 import type { Types } from 'mongoose';
 import { getRemoteAgentPermissions } from './service';
 

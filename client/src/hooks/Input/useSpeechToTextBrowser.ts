@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useRecoilState } from 'recoil';
-import { useToastContext } from '@librechat/client';
-import { useGetCustomConfigSpeechQuery } from 'librechat-data-provider/react-query';
+import { useToastContext } from '@nashm/client';
+import { useGetCustomConfigSpeechQuery } from 'nashm-data-provider/react-query';
 import SpeechRecognitionImport, { useSpeechRecognition } from 'react-speech-recognition';
 import useGetAudioSettings from './useGetAudioSettings';
 import { useLocalize } from '~/hooks';

@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 
 import { getMCPRequestContext, cleanupMCPRequestContextForReq } from '~/mcp/request';
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     warn: jest.fn(),
   },

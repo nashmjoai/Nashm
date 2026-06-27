@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { TooltipAnchor } from '@librechat/client';
+import { TooltipAnchor } from '@nashm/client';
 import { useLocalize } from '~/hooks';
 import { cn } from '~/utils';
 

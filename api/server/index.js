@@ -9,7 +9,7 @@ const passport = require('passport');
 const compression = require('compression');
 const cookieParser = require('cookie-parser');
 const mongoSanitize = require('express-mongo-sanitize');
-const { logger, runAsSystem } = require('@librechat/data-schemas');
+const { logger, runAsSystem } = require('@nashm/data-schemas');
 const {
   isEnabled,
   apiNotFound,
@@ -27,7 +27,7 @@ const {
   preAuthTenantMiddleware,
   setupGracefulShutdown,
   updateInterfacePermissions,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const { connectDb, indexSync } = require('~/db');
 const {
   updateAccessPermissions,

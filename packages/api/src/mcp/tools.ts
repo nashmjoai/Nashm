@@ -1,5 +1,5 @@
-import { logger } from '@librechat/data-schemas';
-import { Constants } from 'librechat-data-provider';
+import { logger } from '@nashm/data-schemas';
+import { Constants } from 'nashm-data-provider';
 import type { JsonSchemaType } from '@librechat/agents';
 import type { LCAvailableTools, LCFunctionTool, ParsedServerConfig } from './types';
 import { requiresEphemeralUserConnection } from './utils';

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { apiBaseUrl, QueryKeys, request, dataService } from 'librechat-data-provider';
+import { apiBaseUrl, QueryKeys, request, dataService } from 'nashm-data-provider';
 import { useQuery, useQueries, useQueryClient } from '@tanstack/react-query';
-import type { Agents, TConversation } from 'librechat-data-provider';
+import type { Agents, TConversation } from 'nashm-data-provider';
 import { isNotFoundError, updateConvoInAllQueries } from '~/utils';
 import { useGetStartupConfig } from '../Endpoints';
 

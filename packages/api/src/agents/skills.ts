@@ -1,10 +1,10 @@
-import { logger } from '@librechat/data-schemas';
-import { isEphemeralAgentId } from 'librechat-data-provider';
+import { logger } from '@nashm/data-schemas';
+import { isEphemeralAgentId } from 'nashm-data-provider';
 import { HumanMessage } from '@librechat/agents/langchain/messages';
 import { formatSkillCatalog, SkillToolDefinition } from '@librechat/agents';
 import type { LCToolRegistry, LCTool, InjectedMessage } from '@librechat/agents';
 import type { BaseMessage } from '@librechat/agents/langchain/messages';
-import type { Agent } from 'librechat-data-provider';
+import type { Agent } from 'nashm-data-provider';
 import type { Types } from 'mongoose';
 import type { InitializeAgentDbMethods } from './initialize';
 import { registerCodeExecutionTools } from './tools';
@@ -1046,7 +1046,7 @@ export interface InjectManualSkillPrimesResult {
  * both manual and always-apply primes, applies cross-list dedup, and
  * enforces the combined `MAX_PRIMED_SKILLS_PER_TURN` ceiling. Retained here
  * for backward compatibility with external consumers of
- * `@librechat/api` that import the manual-only splicer directly.
+ * `@nashm/api` that import the manual-only splicer directly.
  */
 export function injectManualSkillPrimes(
   params: InjectManualSkillPrimesParams,
@@ -1376,7 +1376,7 @@ export interface UnionPrimeAllowedToolsResult {
  *
  * Tolerant of unknown tool names: validation against the runtime registry
  * happens at the caller (in `initialize.ts`) so we can support skills
- * authored against tools LibreChat hasn't implemented yet — the registry
+ * authored against tools Nashm hasn't implemented yet — the registry
  * intersection silently drops them with a debug log, but the import path
  * never rejects them.
  *

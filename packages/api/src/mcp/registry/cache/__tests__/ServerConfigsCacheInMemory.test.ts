@@ -185,13 +185,13 @@ describe('ServerConfigsCacheInMemory Integration Tests', () => {
   });
 
   describe('credential placeholders in YAML configs', () => {
-    it('should preserve LIBRECHAT_OPENID placeholders (admin configs are trusted)', async () => {
+    it('should preserve Nashm_OPENID placeholders (admin configs are trusted)', async () => {
       const adminConfig: ParsedServerConfig & { headers?: Record<string, string> } = {
         type: 'sse',
         url: 'https://internal-service.example.com/mcp',
         headers: {
-          Authorization: 'Bearer {{LIBRECHAT_OPENID_ACCESS_TOKEN}}',
-          'X-User-Id': '{{LIBRECHAT_OPENID_USER_ID}}',
+          Authorization: 'Bearer {{Nashm_OPENID_ACCESS_TOKEN}}',
+          'X-User-Id': '{{Nashm_OPENID_USER_ID}}',
         },
         updatedAt: FIXED_TIME,
       };
@@ -204,19 +204,19 @@ describe('ServerConfigsCacheInMemory Integration Tests', () => {
       };
 
       expect(retrievedWithHeaders?.headers?.Authorization).toBe(
-        'Bearer {{LIBRECHAT_OPENID_ACCESS_TOKEN}}',
+        'Bearer {{Nashm_OPENID_ACCESS_TOKEN}}',
       );
-      expect(retrievedWithHeaders?.headers?.['X-User-Id']).toBe('{{LIBRECHAT_OPENID_USER_ID}}');
+      expect(retrievedWithHeaders?.headers?.['X-User-Id']).toBe('{{Nashm_OPENID_USER_ID}}');
     });
 
-    it('should preserve LIBRECHAT_USER placeholders (admin configs are trusted)', async () => {
+    it('should preserve Nashm_USER placeholders (admin configs are trusted)', async () => {
       const adminConfig: ParsedServerConfig & { headers?: Record<string, string> } = {
         type: 'sse',
         url: 'https://internal-api.example.com/mcp',
         headers: {
-          'X-User-Email': '{{LIBRECHAT_USER_EMAIL}}',
-          'X-User-Name': '{{LIBRECHAT_USER_NAME}}',
-          'X-User-Id': '{{LIBRECHAT_USER_ID}}',
+          'X-User-Email': '{{Nashm_USER_EMAIL}}',
+          'X-User-Name': '{{Nashm_USER_NAME}}',
+          'X-User-Id': '{{Nashm_USER_ID}}',
         },
         updatedAt: FIXED_TIME,
       };
@@ -228,9 +228,9 @@ describe('ServerConfigsCacheInMemory Integration Tests', () => {
         headers?: Record<string, string>;
       };
 
-      expect(retrievedWithHeaders?.headers?.['X-User-Email']).toBe('{{LIBRECHAT_USER_EMAIL}}');
-      expect(retrievedWithHeaders?.headers?.['X-User-Name']).toBe('{{LIBRECHAT_USER_NAME}}');
-      expect(retrievedWithHeaders?.headers?.['X-User-Id']).toBe('{{LIBRECHAT_USER_ID}}');
+      expect(retrievedWithHeaders?.headers?.['X-User-Email']).toBe('{{Nashm_USER_EMAIL}}');
+      expect(retrievedWithHeaders?.headers?.['X-User-Name']).toBe('{{Nashm_USER_NAME}}');
+      expect(retrievedWithHeaders?.headers?.['X-User-Id']).toBe('{{Nashm_USER_ID}}');
     });
   });
 });

@@ -24,14 +24,14 @@
       ],
       "outputs": ["dist/**"]
     },
-    "@librechat/data-schemas#build": {
-      "dependsOn": ["^build", "librechat-data-provider#build"]
+    "@nashm/data-schemas#build": {
+      "dependsOn": ["^build", "nashm-data-provider#build"]
     },
-    "@librechat/api#build": {
-      "dependsOn": ["^build", "librechat-data-provider#build", "@librechat/data-schemas#build"]
+    "@nashm/api#build": {
+      "dependsOn": ["^build", "nashm-data-provider#build", "@nashm/data-schemas#build"]
     },
-    "@librechat/client#build": {
-      "dependsOn": ["^build", "librechat-data-provider#build"]
+    "@nashm/client#build": {
+      "dependsOn": ["^build", "nashm-data-provider#build"]
     }
   }
 }

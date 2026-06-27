@@ -1,14 +1,14 @@
 import { Suspense, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
-import { DelayedRender } from '@librechat/client';
-import { ContentTypes } from 'librechat-data-provider';
+import { DelayedRender } from '@nashm/client';
+import { ContentTypes } from 'nashm-data-provider';
 import type {
   Agents,
   TMessage,
   TAttachment,
   SearchResultData,
   TMessageContentParts,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import { UnfinishedMessage } from './MessageContent';
 import { cn, mapAttachments } from '~/utils';
 import { SearchContext } from '~/Providers';

@@ -313,7 +313,7 @@ export const SSEOptionsSchema = BaseOptionsSchema.extend({
   headers: z.record(z.string(), z.string()).optional(),
   /**
    * On-Behalf-Of (OBO) token exchange configuration.
-   * When configured, LibreChat exchanges the logged-in user's federated access token
+   * When configured, Nashm exchanges the logged-in user's federated access token
    * for a token scoped to this MCP server via the OAuth 2.0 OBO flow (jwt-bearer grant).
    * The exchanged token is injected as a Bearer Authorization header automatically.
    * Requires the user to be authenticated via OpenID Connect (e.g., Entra ID).
@@ -341,7 +341,7 @@ export const StreamableHTTPOptionsSchema = BaseOptionsSchema.extend({
   headers: z.record(z.string(), z.string()).optional(),
   /**
    * On-Behalf-Of (OBO) token exchange configuration.
-   * When configured, LibreChat exchanges the logged-in user's federated access token
+   * When configured, Nashm exchanges the logged-in user's federated access token
    * for a token scoped to this MCP server via the OAuth 2.0 OBO flow (jwt-bearer grant).
    * The exchanged token is injected as a Bearer Authorization header automatically.
    * Requires the user to be authenticated via OpenID Connect (e.g., Entra ID).
@@ -420,7 +420,7 @@ const userUrlSchema = (protocolCheck: (val: string) => boolean, message: string)
  *
  * SECURITY: Stdio transport is intentionally excluded from user input.
  * Stdio allows arbitrary command execution and should only be configured
- * by administrators via the YAML config file (librechat.yaml).
+ * by administrators via the YAML config file (Nashm.yaml).
  * Only remote transports (SSE, HTTP, WebSocket) are allowed via the API.
  *
  * SECURITY: URL fields use userUrlSchema instead of the admin schemas'

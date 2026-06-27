@@ -31,7 +31,7 @@ function TestComponent() {
 
 /**
  * Creates a test router with optional basename to verify navigation works correctly
- * with subdirectory deployments (e.g., /librechat)
+ * with subdirectory deployments (e.g., /Nashm)
  */
 const createTestRouter = (basename = '/', initialEntry?: string) => {
   const defaultEntry = basename === '/' ? '/' : `${basename}/`;
@@ -121,18 +121,18 @@ describe('useAuthRedirect', () => {
       isAuthenticated: false,
     });
 
-    // Test with basename="/librechat" (simulates subdirectory deployment)
-    const router = createTestRouter('/librechat');
+    // Test with basename="/Nashm" (simulates subdirectory deployment)
+    const router = createTestRouter('/Nashm');
     const { getByTestId } = render(<RouterProvider router={router} />);
 
     // Full pathname includes basename
-    expect(router.state.location.pathname).toBe('/librechat/');
+    expect(router.state.location.pathname).toBe('/Nashm/');
 
     // Wait for the redirect - router handles basename internally
     await waitFor(
       () => {
         // Router state pathname includes the full path with basename
-        expect(router.state.location.pathname).toBe('/librechat/login');
+        expect(router.state.location.pathname).toBe('/Nashm/login');
         expect(getByTestId('login-page')).toBeInTheDocument();
       },
       { timeout: 1000 },
@@ -149,12 +149,12 @@ describe('useAuthRedirect', () => {
       isAuthenticated: false,
     });
 
-    const router = createTestRouter('/librechat');
+    const router = createTestRouter('/Nashm');
     const { getByTestId } = render(<RouterProvider router={router} />);
 
     await waitFor(
       () => {
-        expect(router.state.location.pathname).toBe('/librechat/login');
+        expect(router.state.location.pathname).toBe('/Nashm/login');
         expect(getByTestId('login-page')).toBeInTheDocument();
       },
       { timeout: 1000 },
@@ -163,7 +163,7 @@ describe('useAuthRedirect', () => {
     // The fact that navigation worked within the router proves we're using
     // navigate() and not window.location.href (which would cause a full reload
     // and break the test entirely). This maintains the SPA experience.
-    expect(router.state.location.pathname).toBe('/librechat/login');
+    expect(router.state.location.pathname).toBe('/Nashm/login');
   });
 
   it('should clear timeout on unmount', async () => {
@@ -258,19 +258,19 @@ describe('useAuthRedirect', () => {
      * (for callers using window.location.pathname) is tested in
      * api-endpoints-subdir.spec.ts.
      */
-    const router = createTestRouter('/librechat', '/librechat/c/abc123');
+    const router = createTestRouter('/Nashm', '/Nashm/c/abc123');
     render(<RouterProvider router={router} />);
 
     await waitFor(
       () => {
-        expect(router.state.location.pathname).toBe('/librechat/login');
+        expect(router.state.location.pathname).toBe('/Nashm/login');
         const search = router.state.location.search;
         const params = new URLSearchParams(search);
         const redirectTo = decodeURIComponent(params.get('redirect_to')!);
-        /** redirect_to should be /c/abc123, NOT /librechat/c/abc123
+        /** redirect_to should be /c/abc123, NOT /Nashm/c/abc123
          * because navigate() with basename will re-add the prefix */
         expect(redirectTo).toBe('/c/abc123');
-        expect(redirectTo).not.toContain('/librechat/');
+        expect(redirectTo).not.toContain('/Nashm/');
       },
       { timeout: 1000 },
     );

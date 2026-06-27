@@ -20,19 +20,19 @@ const mockDeleteUserAgents = jest.fn();
 const mockDeleteUserPrompts = jest.fn();
 const mockDeleteUserSkills = jest.fn();
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: { error: jest.fn(), info: jest.fn() },
   webSearchKeys: [],
 }));
 
-jest.mock('librechat-data-provider', () => ({
+jest.mock('nashm-data-provider', () => ({
   Tools: {},
   CacheKeys: {},
   Constants: { mcp_delimiter: '::', mcp_prefix: 'mcp_' },
   FileSources: {},
 }));
 
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   MCPOAuthHandler: {},
   MCPTokenStorage: {},
   normalizeHttpError: jest.fn(),

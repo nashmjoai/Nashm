@@ -22,7 +22,7 @@ import {
   Button,
   Spinner,
   useToastContext,
-} from '@librechat/client';
+} from '@nashm/client';
 import { NotificationSeverity } from '~/common';
 
 const STATUS_FILTERS = ['all', 'open', 'reviewed', 'resolved'] as const;

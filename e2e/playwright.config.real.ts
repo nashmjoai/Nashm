@@ -22,8 +22,8 @@ if (!process.env.ANTHROPIC_API_KEY) {
 
 const rootPath = path.resolve(__dirname, '..');
 const serverPath = path.resolve(rootPath, 'e2e/setup/start-server.js');
-const configTemplatePath = path.resolve(rootPath, 'e2e/config/librechat.real.yaml');
-const configPath = path.resolve(rootPath, 'e2e/.generated/librechat.real.yaml');
+const configTemplatePath = path.resolve(rootPath, 'e2e/config/Nashm.real.yaml');
+const configPath = path.resolve(rootPath, 'e2e/.generated/Nashm.real.yaml');
 const reportPath = path.resolve(rootPath, 'e2e/playwright-report');
 
 const baseURL = getE2EBaseURL();

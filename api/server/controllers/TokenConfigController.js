@@ -1,12 +1,12 @@
-const { logger } = require('@librechat/data-schemas');
-const { resolveTokenConfigMap } = require('@librechat/api');
+const { logger } = require('@nashm/data-schemas');
+const { resolveTokenConfigMap } = require('@nashm/api');
 const { getModelsConfig } = require('~/server/controllers/ModelController');
 const { getValueKey, getMultiplier, getCacheMultiplier } = require('~/models');
 
 /**
  * Returns server-resolved context windows (and pricing when
  * `interface.contextCost` is enabled) for every configured model. Resolution
- * lives in `@librechat/api`; this controller only supplies request-scoped deps.
+ * lives in `@nashm/api`; this controller only supplies request-scoped deps.
  * @param {ServerRequest} req
  * @param {ServerResponse} res
  */

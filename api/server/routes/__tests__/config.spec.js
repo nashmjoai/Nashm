@@ -15,8 +15,8 @@ jest.mock('~/server/middleware/roles/capabilities', () => ({
 }));
 
 const mockGetTenantId = jest.fn(() => undefined);
-jest.mock('@librechat/data-schemas', () => ({
-  ...jest.requireActual('@librechat/data-schemas'),
+jest.mock('@nashm/data-schemas', () => ({
+  ...jest.requireActual('@nashm/data-schemas'),
   getTenantId: (...args) => mockGetTenantId(...args),
 }));
 
@@ -27,8 +27,8 @@ const mockResolveBuildInfo = jest.fn(() => ({
   branch: null,
   buildDate: null,
 }));
-jest.mock('@librechat/api', () => ({
-  ...jest.requireActual('@librechat/api'),
+jest.mock('@nashm/api', () => ({
+  ...jest.requireActual('@nashm/api'),
   getCloudFrontConfig: (...args) => mockGetCloudFrontConfig(...args),
   resolveBuildInfo: (...args) => mockResolveBuildInfo(...args),
 }));

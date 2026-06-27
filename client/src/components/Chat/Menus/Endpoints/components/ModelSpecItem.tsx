@@ -1,7 +1,7 @@
 import React from 'react';
 import { VisuallyHidden } from '@ariakit/react';
 import { CheckCircle2, Pin, PinOff } from 'lucide-react';
-import type { TModelSpec } from 'librechat-data-provider';
+import type { TModelSpec } from 'nashm-data-provider';
 import { useFavorites, useLocalize, useIsActiveItem } from '~/hooks';
 import { useModelSelectorContext } from '../ModelSelectorContext';
 import { CustomMenuItem as MenuItem } from '../CustomMenu';

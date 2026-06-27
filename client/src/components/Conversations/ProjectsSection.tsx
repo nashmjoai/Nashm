@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import * as Ariakit from '@ariakit/react';
-import { QueryKeys } from 'librechat-data-provider';
+import { QueryKeys } from 'nashm-data-provider';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -27,8 +27,8 @@ import {
   DropdownPopup,
   NewChatIcon,
   useToastContext,
-} from '@librechat/client';
-import type { TChatProject, TConversation } from 'librechat-data-provider';
+} from '@nashm/client';
+import type { TChatProject, TConversation } from 'nashm-data-provider';
 import type { MenuItemProps } from '~/common';
 import {
   useProjectsInfiniteQuery,

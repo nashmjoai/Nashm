@@ -14,13 +14,13 @@
 
 import * as http from 'http';
 import * as net from 'net';
-import { TokenExchangeMethodEnum } from 'librechat-data-provider';
+import { TokenExchangeMethodEnum } from 'nashm-data-provider';
 import type { Socket } from 'net';
 import type { OAuthTestServer } from './helpers/oauthTestServer';
 import { createOAuthMCPServer } from './helpers/oauthTestServer';
 import { MCPOAuthHandler } from '~/mcp/oauth';
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     info: jest.fn(),
     warn: jest.fn(),

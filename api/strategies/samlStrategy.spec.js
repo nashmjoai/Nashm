@@ -3,7 +3,7 @@ jest.mock('fs');
 jest.mock('path');
 jest.mock('node-fetch');
 jest.mock('@node-saml/passport-saml');
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     info: jest.fn(),
     debug: jest.fn(),
@@ -24,21 +24,21 @@ jest.mock('~/server/services/Config', () => ({
   },
   getAppConfig: jest.fn().mockResolvedValue({}),
 }));
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   isEmailDomainAllowed: jest.fn(() => true),
   getBalanceConfig: jest.fn(() => ({
     tokenCredits: 1000,
     startBalance: 1000,
   })),
   getAvatarFileStrategy: jest.fn((config, fallbackStrategy) => {
-    const { FileSources } = jest.requireActual('librechat-data-provider');
+    const { FileSources } = jest.requireActual('nashm-data-provider');
     if (config?.fileStrategies) {
       return config.fileStrategies.avatar ?? config.fileStrategies.default ?? config.fileStrategy;
     }
     return config?.fileStrategy ?? fallbackStrategy ?? FileSources.local;
   }),
   getAvatarSaveParams: jest.fn((strategy, params) => {
-    const { FileSources } = jest.requireActual('librechat-data-provider');
+    const { FileSources } = jest.requireActual('nashm-data-provider');
     return strategy === FileSources.s3 || strategy === FileSources.cloudfront
       ? { ...params, basePath: 'avatars' }
       : params;
@@ -64,9 +64,9 @@ const fs = require('fs');
 const path = require('path');
 const fetch = require('node-fetch');
 const { Strategy: SamlStrategy } = require('@node-saml/passport-saml');
-const { FileSources } = require('librechat-data-provider');
+const { FileSources } = require('nashm-data-provider');
 const { findUser } = require('~/models');
-const { resolveAppConfigForUser } = require('@librechat/api');
+const { resolveAppConfigForUser } = require('@nashm/api');
 const { resizeAvatar } = require('~/server/services/Files/images/avatar');
 const { getAppConfig } = require('~/server/services/Config');
 const { setupSaml, getCertificateContent } = require('./samlStrategy');
@@ -443,7 +443,7 @@ u7wlOSk+oFzDIO/UILIA
     const result = await validate(profile);
 
     expect(result.user).toBe(false);
-    expect(result.details.message).toBe(require('librechat-data-provider').ErrorTypes.AUTH_FAILED);
+    expect(result.details.message).toBe(require('nashm-data-provider').ErrorTypes.AUTH_FAILED);
   });
 
   it('should process and save the avatar through the shared avatar path if picture is provided', async () => {
@@ -567,7 +567,7 @@ u7wlOSk+oFzDIO/UILIA
   });
 
   it('should block login when tenant config restricts the domain', async () => {
-    const { isEmailDomainAllowed } = require('@librechat/api');
+    const { isEmailDomainAllowed } = require('@nashm/api');
     const existingUser = {
       _id: 'tenant-blocked',
       provider: 'saml',

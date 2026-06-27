@@ -8,7 +8,7 @@ import {
   bedrockInputParser,
   bedrockOutputParser,
   removeNullishValues,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type { BedrockRuntimeClientConfig } from '@aws-sdk/client-bedrock-runtime';
 import type {
   BaseInitializeParams,

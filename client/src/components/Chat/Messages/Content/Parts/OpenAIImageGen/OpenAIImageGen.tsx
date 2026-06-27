@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { PixelCard } from '@librechat/client';
-import type { TAttachment, TFile, TAttachmentMetadata } from 'librechat-data-provider';
+import { PixelCard } from '@nashm/client';
+import type { TAttachment, TFile, TAttachmentMetadata } from 'nashm-data-provider';
 import { ToolIcon, isError } from '~/components/Chat/Messages/Content/ToolOutput';
 import Image from '~/components/Chat/Messages/Content/Image';
 import { useProgress, useLocalize } from '~/hooks';

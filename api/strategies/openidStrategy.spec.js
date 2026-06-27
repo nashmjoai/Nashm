@@ -1,14 +1,14 @@
 const undici = require('undici');
 const fetch = require('node-fetch');
 const jwtDecode = require('jsonwebtoken/decode');
-const { ErrorTypes, FileSources } = require('librechat-data-provider');
+const { ErrorTypes, FileSources } = require('nashm-data-provider');
 const { findUser, createUser, updateUser, findRolesByNames } = require('~/models');
 const {
   getOpenIdProxyDispatcher,
   resolveAppConfigForUser,
   getOpenIdIssuer,
   isEnabled,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const { resizeAvatar } = require('~/server/services/Files/images/avatar');
 const { getAppConfig } = require('~/server/services/Config');
 const { setupOpenId } = require('./openidStrategy');
@@ -32,8 +32,8 @@ jest.mock('~/server/services/Files/images/avatar', () => ({
 jest.mock('~/server/services/Config', () => ({
   getAppConfig: jest.fn().mockResolvedValue({}),
 }));
-jest.mock('@librechat/api', () => {
-  const actual = jest.requireActual('@librechat/api');
+jest.mock('@nashm/api', () => {
+  const actual = jest.requireActual('@nashm/api');
   const getStringClaim = (claims, claim) => {
     const value = claims[claim];
     return typeof value === 'string' && value ? value : undefined;
@@ -56,7 +56,7 @@ jest.mock('@librechat/api', () => {
           return value;
         }
 
-        const { logger } = require('@librechat/data-schemas');
+        const { logger } = require('@nashm/data-schemas');
         if (value != null) {
           logger.warn(
             `[${strategyName}] OPENID_EMAIL_CLAIM="${claimKey}" resolved to a non-string value (type: ${typeof value}). Falling back to: email -> preferred_username -> upn.`,
@@ -80,14 +80,14 @@ jest.mock('@librechat/api', () => {
     getOpenIdIssuer: jest.fn(() => 'https://fake-issuer.com'),
     getOpenIdProxyDispatcher: jest.fn(() => undefined),
     getAvatarFileStrategy: jest.fn((config, fallbackStrategy) => {
-      const { FileSources } = jest.requireActual('librechat-data-provider');
+      const { FileSources } = jest.requireActual('nashm-data-provider');
       if (config?.fileStrategies) {
         return config.fileStrategies.avatar ?? config.fileStrategies.default ?? config.fileStrategy;
       }
       return config?.fileStrategy ?? fallbackStrategy ?? FileSources.local;
     }),
     getAvatarSaveParams: jest.fn((strategy, params) => {
-      const { FileSources } = jest.requireActual('librechat-data-provider');
+      const { FileSources } = jest.requireActual('nashm-data-provider');
       return strategy === FileSources.s3 || strategy === mockCloudfrontFileSource
         ? { ...params, basePath: 'avatars' }
         : params;
@@ -101,8 +101,8 @@ jest.mock('~/models', () => ({
   updateUser: jest.fn(),
   findRolesByNames: jest.fn(),
 }));
-jest.mock('@librechat/data-schemas', () => ({
-  ...jest.requireActual('@librechat/api'),
+jest.mock('@nashm/data-schemas', () => ({
+  ...jest.requireActual('@nashm/api'),
   logger: {
     info: jest.fn(),
     warn: jest.fn(),
@@ -216,7 +216,7 @@ describe('setupOpenId', () => {
   beforeEach(async () => {
     // Clear previous mock calls and reset implementations
     jest.clearAllMocks();
-    isEnabled.mockImplementation(jest.requireActual('@librechat/api').isEnabled);
+    isEnabled.mockImplementation(jest.requireActual('@nashm/api').isEnabled);
     require('~/cache/getLogStores').mockImplementation(() => ({
       get: jest.fn(),
       set: jest.fn(),
@@ -380,20 +380,20 @@ describe('setupOpenId', () => {
     const getLoginStrategy = () => require('openid-client/passport').__getStrategyByName('openid');
 
     it('adds a single OpenID audience to authorization requests', () => {
-      process.env.OPENID_AUDIENCE = 'librechat';
+      process.env.OPENID_AUDIENCE = 'Nashm';
 
       const params = getLoginStrategy().authorizationRequestParams({}, { state: 'login-state' });
 
-      expect(params.get('audience')).toBe('librechat');
+      expect(params.get('audience')).toBe('Nashm');
       expect(params.get('state')).toBe('login-state');
     });
 
     it('uses the first non-empty audience when OPENID_AUDIENCE accepts multiple JWT audiences', () => {
-      process.env.OPENID_AUDIENCE = ' librechat , control-plane-web ';
+      process.env.OPENID_AUDIENCE = ' Nashm , control-plane-web ';
 
       const params = getLoginStrategy().authorizationRequestParams({}, {});
 
-      expect(params.get('audience')).toBe('librechat');
+      expect(params.get('audience')).toBe('Nashm');
     });
 
     it('does not add an authorization audience when OPENID_AUDIENCE is empty', () => {
@@ -735,7 +735,7 @@ describe('setupOpenId', () => {
   });
 
   it('should reject login when required role is missing from userinfo claims', async () => {
-    const { logger } = require('@librechat/data-schemas');
+    const { logger } = require('@nashm/data-schemas');
     process.env.OPENID_REQUIRED_ROLE = 'requiredRole';
     process.env.OPENID_REQUIRED_ROLE_PARAMETER_PATH = 'roles';
     process.env.OPENID_REQUIRED_ROLE_TOKEN_KIND = 'userinfo';
@@ -758,7 +758,7 @@ describe('setupOpenId', () => {
   });
 
   it('should reject login with invalid required role token kind', async () => {
-    const { logger } = require('@librechat/data-schemas');
+    const { logger } = require('@nashm/data-schemas');
     process.env.OPENID_REQUIRED_ROLE = 'requiredRole';
     process.env.OPENID_REQUIRED_ROLE_PARAMETER_PATH = 'roles';
     process.env.OPENID_REQUIRED_ROLE_TOKEN_KIND = 'invalid';
@@ -869,7 +869,7 @@ describe('setupOpenId', () => {
       expect(undici.fetch).not.toHaveBeenCalled();
       expect(user).toBe(false);
       expect(details.message).toBe('You must have "group-required" role to log in.');
-      const { logger } = require('@librechat/data-schemas');
+      const { logger } = require('@nashm/data-schemas');
       const expectedTokenKind = cfg.kind === 'access' ? 'access token' : 'id token';
       expect(logger.error).toHaveBeenCalledWith(
         expect.stringContaining(`Key '${cfg.path}' not found in ${expectedTokenKind}!`),
@@ -883,7 +883,7 @@ describe('setupOpenId', () => {
       process.env.OPENID_REQUIRED_ROLE_PARAMETER_PATH = 'groups';
       process.env.OPENID_REQUIRED_ROLE_TOKEN_KIND = 'id';
 
-      const { logger } = require('@librechat/data-schemas');
+      const { logger } = require('@nashm/data-schemas');
 
       jwtDecode.mockReturnValue({
         hasgroups: true,
@@ -963,7 +963,7 @@ describe('setupOpenId', () => {
         process.env.OPENID_REQUIRED_ROLE_PARAMETER_PATH = 'groups';
         process.env.OPENID_REQUIRED_ROLE_TOKEN_KIND = 'id';
 
-        const { logger } = require('@librechat/data-schemas');
+        const { logger } = require('@nashm/data-schemas');
 
         jwtDecode.mockReturnValue({
           hasgroups: true,
@@ -1027,7 +1027,7 @@ describe('setupOpenId', () => {
         process.env.OPENID_REQUIRED_ROLE_PARAMETER_PATH = 'groups';
         process.env.OPENID_REQUIRED_ROLE_TOKEN_KIND = 'id';
 
-        const { logger } = require('@librechat/data-schemas');
+        const { logger } = require('@nashm/data-schemas');
 
         jwtDecode.mockReturnValue(decodedTokenValue);
 
@@ -1813,7 +1813,7 @@ describe('setupOpenId', () => {
         tenantId: 'tenant-a',
         role: 'USER',
       };
-      const { tenantStorage } = require('@librechat/data-schemas');
+      const { tenantStorage } = require('@nashm/data-schemas');
 
       findUser.mockImplementation(async (query) => {
         if (query.openidId === tokenset.claims().sub || query.email === tokenset.claims().email) {
@@ -1846,7 +1846,7 @@ describe('setupOpenId', () => {
         tenantId: 'tenant-a',
         role: 'USER',
       };
-      const { isEmailDomainAllowed } = require('@librechat/api');
+      const { isEmailDomainAllowed } = require('@nashm/api');
 
       findUser.mockImplementation(async (query) => {
         if (query.openidId === tokenset.claims().sub || query.email === tokenset.claims().email) {
@@ -1945,7 +1945,7 @@ describe('setupOpenId', () => {
       permissions: ['not-admin'],
     });
 
-    const { logger } = require('@librechat/data-schemas');
+    const { logger } = require('@nashm/data-schemas');
 
     // Act
     const { user } = await validate(tokenset);
@@ -2052,7 +2052,7 @@ describe('setupOpenId', () => {
     });
 
     it('should log error and reject login when required role path does not exist in token', async () => {
-      const { logger } = require('@librechat/data-schemas');
+      const { logger } = require('@nashm/data-schemas');
       process.env.OPENID_REQUIRED_ROLE = 'app-user';
       process.env.OPENID_REQUIRED_ROLE_PARAMETER_PATH = 'resource_access.nonexistent.roles';
 
@@ -2077,7 +2077,7 @@ describe('setupOpenId', () => {
     });
 
     it('should handle missing intermediate nested path gracefully', async () => {
-      const { logger } = require('@librechat/data-schemas');
+      const { logger } = require('@nashm/data-schemas');
       process.env.OPENID_REQUIRED_ROLE = 'user';
       process.env.OPENID_REQUIRED_ROLE_PARAMETER_PATH = 'org.team.roles';
 
@@ -2303,7 +2303,7 @@ describe('setupOpenId', () => {
     });
 
     it('should handle empty object at nested path', async () => {
-      const { logger } = require('@librechat/data-schemas');
+      const { logger } = require('@nashm/data-schemas');
       process.env.OPENID_REQUIRED_ROLE = 'user';
       process.env.OPENID_REQUIRED_ROLE_PARAMETER_PATH = 'access.roles';
 
@@ -2323,7 +2323,7 @@ describe('setupOpenId', () => {
     });
 
     it('should handle null value at intermediate path', async () => {
-      const { logger } = require('@librechat/data-schemas');
+      const { logger } = require('@nashm/data-schemas');
       process.env.OPENID_REQUIRED_ROLE = 'user';
       process.env.OPENID_REQUIRED_ROLE_PARAMETER_PATH = 'data.roles';
 
@@ -2347,7 +2347,7 @@ describe('setupOpenId', () => {
       process.env.OPENID_ADMIN_ROLE_PARAMETER_PATH = 'roles';
       process.env.OPENID_ADMIN_ROLE_TOKEN_KIND = 'invalid';
 
-      const { logger } = require('@librechat/data-schemas');
+      const { logger } = require('@nashm/data-schemas');
 
       jwtDecode.mockReturnValue({
         roles: ['requiredRole', 'admin'],
@@ -2366,7 +2366,7 @@ describe('setupOpenId', () => {
     });
 
     it('should reject login when roles path returns invalid type (object)', async () => {
-      const { logger } = require('@librechat/data-schemas');
+      const { logger } = require('@nashm/data-schemas');
       process.env.OPENID_REQUIRED_ROLE = 'app-user';
       process.env.OPENID_REQUIRED_ROLE_PARAMETER_PATH = 'roles';
 
@@ -2387,7 +2387,7 @@ describe('setupOpenId', () => {
     });
 
     it('should reject login when roles path returns invalid type (number)', async () => {
-      const { logger } = require('@librechat/data-schemas');
+      const { logger } = require('@nashm/data-schemas');
       process.env.OPENID_REQUIRED_ROLE = 'user';
       process.env.OPENID_REQUIRED_ROLE_PARAMETER_PATH = 'roleCount';
 
@@ -2473,7 +2473,7 @@ describe('setupOpenId', () => {
     });
 
     it('should fall back to default chain with warning when configured claim is missing from userinfo', async () => {
-      const { logger } = require('@librechat/data-schemas');
+      const { logger } = require('@nashm/data-schemas');
       process.env.OPENID_EMAIL_CLAIM = 'nonexistent_claim';
 
       const { user } = await validate(tokenset);
@@ -2512,7 +2512,7 @@ describe('setupOpenId', () => {
     });
 
     it('should block login when tenant config restricts the domain', async () => {
-      const { isEmailDomainAllowed } = require('@librechat/api');
+      const { isEmailDomainAllowed } = require('@nashm/api');
       const existingUser = {
         _id: 'openid-tenant-blocked',
         provider: 'openid',
@@ -2536,7 +2536,7 @@ describe('setupOpenId', () => {
 
 describe('getRoleSource', () => {
   const { getRoleSource } = require('./openidStrategy');
-  const { logger } = require('@librechat/data-schemas');
+  const { logger } = require('@nashm/data-schemas');
 
   const accessClaims = { roles: ['from-access'] };
   const idClaims = { roles: ['from-id'] };

@@ -1,12 +1,12 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
-import { useDeleteAgentApiKeyMutation } from 'librechat-data-provider/react-query';
-import type { TAgentApiKeyListItem } from 'librechat-data-provider';
+import { useDeleteAgentApiKeyMutation } from 'nashm-data-provider/react-query';
+import type { TAgentApiKeyListItem } from 'nashm-data-provider';
 import { render, fireEvent } from 'test/layout-test-utils';
 import Item from '../Item';
 
-jest.mock('librechat-data-provider/react-query', () => ({
-  ...jest.requireActual('librechat-data-provider/react-query'),
+jest.mock('nashm-data-provider/react-query', () => ({
+  ...jest.requireActual('nashm-data-provider/react-query'),
   useDeleteAgentApiKeyMutation: jest.fn(),
 }));
 

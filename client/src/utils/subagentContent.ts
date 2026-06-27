@@ -1,5 +1,5 @@
-import { ContentTypes, ToolCallTypes } from 'librechat-data-provider';
-import type { SubagentUpdateEvent } from 'librechat-data-provider';
+import { ContentTypes, ToolCallTypes } from 'nashm-data-provider';
+import type { SubagentUpdateEvent } from 'nashm-data-provider';
 
 /**
  * Client-side helpers for rendering the live `SubagentCall` UI while

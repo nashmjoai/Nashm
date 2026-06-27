@@ -1,5 +1,5 @@
 import { Schema } from 'mongoose';
-import { PrincipalType, PrincipalModel } from 'librechat-data-provider';
+import { PrincipalType, PrincipalModel } from 'nashm-data-provider';
 import type { IConfig } from '~/types';
 
 const configSchema: Schema<IConfig> = new Schema<IConfig>(

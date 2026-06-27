@@ -1,6 +1,6 @@
 import { buildWebSearchContext, buildWebSearchDynamicContext } from './web';
 
-jest.mock('librechat-data-provider', () => ({
+jest.mock('nashm-data-provider', () => ({
   Tools: { web_search: 'web_search' },
   replaceSpecialVars: jest.fn(({ now }: { now?: string }) => now ?? 'NOW'),
 }));

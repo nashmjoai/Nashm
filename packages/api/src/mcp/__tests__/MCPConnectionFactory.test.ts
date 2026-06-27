@@ -1,5 +1,5 @@
-import { logger, getTenantId, tenantStorage } from '@librechat/data-schemas';
-import type { TokenMethods, IUser } from '@librechat/data-schemas';
+import { logger, getTenantId, tenantStorage } from '@nashm/data-schemas';
+import type { TokenMethods, IUser } from '@nashm/data-schemas';
 import type { FlowStateManager } from '~/flow/manager';
 import type { MCPOAuthTokens } from '~/mcp/oauth';
 import type * as t from '~/mcp/types';
@@ -17,7 +17,7 @@ jest.mock('~/utils/graph', () => ({
   preProcessGraphTokens: jest.fn(async (options) => options),
 }));
 jest.mock('~/utils');
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     info: jest.fn(),
     warn: jest.fn(),
@@ -177,7 +177,7 @@ describe('MCPConnectionFactory', () => {
       const graphTokenResolver = jest.fn();
       const serverConfig: t.MCPOptions = {
         type: 'streamable-http',
-        url: 'https://api.example.com/mcp?token={{LIBRECHAT_GRAPH_ACCESS_TOKEN}}',
+        url: 'https://api.example.com/mcp?token={{Nashm_GRAPH_ACCESS_TOKEN}}',
       };
       const graphProcessedConfig: t.MCPOptions = {
         ...serverConfig,

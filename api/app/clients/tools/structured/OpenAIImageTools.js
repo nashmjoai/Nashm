@@ -2,16 +2,16 @@ const axios = require('axios');
 const { v4 } = require('uuid');
 const OpenAI = require('openai');
 const FormData = require('form-data');
-const { logger } = require('@librechat/data-schemas');
+const { logger } = require('@nashm/data-schemas');
 const { tool } = require('@librechat/agents/langchain/tools');
-const { ContentTypes, EImageOutputType } = require('librechat-data-provider');
+const { ContentTypes, EImageOutputType } = require('nashm-data-provider');
 const {
   logAxiosError,
   oaiToolkit,
   extractBaseURL,
   getProxyDispatcher,
   applyAxiosProxyConfig,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const { getStrategyFunctions } = require('~/server/services/Files/strategies');
 const { getFiles } = require('~/models');
 

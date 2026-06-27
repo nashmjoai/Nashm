@@ -1,8 +1,8 @@
 import React from 'react';
-import { Label, InfoHoverCard, ESide } from '@librechat/client';
-import { getRefillEligibilityDate } from 'librechat-data-provider';
+import { Label, InfoHoverCard, ESide } from '@nashm/client';
+import { getRefillEligibilityDate } from 'nashm-data-provider';
 
-import type { RefillIntervalUnit, TBalanceResponse } from 'librechat-data-provider';
+import type { RefillIntervalUnit, TBalanceResponse } from 'nashm-data-provider';
 import type { TranslationKeys } from '~/hooks';
 
 import { useLocalize } from '~/hooks';

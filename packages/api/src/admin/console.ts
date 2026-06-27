@@ -1,8 +1,8 @@
 import { Types } from 'mongoose';
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 import type { FilterQuery, Model } from 'mongoose';
 import type { Response } from 'express';
-import type { TModelsConfig } from 'librechat-data-provider';
+import type { TModelsConfig } from 'nashm-data-provider';
 import type {
   IUser,
   IFamilyPlan,
@@ -12,7 +12,7 @@ import type {
   SubscriptionPlan,
   SubscriptionStatus,
   SupportTicketStatus,
-} from '@librechat/data-schemas';
+} from '@nashm/data-schemas';
 import type { ServerRequest } from '~/types/http';
 import { getDefaultAllowedPlans, getEffectiveSubscription } from '~/subscriptions';
 import { parsePagination } from './pagination';

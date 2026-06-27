@@ -1,14 +1,14 @@
 import { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 import TagManager from 'react-gtm-module';
-import { installCloudFrontImageRetry } from '@librechat/client';
+import { installCloudFrontImageRetry } from '@nashm/client';
 import {
   getTokenHeader,
   LocalStorageKeys,
   PermissionTypes,
   Permissions,
-} from 'librechat-data-provider';
-import type { TStartupConfig, TUser } from 'librechat-data-provider';
+} from 'nashm-data-provider';
+import type { TStartupConfig, TUser } from 'nashm-data-provider';
 import { useMCPToolsQuery, useMCPServersQuery } from '~/data-provider';
 import { cleanupTimestampedStorage } from '~/utils/timestamps';
 import useSpeechSettingsInit from './useSpeechSettingsInit';

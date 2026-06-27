@@ -1,4 +1,4 @@
-name: Docker Build Smoke Tests
+﻿name: Docker Build Smoke Tests
 
 on:
   workflow_dispatch:
@@ -66,18 +66,18 @@ jobs:
           platforms: linux/amd64
           push: false
           load: true
-          tags: librechat-api-smoke:ci
+          tags: Nashm-api-smoke:ci
           cache-from: type=gha,scope=docker-smoke-api
           cache-to: type=gha,mode=max,scope=docker-smoke-api
 
-      # Loads the entire externalized require graph of the built @librechat/api
+      # Loads the entire externalized require graph of the built @nashm/api
       # bundle inside the pruned production image. A missing or ESM-incompatible
       # runtime dependency (e.g. the `get-stream` regression) fails here with a
       # non-zero exit — deterministically, with no database required.
       - name: Verify production image resolves all runtime modules
         run: |
-          docker run --rm librechat-api-smoke:ci \
-            node -e "require('@librechat/api'); require('@librechat/api/telemetry'); console.log('module resolution OK')"
+          docker run --rm Nashm-api-smoke:ci \
+            node -e "require('@nashm/api'); require('@nashm/api/telemetry'); console.log('module resolution OK')"
 
       # Boot the real entrypoint against a real MongoDB so the *entire* server
       # require graph loads (api/db throws at module scope without MONGO_URI, and
@@ -94,13 +94,13 @@ jobs:
           docker run -d --name lc-api --network lc-smoke -p 3080:3080 \
             -e HOST=0.0.0.0 -e PORT=3080 \
             -e NODE_ENV=production \
-            -e MONGO_URI=mongodb://lc-mongo:27017/LibreChat \
+            -e MONGO_URI=mongodb://lc-mongo:27017/Nashm \
             -e CREDS_KEY=0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef \
             -e CREDS_IV=0123456789abcdef0123456789abcdef \
             -e JWT_SECRET=docker-smoke-jwt-secret \
             -e JWT_REFRESH_SECRET=docker-smoke-jwt-refresh-secret \
             -e SEARCH=false \
-            librechat-api-smoke:ci
+            Nashm-api-smoke:ci
 
           healthy=""
           for i in $(seq 1 60); do

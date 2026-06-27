@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Outlet } from 'react-router-dom';
-import { useMediaQuery } from '@librechat/client';
+import { useMediaQuery } from '@nashm/client';
 import {
   useSearchEnabled,
   useAssistantsMap,

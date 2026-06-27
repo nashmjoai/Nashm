@@ -1,4 +1,4 @@
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 import type {
   IBalanceUpdate,
   BalanceConfig,
@@ -6,7 +6,7 @@ import type {
   ObjectId,
   IBalance,
   IUser,
-} from '@librechat/data-schemas';
+} from '@nashm/data-schemas';
 import type { NextFunction, Request as ServerRequest, Response as ServerResponse } from 'express';
 import type { BalanceUpdateFields } from '~/types';
 import { getBalanceConfig } from '~/app/config';

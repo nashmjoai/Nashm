@@ -6,7 +6,7 @@ import type { FileSources } from './files';
  * `packages/data-schemas/src/methods/skill.ts`; whenever those constants
  * change, the DB-side validators MUST be updated to match.
  *
- * Exported from `librechat-data-provider` so both frontend form validators
+ * Exported from `nashm-data-provider` so both frontend form validators
  * and backend Mongoose pre-save hooks use the same literals.
  */
 export const SKILL_NAME_MAX_LENGTH = 64;
@@ -24,7 +24,7 @@ export const SKILL_NAME_PATTERN = /^[a-z0-9][a-z0-9-]*$/;
 
 /**
  * Source of a skill — where its canonical definition came from.
- * `inline` means the skill was authored directly in LibreChat.
+ * `inline` means the skill was authored directly in Nashm.
  * `deployment` means the skill was loaded from the server's configured
  * deployment skill directory and is not persisted as a Skill document.
  * `github` is populated by admin-configured GitHub skill sync; `notion` is reserved.

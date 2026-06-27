@@ -1,4 +1,4 @@
-import type { AppConfig } from '@librechat/data-schemas';
+import type { AppConfig } from '@nashm/data-schemas';
 import { isFileSnapshotEnabled } from './config';
 
 const withSharedLinks = (sharedLinks: unknown): AppConfig =>

@@ -1,11 +1,11 @@
-const { logger } = require('@librechat/data-schemas');
-const { resolveContextProjection } = require('@librechat/api');
+const { logger } = require('@nashm/data-schemas');
+const { resolveContextProjection } = require('@nashm/api');
 const db = require('~/models');
 
 /**
  * Returns a server-side context-usage projection for the viewed branch + config
  * (agents SDK, no model call) — powers the gauge for snapshot-less branches and
- * after a model/window switch. Resolution lives in `@librechat/api`; this
+ * after a model/window switch. Resolution lives in `@nashm/api`; this
  * controller only injects request-scoped model accessors.
  * @param {ServerRequest} req
  * @param {ServerResponse} res

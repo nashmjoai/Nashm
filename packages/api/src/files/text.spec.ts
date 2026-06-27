@@ -1,7 +1,7 @@
-import { FileSources } from 'librechat-data-provider';
+import { FileSources } from 'nashm-data-provider';
 import { Readable } from 'stream';
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     debug: jest.fn(),
     warn: jest.fn(),

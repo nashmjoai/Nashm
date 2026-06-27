@@ -1,4 +1,4 @@
-import { RetentionMode } from 'librechat-data-provider';
+import { RetentionMode } from 'nashm-data-provider';
 import type { DeleteResult, FilterQuery, Model } from 'mongoose';
 import type { AppConfig, IMessage } from '~/types';
 import { createTempChatExpirationDate } from '~/utils/tempChatRetention';

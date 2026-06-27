@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useMemo, useCallback } from 'react';
 import debounce from 'lodash/debounce';
-import { EModelEndpoint, isAgentsEndpoint, isAssistantsEndpoint } from 'librechat-data-provider';
-import type * as t from 'librechat-data-provider';
+import { EModelEndpoint, isAgentsEndpoint, isAssistantsEndpoint } from 'nashm-data-provider';
+import type * as t from 'nashm-data-provider';
 import type { Endpoint, SelectedValues } from '~/common';
 import {
   useAgentDefaultPermissionLevel,
@@ -22,7 +22,7 @@ type ModelSelectorContextType = {
   selectedValues: SelectedValues;
   endpointSearchValues: Record<string, string>;
   searchResults: (t.TModelSpec | Endpoint)[] | null;
-  // LibreChat
+  // Nashm
   modelSpecs: t.TModelSpec[];
   mappedEndpoints: Endpoint[];
   agentsMap: t.TAgentsMap | undefined;

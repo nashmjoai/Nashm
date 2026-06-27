@@ -1,8 +1,8 @@
-import type { CodeEnvRef } from 'librechat-data-provider';
+import type { CodeEnvRef } from 'nashm-data-provider';
 import type { Document, Types } from 'mongoose';
 
 /**
- * Skill — the single source of truth for a LibreChat skill.
+ * Skill — the single source of truth for a Nashm skill.
  * Each document is the full SKILL.md body plus structured frontmatter and metadata.
  * The `version` field is an integer monotonic counter used for optimistic concurrency.
  */
@@ -15,7 +15,7 @@ export interface ISkill {
    */
   name: string;
   /**
-   * Human-readable label shown only in the LibreChat UI (skill list, detail
+   * Human-readable label shown only in the Nashm UI (skill list, detail
    * header, sharing dialogs). NOT sent to Claude and NOT part of the trigger
    * path — `name` + `description` drive triggering. Purely cosmetic: lets an
    * author keep a stable kebab-case `name` while showing something prettier
@@ -70,7 +70,7 @@ export interface ISkill {
   version: number;
   /**
    * Provenance of this skill's canonical definition.
-   * - `inline` — authored inside LibreChat.
+   * - `inline` — authored inside Nashm.
    * - `github` — mirrored from a configured GitHub skill sync source.
    * - `notion` — reserved for future external sync integrations.
    */

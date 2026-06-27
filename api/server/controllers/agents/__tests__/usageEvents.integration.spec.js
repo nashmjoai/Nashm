@@ -14,7 +14,7 @@ const {
   aggregateEmittedUsage,
   resolveAgentTokenConfig,
   buildPersistedContextUsage,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const { getDefaultHandlers } = require('~/server/controllers/agents/callbacks');
 
 jest.mock('nanoid', () => ({

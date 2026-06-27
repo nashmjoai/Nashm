@@ -17,7 +17,7 @@ import { getPrimaryE2EUser } from '../../setup/users.mock';
  */
 
 const SERVER_NAME = 'e2e-http';
-/** Must match the `e2e-http` URL origin in e2e/config/librechat.e2e.yaml. */
+/** Must match the `e2e-http` URL origin in e2e/config/Nashm.e2e.yaml. */
 const FIXTURE_ORIGIN = `http://127.0.0.1:${process.env.E2E_MCP_HTTP_PORT || '8765'}`;
 
 async function reinitialize(

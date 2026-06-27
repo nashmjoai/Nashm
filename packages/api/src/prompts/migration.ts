@@ -1,7 +1,7 @@
-import { logger } from '@librechat/data-schemas';
-import { AccessRoleIds, ResourceType, PrincipalType } from 'librechat-data-provider';
+import { logger } from '@nashm/data-schemas';
+import { AccessRoleIds, ResourceType, PrincipalType } from 'nashm-data-provider';
 import { ensureRequiredCollectionsExist } from '../db/utils';
-import type { AccessRoleMethods, IPromptGroupDocument } from '@librechat/data-schemas';
+import type { AccessRoleMethods, IPromptGroupDocument } from '@nashm/data-schemas';
 import type { Model, Mongoose } from 'mongoose';
 
 const GLOBAL_PROJECT_NAME = 'instance';

@@ -1,5 +1,5 @@
-import { logger } from '@librechat/data-schemas';
-import { FileSources } from 'librechat-data-provider';
+import { logger } from '@nashm/data-schemas';
+import { FileSources } from 'nashm-data-provider';
 import type { SaveURLResult } from './types';
 import { extractKeyFromS3Url, getStorageMetadataForKey } from './s3/crud';
 

@@ -1,8 +1,8 @@
 import React from 'react';
-import { Button, useMediaQuery } from '@librechat/client';
+import { Button, useMediaQuery } from '@nashm/client';
 import { Users, X, ExternalLink } from 'lucide-react';
-import { ResourceType } from 'librechat-data-provider';
-import type { TPrincipal, AccessRoleIds } from 'librechat-data-provider';
+import { ResourceType } from 'nashm-data-provider';
+import type { TPrincipal, AccessRoleIds } from 'nashm-data-provider';
 import AccessRolesPicker from '~/components/Sharing/AccessRolesPicker';
 import PrincipalAvatar from '~/components/Sharing/PrincipalAvatar';
 import { RESOURCE_CONFIGS } from '~/utils/resources';

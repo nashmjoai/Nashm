@@ -1,6 +1,6 @@
 const path = require('path');
 const { v4 } = require('uuid');
-const { logger } = require('@librechat/data-schemas');
+const { logger } = require('@nashm/data-schemas');
 const { getCodeBaseURL } = require('@librechat/agents');
 const {
   withTimeout,
@@ -18,7 +18,7 @@ const {
   getExtractedTextFormat,
   getStorageMetadata,
   buildCodeEnvDownloadQuery,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const {
   Tools,
   megabyte,
@@ -31,7 +31,7 @@ const {
   EModelEndpoint,
   mergeFileConfig,
   getEndpointFileConfig,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 const { filterFilesByAgentAccess } = require('~/server/services/Files/permissions');
 const { createFile, getFiles, updateFile, claimCodeFile } = require('~/models');
 const { getStrategyFunctions } = require('~/server/services/Files/strategies');
@@ -200,7 +200,7 @@ const finalizePreview = async ({
  *
  * `onResolved` receives the post-update DB record and is the only piece
  * that varies — chat-completions writes the legacy `attachment` SSE
- * event, Open Responses writes the spec-shaped `librechat:attachment`
+ * event, Open Responses writes the spec-shaped `Nashm:attachment`
  * event with a sequence number, and the direct tool endpoint has no
  * stream to write to (caller passes a no-op).
  *
@@ -349,7 +349,7 @@ const processCodeOutput = async ({
       url: `${baseURL}/download/${session_id}/${id}${downloadQuery}`,
       responseType: 'arraybuffer',
       headers: {
-        'User-Agent': 'LibreChat/1.0',
+        'User-Agent': 'Nashm/1.0',
         ...authHeaders,
       },
       httpAgent: codeServerHttpAgent,
@@ -672,7 +672,7 @@ function checkIfActive(dateString) {
 /**
  * Retrieves the `lastModified` time string for a specified file from Code Execution Server.
  *
- * @param {import('librechat-data-provider').CodeEnvRef} ref - Typed pointer
+ * @param {import('nashm-data-provider').CodeEnvRef} ref - Typed pointer
  *   into codeapi storage. Carries kind/id/storage_session_id/file_id;
  *   codeapi resolves the sessionKey from the request's auth context.
  * @param {ServerRequest} [req] - Current authenticated request, used to mint Code API auth.
@@ -700,7 +700,7 @@ async function getSessionInfo(ref, req) {
       method: 'get',
       url: `${baseURL}/sessions/${ref.storage_session_id}/objects/${ref.file_id}${query}`,
       headers: {
-        'User-Agent': 'LibreChat/1.0',
+        'User-Agent': 'Nashm/1.0',
         ...authHeaders,
       },
       httpAgent: codeServerHttpAgent,
@@ -1018,7 +1018,7 @@ async function readSandboxFile({ file_path, session_id, files, req }) {
       data: postData,
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'LibreChat/1.0',
+        'User-Agent': 'Nashm/1.0',
         ...authHeaders,
       },
       httpAgent: codeServerHttpAgent,
@@ -1102,7 +1102,7 @@ async function writeSandboxFile({ file_path, content, session_id, files, req }) 
       data: postData,
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'LibreChat/1.0',
+        'User-Agent': 'Nashm/1.0',
         ...authHeaders,
       },
       httpAgent: codeServerHttpAgent,

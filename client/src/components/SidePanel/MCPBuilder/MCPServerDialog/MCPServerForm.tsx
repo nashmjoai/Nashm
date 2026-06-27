@@ -1,5 +1,5 @@
 import { FormProvider, useWatch } from 'react-hook-form';
-import { Permissions, PermissionTypes } from 'librechat-data-provider';
+import { Permissions, PermissionTypes } from 'nashm-data-provider';
 import { useHasAccess } from '~/hooks';
 import type { useMCPServerForm, MCPServerFormData } from './hooks/useMCPServerForm';
 import { AuthTypeEnum } from './hooks/useMCPServerForm';

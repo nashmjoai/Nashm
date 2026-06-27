@@ -1,6 +1,6 @@
-import { CANCEL_RATE } from '@librechat/data-schemas';
-import type { TCustomConfig, TTransactionsConfig } from 'librechat-data-provider';
-import type { TransactionData } from '@librechat/data-schemas';
+import { CANCEL_RATE } from '@nashm/data-schemas';
+import type { TCustomConfig, TTransactionsConfig } from 'nashm-data-provider';
+import type { TransactionData } from '@nashm/data-schemas';
 import type { EndpointTokenConfig } from '~/types/tokens';
 
 type TokenType = 'prompt' | 'completion';

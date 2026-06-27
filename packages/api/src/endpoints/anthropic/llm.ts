@@ -1,4 +1,4 @@
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 import { AnthropicClientOptions } from '@librechat/agents';
 import {
   anthropicSettings,
@@ -6,7 +6,7 @@ import {
   removeNullishValues,
   ThinkingDisplay,
   AuthKeys,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type { Dispatcher } from 'undici';
 import type {
   AnthropicLLMConfigResult,

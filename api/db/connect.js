@@ -1,6 +1,6 @@
 require('dotenv').config();
-const { isEnabled, instrumentMongooseQueryMetrics } = require('@librechat/api');
-const { logger } = require('@librechat/data-schemas');
+const { isEnabled, instrumentMongooseQueryMetrics } = require('@nashm/api');
+const { logger } = require('@nashm/data-schemas');
 
 const mongoose = require('mongoose');
 const MONGO_URI = process.env.MONGO_URI;

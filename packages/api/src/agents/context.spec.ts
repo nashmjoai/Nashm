@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Constants } from 'librechat-data-provider';
+import { Constants } from 'nashm-data-provider';
 import { DynamicStructuredTool } from '@librechat/agents/langchain/tools';
 import type { Logger } from 'winston';
 import type { MCPManager } from '~/mcp/MCPManager';

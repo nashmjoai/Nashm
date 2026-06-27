@@ -1,13 +1,13 @@
-import { logger, BASE_CONFIG_PRINCIPAL_ID } from '@librechat/data-schemas';
+import { logger, BASE_CONFIG_PRINCIPAL_ID } from '@nashm/data-schemas';
 import {
   BASE_ONLY_CONFIG_SECTIONS,
   PrincipalType,
   PrincipalModel,
   INTERFACE_PERMISSION_FIELDS,
   PERMISSION_SUB_KEYS,
-} from 'librechat-data-provider';
-import type { AppConfig, ConfigSection, IConfig, SystemCapability } from '@librechat/data-schemas';
-import type { TCustomConfig } from 'librechat-data-provider';
+} from 'nashm-data-provider';
+import type { AppConfig, ConfigSection, IConfig, SystemCapability } from '@nashm/data-schemas';
+import type { TCustomConfig } from 'nashm-data-provider';
 import type { Types, ClientSession } from 'mongoose';
 import type { Response } from 'express';
 import type { CapabilityUser } from '~/middleware/capabilities';
@@ -344,7 +344,7 @@ export function createAdminConfigHandlers(deps: AdminConfigDeps): {
         if (section in filteredOverrides) {
           delete (filteredOverrides as Record<string, unknown>)[section];
           logger.warn(
-            `[adminConfig] Stripping base-only config section "${section}" - configure it in librechat.yaml instead`,
+            `[adminConfig] Stripping base-only config section "${section}" - configure it in Nashm.yaml instead`,
           );
         }
       }
@@ -465,7 +465,7 @@ export function createAdminConfigHandlers(deps: AdminConfigDeps): {
       const validEntries = entries.filter((entry) => {
         if (isBaseOnlyFieldPath(entry.fieldPath)) {
           logger.warn(
-            `[adminConfig] Stripping base-only config field "${entry.fieldPath}" - configure it in librechat.yaml instead`,
+            `[adminConfig] Stripping base-only config field "${entry.fieldPath}" - configure it in Nashm.yaml instead`,
           );
           return false;
         }
@@ -663,7 +663,7 @@ export function createAdminConfigHandlers(deps: AdminConfigDeps): {
 
       if (isBaseOnlyFieldPath(fieldPath)) {
         logger.warn(
-          `[adminConfig] Ignoring delete for base-only config field "${fieldPath}" - configure it in librechat.yaml instead`,
+          `[adminConfig] Ignoring delete for base-only config field "${fieldPath}" - configure it in Nashm.yaml instead`,
         );
         return res.status(200).json({ message: 'No actionable field path provided' });
       }

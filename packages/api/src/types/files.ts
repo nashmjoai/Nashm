@@ -1,5 +1,5 @@
-import type { BedrockDocumentFormat } from 'librechat-data-provider';
-import type { IMongoFile } from '@librechat/data-schemas';
+import type { BedrockDocumentFormat } from 'nashm-data-provider';
+import type { IMongoFile } from '@nashm/data-schemas';
 import type { Readable } from 'stream';
 import type { ServerRequest } from './http';
 import type { DownloadURLParams } from '~/storage/types';

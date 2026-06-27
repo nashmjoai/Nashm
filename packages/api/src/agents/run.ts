@@ -1,4 +1,4 @@
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 import { Run, Providers, Constants } from '@librechat/agents';
 import {
   KnownEndpoints,
@@ -8,7 +8,7 @@ import {
   extractEnvVariable,
   providerEndpointMap,
   normalizeEndpointName,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type {
   SummarizationConfig as AgentSummarizationConfig,
   MultiAgentGraphConfig,
@@ -29,9 +29,9 @@ import type {
   AgentSubagentsConfig,
   ReasoningResponseKey,
   SummarizationConfig,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type { BaseMessage } from '@librechat/agents/langchain/messages';
-import type { AppConfig, IUser } from '@librechat/data-schemas';
+import type { AppConfig, IUser } from '@nashm/data-schemas';
 import type { SubagentUsageEvent } from '~/agents/usage';
 import type * as t from '~/types';
 import { getLLMConfig as getAnthropicLLMConfig } from '~/endpoints/anthropic/llm';
@@ -395,7 +395,7 @@ interface SummarizationClientOverrides {
  * overrides required to talk to that endpoint.
  *
  * Without this step, a `summarization.provider: "Ollama"` entry in
- * `librechat.yaml` flows verbatim to the agents SDK, which only knows a fixed
+ * `Nashm.yaml` flows verbatim to the agents SDK, which only knows a fixed
  * set of provider names and throws "Unsupported LLM provider: Ollama".
  */
 function resolveSummarizationProvider(
@@ -448,7 +448,7 @@ function resolveSummarizationProvider(
     }
     /**
      * Resolve templated header values (e.g. `${PORTKEY_API_KEY}`,
-     * `{{LIBRECHAT_BODY_PARENTMESSAGEID}}`) before handing them to
+     * `{{Nashm_BODY_PARENTMESSAGEID}}`) before handing them to
      * `getOpenAIConfig`, matching the agent main flow where `resolveHeaders`
      * runs on `llmConfig.configuration.defaultHeaders`.
      */
@@ -799,7 +799,7 @@ function buildLangfuseConfig(tenantIdInput?: unknown) {
   return {
     deterministicTraceId: true,
     ...(tenantId !== '' && {
-      metadata: { 'librechat.tenant.id': tenantId },
+      metadata: { 'Nashm.tenant.id': tenantId },
       tags: [`tenant:${tenantId}`],
     }),
   };

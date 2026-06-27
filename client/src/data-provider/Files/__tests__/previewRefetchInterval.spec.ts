@@ -1,9 +1,9 @@
-import { FileSources } from 'librechat-data-provider';
-import type { TFilePreview } from 'librechat-data-provider';
+import { FileSources } from 'nashm-data-provider';
+import type { TFilePreview } from 'nashm-data-provider';
 
 const mockGetFilePreview = jest.fn();
-jest.mock('librechat-data-provider', () => {
-  const actual = jest.requireActual('librechat-data-provider');
+jest.mock('nashm-data-provider', () => {
+  const actual = jest.requireActual('nashm-data-provider');
   return {
     ...actual,
     dataService: {

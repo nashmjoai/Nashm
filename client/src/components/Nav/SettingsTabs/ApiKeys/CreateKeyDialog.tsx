@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { OGDialog, OGDialogContent, OGDialogHeader, OGDialogTitle } from '@librechat/client';
-import type { TAgentApiKeyCreateResponse } from 'librechat-data-provider';
+import { OGDialog, OGDialogContent, OGDialogHeader, OGDialogTitle } from '@nashm/client';
+import type { TAgentApiKeyCreateResponse } from 'nashm-data-provider';
 import { useLocalize } from '~/hooks';
 import Create from './Create';
 import Reveal from './Reveal';

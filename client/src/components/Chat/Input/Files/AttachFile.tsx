@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
-import { FileUpload, TooltipAnchor, AttachmentIcon } from '@librechat/client';
-import type { TConversation } from 'librechat-data-provider';
+import { FileUpload, TooltipAnchor, AttachmentIcon } from '@nashm/client';
+import type { TConversation } from 'nashm-data-provider';
 import type { ExtendedFile, FileSetter } from '~/common';
 import { useFileHandlingNoChatContext, useLocalize } from '~/hooks';
 import { cn } from '~/utils';

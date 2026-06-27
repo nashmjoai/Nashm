@@ -4,12 +4,12 @@ import {
   useGetAgentApiKeysQuery,
   useCreateAgentApiKeyMutation,
   useDeleteAgentApiKeyMutation,
-} from 'librechat-data-provider/react-query';
+} from 'nashm-data-provider/react-query';
 import { render, fireEvent, waitFor } from 'test/layout-test-utils';
 import ApiKeys from '../ApiKeys';
 
-jest.mock('librechat-data-provider/react-query', () => ({
-  ...jest.requireActual('librechat-data-provider/react-query'),
+jest.mock('nashm-data-provider/react-query', () => ({
+  ...jest.requireActual('nashm-data-provider/react-query'),
   useGetAgentApiKeysQuery: jest.fn(),
   useCreateAgentApiKeyMutation: jest.fn(),
   useDeleteAgentApiKeyMutation: jest.fn(),

@@ -4,8 +4,8 @@ import {
   PrincipalType,
   PermissionBits,
   AccessRoleIds,
-} from 'librechat-data-provider';
-import { permissionBitSupersets, tenantStorage } from '@librechat/data-schemas';
+} from 'nashm-data-provider';
+import { permissionBitSupersets, tenantStorage } from '@nashm/data-schemas';
 import { enrichRemoteAgentPrincipals } from './permissions';
 import type { EnricherDependencies, Principal } from './permissions';
 

@@ -10,7 +10,7 @@ jest.mock('@librechat/agents', () => ({
 }));
 
 /* Inline the identity helpers' validation rules instead of pulling
- * them through `@librechat/api`'s root barrel (which has init-time
+ * them through `@nashm/api`'s root barrel (which has init-time
  * provider-config side effects that don't matter here) or its leaf
  * module (the package's `exports` field only surfaces the root).
  * The real implementation lives in `packages/api/src/files/code/identity.ts`
@@ -29,7 +29,7 @@ const validateIdentity = ({ kind, id, version }, label) => {
   }
 };
 
-jest.mock('@librechat/api', () => {
+jest.mock('@nashm/api', () => {
   const http = require('http');
   const https = require('https');
   return {
@@ -60,7 +60,7 @@ const {
   codeServerHttpAgent,
   codeServerHttpsAgent,
   getCodeApiAuthHeaders,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const { deleteCodeEnvFile, getCodeOutputDownloadStream, uploadCodeEnvFile } = require('./crud');
 
 describe('Code CRUD', () => {
@@ -181,7 +181,7 @@ describe('Code CRUD', () => {
           url: 'https://code-api.example.com/sessions/session-1/objects/file-1?kind=agent&id=agent-abc',
           headers: expect.objectContaining({
             Authorization: 'Bearer codeapi-token',
-            'User-Agent': 'LibreChat/1.0',
+            'User-Agent': 'Nashm/1.0',
           }),
           httpAgent: codeServerHttpAgent,
           httpsAgent: codeServerHttpsAgent,

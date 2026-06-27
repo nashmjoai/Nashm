@@ -1,9 +1,9 @@
 import { memo, useRef, useMemo, useEffect, useState, useCallback } from 'react';
 import { useWatch } from 'react-hook-form';
-import { TextareaAutosize } from '@librechat/client';
+import { TextareaAutosize } from '@nashm/client';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { Constants, isAssistantsEndpoint, isAgentsEndpoint } from 'librechat-data-provider';
-import type { TConversation } from 'librechat-data-provider';
+import { Constants, isAssistantsEndpoint, isAgentsEndpoint } from 'nashm-data-provider';
+import type { TConversation } from 'nashm-data-provider';
 import type { ExtendedFile, FileSetter, ConvoGenerator } from '~/common';
 import {
   useTextarea,

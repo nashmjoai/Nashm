@@ -28,13 +28,13 @@ const mockSyncAccess = {
   requirePlatformManageSkills: jest.fn((req, res, next) => next()),
 };
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   SystemCapabilities: {
     ACCESS_ADMIN: 'access:admin',
   },
 }));
 
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   createAdminSkillsSyncAccess: jest.fn(() => mockSyncAccess),
   createAdminSkillsSyncHandlers: jest.fn(() => mockHandlers),
 }));
@@ -85,7 +85,7 @@ describe('admin skills sync routes', () => {
     const {
       createAdminSkillsSyncAccess,
       createAdminSkillsSyncHandlers,
-    } = require('@librechat/api');
+    } = require('@nashm/api');
     expect(mockRequireCapability).toHaveBeenCalledWith('access:admin');
     expect(createAdminSkillsSyncAccess).toHaveBeenCalledWith({
       getAppConfig: mockGetAppConfig,

@@ -1,5 +1,5 @@
-const { logger } = require('@librechat/data-schemas');
-const { ToolCallTypes } = require('librechat-data-provider');
+const { logger } = require('@nashm/data-schemas');
+const { ToolCallTypes } = require('nashm-data-provider');
 
 /**
  * @typedef {import('openai').OpenAI} OpenAI

@@ -6,11 +6,11 @@ import { getLocalE2EEnv, getE2EBaseURL } from './setup/env';
 const rootPath = path.resolve(__dirname, '..');
 const serverPath = path.resolve(rootPath, 'e2e/setup/start-server.js');
 const mcpHttpServerPath = path.resolve(rootPath, 'e2e/setup/fake-mcp-http-server.js');
-/** Must match the `e2e-http` server URL in e2e/config/librechat.e2e.yaml. */
+/** Must match the `e2e-http` server URL in e2e/config/Nashm.e2e.yaml. */
 const MCP_HTTP_PORT = process.env.E2E_MCP_HTTP_PORT || '8765';
 const fakeModelHookPath = path.resolve(rootPath, 'e2e/setup/fake-model.js');
-const configTemplatePath = path.resolve(rootPath, 'e2e/config/librechat.e2e.yaml');
-const configPath = path.resolve(rootPath, 'e2e/.generated/librechat.e2e.yaml');
+const configTemplatePath = path.resolve(rootPath, 'e2e/config/Nashm.e2e.yaml');
+const configPath = path.resolve(rootPath, 'e2e/.generated/Nashm.e2e.yaml');
 const reportPath = path.resolve(rootPath, 'e2e/playwright-report');
 const deploymentSkillsPath = path.resolve(rootPath, 'e2e/fixtures/deployment-skills');
 
@@ -32,8 +32,8 @@ const baseEnv = {
   ...getLocalE2EEnv(),
   CONFIG_PATH: configPath,
   DEPLOYMENT_SKILLS_DIR: deploymentSkillsPath,
-  /** Loaded in-process by `@librechat/api`'s `createRun` to swap in a fake model. */
-  LIBRECHAT_TEST_RUN_HOOK: fakeModelHookPath,
+  /** Loaded in-process by `@nashm/api`'s `createRun` to swap in a fake model. */
+  Nashm_TEST_RUN_HOOK: fakeModelHookPath,
   ...vanillaOverrides,
 };
 
@@ -46,7 +46,7 @@ const preservedCredentialEnvKeys = new Set([
 
 /**
  * The custom endpoints in the template point at an unreachable baseURL; the fake
- * model injected via `LIBRECHAT_TEST_RUN_HOOK` overrides the run before any
+ * model injected via `Nashm_TEST_RUN_HOOK` overrides the run before any
  * request is made, so no real (or mock HTTP) provider is contacted.
  */
 function writeRuntimeMockConfig() {

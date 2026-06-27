@@ -1,7 +1,7 @@
 import { processTextWithTokenLimit, TokenCountFn } from './text';
 import Tokenizer, { countTokens } from './tokenizer';
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     debug: jest.fn(),
     warn: jest.fn(),
@@ -725,7 +725,7 @@ describe('processTextWithTokenLimit', () => {
     });
   });
 
-  describe('using countTokens async function from @librechat/api', () => {
+  describe('using countTokens async function from @nashm/api', () => {
     it('countTokens should return correct token count', async () => {
       const text = 'Hello, world!';
       const count = await countTokens(text);

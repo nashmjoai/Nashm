@@ -12,14 +12,14 @@
  */
 
 import { Keyv } from 'keyv';
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 import type { OAuthTestServer } from './helpers/oauthTestServer';
 import type { MCPOAuthTokens } from '~/mcp/oauth';
 import { MockKeyv, InMemoryTokenStore, createOAuthMCPServer } from './helpers/oauthTestServer';
 import { MCPTokenStorage, ReauthenticationRequiredError } from '~/mcp/oauth';
 import { FlowStateManager, PENDING_STALE_MS } from '~/flow/manager';
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     info: jest.fn(),
     warn: jest.fn(),

@@ -8,8 +8,8 @@ import {
   DropdownMenuContent,
   DropdownMenuSeparator,
   DropdownMenuCheckboxItem,
-} from '@librechat/client';
-import type { AgentToolType } from 'librechat-data-provider';
+} from '@nashm/client';
+import type { AgentToolType } from 'nashm-data-provider';
 import { useLocalize } from '~/hooks';
 import { cn } from '~/utils';
 

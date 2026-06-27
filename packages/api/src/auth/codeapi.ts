@@ -1,11 +1,11 @@
-import { getTenantId } from '@librechat/data-schemas';
+import { getTenantId } from '@nashm/data-schemas';
 import { createHash, createPrivateKey, randomUUID, sign as cryptoSign } from 'crypto';
 import type { KeyObject, JsonWebKey } from 'crypto';
 import type { ServerRequest } from '~/types';
 import { isEnabled } from '~/utils';
 
 type CodeApiJwtAlg = 'EdDSA' | 'RS256';
-type PrincipalSource = 'librechat_jwt' | 'openid_reuse';
+type PrincipalSource = 'Nashm_jwt' | 'openid_reuse';
 
 interface CodeApiUserContext {
   id?: string;
@@ -58,7 +58,7 @@ interface CachedToken {
   cachedUntil: number;
 }
 
-const DEFAULT_ISSUER = 'librechat';
+const DEFAULT_ISSUER = 'Nashm';
 const DEFAULT_AUDIENCE = 'codeapi';
 const DEFAULT_KID = 'lc-codeapi-2026-05';
 const DEFAULT_SINGLE_TENANT_ID = 'legacy';
@@ -215,7 +215,7 @@ function resolveTenantId(user: CodeApiUserContext): string | undefined {
 
 function isManagedCodeApiJwtMode(): boolean {
   const provider = process.env.CODEAPI_AUTH_PROVIDER;
-  return provider === 'librechat-jwt' || provider === 'both';
+  return provider === 'Nashm-jwt' || provider === 'both';
 }
 
 export function isCodeApiJwtAuthEnabled(): boolean {
@@ -226,7 +226,7 @@ function resolvePrincipalSource(req: ServerRequest): PrincipalSource {
   if (req.authStrategy === 'openidJwt') {
     return 'openid_reuse';
   }
-  return 'librechat_jwt';
+  return 'Nashm_jwt';
 }
 
 function canonicalContextHash(input: {

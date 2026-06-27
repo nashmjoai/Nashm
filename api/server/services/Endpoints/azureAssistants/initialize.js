@@ -5,8 +5,8 @@ const {
   constructAzureURL,
   checkUserKeyExpiry,
   getProxyDispatcher,
-} = require('@librechat/api');
-const { ErrorTypes, EModelEndpoint, mapModelToAzureConfig } = require('librechat-data-provider');
+} = require('@nashm/api');
+const { ErrorTypes, EModelEndpoint, mapModelToAzureConfig } = require('nashm-data-provider');
 const { getUserKeyValues, getUserKeyExpiry } = require('~/models');
 
 class Files {

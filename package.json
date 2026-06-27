@@ -1,5 +1,5 @@
 {
-  "name": "LibreChat",
+  "name": "Nashm",
   "version": "v0.8.7-rc1",
   "description": "",
   "packageManager": "npm@11.13.0",
@@ -112,14 +112,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/danny-avila/LibreChat.git"
+    "url": "git+https://github.com/danny-avila/Nashm.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/danny-avila/LibreChat/issues"
+    "url": "https://github.com/danny-avila/Nashm/issues"
   },
-  "homepage": "https://librechat.ai/",
+  "homepage": "https://Nashm.ai/",
   "devDependencies": {
     "@axe-core/playwright": "^4.10.1",
     "@eslint/compat": "^1.2.6",

@@ -6,7 +6,7 @@ const {
   uaParser,
   checkBan,
 } = require('~/server/middleware');
-const { restoreTenantContextFromReq } = require('@librechat/api');
+const { restoreTenantContextFromReq } = require('@nashm/api');
 const { avatar: asstAvatarRouter } = require('~/server/routes/assistants/v1');
 const { avatar: agentAvatarRouter } = require('~/server/routes/agents/v1');
 const { createMulterInstance } = require('./multer');

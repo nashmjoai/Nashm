@@ -1,5 +1,5 @@
 const { Keyv } = require('keyv');
-const { Time, CacheKeys, ViolationTypes } = require('librechat-data-provider');
+const { Time, CacheKeys, ViolationTypes } = require('nashm-data-provider');
 const {
   logFile,
   keyvMongo,
@@ -8,7 +8,7 @@ const {
   standardCache,
   violationCache,
   registerShutdownTask,
-} = require('@librechat/api');
+} = require('@nashm/api');
 
 const namespaces = {
   [ViolationTypes.GENERAL]: new Keyv({ store: logFile, namespace: 'violations' }),

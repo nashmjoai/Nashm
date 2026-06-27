@@ -1,4 +1,4 @@
-const { createLoadConfigModels, fetchModels } = require('@librechat/api');
+const { createLoadConfigModels, fetchModels } = require('@nashm/api');
 const { getAppConfig } = require('./app');
 const db = require('~/models');
 

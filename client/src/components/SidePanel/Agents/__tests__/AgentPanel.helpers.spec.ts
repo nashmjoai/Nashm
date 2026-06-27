@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { Constants, type Agent } from 'librechat-data-provider';
+import { Constants, type Agent } from 'nashm-data-provider';
 import type { FieldNamesMarkedBoolean } from 'react-hook-form';
 import type { AgentForm } from '~/common';
 import {

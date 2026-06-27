@@ -1,5 +1,5 @@
 import { get } from 'lodash';
-import { SystemRoles } from 'librechat-data-provider';
+import { SystemRoles } from 'nashm-data-provider';
 import { isEnabled } from '~/utils';
 
 export type OpenIdRoleSyncClaimSource = 'access' | 'id' | 'userinfo';
@@ -41,14 +41,14 @@ type OpenIdRoleSyncRolesLookup = (
   fieldsToSelect?: string | string[] | null,
 ) => Promise<Array<{ name?: string | null }> | null | undefined>;
 
-type LibreChatRolesForOpenIdSyncInput = {
+type NashmRolesForOpenIdSyncInput = {
   rolePriority: string[];
   fallbackRole?: string;
   getRolesByNames: OpenIdRoleSyncRolesLookup;
   logPrefix?: string;
 };
 
-type LibreChatRolesForOpenIdSync = {
+type NashmRolesForOpenIdSync = {
   rolePriority: string[];
   fallbackRole?: string;
 };
@@ -178,12 +178,12 @@ export async function getOpenIdRolesForOpenIdSync({
 }
 
 /**
- * Gets the configured LibreChat roles that OpenID role sync is allowed to assign.
+ * Gets the configured Nashm roles that OpenID role sync is allowed to assign.
  * The names are read from config, checked against storage, and returned as canonical role names.
  */
-export async function getLibreChatRolesForOpenIdSync(
-  input: LibreChatRolesForOpenIdSyncInput,
-): Promise<LibreChatRolesForOpenIdSync> {
+export async function getNashmRolesForOpenIdSync(
+  input: NashmRolesForOpenIdSyncInput,
+): Promise<NashmRolesForOpenIdSync> {
   const roleNames = input.fallbackRole
     ? [...input.rolePriority, input.fallbackRole]
     : input.rolePriority;
@@ -242,7 +242,7 @@ export async function getLibreChatRolesForOpenIdSync(
 }
 
 /**
- * Chooses the LibreChat role to assign from normalized OpenID token values and validated config.
+ * Chooses the Nashm role to assign from normalized OpenID token values and validated config.
  * Priority roles win first, then the current fallback role can be preserved, then fallback applies.
  */
 export function selectOpenIdRole(
@@ -261,7 +261,7 @@ export function selectOpenIdRole(
   );
   const openIdRoleKeys = new Set<string>();
 
-  // Keep only OpenID roles that can map to configured LibreChat roles.
+  // Keep only OpenID roles that can map to configured Nashm roles.
   for (const value of openIdRoleValues) {
     if (typeof value !== 'string') {
       continue;

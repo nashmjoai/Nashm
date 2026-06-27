@@ -2,8 +2,8 @@ import { Keyv } from 'keyv';
 import { FlowStateManager, PENDING_STALE_MS } from './manager';
 import { FlowState } from './types';
 
-jest.mock('@librechat/data-schemas', () => ({
-  ...jest.requireActual('@librechat/data-schemas'),
+jest.mock('@nashm/data-schemas', () => ({
+  ...jest.requireActual('@nashm/data-schemas'),
   logger: {
     info: jest.fn(),
     warn: jest.fn(),

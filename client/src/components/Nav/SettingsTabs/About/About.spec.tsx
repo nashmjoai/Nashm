@@ -1,8 +1,8 @@
 import React from 'react';
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Constants } from 'librechat-data-provider';
-import type { TStartupConfig } from 'librechat-data-provider';
+import { Constants } from 'nashm-data-provider';
+import type { TStartupConfig } from 'nashm-data-provider';
 import About from './About';
 
 const mockCopy = jest.fn<boolean, unknown[]>();
@@ -80,7 +80,7 @@ describe('About', () => {
       expect(mockCopy).toHaveBeenCalledTimes(1);
       const [blob, options] = mockCopy.mock.calls[0] as [string, { format: string }];
       expect(options).toEqual({ format: 'text/plain' });
-      expect(blob).toContain(`LibreChat version: ${Constants.VERSION}`);
+      expect(blob).toContain(`Nashm version: ${Constants.VERSION}`);
       expect(blob).toContain(`Commit: ${populatedBuildInfo.commit}`);
       expect(blob).toContain(`Branch: ${populatedBuildInfo.branch}`);
       expect(blob).toContain('Build date: 2026-04-20 12:00:00 UTC');

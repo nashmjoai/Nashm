@@ -1,8 +1,8 @@
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: { debug: jest.fn(), error: jest.fn(), warn: jest.fn() },
 }));
 
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   checkAccess: jest.fn(),
   loadWebSearchAuth: jest.fn(),
 }));
@@ -31,7 +31,7 @@ jest.mock('~/app/clients/tools/util', () => ({
   loadTools: jest.fn(),
 }));
 
-const { Tools, AuthType } = require('librechat-data-provider');
+const { Tools, AuthType } = require('nashm-data-provider');
 const { verifyToolAuth } = require('../tools');
 
 /**

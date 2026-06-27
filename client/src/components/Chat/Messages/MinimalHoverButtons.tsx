@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Clipboard, CheckMark } from '@librechat/client';
-import type { TMessage, SearchResultData } from 'librechat-data-provider';
+import { Clipboard, CheckMark } from '@nashm/client';
+import type { TMessage, SearchResultData } from 'nashm-data-provider';
 import { useLocalize, useCopyToClipboard } from '~/hooks';
 
 type THoverButtons = {

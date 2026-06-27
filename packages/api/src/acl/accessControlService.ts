@@ -1,12 +1,12 @@
 import { Types } from 'mongoose';
-import { createMethods, logger } from '@librechat/data-schemas';
+import { createMethods, logger } from '@nashm/data-schemas';
 import {
   AccessRoleIds,
   PermissionBits,
   PrincipalType,
   ResourceType,
-} from 'librechat-data-provider';
-import type { AllMethods, IAclEntry } from '@librechat/data-schemas';
+} from 'nashm-data-provider';
+import type { AllMethods, IAclEntry } from '@nashm/data-schemas';
 import type { ClientSession, DeleteResult } from 'mongoose';
 
 import type { ResolvedPrincipal } from '~/types/principal';

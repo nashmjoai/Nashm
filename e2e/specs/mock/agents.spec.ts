@@ -10,7 +10,7 @@ import {
 } from './agents.helpers';
 import { MOCK_ENDPOINTS, mockReply, sendMessage } from './helpers';
 
-const DESCRIPTION = 'Use this agent to verify LibreChat agent creation in mock end-to-end tests.';
+const DESCRIPTION = 'Use this agent to verify Nashm agent creation in mock end-to-end tests.';
 const INSTRUCTIONS =
   'Reply through the mock e2e model and keep this agent available for UI persistence checks.';
 const MODEL_PARAMETERS = {

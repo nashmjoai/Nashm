@@ -1,4 +1,4 @@
-const { logger } = require('@librechat/data-schemas');
+const { logger } = require('@nashm/data-schemas');
 const { exchangeOboToken } = require('./OboTokenService');
 
 /**

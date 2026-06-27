@@ -1,6 +1,6 @@
 const { getCachedTools, getAppConfig } = require('~/server/services/Config');
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     debug: jest.fn(),
     error: jest.fn(),

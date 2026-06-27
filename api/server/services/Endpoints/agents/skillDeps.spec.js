@@ -21,7 +21,7 @@ jest.mock('~/server/services/Files/Code/process', () => ({
   writeSandboxFile: jest.fn(),
 }));
 
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   checkAccess: jest.fn(),
   createDeploymentSkillMethods: (...args) => mockCreateDeploymentSkillMethods(...args),
   enrichWithSkillConfigurable: jest.fn(),
@@ -32,7 +32,7 @@ jest.mock('@librechat/api', () => ({
   resolveRequestTenantId: (...args) => mockResolveRequestTenantId(...args),
 }));
 
-jest.mock('librechat-data-provider', () => ({
+jest.mock('nashm-data-provider', () => ({
   AccessRoleIds: { SKILL_OWNER: 'SKILL_OWNER' },
   FileContext: { skill_file: 'skill_file' },
   PermissionBits: { EDIT: 2 },

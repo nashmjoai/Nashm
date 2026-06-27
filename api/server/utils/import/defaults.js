@@ -1,5 +1,5 @@
-const { logger, getTenantId } = require('@librechat/data-schemas');
-const { EModelEndpoint, openAISettings, anthropicSettings } = require('librechat-data-provider');
+const { logger, getTenantId } = require('@nashm/data-schemas');
+const { EModelEndpoint, openAISettings, anthropicSettings } = require('nashm-data-provider');
 const { getModelsConfig } = require('~/server/controllers/ModelController');
 
 /**

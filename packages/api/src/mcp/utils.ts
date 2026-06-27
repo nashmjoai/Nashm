@@ -1,12 +1,12 @@
-import { Constants } from 'librechat-data-provider';
+import { Constants } from 'nashm-data-provider';
 import type { ParsedServerConfig } from '~/mcp/types';
 import type { RequestBody } from '~/types';
 
 export const mcpToolPattern: RegExp = new RegExp(`^.+${Constants.mcp_delimiter}.+$`);
 
-const RUNTIME_CONTEXT_PLACEHOLDER_PATTERN = /\{\{LIBRECHAT_(?:USER|OPENID|GRAPH|BODY)_[^}]+\}\}/;
-const RUNTIME_BODY_PLACEHOLDER_PATTERN = /\{\{LIBRECHAT_BODY_[^}]+\}\}/;
-const RUNTIME_BODY_PLACEHOLDER_CAPTURE_PATTERN = /\{\{LIBRECHAT_BODY_([^}]+)\}\}/g;
+const RUNTIME_CONTEXT_PLACEHOLDER_PATTERN = /\{\{Nashm_(?:USER|OPENID|GRAPH|BODY)_[^}]+\}\}/;
+const RUNTIME_BODY_PLACEHOLDER_PATTERN = /\{\{Nashm_BODY_[^}]+\}\}/;
+const RUNTIME_BODY_PLACEHOLDER_CAPTURE_PATTERN = /\{\{Nashm_BODY_([^}]+)\}\}/g;
 
 const BODY_PLACEHOLDER_FIELDS: Record<string, keyof RequestBody> = {
   CONVERSATIONID: 'conversationId',

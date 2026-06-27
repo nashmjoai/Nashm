@@ -1,6 +1,6 @@
 /**
  * Strips repetitive boilerplate from `@librechat/agents` code-execution
- * tool output before LibreChat re-injects it into the assistant's
+ * tool output before Nashm re-injects it into the assistant's
  * conversation history.
  *
  * Older bash executor output from `@librechat/agents` appended two
@@ -23,7 +23,7 @@
  *
  * Newer compact summaries under `Generated files:` intentionally do
  * not list `- /...` paths and pass through unchanged. Stripping happens
- * in LibreChat (this file), not upstream, so the cleaning is reversible
+ * in Nashm (this file), not upstream, so the cleaning is reversible
  * — pin to a specific upstream version and the patterns adjust here
  * without releasing a new agents build. The patterns are anchored
  * conservatively: only the documented forms are matched, so a future

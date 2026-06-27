@@ -9,8 +9,8 @@ const mockGenerationJobManager = {
   getActiveJobIdsForUser: jest.fn().mockResolvedValue([]),
 };
 
-jest.mock('@librechat/data-schemas', () => ({
-  ...jest.requireActual('@librechat/data-schemas'),
+jest.mock('@nashm/data-schemas', () => ({
+  ...jest.requireActual('@nashm/data-schemas'),
   logger: {
     debug: jest.fn(),
     warn: jest.fn(),
@@ -19,8 +19,8 @@ jest.mock('@librechat/data-schemas', () => ({
   },
 }));
 
-jest.mock('@librechat/api', () => ({
-  ...jest.requireActual('@librechat/api'),
+jest.mock('@nashm/api', () => ({
+  ...jest.requireActual('@nashm/api'),
   isEnabled: jest.fn().mockReturnValue(false),
   GenerationJobManager: mockGenerationJobManager,
 }));

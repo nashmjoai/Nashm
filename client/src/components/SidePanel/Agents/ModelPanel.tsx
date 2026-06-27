@@ -1,6 +1,6 @@
 import React, { useMemo, useEffect } from 'react';
 import keyBy from 'lodash/keyBy';
-import { ControlCombobox } from '@librechat/client';
+import { ControlCombobox } from '@nashm/client';
 import { ChevronLeft, RotateCcw } from 'lucide-react';
 import { useFormContext, useWatch, Controller } from 'react-hook-form';
 import { componentMapping } from '~/components/SidePanel/Parameters/components';
@@ -12,8 +12,8 @@ import {
   SettingDefinition,
   agentParamSettings,
   applyModelAwareDefaults,
-} from 'librechat-data-provider';
-import type * as t from 'librechat-data-provider';
+} from 'nashm-data-provider';
+import type * as t from 'nashm-data-provider';
 import type { AgentForm, AgentModelPanelProps, StringOption } from '~/common';
 import { useGetEndpointsQuery } from '~/data-provider';
 import { useLiveAnnouncer } from '~/Providers';

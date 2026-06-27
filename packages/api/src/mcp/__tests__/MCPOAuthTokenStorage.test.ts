@@ -8,7 +8,7 @@
 import { MCPTokenStorage, ReauthenticationRequiredError } from '~/mcp/oauth';
 import { InMemoryTokenStore } from './helpers/oauthTestServer';
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     info: jest.fn(),
     warn: jest.fn(),
@@ -481,7 +481,7 @@ describe('MCPTokenStorage', () => {
     });
 
     it('should handle unauthorized_client refresh error', async () => {
-      const { logger } = await import('@librechat/data-schemas');
+      const { logger } = await import('@nashm/data-schemas');
 
       await store.createToken({
         userId: 'u1',
@@ -571,7 +571,7 @@ describe('MCPTokenStorage', () => {
     });
 
     it('should return null and log warning on invalid_client when deleteTokens not provided', async () => {
-      const { logger } = await import('@librechat/data-schemas');
+      const { logger } = await import('@nashm/data-schemas');
 
       await store.createToken({
         userId: 'u1',

@@ -1,19 +1,19 @@
-const { Tools } = require('librechat-data-provider');
+const { Tools } = require('nashm-data-provider');
 
 // Mock all dependencies before requiring the module
 jest.mock('nanoid', () => ({
   nanoid: jest.fn(() => 'mock-id'),
 }));
 
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   sendEvent: jest.fn(),
-  HOST_FILE_AUTHORING_ARTIFACT_KEY: '__librechat_file_authoring',
+  HOST_FILE_AUTHORING_ARTIFACT_KEY: '__Nashm_file_authoring',
   isCodeSessionToolName: jest.fn((name) =>
     ['execute_code', 'bash_tool', 'read_file'].includes(name),
   ),
 }));
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     error: jest.fn(),
   },
@@ -72,7 +72,7 @@ describe('createToolEndCallback', () => {
     jest.clearAllMocks();
 
     // Get the mocked logger
-    logger = require('@librechat/data-schemas').logger;
+    logger = require('@nashm/data-schemas').logger;
 
     // Now require the module after all mocks are set up
     const callbacks = require('../callbacks');
@@ -382,7 +382,7 @@ describe('createToolEndCallback', () => {
           name: toolName,
           tool_call_id: toolCallId,
           artifact: {
-            ...(hostFileAuthoring ? { __librechat_file_authoring: true } : {}),
+            ...(hostFileAuthoring ? { __Nashm_file_authoring: true } : {}),
             session_id: 'sess-1',
             files: [{ id: fileId, name, session_id: 'sess-1' }],
           },

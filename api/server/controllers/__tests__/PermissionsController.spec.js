@@ -3,20 +3,20 @@ const mongoose = require('mongoose');
 const mockLogger = { error: jest.fn(), warn: jest.fn(), info: jest.fn(), debug: jest.fn() };
 const mockGetTenantId = jest.fn();
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: mockLogger,
   getTenantId: mockGetTenantId,
   SYSTEM_TENANT_ID: '__SYSTEM__',
 }));
 
 const { AccessRoleIds, ResourceType, PrincipalType } =
-  jest.requireActual('librechat-data-provider');
+  jest.requireActual('nashm-data-provider');
 
-jest.mock('librechat-data-provider', () => ({
-  ...jest.requireActual('librechat-data-provider'),
+jest.mock('nashm-data-provider', () => ({
+  ...jest.requireActual('nashm-data-provider'),
 }));
 
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   enrichRemoteAgentPrincipals: jest.fn(),
   backfillRemoteAgentPermissions: jest.fn(),
 }));

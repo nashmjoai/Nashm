@@ -1,5 +1,5 @@
-const { isEnabled } = require('@librechat/api');
-const { logger, SystemCapabilities } = require('@librechat/data-schemas');
+const { isEnabled } = require('@nashm/api');
+const { logger, SystemCapabilities } = require('@nashm/data-schemas');
 const { hasCapability } = require('~/server/middleware/roles/capabilities');
 
 /**

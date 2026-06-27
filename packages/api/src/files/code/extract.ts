@@ -2,7 +2,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs/promises';
 import { randomUUID } from 'crypto';
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 import type { CodeArtifactCategory } from './classify';
 import { bufferToOfficeHtml, officeHtmlBucket } from '~/files/documents/html';
 import { createConcurrencyLimiter, withTimeout } from '~/utils/promise';

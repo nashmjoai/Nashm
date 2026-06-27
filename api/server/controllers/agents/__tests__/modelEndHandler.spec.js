@@ -1,7 +1,7 @@
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: { error: jest.fn(), debug: jest.fn() },
 }));
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   sendEvent: jest.fn(),
   emitEvent: jest.fn(),
   createToolExecuteHandler: jest.fn(),

@@ -6,7 +6,7 @@ import {
   StepEvents,
   ContentTypes,
   ToolCallTypes,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type {
   TMessageContentParts,
   SummaryContentPart,
@@ -16,7 +16,7 @@ import type {
   TMessage,
   SubagentUpdateEvent,
   Agents,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import { subagentProgressByToolCallId } from '~/store/subagents';
 import useStepHandler from '~/hooks/SSE/useStepHandler';
 

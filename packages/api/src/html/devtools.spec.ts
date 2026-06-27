@@ -11,7 +11,7 @@ const createReq = (value?: string): QueryDevtoolsRequest => ({
 
 describe('query devtools HTML bootstrap', () => {
   const html =
-    '<!DOCTYPE html><html lang="en-US"><head><title>LibreChat</title></head><body></body></html>';
+    '<!DOCTYPE html><html lang="en-US"><head><title>Nashm</title></head><body></body></html>';
 
   it('uses the documented debug header value as the opt-in signal', () => {
     expect(shouldEnableQueryDevtools(createReq('1'))).toBe(true);
@@ -26,8 +26,8 @@ describe('query devtools HTML bootstrap', () => {
   it('injects a server-to-client flag when the debug header is present', () => {
     const updatedHtml = maybeInjectQueryDevtoolsBootstrap(html, createReq('1'));
 
-    expect(updatedHtml).toContain('window.__LIBRECHAT_CONFIG__');
-    expect(updatedHtml).toContain('data-librechat-query-devtools="true"');
+    expect(updatedHtml).toContain('window.__Nashm_CONFIG__');
+    expect(updatedHtml).toContain('data-Nashm-query-devtools="true"');
     expect(updatedHtml).toContain('"enableQueryDevtools":true');
     expect(updatedHtml.indexOf('enableQueryDevtools')).toBeLessThan(updatedHtml.indexOf('</head>'));
   });

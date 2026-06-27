@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { logger, getTenantId, webSearchKeys } = require('@librechat/data-schemas');
+const { logger, getTenantId, webSearchKeys } = require('@nashm/data-schemas');
 const {
   getNewS3URL,
   needsRefresh,
@@ -8,14 +8,14 @@ const {
   normalizeHttpError,
   extractWebSearchEnvVars,
   deleteAllSharedLinksWithCleanup,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const {
   Tools,
   CacheKeys,
   Constants,
   FileSources,
   ResourceType,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 const { updateUserPluginAuth, deleteUserPluginAuth } = require('~/server/services/PluginService');
 const { verifyOTPOrBackupCode } = require('~/server/services/twoFactorService');
 const { verifyEmail, resendVerificationEmail } = require('~/server/services/AuthService');

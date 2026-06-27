@@ -1,7 +1,7 @@
 import { memo, useRef } from 'react';
 import * as Ariakit from '@ariakit/react';
-import { TooltipAnchor } from '@librechat/client';
-import type { TConversation } from 'librechat-data-provider';
+import { TooltipAnchor } from '@nashm/client';
+import type { TConversation } from 'nashm-data-provider';
 import type { CurrencyConfig } from '~/utils';
 import { formatTokens, formatCost, cn } from '~/utils';
 import useTokenUsage from '~/hooks/Chat/useTokenUsage';

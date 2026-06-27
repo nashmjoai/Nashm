@@ -1,6 +1,6 @@
-import { Constants } from 'librechat-data-provider';
+import { Constants } from 'nashm-data-provider';
 import { DynamicStructuredTool } from '@librechat/agents/langchain/tools';
-import type { Agent, TEphemeralAgent } from 'librechat-data-provider';
+import type { Agent, TEphemeralAgent } from 'nashm-data-provider';
 import type { LCTool } from '@librechat/agents';
 import type { Logger } from 'winston';
 import type { ParsedServerConfig } from '~/mcp/types';

@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const { nanoid } = require('nanoid');
 const { GraphEvents, sleep } = require('@librechat/agents');
 const { tool } = require('@librechat/agents/langchain/tools');
-const { logger, encryptV2, decryptV2 } = require('@librechat/data-schemas');
+const { logger, encryptV2, decryptV2 } = require('@nashm/data-schemas');
 const {
   sendEvent,
   logAxiosError,
@@ -10,7 +10,7 @@ const {
   GenerationJobManager,
   createSSRFSafeAgents,
   validateActionOAuthMetadata,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const {
   Time,
   CacheKeys,
@@ -20,7 +20,7 @@ const {
   actionDelimiter,
   isImageVisionTool,
   actionDomainSeparator,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 const {
   findToken,
   updateToken,
@@ -196,7 +196,7 @@ async function createActionTool({
   /** @type {(toolInput: Object | string, config: GraphRunnableConfig) => Promise<unknown>} */
   const _call = async (toolInput, config) => {
     try {
-      /** @type {import('librechat-data-provider').ActionMetadataRuntime} */
+      /** @type {import('nashm-data-provider').ActionMetadataRuntime} */
       const metadata = action.metadata;
       const executor = requestBuilder.createExecutor();
       const preparedExecutor = executor.setParams(toolInput ?? {});

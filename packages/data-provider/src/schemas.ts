@@ -227,7 +227,7 @@ export enum AnthropicEffort {
 /**
  * Controls whether the model's reasoning content is returned in responses.
  *
- * - `'auto'` - LibreChat decides: opt in to `'summarized'` for models that
+ * - `'auto'` - Nashm decides: opt in to `'summarized'` for models that
  *   omit by default (Opus 4.7+), leave the field off for older models.
  * - `'summarized'` - always request a post-hoc summary of the reasoning.
  * - `'omitted'` - always suppress reasoning content. Slightly lower latency.
@@ -242,7 +242,7 @@ export enum ThinkingDisplay {
 
 /**
  * Wire-level values accepted by the Anthropic Messages API `thinking.display`
- * field. Excludes the LibreChat-only `'auto'` sentinel.
+ * field. Excludes the Nashm-only `'auto'` sentinel.
  */
 export type ThinkingDisplayWireValue = Exclude<ThinkingDisplay, ThinkingDisplay.auto>;
 
@@ -1015,7 +1015,7 @@ export const tConvoUpdateSchema = tConversationSchema.merge(
 
 export const tQueryParamsSchema = tConversationSchema
   .pick({
-    // librechat settings
+    // Nashm settings
     /** The model spec to be used */
     spec: true,
     /** The AI context window, overrides the system-defined window as determined by `model` value */

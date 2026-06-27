@@ -1,6 +1,6 @@
-import { RetentionMode } from 'librechat-data-provider';
-import { createFallbackRetentionDate } from '@librechat/data-schemas';
-import type { AppConfig } from '@librechat/data-schemas';
+import { RetentionMode } from 'nashm-data-provider';
+import { createFallbackRetentionDate } from '@nashm/data-schemas';
+import type { AppConfig } from '@nashm/data-schemas';
 
 type InterfaceConfig = AppConfig['interfaceConfig'];
 

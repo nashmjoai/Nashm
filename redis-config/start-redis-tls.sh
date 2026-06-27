@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 
 # Start Redis with TLS configuration
 echo "Starting Redis with TLS on port 6379..."
@@ -10,4 +10,4 @@ if pgrep -f "redis-server.*tls" > /dev/null; then
 fi
 
 # Start Redis with TLS config
-redis-server /Users/theotr/WebstormProjects/LibreChat/redis-cluster/redis-tls.conf
+redis-server /Users/theotr/WebstormProjects/Nashm/redis-cluster/redis-tls.conf

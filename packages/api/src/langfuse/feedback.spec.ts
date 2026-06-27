@@ -1,5 +1,5 @@
 jest.mock(
-  '@librechat/data-schemas',
+  '@nashm/data-schemas',
   () => ({
     logger: {
       debug: jest.fn(),

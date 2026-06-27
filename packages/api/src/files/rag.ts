@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 import { generateShortLivedToken } from '~/crypto/jwt';
 
 interface DeleteRagFileParams {

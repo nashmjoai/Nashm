@@ -1,5 +1,5 @@
 jest.mock(
-  'librechat-data-provider',
+  'nashm-data-provider',
   () => ({
     actionDelimiter: '_action_',
     actionDomainSeparator: '---',
@@ -27,8 +27,8 @@ jest.mock(
   { virtual: true },
 );
 
-import { AuthTypeEnum, AuthorizationTypeEnum } from 'librechat-data-provider';
-import type { ActionMetadata } from 'librechat-data-provider';
+import { AuthTypeEnum, AuthorizationTypeEnum } from 'nashm-data-provider';
+import type { ActionMetadata } from 'nashm-data-provider';
 import {
   buildActionOAuthTokenDeleteQueries,
   legacyActionDomainEncode,

@@ -6,8 +6,8 @@ const { spawn } = require('child_process');
 const rootPath = path.resolve(__dirname, '../..');
 const baseURL = process.env.E2E_BASE_URL || 'http://localhost:3080';
 const storageStatePath = path.resolve(rootPath, 'e2e/storageState.json');
-const configTemplatePath = path.resolve(rootPath, 'e2e/config/librechat.e2e.yaml');
-const configPath = path.resolve(rootPath, 'e2e/.generated/librechat.e2e.yaml');
+const configTemplatePath = path.resolve(rootPath, 'e2e/config/Nashm.e2e.yaml');
+const configPath = path.resolve(rootPath, 'e2e/.generated/Nashm.e2e.yaml');
 const fakeModelHookPath = path.resolve(rootPath, 'e2e/setup/fake-model.js');
 const defaultUser = {
   email: 'testuser@example.com',
@@ -47,8 +47,8 @@ const rateLimitOverrides = {
 
 const mockOverrides = {
   CONFIG_PATH: configPath,
-  /** Loaded in-process by `@librechat/api`'s `createRun` to swap in a fake model. */
-  LIBRECHAT_TEST_RUN_HOOK: fakeModelHookPath,
+  /** Loaded in-process by `@nashm/api`'s `createRun` to swap in a fake model. */
+  Nashm_TEST_RUN_HOOK: fakeModelHookPath,
   OPENAI_API_KEY: 'user_provided',
   TENANT_ISOLATION_STRICT: 'false',
   OPENID_CLIENT_ID: '',
@@ -105,7 +105,7 @@ function getBaseEnv() {
     NODE_ENV: 'CI',
     HOST: process.env.E2E_HOST || host,
     PORT: process.env.E2E_PORT || port,
-    MONGO_URI: process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/LibreChat-e2e',
+    MONGO_URI: process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/Nashm-e2e',
     DOMAIN_CLIENT: process.env.E2E_DOMAIN_CLIENT || baseURL,
     DOMAIN_SERVER: process.env.E2E_DOMAIN_SERVER || baseURL,
     E2E_RUNTIME_ENV_PATH:
@@ -403,7 +403,7 @@ async function main() {
         spawnProcess('app', 'node', [path.resolve(rootPath, 'e2e/setup/start-server.js')], env),
       );
       if (!(await waitForURL(baseURL, 120000))) {
-        throw new Error(`LibreChat server did not become ready at ${baseURL}`);
+        throw new Error(`Nashm server did not become ready at ${baseURL}`);
       }
     }
 

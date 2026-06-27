@@ -1,5 +1,5 @@
-import { Constants, EModelEndpoint, LocalStorageKeys } from 'librechat-data-provider';
-import type { TModelSpec, TStartupConfig, TEndpointsConfig } from 'librechat-data-provider';
+import { Constants, EModelEndpoint, LocalStorageKeys } from 'nashm-data-provider';
+import type { TModelSpec, TStartupConfig, TEndpointsConfig } from 'nashm-data-provider';
 import { getDefaultModelSpec } from '../endpoints';
 
 const createModelSpec = (name: string, overrides: Partial<TModelSpec> = {}): TModelSpec =>

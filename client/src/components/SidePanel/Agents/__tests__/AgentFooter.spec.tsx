@@ -1,9 +1,9 @@
 import React from 'react';
-import { SystemRoles } from 'librechat-data-provider';
+import { SystemRoles } from 'nashm-data-provider';
 import { render, screen } from '@testing-library/react';
 import type { UseMutationResult } from '@tanstack/react-query';
 import '@testing-library/jest-dom/extend-expect';
-import type { Agent, AgentCreateParams, TUser, ResourceType } from 'librechat-data-provider';
+import type { Agent, AgentCreateParams, TUser, ResourceType } from 'nashm-data-provider';
 import AgentFooter from '../AgentFooter';
 import { Panel } from '~/common';
 
@@ -155,7 +155,7 @@ jest.mock('../DuplicateAgent', () => ({
   ),
 }));
 
-jest.mock('@librechat/client', () => ({
+jest.mock('@nashm/client', () => ({
   Spinner: () => <div data-testid="spinner" />,
 }));
 

@@ -1,5 +1,5 @@
-import { ContentTypes } from 'librechat-data-provider';
-import type { SubagentUpdateEvent } from 'librechat-data-provider';
+import { ContentTypes } from 'nashm-data-provider';
+import type { SubagentUpdateEvent } from 'nashm-data-provider';
 import { aggregateSubagentContent, buildSubagentTickerLines } from '../subagentContent';
 
 const makeEvent = (overrides: Partial<SubagentUpdateEvent>): SubagentUpdateEvent => ({

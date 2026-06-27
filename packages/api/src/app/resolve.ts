@@ -1,5 +1,5 @@
-import { tenantStorage } from '@librechat/data-schemas';
-import type { AppConfig } from '@librechat/data-schemas';
+import { tenantStorage } from '@nashm/data-schemas';
+import type { AppConfig } from '@nashm/data-schemas';
 
 interface UserForConfigResolution {
   tenantId?: string;

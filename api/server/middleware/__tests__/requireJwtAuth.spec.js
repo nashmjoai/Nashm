@@ -36,7 +36,7 @@ jest.mock('passport', () => ({
   }),
 }));
 
-jest.mock('@librechat/data-schemas', () => {
+jest.mock('@nashm/data-schemas', () => {
   const { AsyncLocalStorage } = require('async_hooks');
   const tenantStorage = new AsyncLocalStorage();
   return {
@@ -48,12 +48,12 @@ jest.mock('@librechat/data-schemas', () => {
   };
 });
 
-// Mock @librechat/api — the real tenantContextMiddleware is TS and cannot be
+// Mock @nashm/api — the real tenantContextMiddleware is TS and cannot be
 // required directly from CJS tests. This thin wrapper mirrors the real logic
 // (read request context, call tenantStorage.run) using the same data-schemas
 // primitives. The real implementation is covered by packages/api tenant.spec.ts.
-jest.mock('@librechat/api', () => {
-  const { tenantStorage } = require('@librechat/data-schemas');
+jest.mock('@nashm/api', () => {
+  const { tenantStorage } = require('@nashm/data-schemas');
   const normalizeAuthLogValue = (value) => {
     if (value == null) {
       return undefined;
@@ -125,7 +125,7 @@ jest.mock('@librechat/api', () => {
     if (!normalized) {
       return undefined;
     }
-    return normalized === 'openid' || normalized === 'librechat' ? normalized : 'other';
+    return normalized === 'openid' || normalized === 'Nashm' ? normalized : 'other';
   };
   const normalizeRoutePath = (path) => {
     if (typeof path === 'string') {
@@ -237,12 +237,12 @@ jest.mock('@librechat/api', () => {
 
 const requireJwtAuth = require('../requireJwtAuth');
 const { requireRumProxyAuth } = requireJwtAuth;
-const { getTenantId, getUserId, logger } = require('@librechat/data-schemas');
+const { getTenantId, getUserId, logger } = require('@nashm/data-schemas');
 const {
   isEnabled,
   maybeRefreshCloudFrontAuthCookiesMiddleware,
   recordRumProxyRequest,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const passport = require('passport');
 
 const jwtSecret = 'test-refresh-secret';
@@ -598,7 +598,7 @@ describe('requireJwtAuth tenant context chaining', () => {
     );
   });
 
-  it('uses OpenID JWT before LibreChat JWT when the OpenID cookie is present', async () => {
+  it('uses OpenID JWT before Nashm JWT when the OpenID cookie is present', async () => {
     isEnabled.mockReturnValue(true);
     mockRegisteredStrategies.add('openidJwt');
     const req = mockReq(undefined, {
@@ -874,7 +874,7 @@ describe('requireRumProxyAuth', () => {
     }
   });
 
-  it('authenticates telemetry with the LibreChat JWT strategy without tenant or cookie refresh middleware', () => {
+  it('authenticates telemetry with the Nashm JWT strategy without tenant or cookie refresh middleware', () => {
     const req = mockReq({ id: 'user-jwt', tenantId: 'tenant-jwt', role: 'user' });
     const res = mockRes();
     const next = jest.fn();
@@ -921,7 +921,7 @@ describe('requireRumProxyAuth', () => {
     expect(next).toHaveBeenCalled();
   });
 
-  it('falls back to LibreChat JWT when OpenID JWT telemetry auth fails', () => {
+  it('falls back to Nashm JWT when OpenID JWT telemetry auth fails', () => {
     isEnabled.mockReturnValue(true);
     mockRegisteredStrategies.add('openidJwt');
     const req = mockReq(undefined, {

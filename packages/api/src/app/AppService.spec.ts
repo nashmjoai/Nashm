@@ -7,12 +7,12 @@ import {
   defaultSocialLogins,
   validateAzureGroups,
   defaultAgentCapabilities,
-} from 'librechat-data-provider';
-import type { TCustomConfig } from 'librechat-data-provider';
-import type { FunctionTool } from '@librechat/data-schemas';
+} from 'nashm-data-provider';
+import type { TCustomConfig } from 'nashm-data-provider';
+import type { FunctionTool } from '@nashm/data-schemas';
 
-jest.mock('@librechat/data-schemas', () => ({
-  ...jest.requireActual('@librechat/data-schemas'),
+jest.mock('@nashm/data-schemas', () => ({
+  ...jest.requireActual('@nashm/data-schemas'),
   logger: {
     info: jest.fn(),
     warn: jest.fn(),
@@ -21,13 +21,13 @@ jest.mock('@librechat/data-schemas', () => ({
   },
 }));
 
-import { AppService } from '@librechat/data-schemas';
+import { AppService } from '@nashm/data-schemas';
 
 const azureGroups = [
   {
-    group: 'librechat-westus',
+    group: 'Nashm-westus',
     apiKey: '${WESTUS_API_KEY}',
-    instanceName: 'librechat-westus',
+    instanceName: 'Nashm-westus',
     version: '2023-12-01-preview',
     models: {
       'gpt-4-vision-preview': {
@@ -49,9 +49,9 @@ const azureGroups = [
     },
   },
   {
-    group: 'librechat-eastus',
+    group: 'Nashm-eastus',
     apiKey: '${EASTUS_API_KEY}',
-    instanceName: 'librechat-eastus',
+    instanceName: 'Nashm-eastus',
     deploymentName: 'gpt-4-turbo',
     version: '2024-02-15-preview',
     models: {

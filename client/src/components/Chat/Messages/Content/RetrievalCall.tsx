@@ -1,9 +1,9 @@
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useRecoilValue } from 'recoil';
-import { Tools } from 'librechat-data-provider';
-import { TooltipAnchor } from '@librechat/client';
+import { Tools } from 'nashm-data-provider';
+import { TooltipAnchor } from '@nashm/client';
 import { FileText, FileSpreadsheet, FileCode, FileImage, File } from 'lucide-react';
-import type { TAttachment, TFile } from 'librechat-data-provider';
+import type { TAttachment, TFile } from 'nashm-data-provider';
 import { useLocalize, useProgress, useExpandCollapse } from '~/hooks';
 import { ToolIcon, OutputRenderer, isError } from './ToolOutput';
 import FilePreviewDialog from './FilePreviewDialog';

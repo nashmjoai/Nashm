@@ -1,5 +1,5 @@
 require('events').EventEmitter.defaultMaxListeners = 100;
-const { logger } = require('@librechat/data-schemas');
+const { logger } = require('@nashm/data-schemas');
 const { getBufferString, HumanMessage } = require('@librechat/agents/langchain/messages');
 const {
   createRun,
@@ -49,7 +49,7 @@ const {
   buildAgentScopedContext,
   buildSkillPrimeContentParts,
   buildInitialToolSessions,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const {
   Callback,
   Providers,
@@ -71,7 +71,7 @@ const {
   isEphemeralAgentId,
   removeNullishValues,
   DEFAULT_MEMORY_MAX_INPUT_TOKENS,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 const { filterFilesByAgentAccess } = require('~/server/services/Files/permissions');
 const { encodeAndFormat } = require('~/server/services/Files/images/encode');
 const { createContextHandlers } = require('~/app/clients/prompts');
@@ -123,12 +123,12 @@ class AgentClient extends BaseClient {
     this.maxContextTokens = maxContextTokens;
     /** Latest visible context snapshot for this response, captured live by the
      *  ON_CONTEXT_USAGE handler; persisted on `metadata.contextUsage`.
-     *  @type {{ latest: import('librechat-data-provider').TContextUsageEvent | null } | undefined} */
+     *  @type {{ latest: import('nashm-data-provider').TContextUsageEvent | null } | undefined} */
     this.contextUsageSink = contextUsageSink;
     /** Every emitted `on_token_usage` payload for this response (primary,
      *  summarization, sequential, and subagent); aggregated into the rollup
      *  persisted on `metadata.usage`.
-     *  @type {Array<import('librechat-data-provider').TTokenUsageEvent> | undefined} */
+     *  @type {Array<import('nashm-data-provider').TTokenUsageEvent> | undefined} */
     this.usageEmitSink = usageEmitSink;
     /** @type {MessageContentComplex[]} */
     this.contentParts = contentParts;
@@ -709,7 +709,7 @@ class AgentClient extends BaseClient {
       agent.model_parameters,
     );
 
-    /** @type {import('@librechat/api').MemoryConfig} */
+    /** @type {import('@nashm/api').MemoryConfig} */
     const config = {
       validKeys: memoryConfig.validKeys,
       instructions: agent.instructions,
@@ -876,15 +876,15 @@ class AgentClient extends BaseClient {
    * Returns undefined when nothing was captured.
    * @returns {{
    *   thoughtSignatures?: Record<string, string>,
-   *   contextUsage?: import('librechat-data-provider').TContextUsageEvent,
-   *   usage?: import('librechat-data-provider').TResponseUsage,
+   *   contextUsage?: import('nashm-data-provider').TContextUsageEvent,
+   *   usage?: import('nashm-data-provider').TResponseUsage,
    * } | undefined}
    */
   buildResponseMetadata() {
     /** @type {{
      *   thoughtSignatures?: Record<string, string>,
-     *   contextUsage?: import('librechat-data-provider').TContextUsageEvent,
-     *   usage?: import('librechat-data-provider').TResponseUsage,
+     *   contextUsage?: import('nashm-data-provider').TContextUsageEvent,
+     *   usage?: import('nashm-data-provider').TResponseUsage,
      * }} */
     const metadata = {};
     const signatures = this.collectedThoughtSignatures;
@@ -951,7 +951,7 @@ class AgentClient extends BaseClient {
    * untagged/unknown agent falls back to the primary config, so single-endpoint
    * graphs are unchanged.
    * @param {UsageMetadata} usage
-   * @returns {import('@librechat/api').EndpointTokenConfig | undefined}
+   * @returns {import('@nashm/api').EndpointTokenConfig | undefined}
    */
   resolveAgentEndpointTokenConfig(usage) {
     return resolveAgentTokenConfig({

@@ -1,18 +1,18 @@
 jest.mock('../connect', () => jest.fn().mockResolvedValue(true));
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   ensureRequiredCollectionsExist: jest.fn().mockResolvedValue(undefined),
   matchModelName: jest.fn(),
   findMatchingPattern: jest.fn(),
 }));
-jest.mock('@librechat/data-schemas', () => ({
-  ...jest.requireActual('@librechat/data-schemas'),
+jest.mock('@nashm/data-schemas', () => ({
+  ...jest.requireActual('@nashm/data-schemas'),
   logger: { error: jest.fn(), info: jest.fn(), warn: jest.fn(), debug: jest.fn() },
 }));
 jest.mock('~/cache/getLogStores', () => jest.fn());
 
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
-const { createMethods, SYSTEM_TENANT_ID, tenantStorage } = require('@librechat/data-schemas');
+const { createMethods, SYSTEM_TENANT_ID, tenantStorage } = require('@nashm/data-schemas');
 
 describe('migrate-shared-link-permissions', () => {
   let mongoServer;

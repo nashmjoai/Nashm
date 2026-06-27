@@ -1,5 +1,5 @@
 import userEvent from '@testing-library/user-event';
-import type { TStartupConfig } from 'librechat-data-provider';
+import type { TStartupConfig } from 'nashm-data-provider';
 import * as endpointQueries from '~/data-provider/Endpoints/queries';
 import * as miscDataProvider from '~/data-provider/Misc/queries';
 import * as authMutations from '~/data-provider/Auth/mutations';
@@ -7,7 +7,7 @@ import { render, getByTestId } from 'test/layout-test-utils';
 import * as authQueries from '~/data-provider/Auth/queries';
 import Login from '../LoginForm';
 
-jest.mock('librechat-data-provider/react-query');
+jest.mock('nashm-data-provider/react-query');
 
 const mockLogin = jest.fn();
 

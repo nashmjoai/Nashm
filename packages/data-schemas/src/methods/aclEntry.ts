@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-import { PrincipalType, PrincipalModel, PermissionBits } from 'librechat-data-provider';
+import { PrincipalType, PrincipalModel, PermissionBits } from 'nashm-data-provider';
 import type {
   AnyBulkWriteOperation,
   ClientSession,

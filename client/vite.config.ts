@@ -112,7 +112,7 @@ export default defineConfig(({ command }) => ({
           'assets/query-devtools*.js',
         ],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
-        /** LibreChat mutates index.html per request for subpath and language support. */
+        /** Nashm mutates index.html per request for subpath and language support. */
         navigateFallback: null,
         /** Reloads window clients that cannot answer a ping after activation —
          * pages stuck on a previous build's purged precache (stale index.html)
@@ -137,8 +137,8 @@ export default defineConfig(({ command }) => ({
       },
       includeAssets: [],
       manifest: {
-        name: 'LibreChat',
-        short_name: 'LibreChat',
+        name: 'Nashm',
+        short_name: 'Nashm',
         display: 'standalone',
         background_color: '#000000',
         theme_color: '#009688',

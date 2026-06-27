@@ -1,4 +1,4 @@
-const { Constants, ForkOptions } = require('librechat-data-provider');
+const { Constants, ForkOptions } = require('nashm-data-provider');
 
 jest.mock('~/models', () => ({
   getConvo: jest.fn(),

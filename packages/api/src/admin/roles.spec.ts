@@ -1,15 +1,15 @@
 import { Types } from 'mongoose';
-import { PrincipalType, SystemRoles } from 'librechat-data-provider';
-import type { IRole, IUser } from '@librechat/data-schemas';
+import { PrincipalType, SystemRoles } from 'nashm-data-provider';
+import type { IRole, IUser } from '@nashm/data-schemas';
 import type { Response } from 'express';
 import type { ServerRequest } from '~/types/http';
 import type { AdminRolesDeps } from './roles';
 import { createAdminRolesHandlers } from './roles';
 
-const { RoleConflictError } = jest.requireActual('@librechat/data-schemas');
+const { RoleConflictError } = jest.requireActual('@nashm/data-schemas');
 
-jest.mock('@librechat/data-schemas', () => ({
-  ...jest.requireActual('@librechat/data-schemas'),
+jest.mock('@nashm/data-schemas', () => ({
+  ...jest.requireActual('@nashm/data-schemas'),
   logger: { error: jest.fn(), warn: jest.fn(), info: jest.fn(), debug: jest.fn() },
 }));
 

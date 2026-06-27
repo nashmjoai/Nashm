@@ -3,7 +3,7 @@ const express = require('express');
 const request = require('supertest');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
-const { getBasePath, PENDING_STALE_MS } = require('@librechat/api');
+const { getBasePath, PENDING_STALE_MS } = require('@nashm/api');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 
 function generateTestCsrfToken(flowId) {
@@ -32,8 +32,8 @@ const mockRegistryInstance = {
 };
 let mockMCPUseAllowed = true;
 
-jest.mock('@librechat/api', () => {
-  const actual = jest.requireActual('@librechat/api');
+jest.mock('@nashm/api', () => {
+  const actual = jest.requireActual('@nashm/api');
   return {
     ...actual,
     MCPOAuthHandler: {
@@ -63,7 +63,7 @@ jest.mock('@librechat/api', () => {
     },
     getUserMCPAuthMap: jest.fn(),
     generateCheckAccess: jest.fn(({ permissionType, permissions }) => (req, res, next) => {
-      const { PermissionTypes, Permissions } = require('librechat-data-provider');
+      const { PermissionTypes, Permissions } = require('nashm-data-provider');
       const isMCPUseCheck =
         permissionType === PermissionTypes.MCP_SERVERS && permissions.includes(Permissions.USE);
       if (isMCPUseCheck && !mockMCPUseAllowed) {
@@ -74,7 +74,7 @@ jest.mock('@librechat/api', () => {
     MCPServersRegistry: {
       getInstance: () => mockRegistryInstance,
     },
-    // Error handling utilities (from @librechat/api mcp/errors)
+    // Error handling utilities (from @nashm/api mcp/errors)
     isMCPDomainNotAllowedError: (error) => error?.code === 'MCP_DOMAIN_NOT_ALLOWED',
     isMCPInspectionFailedError: (error) => error?.code === 'MCP_INSPECTION_FAILED',
     MCPErrorCodes: {
@@ -84,7 +84,7 @@ jest.mock('@librechat/api', () => {
   };
 });
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   getTenantId: jest.fn(),
   tenantStorage: {
     run: jest.fn((store, fn) => fn()),
@@ -201,8 +201,8 @@ describe('MCP Routes', () => {
     currentUser = undefined;
     mockResolveAllMcpConfigs.mockResolvedValue({});
     mockResolveMcpConfigNames.mockResolvedValue([]);
-    const { MCPOAuthHandler } = require('@librechat/api');
-    const { getTenantId } = require('@librechat/data-schemas');
+    const { MCPOAuthHandler } = require('@nashm/api');
+    const { getTenantId } = require('@nashm/data-schemas');
     getTenantId.mockReturnValue(undefined);
     MCPOAuthHandler.generateFlowId.mockImplementation((userId, serverName, tenantId) => {
       const flowId = `${userId}:${serverName}`;
@@ -260,7 +260,7 @@ describe('MCP Routes', () => {
   });
 
   describe('GET /:serverName/oauth/initiate', () => {
-    const { MCPOAuthHandler } = require('@librechat/api');
+    const { MCPOAuthHandler } = require('@nashm/api');
     const { getLogStores } = require('~/cache');
 
     it('should reuse stored authorization URL without starting a new OAuth flow', async () => {
@@ -293,7 +293,7 @@ describe('MCP Routes', () => {
     });
 
     it('should accept tenant-scoped flow IDs when a tenant is active', async () => {
-      const { getTenantId } = require('@librechat/data-schemas');
+      const { getTenantId } = require('@nashm/data-schemas');
       getTenantId.mockReturnValue('tenant-a');
       const tenantFlowId = 'tenant:tenant-a:test-user-id:test-server';
       const mockFlowManager = {
@@ -322,7 +322,7 @@ describe('MCP Routes', () => {
     });
 
     it('should reject non-tenant flow IDs when a tenant is active', async () => {
-      const { getTenantId } = require('@librechat/data-schemas');
+      const { getTenantId } = require('@nashm/data-schemas');
       getTenantId.mockReturnValue('tenant-a');
       const mockFlowManager = { getFlowState: jest.fn() };
 
@@ -536,7 +536,7 @@ describe('MCP Routes', () => {
   });
 
   describe('GET /:serverName/oauth/callback', () => {
-    const { MCPOAuthHandler, MCPTokenStorage } = require('@librechat/api');
+    const { MCPOAuthHandler, MCPTokenStorage } = require('@nashm/api');
     const { getLogStores } = require('~/cache');
 
     it('should redirect to error page when OAuth error is received', async () => {
@@ -786,7 +786,7 @@ describe('MCP Routes', () => {
         };
         const mergedServerConfig = {
           type: 'streamable-http',
-          url: 'https://override.example.com/{{LIBRECHAT_BODY_CONVERSATIONID}}/mcp',
+          url: 'https://override.example.com/{{Nashm_BODY_CONVERSATIONID}}/mcp',
           source: 'config',
         };
         const fetchedTools = [{ name: 'search', inputSchema: { type: 'object' } }];
@@ -938,7 +938,7 @@ describe('MCP Routes', () => {
       require('~/config').getMCPManager.mockReturnValue(mockMcpManager);
 
       const { getCachedTools, setCachedTools } = require('~/server/services/Config');
-      const { Constants } = require('librechat-data-provider');
+      const { Constants } = require('nashm-data-provider');
       getCachedTools.mockResolvedValue({
         [`existing-tool${Constants.mcp_delimiter}test-server`]: { type: 'function' },
         [`other-tool${Constants.mcp_delimiter}other-server`]: { type: 'function' },
@@ -1533,7 +1533,7 @@ describe('MCP Routes', () => {
     });
 
     it('should return tokens for a tenant-prefixed flow owned by the user', async () => {
-      const { getTenantId } = require('@librechat/data-schemas');
+      const { getTenantId } = require('@nashm/data-schemas');
       const mockFlowManager = {
         getFlowState: jest.fn().mockResolvedValue({
           status: 'COMPLETED',
@@ -1564,7 +1564,7 @@ describe('MCP Routes', () => {
     });
 
     it('should reject tenant-prefixed token flow access from another tenant', async () => {
-      const { getTenantId } = require('@librechat/data-schemas');
+      const { getTenantId } = require('@nashm/data-schemas');
       getTenantId.mockReturnValue('tenant-b');
 
       const response = await request(app).get(
@@ -1668,7 +1668,7 @@ describe('MCP Routes', () => {
     });
 
     it('should return flow status for a tenant-prefixed flow owned by the user', async () => {
-      const { getTenantId } = require('@librechat/data-schemas');
+      const { getTenantId } = require('@nashm/data-schemas');
       const mockFlowManager = {
         getFlowState: jest.fn().mockResolvedValue({
           status: 'PENDING',
@@ -1698,7 +1698,7 @@ describe('MCP Routes', () => {
     });
 
     it('should reject tenant-prefixed status access from another tenant', async () => {
-      const { getTenantId } = require('@librechat/data-schemas');
+      const { getTenantId } = require('@nashm/data-schemas');
       getTenantId.mockReturnValue('tenant-b');
 
       const response = await request(app).get(
@@ -1746,7 +1746,7 @@ describe('MCP Routes', () => {
   });
 
   describe('POST /oauth/cancel/:serverName', () => {
-    const { MCPOAuthHandler } = require('@librechat/api');
+    const { MCPOAuthHandler } = require('@nashm/api');
     const { getLogStores } = require('~/cache');
 
     it('should cancel OAuth flow successfully', async () => {
@@ -2006,7 +2006,7 @@ describe('MCP Routes', () => {
       require('~/config').getMCPManager.mockReturnValue(mockMcpManager);
       require('~/config').getFlowStateManager.mockReturnValue({});
       require('~/cache').getLogStores.mockReturnValue({});
-      require('@librechat/api').getUserMCPAuthMap.mockResolvedValue({
+      require('@nashm/api').getUserMCPAuthMap.mockResolvedValue({
         'mcp:test-server': {
           API_KEY: 'api-key-value',
         },
@@ -2033,7 +2033,7 @@ describe('MCP Routes', () => {
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
-      expect(require('@librechat/api').getUserMCPAuthMap).toHaveBeenCalledWith({
+      expect(require('@nashm/api').getUserMCPAuthMap).toHaveBeenCalledWith({
         userId: 'test-user-id',
         servers: ['test-server'],
         findPluginAuthsByKeys: require('~/models').findPluginAuthsByKeys,
@@ -2302,7 +2302,7 @@ describe('MCP Routes', () => {
 
   describe('GET /:serverName/oauth/callback - Edge Cases', () => {
     it('should handle OAuth callback without toolFlowId (falsy toolFlowId)', async () => {
-      const { MCPOAuthHandler, MCPTokenStorage } = require('@librechat/api');
+      const { MCPOAuthHandler, MCPTokenStorage } = require('@nashm/api');
       const mockTokens = {
         access_token: 'edge-access-token',
         refresh_token: 'edge-refresh-token',
@@ -2353,7 +2353,7 @@ describe('MCP Routes', () => {
     it('should handle null cached tools in OAuth callback (triggers || {} fallback)', async () => {
       const { getCachedTools } = require('~/server/services/Config');
       getCachedTools.mockResolvedValue(null);
-      const { MCPOAuthHandler, MCPTokenStorage } = require('@librechat/api');
+      const { MCPOAuthHandler, MCPTokenStorage } = require('@nashm/api');
       const mockTokens = {
         access_token: 'edge-access-token',
         refresh_token: 'edge-refresh-token',
@@ -2406,8 +2406,8 @@ describe('MCP Routes', () => {
 
   describe('GET /:serverName/oauth/callback - Tenant Context', () => {
     beforeEach(() => {
-      const { getTenantId, tenantStorage } = require('@librechat/data-schemas');
-      const { MCPOAuthHandler, MCPTokenStorage } = require('@librechat/api');
+      const { getTenantId, tenantStorage } = require('@nashm/data-schemas');
+      const { MCPOAuthHandler, MCPTokenStorage } = require('@nashm/api');
       getTenantId.mockReset();
       tenantStorage.run.mockReset();
       tenantStorage.run.mockImplementation((store, fn) => fn());
@@ -2418,8 +2418,8 @@ describe('MCP Routes', () => {
     });
 
     it('should wrap callback body in tenantStorage.run when flowState has tenantId and no current context', async () => {
-      const { getTenantId, tenantStorage } = require('@librechat/data-schemas');
-      const { MCPOAuthHandler, MCPTokenStorage } = require('@librechat/api');
+      const { getTenantId, tenantStorage } = require('@nashm/data-schemas');
+      const { MCPOAuthHandler, MCPTokenStorage } = require('@nashm/api');
       const flowId = 'user123:test-server';
       const csrfToken = generateTestCsrfToken(flowId);
 
@@ -2456,8 +2456,8 @@ describe('MCP Routes', () => {
     });
 
     it('should not call tenantStorage.run when flowState has no tenantId', async () => {
-      const { getTenantId, tenantStorage } = require('@librechat/data-schemas');
-      const { MCPOAuthHandler, MCPTokenStorage } = require('@librechat/api');
+      const { getTenantId, tenantStorage } = require('@nashm/data-schemas');
+      const { MCPOAuthHandler, MCPTokenStorage } = require('@nashm/api');
       const flowId = 'user123:test-server';
       const csrfToken = generateTestCsrfToken(flowId);
 
@@ -2498,8 +2498,8 @@ describe('MCP Routes', () => {
     });
 
     it('should continue returning MCP tools when one server cache lookup fails', async () => {
-      const { Constants } = require('librechat-data-provider');
-      const { logger } = require('@librechat/data-schemas');
+      const { Constants } = require('nashm-data-provider');
+      const { logger } = require('@nashm/data-schemas');
       const { getMCPServerTools } = require('~/server/services/Config');
 
       mockResolveAllMcpConfigs.mockResolvedValueOnce({
@@ -2559,7 +2559,7 @@ describe('MCP Routes', () => {
     });
 
     it('should return configured servers when all cache lookups fail', async () => {
-      const { logger } = require('@librechat/data-schemas');
+      const { logger } = require('@nashm/data-schemas');
       const { getMCPServerTools } = require('~/server/services/Config');
 
       mockResolveAllMcpConfigs.mockResolvedValueOnce({

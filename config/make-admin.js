@@ -94,9 +94,9 @@ async function setAdminRole(email, targetRole = 'ADMIN') {
   // Connect to the DB
   await connect();
 
-  const { User, SystemGrant } = require('@librechat/data-schemas').createModels(mongoose);
+  const { User, SystemGrant } = require('@nashm/data-schemas').createModels(mongoose);
   const { registerUser } = require('~/server/services/AuthService');
-  const { PrincipalType } = require('librechat-data-provider');
+  const { PrincipalType } = require('nashm-data-provider');
 
   const user = await User.findOne({ email });
   if (user) {
@@ -174,7 +174,7 @@ async function setAdminRole(email, targetRole = 'ADMIN') {
 
 (async () => {
   try {
-    console.purple('--- LibreChat Setup & Admin Script ---');
+    console.purple('--- Nashm Setup & Admin Script ---');
     
     // 1. Check/update secrets and search settings in .env
     await updateEnvAndCheckSearch();

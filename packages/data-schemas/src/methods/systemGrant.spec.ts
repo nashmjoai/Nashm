@@ -1,6 +1,6 @@
 import mongoose, { Types } from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { PrincipalType, SystemRoles } from 'librechat-data-provider';
+import { PrincipalType, SystemRoles } from 'nashm-data-provider';
 import type { SystemCapability } from '~/types/admin';
 import type * as t from '~/types';
 import { SystemCapabilities, CapabilityImplications } from '~/admin/capabilities';

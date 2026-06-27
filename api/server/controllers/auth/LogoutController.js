@@ -1,6 +1,6 @@
 const cookies = require('cookie');
-const { isEnabled, clearCloudFrontCookies } = require('@librechat/api');
-const { logger } = require('@librechat/data-schemas');
+const { isEnabled, clearCloudFrontCookies } = require('@nashm/api');
+const { logger } = require('@nashm/data-schemas');
 const { logoutUser } = require('~/server/services/AuthService');
 const { getOpenIdConfig } = require('~/strategies');
 

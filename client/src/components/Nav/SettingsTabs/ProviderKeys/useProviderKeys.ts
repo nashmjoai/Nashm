@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Permissions, PermissionTypes } from 'librechat-data-provider';
+import { Permissions, PermissionTypes } from 'nashm-data-provider';
 import { useGetEndpointsQuery, useGetStartupConfig } from '~/data-provider';
 import { getUserKeyEndpoints } from './utils';
 import { useHasAccess } from '~/hooks';

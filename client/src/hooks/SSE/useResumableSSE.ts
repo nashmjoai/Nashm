@@ -14,7 +14,7 @@ import {
   createPayload,
   ViolationTypes,
   removeNullishValues,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type {
   Agents,
   TMessage,
@@ -22,7 +22,7 @@ import type {
   TSubmission,
   TConversation,
   EventSubmission,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type { EventHandlerParams } from './useEventHandlers';
 import type { ActiveJobsResponse } from '~/data-provider';
 import type { TResData } from '~/common';

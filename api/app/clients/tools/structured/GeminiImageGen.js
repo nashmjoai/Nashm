@@ -2,16 +2,16 @@ const path = require('path');
 const sharp = require('sharp');
 const { v4 } = require('uuid');
 const { GoogleGenAI } = require('@google/genai');
-const { logger } = require('@librechat/data-schemas');
+const { logger } = require('@nashm/data-schemas');
 const { tool } = require('@librechat/agents/langchain/tools');
-const { ContentTypes, EImageOutputType } = require('librechat-data-provider');
+const { ContentTypes, EImageOutputType } = require('nashm-data-provider');
 const {
   geminiToolkit,
   loadServiceKey,
   getBalanceConfig,
   getEnvProxyDispatcher,
   getTransactionsConfig,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const { getStrategyFunctions } = require('~/server/services/Files/strategies');
 const { spendTokens, getFiles } = require('~/models');
 

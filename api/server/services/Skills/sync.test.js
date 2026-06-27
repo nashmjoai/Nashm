@@ -11,8 +11,8 @@ jest.mock('~/server/services/Config', () => ({
   getAppConfig: mockGetAppConfig,
 }));
 
-jest.mock('@librechat/api', () => {
-  const actualApi = jest.requireActual('@librechat/api');
+jest.mock('@nashm/api', () => {
+  const actualApi = jest.requireActual('@nashm/api');
   return {
     createSkillSyncTriggerOrchestrator: actualApi.createSkillSyncTriggerOrchestrator,
     createGitHubSkillSyncRunner: jest.fn((deps) => {
@@ -57,7 +57,7 @@ jest.mock('@librechat/api', () => {
   };
 });
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     error: jest.fn(),
     warn: jest.fn(),
@@ -121,8 +121,8 @@ describe('GitHub skill sync service', () => {
         runOnStartup: false,
         sources: [
           {
-            id: 'librechat-skills',
-            owner: 'LibreChat',
+            id: 'Nashm-skills',
+            owner: 'Nashm',
             repo: 'skills',
             ref: 'main',
             paths: ['skills'],
@@ -168,7 +168,7 @@ describe('GitHub skill sync service', () => {
         sources: [
           {
             id: 'tenant-skills',
-            owner: 'LibreChat',
+            owner: 'Nashm',
             repo: 'skills',
             ref: 'main',
             paths: ['skills'],
@@ -208,7 +208,7 @@ describe('GitHub skill sync service', () => {
         sources: [
           {
             id: 'tenant-skills',
-            owner: 'LibreChat',
+            owner: 'Nashm',
             repo: 'skills',
             ref: 'main',
             paths: ['skills'],
@@ -227,7 +227,7 @@ describe('GitHub skill sync service', () => {
           sourceId: 'tenant-skills',
           status: 'idle',
           credentialPresent: false,
-          owner: 'LibreChat',
+          owner: 'Nashm',
           repo: 'skills',
           ref: 'main',
           paths: ['skills'],
@@ -260,7 +260,7 @@ describe('GitHub skill sync service', () => {
         sources: [
           {
             id: 'base-skills',
-            owner: 'LibreChat',
+            owner: 'Nashm',
             repo: 'skills',
             ref: 'main',
             paths: ['skills'],
@@ -291,7 +291,7 @@ describe('GitHub skill sync service', () => {
         sources: [
           {
             id: 'tenant-skills',
-            owner: 'LibreChat',
+            owner: 'Nashm',
             repo: 'skills',
             ref: 'main',
             paths: ['skills'],
@@ -328,7 +328,7 @@ describe('GitHub skill sync service', () => {
         sources: [
           {
             id: 'base-skills',
-            owner: 'LibreChat',
+            owner: 'Nashm',
             repo: 'skills',
             ref: 'main',
             paths: ['skills'],
@@ -362,7 +362,7 @@ describe('GitHub skill sync service', () => {
         sources: [
           {
             id: 'tenant-skills',
-            owner: 'LibreChat',
+            owner: 'Nashm',
             repo: 'skills',
             ref: 'main',
             paths: ['skills'],
@@ -390,7 +390,7 @@ describe('GitHub skill sync service', () => {
         sources: [
           {
             id: 'tenant-skills',
-            owner: 'LibreChat',
+            owner: 'Nashm',
             repo: 'skills',
             ref: 'main',
             paths: ['skills'],
@@ -409,7 +409,7 @@ describe('GitHub skill sync service', () => {
           sourceId: 'tenant-skills',
           status: 'running',
           credentialPresent: true,
-          owner: 'LibreChat',
+          owner: 'Nashm',
           repo: 'skills',
           ref: 'main',
           paths: ['skills'],
@@ -442,7 +442,7 @@ describe('GitHub skill sync service', () => {
         sources: [
           {
             id: 'tenant-skills',
-            owner: 'LibreChat',
+            owner: 'Nashm',
             repo: 'skills',
             ref: 'main',
             paths: ['skills'],
@@ -461,7 +461,7 @@ describe('GitHub skill sync service', () => {
           sourceId: 'tenant-skills',
           status: 'running',
           credentialPresent: true,
-          owner: 'LibreChat',
+          owner: 'Nashm',
           repo: 'skills',
           ref: 'main',
           paths: ['skills'],
@@ -516,7 +516,7 @@ describe('GitHub skill sync service', () => {
   });
 
   it('does not force manual sync runs into the system tenant context', async () => {
-    const { runAsSystem } = require('@librechat/data-schemas');
+    const { runAsSystem } = require('@nashm/data-schemas');
     mockGetAppConfig.mockResolvedValue({ skillSync: undefined, paths: {} });
 
     const service = require('./sync');
@@ -527,7 +527,7 @@ describe('GitHub skill sync service', () => {
   });
 
   it('resolves the access role outside tenant isolation but writes the ACL in context', async () => {
-    const { runAsSystem } = require('@librechat/data-schemas');
+    const { runAsSystem } = require('@nashm/data-schemas');
     mockGetAppConfig.mockResolvedValue({ skillSync: undefined, paths: {} });
     mockFindRoleByIdentifier.mockResolvedValue({
       _id: 'role-object-id',

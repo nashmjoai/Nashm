@@ -4,9 +4,9 @@ import {
   isAgentsEndpoint,
   orderEndpointsConfig,
   defaultAgentCapabilities,
-} from 'librechat-data-provider';
-import type { AgentCapabilities, TEndpointsConfig, TConfig } from 'librechat-data-provider';
-import type { AppConfig } from '@librechat/data-schemas';
+} from 'nashm-data-provider';
+import type { AgentCapabilities, TEndpointsConfig, TConfig } from 'nashm-data-provider';
+import type { AppConfig } from '@nashm/data-schemas';
 import type { ServerRequest, TCustomEndpointsConfig } from '~/types';
 import { loadCustomEndpointsConfig as defaultLoadCustomEndpoints } from '~/endpoints/custom';
 

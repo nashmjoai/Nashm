@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import copy from 'copy-to-clipboard';
 import { useRecoilValue } from 'recoil';
 import { Download } from 'lucide-react';
-import { OGDialog, OGDialogContent, OGDialogTitle, OGDialogDescription } from '@librechat/client';
+import { OGDialog, OGDialogContent, OGDialogTitle, OGDialogDescription } from '@nashm/client';
 import { useFileDownload, useSharedFileDownload } from '~/data-provider';
 import { logger, sortPagesByRelevance, triggerDownload } from '~/utils';
 import CopyButton from '~/components/Messages/Content/CopyButton';

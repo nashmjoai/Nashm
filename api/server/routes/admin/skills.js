@@ -1,6 +1,6 @@
 const express = require('express');
-const { createAdminSkillsSyncAccess, createAdminSkillsSyncHandlers } = require('@librechat/api');
-const { SystemCapabilities } = require('@librechat/data-schemas');
+const { createAdminSkillsSyncAccess, createAdminSkillsSyncHandlers } = require('@nashm/api');
+const { SystemCapabilities } = require('@nashm/data-schemas');
 const { hasCapability, requireCapability } = require('~/server/middleware/roles/capabilities');
 const { requireJwtAuth } = require('~/server/middleware');
 const { upsertSkillSyncCredential, deleteSkillSyncCredential } = require('~/models');

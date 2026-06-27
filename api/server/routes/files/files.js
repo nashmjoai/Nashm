@@ -1,12 +1,12 @@
 const fs = require('fs').promises;
 const express = require('express');
-const { logger, SystemCapabilities } = require('@librechat/data-schemas');
+const { logger, SystemCapabilities } = require('@nashm/data-schemas');
 const {
   logAxiosError,
   refreshS3FileUrls,
   resolveUploadErrorMessage,
   verifyAgentUploadPermission,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const {
   Time,
   isUUID,
@@ -17,7 +17,7 @@ const {
   PermissionBits,
   checkOpenAIStorage,
   isAssistantsEndpoint,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 const {
   filterFile,
   processFileUpload,

@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { Types } from 'mongoose';
-import { getTenantId } from '@librechat/data-schemas';
+import { getTenantId } from '@nashm/data-schemas';
 import type {
   ISkill,
   ISkillFile,
@@ -10,7 +10,7 @@ import type {
   SkillSyncStatusInput,
   UpdateSkillInput,
   UpdateSkillResult,
-} from '@librechat/data-schemas';
+} from '@nashm/data-schemas';
 import type { GitHubSkillSyncDeps } from './github';
 import { DEFAULT_SKILL_IMPORT_LIMITS } from '../limits';
 import { createGitHubSkillSyncRunner } from './github';
@@ -127,8 +127,8 @@ function makeSkillFile(
     source: 'local',
     sourceMetadata: {
       provider: 'github',
-      sourceId: 'librechat-skills',
-      upstreamId: 'librechat-skills:skills/research',
+      sourceId: 'Nashm-skills',
+      upstreamId: 'Nashm-skills:skills/research',
       commitSha: 'old-commit-sha',
       blobSha: 'old-file-sha',
       path: 'skills/research/scripts/run.sh',
@@ -142,7 +142,7 @@ function makeSkillFile(
   };
 }
 
-function makeSourceAuthorId(sourceId = 'librechat-skills', tenantId?: string): Types.ObjectId {
+function makeSourceAuthorId(sourceId = 'Nashm-skills', tenantId?: string): Types.ObjectId {
   const seed = tenantId ? `github:${sourceId}:${tenantId}` : `github:${sourceId}`;
   return new Types.ObjectId(crypto.createHash('sha256').update(seed).digest('hex').slice(0, 24));
 }
@@ -160,8 +160,8 @@ function createDeps(
         runOnStartup: false,
         sources: [
           {
-            id: 'librechat-skills',
-            owner: 'LibreChat',
+            id: 'Nashm-skills',
+            owner: 'Nashm',
             repo: 'skills',
             ref: 'main',
             paths: ['skills'],
@@ -266,8 +266,8 @@ describe('createGitHubSkillSyncRunner', () => {
         source: 'github',
         sourceMetadata: expect.objectContaining({
           provider: 'github',
-          sourceId: 'librechat-skills',
-          upstreamId: 'librechat-skills:skills/research',
+          sourceId: 'Nashm-skills',
+          upstreamId: 'Nashm-skills:skills/research',
           skillBlobSha: 'skill-md-sha',
         }),
       }),
@@ -276,7 +276,7 @@ describe('createGitHubSkillSyncRunner', () => {
       expect.objectContaining({
         relativePath: 'scripts/run.sh',
         sourceMetadata: expect.objectContaining({
-          upstreamId: 'librechat-skills:skills/research',
+          upstreamId: 'Nashm-skills:skills/research',
           blobSha: 'file-sha',
           commitSha: 'commit-sha',
         }),
@@ -372,7 +372,7 @@ describe('createGitHubSkillSyncRunner', () => {
       expect.objectContaining({
         status: 'failed',
         errorCode: 'DUPLICATE_SKILL_NAME',
-        errorMessage: 'GitHub source "librechat-skills" contains multiple skills named "duplicate"',
+        errorMessage: 'GitHub source "Nashm-skills" contains multiple skills named "duplicate"',
       }),
     );
   });
@@ -424,8 +424,8 @@ describe('createGitHubSkillSyncRunner', () => {
           runOnStartup: false,
           sources: [
             {
-              id: 'librechat-skills',
-              owner: 'LibreChat',
+              id: 'Nashm-skills',
+              owner: 'Nashm',
               repo: 'skills',
               ref: 'main',
               paths: [''],
@@ -445,7 +445,7 @@ describe('createGitHubSkillSyncRunner', () => {
       expect.objectContaining({
         status: 'failed',
         errorCode: 'DUPLICATE_SKILL_NAME',
-        errorMessage: 'GitHub source "librechat-skills" contains multiple skills named "duplicate"',
+        errorMessage: 'GitHub source "Nashm-skills" contains multiple skills named "duplicate"',
       }),
     );
   });
@@ -561,8 +561,8 @@ describe('createGitHubSkillSyncRunner', () => {
           runOnStartup: false,
           sources: [
             {
-              id: 'librechat-skills',
-              owner: 'LibreChat',
+              id: 'Nashm-skills',
+              owner: 'Nashm',
               repo: 'skills',
               ref: 'main',
               paths: ['skills'],
@@ -583,7 +583,7 @@ describe('createGitHubSkillSyncRunner', () => {
       expect(getCredentialToken).not.toHaveBeenCalled();
       expect(deps.createSkill).toHaveBeenCalledWith(
         expect.objectContaining({
-          sourceMetadata: expect.objectContaining({ sourceId: 'librechat-skills' }),
+          sourceMetadata: expect.objectContaining({ sourceId: 'Nashm-skills' }),
         }),
       );
     } finally {
@@ -618,8 +618,8 @@ describe('createGitHubSkillSyncRunner', () => {
           runOnStartup: false,
           sources: [
             {
-              id: 'librechat-skills',
-              owner: 'LibreChat',
+              id: 'Nashm-skills',
+              owner: 'Nashm',
               repo: 'skills',
               ref: 'main',
               paths: ['skills'],
@@ -627,7 +627,7 @@ describe('createGitHubSkillSyncRunner', () => {
             },
             {
               id: 'stored-credential-skills',
-              owner: 'LibreChat',
+              owner: 'Nashm',
               repo: 'skills',
               ref: 'main',
               paths: ['skills'],
@@ -645,7 +645,7 @@ describe('createGitHubSkillSyncRunner', () => {
 
       expect(status.credentials).toEqual([]);
       expect(status.sources).toEqual([
-        expect.objectContaining({ sourceId: 'librechat-skills', credentialPresent: false }),
+        expect.objectContaining({ sourceId: 'Nashm-skills', credentialPresent: false }),
         expect.objectContaining({
           sourceId: 'stored-credential-skills',
           credentialPresent: false,
@@ -656,7 +656,7 @@ describe('createGitHubSkillSyncRunner', () => {
         'GitHub skill sync credentials are not available for this runner',
       );
       expect(result.sources).toEqual([
-        expect.objectContaining({ sourceId: 'librechat-skills', credentialPresent: false }),
+        expect.objectContaining({ sourceId: 'Nashm-skills', credentialPresent: false }),
         expect.objectContaining({
           sourceId: 'stored-credential-skills',
           credentialPresent: false,
@@ -695,8 +695,8 @@ describe('createGitHubSkillSyncRunner', () => {
           runOnStartup: false,
           sources: [
             {
-              id: 'librechat-skills',
-              owner: 'LibreChat',
+              id: 'Nashm-skills',
+              owner: 'Nashm',
               repo: 'skills',
               ref: 'heads/release/2026-05',
               paths: ['skills'],
@@ -722,8 +722,8 @@ describe('createGitHubSkillSyncRunner', () => {
           runOnStartup: false,
           sources: [
             {
-              id: 'librechat-skills',
-              owner: 'LibreChat',
+              id: 'Nashm-skills',
+              owner: 'Nashm',
               repo: 'skills',
               ref: 'main',
               paths: ['skills'],
@@ -745,14 +745,14 @@ describe('createGitHubSkillSyncRunner', () => {
     expect(observedTenantId).toBe('tenant-a');
     expect(deps.findSkillBySourceIdentity).toHaveBeenCalledWith({
       source: 'github',
-      upstreamId: 'librechat-skills:skills/research',
+      upstreamId: 'Nashm-skills:skills/research',
       tenantId: 'tenant-a',
     });
     expect(deps.createSkill).toHaveBeenCalledWith(
       expect.objectContaining({ name: 'research', tenantId: 'tenant-a' }),
     );
     expect(deps.upsertStatus).toHaveBeenCalledWith(
-      expect.objectContaining({ sourceId: 'librechat-skills', tenantId: 'tenant-a' }),
+      expect.objectContaining({ sourceId: 'Nashm-skills', tenantId: 'tenant-a' }),
     );
     const [lockParams] = (deps.tryAcquireLock as jest.Mock).mock.calls[0];
     expect(lockParams).not.toHaveProperty('tenantId');
@@ -763,7 +763,7 @@ describe('createGitHubSkillSyncRunner', () => {
       listStatuses: jest.fn(async () => [
         {
           provider: 'github',
-          sourceId: 'librechat-skills',
+          sourceId: 'Nashm-skills',
           tenantId: 'tenant-a',
           status: 'succeeded',
           syncedSkillCount: 1,
@@ -773,7 +773,7 @@ describe('createGitHubSkillSyncRunner', () => {
         } as ISkillSyncStatus,
         {
           provider: 'github',
-          sourceId: 'librechat-skills',
+          sourceId: 'Nashm-skills',
           tenantId: 'tenant-b',
           status: 'failed',
           errorCode: 'OTHER_TENANT',
@@ -790,8 +790,8 @@ describe('createGitHubSkillSyncRunner', () => {
           runOnStartup: false,
           sources: [
             {
-              id: 'librechat-skills',
-              owner: 'LibreChat',
+              id: 'Nashm-skills',
+              owner: 'Nashm',
               repo: 'skills',
               ref: 'main',
               paths: ['skills'],
@@ -807,7 +807,7 @@ describe('createGitHubSkillSyncRunner', () => {
 
     expect(status.sources[0]).toEqual(
       expect.objectContaining({
-        sourceId: 'librechat-skills',
+        sourceId: 'Nashm-skills',
         tenantId: 'tenant-b',
         status: 'failed',
         errorCode: 'OTHER_TENANT',
@@ -843,14 +843,14 @@ describe('createGitHubSkillSyncRunner', () => {
         author: new Types.ObjectId(),
         authorName: 'GitHub Sync',
         source: 'github',
-        sourceMetadata: { provider: 'github', sourceId: 'librechat-skills', upstreamId },
+        sourceMetadata: { provider: 'github', sourceId: 'Nashm-skills', upstreamId },
       });
       skill._id = _id;
       return skill;
     };
     const listSkillsBySource = jest.fn(async () => [
-      existingSkill('librechat-skills:skills/research', keptId),
-      existingSkill('librechat-skills:skills/removed', staleId),
+      existingSkill('Nashm-skills:skills/research', keptId),
+      existingSkill('Nashm-skills:skills/removed', staleId),
     ]);
     const deps = createDeps({ listSkillsBySource });
     const runner = createGitHubSkillSyncRunner(deps);
@@ -859,7 +859,7 @@ describe('createGitHubSkillSyncRunner', () => {
     expect(result.status).toBe('completed');
     expect(listSkillsBySource).toHaveBeenCalledWith({
       source: 'github',
-      sourceId: 'librechat-skills',
+      sourceId: 'Nashm-skills',
     });
     expect(deps.deleteSkill).toHaveBeenCalledTimes(1);
     expect(deps.deleteSkill).toHaveBeenCalledWith(staleId.toString());
@@ -881,13 +881,13 @@ describe('createGitHubSkillSyncRunner', () => {
         author,
         authorName: 'GitHub Sync',
         source: 'github',
-        sourceMetadata: { provider: 'github', sourceId: 'librechat-skills', upstreamId },
+        sourceMetadata: { provider: 'github', sourceId: 'Nashm-skills', upstreamId },
       });
       skill._id = _id;
       return skill;
     };
-    const staleSkill = existingSkill('librechat-skills:skills/removed', staleId, 'renamed');
-    const syncedSkill = existingSkill('librechat-skills:skills/research', existingId, 'research');
+    const staleSkill = existingSkill('Nashm-skills:skills/removed', staleId, 'renamed');
+    const syncedSkill = existingSkill('Nashm-skills:skills/research', existingId, 'research');
     const existingById = new Map([[existingId.toString(), syncedSkill]]);
     const deletedIds = new Set<string>();
     const listSkillsBySource = jest.fn(async () =>
@@ -921,7 +921,7 @@ describe('createGitHubSkillSyncRunner', () => {
     const deps = createDeps({
       fetchFn: githubFetch('---\nname: renamed\ndescription: Renamed skill\n---\nBody'),
       findSkillBySourceIdentity: jest.fn(async ({ upstreamId }) =>
-        upstreamId === 'librechat-skills:skills/research' ? syncedSkill : null,
+        upstreamId === 'Nashm-skills:skills/research' ? syncedSkill : null,
       ),
       getSkillById: jest.fn(async (id) => existingById.get(id.toString()) ?? null),
       listSkillsBySource,
@@ -1039,19 +1039,19 @@ describe('createGitHubSkillSyncRunner', () => {
         author,
         authorName: 'GitHub Sync',
         source: 'github',
-        sourceMetadata: { provider: 'github', sourceId: 'librechat-skills', upstreamId },
+        sourceMetadata: { provider: 'github', sourceId: 'Nashm-skills', upstreamId },
       });
       skill._id = _id;
       return skill;
     };
-    const staleSkill = makeExisting('librechat-skills:skills/removed', staleId, 'renamed');
-    const syncedSkill = makeExisting('librechat-skills:skills/research', existingId, 'research');
+    const staleSkill = makeExisting('Nashm-skills:skills/removed', staleId, 'renamed');
+    const syncedSkill = makeExisting('Nashm-skills:skills/research', existingId, 'research');
     const createdIds: string[] = [];
     const deleteSkill = jest.fn(async (id: string) => ({ deleted: createdIds.includes(id) }));
     const deps = createDeps({
       fetchFn,
       findSkillBySourceIdentity: jest.fn(async ({ upstreamId }) =>
-        upstreamId === 'librechat-skills:skills/research' ? syncedSkill : null,
+        upstreamId === 'Nashm-skills:skills/research' ? syncedSkill : null,
       ),
       getSkillById: jest.fn(async (id) =>
         id.toString() === existingId.toString() ? syncedSkill : null,
@@ -1098,13 +1098,13 @@ describe('createGitHubSkillSyncRunner', () => {
         author,
         authorName: 'GitHub Sync',
         source: 'github',
-        sourceMetadata: { provider: 'github', sourceId: 'librechat-skills', upstreamId },
+        sourceMetadata: { provider: 'github', sourceId: 'Nashm-skills', upstreamId },
       });
       skill._id = _id;
       return skill;
     };
-    const staleSkill = makeExisting('librechat-skills:skills/removed', staleId, 'renamed');
-    const syncedSkill = makeExisting('librechat-skills:skills/research', existingId, 'research');
+    const staleSkill = makeExisting('Nashm-skills:skills/removed', staleId, 'renamed');
+    const syncedSkill = makeExisting('Nashm-skills:skills/research', existingId, 'research');
     const deletedIds = new Set<string>();
     let restoredSkill: (ISkill & { _id: Types.ObjectId }) | undefined;
     const createSkill = jest.fn(async (input: CreateSkillInput): Promise<CreateSkillResult> => {
@@ -1118,7 +1118,7 @@ describe('createGitHubSkillSyncRunner', () => {
     const deps = createDeps({
       fetchFn: githubFetch('---\nname: renamed\ndescription: Renamed skill\n---\nBody'),
       findSkillBySourceIdentity: jest.fn(async ({ upstreamId }) =>
-        upstreamId === 'librechat-skills:skills/research' ? syncedSkill : null,
+        upstreamId === 'Nashm-skills:skills/research' ? syncedSkill : null,
       ),
       getSkillById: jest.fn(async (id) =>
         id.toString() === existingId.toString() ? syncedSkill : null,
@@ -1139,7 +1139,7 @@ describe('createGitHubSkillSyncRunner', () => {
       expect.objectContaining({
         name: 'renamed',
         sourceMetadata: expect.objectContaining({
-          upstreamId: 'librechat-skills:skills/removed',
+          upstreamId: 'Nashm-skills:skills/removed',
         }),
       }),
     );
@@ -1162,7 +1162,7 @@ describe('createGitHubSkillSyncRunner', () => {
         author: new Types.ObjectId(),
         authorName: 'GitHub Sync',
         source: 'github',
-        sourceMetadata: { provider: 'github', sourceId: 'librechat-skills', upstreamId },
+        sourceMetadata: { provider: 'github', sourceId: 'Nashm-skills', upstreamId },
       });
       skill._id = _id;
       skill.tenantId = tenantId;
@@ -1171,8 +1171,8 @@ describe('createGitHubSkillSyncRunner', () => {
     // The configured source is ambient (no tenantId), but listSkillsBySource
     // (non-strict) returns a skill owned by tenant-b. It must not be deleted.
     const listSkillsBySource = jest.fn(async () => [
-      makeExisting('librechat-skills:skills/removed', ambientStaleId, undefined),
-      makeExisting('librechat-skills:skills/removed', otherTenantId, 'tenant-b'),
+      makeExisting('Nashm-skills:skills/removed', ambientStaleId, undefined),
+      makeExisting('Nashm-skills:skills/removed', otherTenantId, 'tenant-b'),
     ]);
     const deps = createDeps({ listSkillsBySource });
     const runner = createGitHubSkillSyncRunner(deps);
@@ -1195,8 +1195,8 @@ describe('createGitHubSkillSyncRunner', () => {
             runOnStartup: false,
             sources: [
               {
-                id: 'librechat-skills',
-                owner: 'LibreChat',
+                id: 'Nashm-skills',
+                owner: 'Nashm',
                 repo: 'skills',
                 ref: 'main',
                 paths: ['skills'],
@@ -1234,7 +1234,7 @@ describe('createGitHubSkillSyncRunner', () => {
           sources: [
             {
               id: 'source-a',
-              owner: 'LibreChat',
+              owner: 'Nashm',
               repo: 'skills-a',
               ref: 'main',
               paths: ['skills'],
@@ -1242,7 +1242,7 @@ describe('createGitHubSkillSyncRunner', () => {
             },
             {
               id: 'source-b',
-              owner: 'LibreChat',
+              owner: 'Nashm',
               repo: 'skills-b',
               ref: 'main',
               paths: ['skills'],
@@ -1362,9 +1362,9 @@ describe('createGitHubSkillSyncRunner', () => {
       source: 'github',
       sourceMetadata: {
         provider: 'github',
-        sourceId: 'librechat-skills',
-        upstreamId: 'librechat-skills:skills/research',
-        owner: 'LibreChat',
+        sourceId: 'Nashm-skills',
+        upstreamId: 'Nashm-skills:skills/research',
+        owner: 'Nashm',
         repo: 'skills',
         ref: 'main',
         skillPath: 'skills/research',
@@ -1378,8 +1378,8 @@ describe('createGitHubSkillSyncRunner', () => {
           runOnStartup: false,
           sources: [
             {
-              id: 'librechat-skills',
-              owner: 'LibreChat',
+              id: 'Nashm-skills',
+              owner: 'Nashm',
               repo: 'skills',
               ref: 'release',
               paths: ['skills'],
@@ -1407,7 +1407,7 @@ describe('createGitHubSkillSyncRunner', () => {
     expect(result.status).toBe('completed');
     expect(deps.findSkillBySourceIdentity).toHaveBeenCalledWith({
       source: 'github',
-      upstreamId: 'librechat-skills:skills/research',
+      upstreamId: 'Nashm-skills:skills/research',
       tenantId: undefined,
     });
     expect(deps.createSkill).not.toHaveBeenCalled();
@@ -1416,7 +1416,7 @@ describe('createGitHubSkillSyncRunner', () => {
         update: expect.objectContaining({
           sourceMetadata: expect.objectContaining({
             ref: 'release',
-            upstreamId: 'librechat-skills:skills/research',
+            upstreamId: 'Nashm-skills:skills/research',
           }),
           frontmatter: {},
         }),
@@ -1428,16 +1428,16 @@ describe('createGitHubSkillSyncRunner', () => {
     const otherTenantSkill = makeSkill({
       name: 'research',
       description: 'Tenant skill',
-      author: makeSourceAuthorId('librechat-skills', 'tenant-b'),
+      author: makeSourceAuthorId('Nashm-skills', 'tenant-b'),
       authorName: 'GitHub Sync',
       frontmatter: {},
       source: 'github',
       tenantId: 'tenant-b',
       sourceMetadata: {
         provider: 'github',
-        sourceId: 'librechat-skills',
-        upstreamId: 'librechat-skills:skills/research',
-        owner: 'LibreChat',
+        sourceId: 'Nashm-skills',
+        upstreamId: 'Nashm-skills:skills/research',
+        owner: 'Nashm',
         repo: 'skills',
         ref: 'main',
         skillPath: 'skills/research',
@@ -1525,9 +1525,9 @@ describe('createGitHubSkillSyncRunner', () => {
       source: 'github',
       sourceMetadata: {
         provider: 'github',
-        sourceId: 'librechat-skills',
-        upstreamId: 'librechat-skills:skills/research',
-        owner: 'LibreChat',
+        sourceId: 'Nashm-skills',
+        upstreamId: 'Nashm-skills:skills/research',
+        owner: 'Nashm',
         repo: 'skills',
         ref: 'main',
         skillPath: 'skills/research',
@@ -1536,7 +1536,7 @@ describe('createGitHubSkillSyncRunner', () => {
     const deps = createDeps({
       fetchFn,
       findSkillBySourceIdentity: jest.fn(async ({ upstreamId }) =>
-        upstreamId === 'librechat-skills:skills/research' ? existing : null,
+        upstreamId === 'Nashm-skills:skills/research' ? existing : null,
       ),
       listSkillsBySource: jest.fn(async () => [existing]),
       getSkillById: jest.fn(async (id) =>
@@ -1556,7 +1556,7 @@ describe('createGitHubSkillSyncRunner', () => {
       expect.objectContaining({
         name: 'research',
         sourceMetadata: expect.objectContaining({
-          upstreamId: 'librechat-skills:skills/new',
+          upstreamId: 'Nashm-skills:skills/new',
         }),
       }),
     );
@@ -1566,7 +1566,7 @@ describe('createGitHubSkillSyncRunner', () => {
         update: expect.objectContaining({
           name: 'renamed',
           sourceMetadata: expect.objectContaining({
-            upstreamId: 'librechat-skills:skills/research',
+            upstreamId: 'Nashm-skills:skills/research',
           }),
         }),
       }),
@@ -1583,9 +1583,9 @@ describe('createGitHubSkillSyncRunner', () => {
       source: 'github',
       sourceMetadata: {
         provider: 'github',
-        sourceId: 'librechat-skills',
-        upstreamId: 'librechat-skills:skills/old-research',
-        owner: 'LibreChat',
+        sourceId: 'Nashm-skills',
+        upstreamId: 'Nashm-skills:skills/old-research',
+        owner: 'Nashm',
         repo: 'skills',
         ref: 'main',
         skillPath: 'skills/old-research',
@@ -1594,8 +1594,8 @@ describe('createGitHubSkillSyncRunner', () => {
     const unchangedFile = makeSkillFile(existing, {
       sourceMetadata: {
         provider: 'github',
-        sourceId: 'librechat-skills',
-        upstreamId: 'librechat-skills:skills/old-research',
+        sourceId: 'Nashm-skills',
+        upstreamId: 'Nashm-skills:skills/old-research',
         commitSha: 'old-commit-sha',
         blobSha: 'file-sha',
         path: 'skills/old-research/scripts/run.sh',
@@ -1622,7 +1622,7 @@ describe('createGitHubSkillSyncRunner', () => {
         id: existing._id.toString(),
         update: expect.objectContaining({
           sourceMetadata: expect.objectContaining({
-            upstreamId: 'librechat-skills:skills/research',
+            upstreamId: 'Nashm-skills:skills/research',
             skillPath: 'skills/research',
           }),
         }),
@@ -1640,9 +1640,9 @@ describe('createGitHubSkillSyncRunner', () => {
       source: 'github',
       sourceMetadata: {
         provider: 'github',
-        sourceId: 'librechat-skills',
-        upstreamId: 'librechat-skills:skills/research',
-        owner: 'LibreChat',
+        sourceId: 'Nashm-skills',
+        upstreamId: 'Nashm-skills:skills/research',
+        owner: 'Nashm',
         repo: 'skills',
         ref: 'main',
         skillPath: 'skills/research',
@@ -1687,9 +1687,9 @@ describe('createGitHubSkillSyncRunner', () => {
       source: 'github',
       sourceMetadata: {
         provider: 'github',
-        sourceId: 'librechat-skills',
-        upstreamId: 'librechat-skills:skills/research',
-        owner: 'LibreChat',
+        sourceId: 'Nashm-skills',
+        upstreamId: 'Nashm-skills:skills/research',
+        owner: 'Nashm',
         repo: 'skills',
         ref: 'main',
         skillPath: 'skills/research',
@@ -1730,9 +1730,9 @@ describe('createGitHubSkillSyncRunner', () => {
       source: 'github',
       sourceMetadata: {
         provider: 'github',
-        sourceId: 'librechat-skills',
-        upstreamId: 'librechat-skills:skills/research',
-        owner: 'LibreChat',
+        sourceId: 'Nashm-skills',
+        upstreamId: 'Nashm-skills:skills/research',
+        owner: 'Nashm',
         repo: 'skills',
         ref: 'main',
         skillPath: 'skills/research',
@@ -1745,8 +1745,8 @@ describe('createGitHubSkillSyncRunner', () => {
     const unchangedFile = makeSkillFile(existing, {
       sourceMetadata: {
         provider: 'github',
-        sourceId: 'librechat-skills',
-        upstreamId: 'librechat-skills:skills/research',
+        sourceId: 'Nashm-skills',
+        upstreamId: 'Nashm-skills:skills/research',
         commitSha: 'old-commit-sha',
         blobSha: 'file-sha',
         path: 'skills/research/scripts/run.sh',
@@ -1780,9 +1780,9 @@ describe('createGitHubSkillSyncRunner', () => {
       source: 'github',
       sourceMetadata: {
         provider: 'github',
-        sourceId: 'librechat-skills',
-        upstreamId: 'librechat-skills:skills/research',
-        owner: 'LibreChat',
+        sourceId: 'Nashm-skills',
+        upstreamId: 'Nashm-skills:skills/research',
+        owner: 'Nashm',
         repo: 'skills',
         ref: 'main',
         skillPath: 'skills/research',
@@ -1818,9 +1818,9 @@ describe('createGitHubSkillSyncRunner', () => {
       source: 'github',
       sourceMetadata: {
         provider: 'github',
-        sourceId: 'librechat-skills',
-        upstreamId: 'librechat-skills:skills/research',
-        owner: 'LibreChat',
+        sourceId: 'Nashm-skills',
+        upstreamId: 'Nashm-skills:skills/research',
+        owner: 'Nashm',
         repo: 'skills',
         ref: 'main',
         skillPath: 'skills/research',
@@ -1910,10 +1910,10 @@ describe('createGitHubSkillSyncRunner', () => {
       listStatuses: jest.fn(async () => [
         {
           provider: 'github',
-          sourceId: 'librechat-skills',
+          sourceId: 'Nashm-skills',
           status: 'running',
           credentialKey: 'github-skills-prod',
-          owner: 'LibreChat',
+          owner: 'Nashm',
           repo: 'skills',
           ref: 'main',
           paths: ['skills'],
@@ -1930,7 +1930,7 @@ describe('createGitHubSkillSyncRunner', () => {
     expect(result.status).toBe('skipped');
     expect(result.sources).toEqual([
       expect.objectContaining({
-        sourceId: 'librechat-skills',
+        sourceId: 'Nashm-skills',
         status: 'running',
         credentialPresent: true,
       }),
@@ -2047,13 +2047,13 @@ describe('createGitHubSkillSyncRunner', () => {
         expect.objectContaining({
           relativePath: 'parent.txt',
           sourceMetadata: expect.objectContaining({
-            upstreamId: 'librechat-skills:skills',
+            upstreamId: 'Nashm-skills:skills',
           }),
         }),
         expect.objectContaining({
           relativePath: 'child.txt',
           sourceMetadata: expect.objectContaining({
-            upstreamId: 'librechat-skills:skills/child',
+            upstreamId: 'Nashm-skills:skills/child',
           }),
         }),
       ]),
@@ -2063,13 +2063,13 @@ describe('createGitHubSkillSyncRunner', () => {
         expect.objectContaining({
           relativePath: 'child/SKILL.md',
           sourceMetadata: expect.objectContaining({
-            upstreamId: 'librechat-skills:skills',
+            upstreamId: 'Nashm-skills:skills',
           }),
         }),
         expect.objectContaining({
           relativePath: 'child/child.txt',
           sourceMetadata: expect.objectContaining({
-            upstreamId: 'librechat-skills:skills',
+            upstreamId: 'Nashm-skills:skills',
           }),
         }),
       ]),

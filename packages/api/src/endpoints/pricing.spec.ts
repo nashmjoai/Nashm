@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import { EModelEndpoint } from 'librechat-data-provider';
-import { createTxMethods } from '@librechat/data-schemas';
+import { EModelEndpoint } from 'nashm-data-provider';
+import { createTxMethods } from '@nashm/data-schemas';
 import type { EndpointTokenConfig } from '~/types';
 import { matchModelName, findMatchingPattern } from '~/utils';
 import { buildTokenConfigMap } from './pricing';

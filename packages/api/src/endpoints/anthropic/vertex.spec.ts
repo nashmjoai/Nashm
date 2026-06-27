@@ -1,4 +1,4 @@
-import { AuthKeys } from 'librechat-data-provider';
+import { AuthKeys } from 'nashm-data-provider';
 import { createAnthropicVertexClient } from './vertex';
 
 describe('createAnthropicVertexClient', () => {

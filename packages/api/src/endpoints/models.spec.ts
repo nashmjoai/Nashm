@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Time, EModelEndpoint, defaultModels, AuthType } from 'librechat-data-provider';
+import { Time, EModelEndpoint, defaultModels, AuthType } from 'nashm-data-provider';
 import {
   fetchModels,
   splitAndTrim,
@@ -37,8 +37,8 @@ jest.mock('~/utils', () => {
   };
 });
 
-jest.mock('@librechat/data-schemas', () => ({
-  ...jest.requireActual('@librechat/data-schemas'),
+jest.mock('@nashm/data-schemas', () => ({
+  ...jest.requireActual('@nashm/data-schemas'),
   logger: {
     error: jest.fn(),
     warn: jest.fn(),
@@ -160,8 +160,8 @@ describe('fetchModels', () => {
 
   it('should resolve template variables in custom headers on the OpenAI-compatible path', async () => {
     const customHeaders = {
-      Authorization: 'Bearer {{LIBRECHAT_OPENID_ID_TOKEN}}',
-      'X-User-Email': '{{LIBRECHAT_USER_EMAIL}}',
+      Authorization: 'Bearer {{Nashm_OPENID_ID_TOKEN}}',
+      'X-User-Email': '{{Nashm_USER_EMAIL}}',
     };
     const userObject = { id: 'user123', email: 'user@example.com' };
 

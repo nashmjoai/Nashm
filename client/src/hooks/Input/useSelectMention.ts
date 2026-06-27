@@ -1,14 +1,14 @@
 import { useCallback, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 import { useSearchParams } from 'react-router-dom';
-import { EModelEndpoint, isAgentsEndpoint, isAssistantsEndpoint } from 'librechat-data-provider';
+import { EModelEndpoint, isAgentsEndpoint, isAssistantsEndpoint } from 'nashm-data-provider';
 import type {
   TPreset,
   TModelSpec,
   TConversation,
   TAssistantsMap,
   TEndpointsConfig,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type { MentionOption, ConvoGenerator } from '~/common';
 import {
   clearModelForNonEphemeralAgent,

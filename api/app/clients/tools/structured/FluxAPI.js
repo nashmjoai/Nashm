@@ -1,14 +1,14 @@
 const axios = require('axios');
 const fetch = require('node-fetch');
 const { v4: uuidv4 } = require('uuid');
-const { logger } = require('@librechat/data-schemas');
+const { logger } = require('@nashm/data-schemas');
 const { Tool } = require('@librechat/agents/langchain/tools');
 const {
   applyAxiosProxyConfig,
   createMinimalRetentionRequest,
   getHttpsProxyAgent,
-} = require('@librechat/api');
-const { FileContext, ContentTypes } = require('librechat-data-provider');
+} = require('@nashm/api');
+const { FileContext, ContentTypes } = require('nashm-data-provider');
 
 const fluxApiJsonSchema = {
   type: 'object',

@@ -5,15 +5,15 @@
  * @module packages/api/src/tools/classification
  */
 
-import { logger } from '@librechat/data-schemas';
-import { Constants } from 'librechat-data-provider';
+import { logger } from '@nashm/data-schemas';
+import { Constants } from 'nashm-data-provider';
 import {
   createToolSearch,
   ToolSearchToolDefinition,
   BashProgrammaticToolCallingDefinition,
   createBashProgrammaticToolCallingTool,
 } from '@librechat/agents';
-import type { AgentToolOptions } from 'librechat-data-provider';
+import type { AgentToolOptions } from 'nashm-data-provider';
 import type {
   LCToolRegistry,
   JsonSchemaType,

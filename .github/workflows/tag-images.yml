@@ -1,4 +1,4 @@
-name: Docker Images Build on Tag
+﻿name: Docker Images Build on Tag
 
 on:
   push:
@@ -17,10 +17,10 @@ jobs:
         include:
           - target: api-build
             file: Dockerfile.multi
-            image_name: librechat-api
+            image_name: Nashm-api
           - target: node
             file: Dockerfile
-            image_name: librechat
+            image_name: Nashm
 
     steps:
       # Check out the repository

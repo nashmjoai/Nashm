@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { Tools } from 'librechat-data-provider';
+import { Tools } from 'nashm-data-provider';
 import { UIResourceRenderer } from '@mcp-ui/client';
-import type { TAttachment, UIResource } from 'librechat-data-provider';
+import type { TAttachment, UIResource } from 'nashm-data-provider';
 import { useOptionalMessagesOperations } from '~/Providers';
 import { useLocalize, useExpandCollapse } from '~/hooks';
 import UIResourceCarousel from './UIResourceCarousel';

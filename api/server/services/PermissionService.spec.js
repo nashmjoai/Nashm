@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
-const { RoleBits, createModels, tenantStorage } = require('@librechat/data-schemas');
+const { RoleBits, createModels, tenantStorage } = require('@nashm/data-schemas');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const {
   ResourceType,
   AccessRoleIds,
   PrincipalType,
   PrincipalModel,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 const {
   bulkUpdateResourcePermissions,
   syncUserEntraGroupMemberships,
@@ -21,10 +21,10 @@ const {
 const { findRoleByIdentifier, getUserPrincipals, seedDefaultRoles } = require('~/models');
 
 // Mock the getTransactionSupport function for testing
-jest.mock('@librechat/data-schemas', () => ({
-  ...jest.requireActual('@librechat/data-schemas'),
+jest.mock('@nashm/data-schemas', () => ({
+  ...jest.requireActual('@nashm/data-schemas'),
   getTransactionSupport: jest.fn().mockResolvedValue(false),
-  createModels: jest.requireActual('@librechat/data-schemas').createModels,
+  createModels: jest.requireActual('@nashm/data-schemas').createModels,
 }));
 
 // Mock GraphApiService to prevent config loading issues

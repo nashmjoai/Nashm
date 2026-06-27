@@ -7,7 +7,7 @@ import {
   StdioOptionsSchema,
   WebSocketOptionsSchema,
   StreamableHTTPOptionsSchema,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type {
   EmbeddedResource,
   ListToolsResult,
@@ -16,8 +16,8 @@ import type {
   TextContent,
   Tool,
 } from '@modelcontextprotocol/sdk/types.js';
-import type { SearchResultData, UIResource, TPlugin } from 'librechat-data-provider';
-import type { TokenMethods, IUser } from '@librechat/data-schemas';
+import type { SearchResultData, UIResource, TPlugin } from 'nashm-data-provider';
+import type { TokenMethods, IUser } from '@nashm/data-schemas';
 import type { LCTool } from '@librechat/agents';
 import type { OboTokenResolver, OboTrustChecker } from '~/mcp/oauth/obo';
 import type { GraphTokenResolver } from '~/utils/graph';
@@ -148,7 +148,7 @@ export type FormattedToolResponse = FormattedContentResult;
 
 /**
  * Origin of an MCP server definition.
- * - `'yaml'`   — operator-defined in librechat.yaml, full trust, boot-time init
+ * - `'yaml'`   — operator-defined in Nashm.yaml, full trust, boot-time init
  * - `'config'` — admin-defined via Config override, full trust, lazy init
  * - `'user'`   — user-provided via UI, sandboxed (restricted placeholder resolution)
  */

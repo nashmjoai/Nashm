@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import { useGetCustomConfigSpeechQuery } from 'librechat-data-provider/react-query';
+import { useGetCustomConfigSpeechQuery } from 'nashm-data-provider/react-query';
 import { TTSEndpoints } from '~/common';
 import { logger } from '~/utils';
 import store from '~/store';

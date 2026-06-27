@@ -1,8 +1,8 @@
 import mongoose, { Types } from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { logger, createMethods, createModels } from '@librechat/data-schemas';
-import { ErrorTypes } from 'librechat-data-provider';
-import type { IUser, UserMethods } from '@librechat/data-schemas';
+import { logger, createMethods, createModels } from '@nashm/data-schemas';
+import { ErrorTypes } from 'nashm-data-provider';
+import type { IUser, UserMethods } from '@nashm/data-schemas';
 import type { CommandStartedEvent } from 'mongodb';
 import type { FilterQuery } from 'mongoose';
 import { recordOpenIDUserLookup } from '~/app/metrics';
@@ -12,8 +12,8 @@ function newId() {
   return new Types.ObjectId();
 }
 
-jest.mock('@librechat/data-schemas', () => ({
-  ...jest.requireActual('@librechat/data-schemas'),
+jest.mock('@nashm/data-schemas', () => ({
+  ...jest.requireActual('@nashm/data-schemas'),
   logger: {
     warn: jest.fn(),
     info: jest.fn(),

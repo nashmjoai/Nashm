@@ -1,15 +1,15 @@
 import path from 'path';
 import JSZip from 'jszip';
 import crypto from 'crypto';
-import { logger } from '@librechat/data-schemas';
-import { ResourceType, AccessRoleIds, PrincipalType } from 'librechat-data-provider';
+import { logger } from '@nashm/data-schemas';
+import { ResourceType, AccessRoleIds, PrincipalType } from 'nashm-data-provider';
 import type {
   ISkill,
   ISkillFile,
   CreateSkillInput,
   CreateSkillResult,
   UpsertSkillFileInput,
-} from '@librechat/data-schemas';
+} from '@nashm/data-schemas';
 import type { Request, Response } from 'express';
 import type { Types } from 'mongoose';
 import type { ImportLimits } from './limits';
@@ -22,7 +22,7 @@ const SKILL_MD = 'SKILL.md';
 export type { ImportLimits } from './limits';
 
 /**
- * YAML frontmatter parser — extracts the first-class fields LibreChat
+ * YAML frontmatter parser — extracts the first-class fields Nashm
  * persists as columns (`name`, `description`, `alwaysApply`) out of a
  * SKILL.md file. Intentionally narrow: the full frontmatter validator in
  * `packages/data-schemas/src/methods/skill.ts` covers the wire contract;

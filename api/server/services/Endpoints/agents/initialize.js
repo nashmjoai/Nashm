@@ -1,4 +1,4 @@
-const { logger } = require('@librechat/data-schemas');
+const { logger } = require('@nashm/data-schemas');
 const { createContentAggregator } = require('@librechat/agents');
 const {
   loadSkillStates,
@@ -13,7 +13,7 @@ const {
   resolveAgentScopedSkillIds,
   resolveModelSpecSkillIds,
   buildAgentContextAttachmentsByAgentId,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const {
   ResourceType,
   EModelEndpoint,
@@ -24,7 +24,7 @@ const {
   AgentCapabilities,
   MAX_SUBAGENT_GRAPH_NODES,
   isEphemeralAgentId,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 const {
   createToolEndCallback,
   getDefaultHandlers,
@@ -185,7 +185,7 @@ const initializeClient = async ({ req, res, signal, endpointOption }) => {
    *   agent?: object,
    *   tool_resources?: object,
    *   toolRegistry?: import('@librechat/agents').LCToolRegistry,
-   *   requestScopedConnections?: import('@librechat/api').RequestScopedMCPConnectionStore,
+   *   requestScopedConnections?: import('@nashm/api').RequestScopedMCPConnectionStore,
    *   openAIApiKey?: string
    * }>}
    */
@@ -256,9 +256,9 @@ const initializeClient = async ({ req, res, signal, endpointOption }) => {
   /** Latest visible context snapshot + every emitted usage payload for this
    *  response, captured by the handlers and persisted on the response message's
    *  metadata so the breakdown and branch/total cost survive a reload.
-   *  @type {{ latest: import('librechat-data-provider').TContextUsageEvent | null, count: number }} */
+   *  @type {{ latest: import('nashm-data-provider').TContextUsageEvent | null, count: number }} */
   const contextUsageSink = { latest: null, count: 0 };
-  /** @type {Array<import('librechat-data-provider').TTokenUsageEvent>} */
+  /** @type {Array<import('nashm-data-provider').TTokenUsageEvent>} */
   const usageEmitSink = [];
 
   const eventHandlers = getDefaultHandlers({
@@ -487,8 +487,8 @@ const initializeClient = async ({ req, res, signal, endpointOption }) => {
       onAgentInitialized: (agentId, agent, config) => {
         agentToolContexts.set(agentId, buildAgentToolContext({ agent, config }));
       },
-      // Pass through the `@librechat/api` exports so that tests which
-      // `jest.mock('@librechat/api')` can override the initializer/validator.
+      // Pass through the `@nashm/api` exports so that tests which
+      // `jest.mock('@nashm/api')` can override the initializer/validator.
       initializeAgent,
       validateAgentModel,
     },
@@ -913,7 +913,7 @@ const initializeClient = async ({ req, res, signal, endpointOption }) => {
    *  recorded — even with an `undefined` config — so the resolver can tell a
    *  known non-custom agent (built-in pricing) from an untagged/unknown one
    *  (primary fallback).
-   *  @type {Map<string, import('@librechat/api').EndpointTokenConfig | undefined>} */
+   *  @type {Map<string, import('@nashm/api').EndpointTokenConfig | undefined>} */
   const endpointTokenConfigByAgentId = new Map();
   for (const [agentId, ctx] of agentToolContexts) {
     endpointTokenConfigByAgentId.set(agentId, ctx?.endpointTokenConfig);

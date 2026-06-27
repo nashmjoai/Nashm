@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dropdown } from '@librechat/client';
+import { Dropdown } from '@nashm/client';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { useLocalize } from '~/hooks';
 import store from '~/store';

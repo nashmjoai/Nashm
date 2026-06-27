@@ -1,7 +1,7 @@
 const axios = require('axios');
-const { isEnabled, getReferencedQuotes, mergeQuotedText } = require('@librechat/api');
-const { logger } = require('@librechat/data-schemas');
-const { ErrorTypes } = require('librechat-data-provider');
+const { isEnabled, getReferencedQuotes, mergeQuotedText } = require('@nashm/api');
+const { logger } = require('@nashm/data-schemas');
+const { ErrorTypes } = require('nashm-data-provider');
 const denyRequest = require('./denyRequest');
 
 async function moderateText(req, res, next) {

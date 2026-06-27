@@ -5,7 +5,7 @@ import {
   PrincipalType,
   PrincipalModel,
   PermissionBits,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type * as t from '~/types';
 import { createAclEntryMethods, permissionBitSupersets } from './aclEntry';
 import aclEntrySchema from '~/schema/aclEntry';

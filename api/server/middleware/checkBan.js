@@ -1,8 +1,8 @@
 const { Keyv } = require('keyv');
 const uap = require('ua-parser-js');
-const { logger } = require('@librechat/data-schemas');
-const { ViolationTypes } = require('librechat-data-provider');
-const { isEnabled, keyvMongo, removePorts } = require('@librechat/api');
+const { logger } = require('@nashm/data-schemas');
+const { ViolationTypes } = require('nashm-data-provider');
+const { isEnabled, keyvMongo, removePorts } = require('@nashm/api');
 const { getLogStores } = require('~/cache');
 const denyRequest = require('./denyRequest');
 const { findUser } = require('~/models');

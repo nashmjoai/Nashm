@@ -1,4 +1,4 @@
-import type { RefillIntervalUnit, TUserFavorite } from 'librechat-data-provider';
+import type { RefillIntervalUnit, TUserFavorite } from 'nashm-data-provider';
 import type { Document, Types } from 'mongoose';
 import { CursorPaginationParams } from '~/common';
 

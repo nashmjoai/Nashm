@@ -148,9 +148,9 @@ export type AllMethods = UserMethods &
 
 /** Dependencies injected from the api layer into createMethods */
 export interface CreateMethodsDeps {
-  /** Matches a model name to a canonical key. From @librechat/api. */
+  /** Matches a model name to a canonical key. From @nashm/api. */
   matchModelName?: (model: string, endpoint?: string) => string | undefined;
-  /** Finds the first key in values whose key is a substring of model. From @librechat/api. */
+  /** Finds the first key in values whose key is a substring of model. From @nashm/api. */
   findMatchingPattern?: (
     model: string,
     values: Record<string, number | Record<string, number>>,

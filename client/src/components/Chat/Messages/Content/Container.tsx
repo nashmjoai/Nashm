@@ -1,4 +1,4 @@
-import { TMessage } from 'librechat-data-provider';
+import { TMessage } from 'nashm-data-provider';
 import MessageQuotes from './MessageQuotes';
 import SkillPills from './SkillPills';
 import Files from './Files';

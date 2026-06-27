@@ -1,5 +1,5 @@
-import { OGDialogContent, OGDialog, OGDialogTitle } from '@librechat/client';
-import type { TPromptGroup } from 'librechat-data-provider';
+import { OGDialogContent, OGDialog, OGDialogTitle } from '@nashm/client';
+import type { TPromptGroup } from 'nashm-data-provider';
 import PromptDetails from '../display/PromptDetails';
 import { useLocalize } from '~/hooks';
 

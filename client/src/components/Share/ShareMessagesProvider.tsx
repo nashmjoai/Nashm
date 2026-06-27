@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import type { TMessage } from 'librechat-data-provider';
+import type { TMessage } from 'nashm-data-provider';
 import type { MessagesViewContextValue } from '~/Providers/MessagesViewContext';
 import { MessagesViewContext } from '~/Providers/MessagesViewContext';
 

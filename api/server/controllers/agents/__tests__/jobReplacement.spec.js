@@ -28,11 +28,11 @@ const mockGenerationJobManager = {
 const mockSaveMessage = jest.fn();
 const mockDecrementPendingRequest = jest.fn();
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: mockLogger,
 }));
 
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   isEnabled: jest.fn().mockReturnValue(false),
   GenerationJobManager: mockGenerationJobManager,
   getReferencedQuotes: jest.fn((quotes) => {

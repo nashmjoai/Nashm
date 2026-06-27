@@ -8,7 +8,7 @@ import type { LCTool, LCToolRegistry } from '@librechat/agents';
 
 export const CREATE_FILE_TOOL_NAME = 'create_file';
 export const EDIT_FILE_TOOL_NAME = 'edit_file';
-export const HOST_FILE_AUTHORING_ARTIFACT_KEY = '__librechat_file_authoring';
+export const HOST_FILE_AUTHORING_ARTIFACT_KEY = '__Nashm_file_authoring';
 export const FILE_AUTHORING_TOOL_NAMES: ReadonlySet<string> = new Set([
   CREATE_FILE_TOOL_NAME,
   EDIT_FILE_TOOL_NAME,

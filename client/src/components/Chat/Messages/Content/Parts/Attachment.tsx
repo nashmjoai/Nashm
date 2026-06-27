@@ -1,7 +1,7 @@
 import { memo, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Loader2, AlertCircle, Download, ChevronDown, Files as FilesIcon } from 'lucide-react';
-import { Tools } from 'librechat-data-provider';
-import type { TAttachment, TFile, TAttachmentMetadata } from 'librechat-data-provider';
+import { Tools } from 'nashm-data-provider';
+import type { TAttachment, TFile, TAttachmentMetadata } from 'nashm-data-provider';
 import type { ToolArtifactType } from '~/utils/artifacts';
 import {
   artifactTypeForAttachment,

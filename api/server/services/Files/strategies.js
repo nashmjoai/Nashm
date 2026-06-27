@@ -1,4 +1,4 @@
-const { FileSources } = require('librechat-data-provider');
+const { FileSources } = require('nashm-data-provider');
 const {
   getS3URL,
   saveURLToS3WithMetadata,
@@ -19,7 +19,7 @@ const {
   getCloudFrontDownloadURL,
   deleteFileFromCloudFront,
   uploadGoogleVertexMistralOCR,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const {
   getFirebaseURL,
   prepareImageURL,

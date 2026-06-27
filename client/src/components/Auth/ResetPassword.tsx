@@ -1,9 +1,9 @@
 import { useForm } from 'react-hook-form';
-import { Spinner, Button, SecretInput } from '@librechat/client';
+import { Spinner, Button, SecretInput } from '@nashm/client';
 import { useOutletContext } from 'react-router-dom';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useResetPasswordMutation } from 'librechat-data-provider/react-query';
-import type { TResetPassword } from 'librechat-data-provider';
+import { useResetPasswordMutation } from 'nashm-data-provider/react-query';
+import type { TResetPassword } from 'nashm-data-provider';
 import type { TLoginLayoutContext } from '~/common';
 import { useLocalize } from '~/hooks';
 

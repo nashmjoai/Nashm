@@ -1,12 +1,12 @@
-const { logger } = require('@librechat/data-schemas');
-const { EModelEndpoint } = require('librechat-data-provider');
+const { logger } = require('@nashm/data-schemas');
+const { EModelEndpoint } = require('nashm-data-provider');
 const {
   mergeHeaders,
   getAnthropicModels,
   getBedrockModels,
   getOpenAIModels,
   getGoogleModels,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const { getAppConfig } = require('./app');
 
 /**

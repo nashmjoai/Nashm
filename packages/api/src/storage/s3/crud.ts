@@ -10,15 +10,15 @@ import {
   HeadObjectCommand,
   DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
-import { logger } from '@librechat/data-schemas';
-import { FileSources } from 'librechat-data-provider';
+import { logger } from '@nashm/data-schemas';
+import { FileSources } from 'nashm-data-provider';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import type {
   CompletedPart,
   GetObjectCommandInput,
   PutObjectCommandInput,
 } from '@aws-sdk/client-s3';
-import type { TFile } from 'librechat-data-provider';
+import type { TFile } from 'nashm-data-provider';
 import type { ServerRequest } from '~/types';
 import type {
   UploadFileParams,

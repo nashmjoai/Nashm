@@ -3,7 +3,7 @@ import copy from 'copy-to-clipboard';
 import * as Tabs from '@radix-ui/react-tabs';
 import { Code, Play, RefreshCw, X } from 'lucide-react';
 import { useSetRecoilState, useResetRecoilState } from 'recoil';
-import { Button, Spinner, useMediaQuery, Radio } from '@librechat/client';
+import { Button, Spinner, useMediaQuery, Radio } from '@nashm/client';
 import type { SandpackPreviewRef } from '@codesandbox/sandpack-react';
 import CopyButton from '~/components/Messages/Content/CopyButton';
 import { useShareContext, useMutationState } from '~/Providers';

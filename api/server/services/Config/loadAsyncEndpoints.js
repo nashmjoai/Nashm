@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs/promises');
-const { logger } = require('@librechat/data-schemas');
-const { loadServiceKey, isUserProvided } = require('@librechat/api');
+const { logger } = require('@nashm/data-schemas');
+const { loadServiceKey, isUserProvided } = require('@nashm/api');
 const { config } = require('./EndpointService');
 
 const defaultServiceKeyPath = path.join(__dirname, '../../..', 'data', 'auth.json');

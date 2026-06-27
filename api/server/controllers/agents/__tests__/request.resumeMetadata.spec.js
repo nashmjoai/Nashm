@@ -76,11 +76,11 @@ const mockCleanupMCPRequestContextForReq = jest.fn(async (req) => {
   }
 });
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: mockLogger,
 }));
 
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   sendEvent: jest.fn(),
   getViolationInfo: jest.fn(),
   buildMessageFiles: jest.fn(() => []),

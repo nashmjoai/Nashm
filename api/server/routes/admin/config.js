@@ -1,6 +1,6 @@
 const express = require('express');
-const { createAdminConfigHandlers } = require('@librechat/api');
-const { SystemCapabilities } = require('@librechat/data-schemas');
+const { createAdminConfigHandlers } = require('@nashm/api');
+const { SystemCapabilities } = require('@nashm/data-schemas');
 const {
   hasCapability,
   hasConfigCapability,

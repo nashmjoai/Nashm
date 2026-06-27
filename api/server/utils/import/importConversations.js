@@ -1,6 +1,6 @@
 const fs = require('fs').promises;
-const { resolveImportMaxFileSize } = require('@librechat/api');
-const { logger } = require('@librechat/data-schemas');
+const { resolveImportMaxFileSize } = require('@nashm/api');
+const { logger } = require('@nashm/data-schemas');
 const { getImporter } = require('./importers');
 const { createImportBatchBuilder } = require('./importBatchBuilder');
 

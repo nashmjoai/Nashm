@@ -21,17 +21,17 @@ function mockDependencies() {
     access: mockAccess,
   }));
 
-  mockOptionalModule('@librechat/api', () => ({
+  mockOptionalModule('@nashm/api', () => ({
     isEnabled: (value) => value === true || value === 'true' || value === '1',
     isUserProvided: mockIsUserProvided,
     loadServiceKey: mockLoadServiceKey,
   }));
 
-  mockOptionalModule('@librechat/data-schemas', () => ({
+  mockOptionalModule('@nashm/data-schemas', () => ({
     logger: mockLogger,
   }));
 
-  mockOptionalModule('librechat-data-provider', () => ({
+  mockOptionalModule('nashm-data-provider', () => ({
     EModelEndpoint: {
       agents: 'agents',
       anthropic: 'anthropic',

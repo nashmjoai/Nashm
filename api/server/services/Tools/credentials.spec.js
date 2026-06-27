@@ -1,4 +1,4 @@
-const { AuthType } = require('librechat-data-provider');
+const { AuthType } = require('nashm-data-provider');
 
 jest.mock('~/server/services/PluginService', () => ({
   getUserPluginAuthValue: jest.fn(),

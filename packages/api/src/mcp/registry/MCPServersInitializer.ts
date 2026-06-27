@@ -1,5 +1,5 @@
 import { createHash } from 'crypto';
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 import type * as t from '~/mcp/types';
 import { registryStatusCache as statusCache } from './cache/RegistryStatusCache';
 import { MCPServersRegistry } from './MCPServersRegistry';

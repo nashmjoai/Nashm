@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
-import type { TAttachment, TFile } from 'librechat-data-provider';
+import type { TAttachment, TFile } from 'nashm-data-provider';
 import { useSearchResultsByTurn } from './useSearchResultsByTurn';
 import store from '~/store';
 

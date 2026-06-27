@@ -1,5 +1,5 @@
-import { Permissions, PermissionTypes } from 'librechat-data-provider';
-import { useToastContext } from '@librechat/client';
+import { Permissions, PermissionTypes } from 'nashm-data-provider';
+import { useToastContext } from '@nashm/client';
 import { AdminSettingsDialog } from '~/components/ui';
 import { useUpdateMCPServersPermissionsMutation } from '~/data-provider';
 import { useLocalize } from '~/hooks';

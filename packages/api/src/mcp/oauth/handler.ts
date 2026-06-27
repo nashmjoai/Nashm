@@ -1,7 +1,7 @@
 import { randomBytes } from 'crypto';
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 import { OAuthMetadataSchema } from '@modelcontextprotocol/sdk/shared/auth.js';
-import { TokenExchangeMethodEnum, type MCPOptions } from 'librechat-data-provider';
+import { TokenExchangeMethodEnum, type MCPOptions } from 'nashm-data-provider';
 import {
   checkResourceAllowed,
   resourceUrlFromServerUrl,
@@ -14,7 +14,7 @@ import {
   discoverOAuthProtectedResourceMetadata,
 } from '@modelcontextprotocol/sdk/client/auth.js';
 import type { FetchLike } from '@modelcontextprotocol/sdk/shared/transport';
-import type { TokenMethods } from '@librechat/data-schemas';
+import type { TokenMethods } from '@nashm/data-schemas';
 import type {
   OAuthClientInformation,
   OAuthProtectedResourceMetadata,
@@ -420,7 +420,7 @@ export class MCPOAuthHandler {
 
     /** Client metadata based on what the server supports */
     const clientMetadata = {
-      client_name: 'LibreChat MCP Client',
+      client_name: 'Nashm MCP Client',
       redirect_uris: [redirectUri || this.getDefaultRedirectUri()],
       grant_types: ['authorization_code'] as string[],
       response_types: ['code'] as string[],
@@ -1003,7 +1003,7 @@ export class MCPOAuthHandler {
    *
    * Uses the MCP SDK's own {@link checkResourceAllowed} so the semantics (same origin
    * plus configured-path-prefix) match what the SDK enforces internally via
-   * {@link selectResourceURL}, a code path LibreChat does not go through.
+   * {@link selectResourceURL}, a code path Nashm does not go through.
    */
   private static assertResourceBoundToServer(
     serverUrl: string,
@@ -1167,7 +1167,7 @@ export class MCPOAuthHandler {
    * because of that parameter.
    *
    * RFC 6749 §6 makes `scope` optional on refresh (the server reuses the originally
-   * granted scope when it is omitted). LibreChat sends it by default because some
+   * granted scope when it is omitted). Nashm sends it by default because some
    * servers expect it, but others — notably Salesforce — reject any `scope` on the
    * refresh grant with HTTP 400 "scope parameter not supported". A failed refresh
    * forces a full re-authentication, which on multi-replica deployments amplifies the

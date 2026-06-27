@@ -1,5 +1,5 @@
-import { SystemCapabilities } from '@librechat/data-schemas';
-import type { ISkillSyncStatus } from '@librechat/data-schemas';
+import { SystemCapabilities } from '@nashm/data-schemas';
+import type { ISkillSyncStatus } from '@nashm/data-schemas';
 import type { NextFunction, Response } from 'express';
 import { createAdminSkillsSyncAccess, createAdminSkillsSyncHandlers } from './skills';
 
@@ -28,7 +28,7 @@ function createSourceStatus(overrides: Partial<SourceStatus> = {}): SourceStatus
     status: 'idle',
     credentialKey: 'github-skills-prod',
     credentialPresent: true,
-    owner: 'LibreChat',
+    owner: 'Nashm',
     repo: 'skills',
     ref: 'main',
     paths: ['skills'],
@@ -249,7 +249,7 @@ describe('createAdminSkillsSyncHandlers', () => {
           expect.objectContaining({
             credentialKey: 'github-skills-prod',
             credentialPresent: true,
-            owner: 'LibreChat',
+            owner: 'Nashm',
             repo: 'skills',
             ref: 'main',
             paths: ['skills'],
@@ -298,7 +298,7 @@ describe('createAdminSkillsSyncAccess', () => {
       sources: [
         {
           id: 'base-skills',
-          owner: 'LibreChat',
+          owner: 'Nashm',
           repo: 'skills',
           ref: 'main',
           paths: ['skills'],
@@ -376,7 +376,7 @@ describe('createAdminSkillsSyncAccess', () => {
         sources: [
           {
             id: 'tenant-skills',
-            owner: 'LibreChat',
+            owner: 'Nashm',
             repo: 'skills',
             ref: 'main',
             paths: ['skills'],

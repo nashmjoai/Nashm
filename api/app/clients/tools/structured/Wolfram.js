@@ -1,6 +1,6 @@
 /* eslint-disable no-useless-escape */
 const axios = require('axios');
-const { logger } = require('@librechat/data-schemas');
+const { logger } = require('@nashm/data-schemas');
 const { Tool } = require('@librechat/agents/langchain/tools');
 
 const wolframJsonSchema = {

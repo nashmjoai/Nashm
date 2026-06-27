@@ -1,5 +1,5 @@
 import { Keyv } from 'keyv';
-import type { IUser } from '@librechat/data-schemas';
+import type { IUser } from '@nashm/data-schemas';
 import type {
   OAuthClientInformation,
   OAuthStoredClientMetadata,
@@ -16,7 +16,7 @@ import { FlowStateManager } from '~/flow/manager';
 import { MCPConnection } from '~/mcp/connection';
 import { MCPTokenStorage } from '~/mcp/oauth';
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     info: jest.fn(),
     warn: jest.fn(),
@@ -49,7 +49,7 @@ jest.mock('~/mcp/mcpConfig', () => ({
 
 const SERVER_NAME = 'sdk-oauth-server';
 const USER_ID = 'sdk-user';
-const CLIENT_ID = 'librechat-sdk-test-client';
+const CLIENT_ID = 'Nashm-sdk-test-client';
 
 async function safeDisconnect(conn: MCPConnection | null): Promise<void> {
   if (!conn) {

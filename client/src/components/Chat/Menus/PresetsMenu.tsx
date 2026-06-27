@@ -10,7 +10,7 @@ import {
   OGDialogTitle,
   OGDialogHeader,
   OGDialogContent,
-} from '@librechat/client';
+} from '@nashm/client';
 import type { FC } from 'react';
 import { EditPresetDialog, PresetItems } from './Presets';
 import { useLocalize, usePresets } from '~/hooks';

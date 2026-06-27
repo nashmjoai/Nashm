@@ -1,11 +1,11 @@
-const { FileContext } = require('librechat-data-provider');
+const { FileContext } = require('nashm-data-provider');
 const {
   getStorageMetadata,
   createGitHubSkillSyncRunner,
   createSkillSyncTriggerOrchestrator,
   startGitHubSkillSyncScheduler,
-} = require('@librechat/api');
-const { logger, runAsSystem } = require('@librechat/data-schemas');
+} = require('@nashm/api');
+const { logger, runAsSystem } = require('@nashm/data-schemas');
 const db = require('~/models');
 const { getAppConfig } = require('~/server/services/Config');
 const { getStrategyFunctions } = require('~/server/services/Files/strategies');

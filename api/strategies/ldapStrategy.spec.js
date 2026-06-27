@@ -1,5 +1,5 @@
 // --- Mocks ---
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     info: jest.fn(),
     warn: jest.fn(),
@@ -8,7 +8,7 @@ jest.mock('@librechat/data-schemas', () => ({
   },
 }));
 
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   isEnabled: jest.fn(() => false),
   isEmailDomainAllowed: jest.fn(() => true),
   getBalanceConfig: jest.fn(() => ({ enabled: false })),
@@ -35,8 +35,8 @@ jest.mock('passport-ldapauth', () => {
   });
 });
 
-const { ErrorTypes } = require('librechat-data-provider');
-const { isEmailDomainAllowed, resolveAppConfigForUser } = require('@librechat/api');
+const { ErrorTypes } = require('nashm-data-provider');
+const { isEmailDomainAllowed, resolveAppConfigForUser } = require('@nashm/api');
 const { findUser, createUser, updateUser, countUsers } = require('~/models');
 const { getAppConfig } = require('~/server/services/Config');
 

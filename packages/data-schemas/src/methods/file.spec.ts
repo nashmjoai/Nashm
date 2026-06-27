@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { EToolResources, FileContext } from 'librechat-data-provider';
+import { EToolResources, FileContext } from 'nashm-data-provider';
 import { _resetStrictCache } from '~/models/plugins/tenantIsolation';
 import { runAsSystem } from '~/config/tenantContext';
 import { createFileMethods } from './file';

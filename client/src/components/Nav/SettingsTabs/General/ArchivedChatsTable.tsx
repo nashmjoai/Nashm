@@ -23,8 +23,8 @@ import {
   OGDialogHeader,
   useToastContext,
   OGDialogContent,
-} from '@librechat/client';
-import type { ConversationListParams, TConversation } from 'librechat-data-provider';
+} from '@nashm/client';
+import type { ConversationListParams, TConversation } from 'nashm-data-provider';
 import {
   useConversationsInfiniteQuery,
   useDeleteConversationMutation,

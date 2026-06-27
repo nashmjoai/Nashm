@@ -7,7 +7,7 @@ const mockGrantCreationPermissions = jest.fn();
 const mockUpdateSharedLinkPermissionsExpiration = jest.fn();
 const mockSharedLinksAccess = jest.fn((_req, _res, next) => next());
 
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   isEnabled: jest.fn(() => true),
   generateCheckAccess: jest.fn(() => mockSharedLinksAccess),
   grantCreationPermissions: (...args) => mockGrantCreationPermissions(...args),
@@ -21,14 +21,14 @@ jest.mock('@librechat/api', () => ({
   isActiveExpirationDate: jest.fn((expiredAt) => expiredAt > new Date()),
 }));
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: { error: jest.fn(), warn: jest.fn() },
   createTempChatExpirationDate: jest.fn(() => new Date('2030-01-01T00:00:00.000Z')),
   runAsSystem: jest.fn((fn) => fn()),
   tenantStorage: { run: jest.fn((_ctx, fn) => fn()) },
 }));
 
-jest.mock('librechat-data-provider', () => ({
+jest.mock('nashm-data-provider', () => ({
   PermissionTypes: {
     SHARED_LINKS: 'SHARED_LINKS',
   },
@@ -91,13 +91,13 @@ jest.mock('~/server/middleware/requireJwtAuth', () => (req, res, next) => next()
 jest.mock('~/server/middleware/config/app', () => (_req, _res, next) => next());
 
 const { Readable } = require('stream');
-const { RetentionMode } = require('librechat-data-provider');
-const { createTempChatExpirationDate, logger } = require('@librechat/data-schemas');
+const { RetentionMode } = require('nashm-data-provider');
+const { createTempChatExpirationDate, logger } = require('@nashm/data-schemas');
 const {
   deleteSharedLinkWithCleanup,
   isFileSnapshotEnabled,
   isFileSnapshotKillSwitchActive,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const {
   getFiles,
   updateFile,

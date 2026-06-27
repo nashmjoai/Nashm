@@ -1,4 +1,4 @@
-const { logger } = require('@librechat/data-schemas');
+const { logger } = require('@nashm/data-schemas');
 const {
   ADDED_AGENT_ID,
   initializeAgent,
@@ -6,8 +6,8 @@ const {
   resolveAgentScopedSkillIds,
   resolveModelSpecSkillIds,
   loadAddedAgent: loadAddedAgentFn,
-} = require('@librechat/api');
-const { isEphemeralAgentId } = require('librechat-data-provider');
+} = require('@nashm/api');
+const { isEphemeralAgentId } = require('nashm-data-provider');
 const { filterFilesByAgentAccess } = require('~/server/services/Files/permissions');
 const { getMCPServerTools } = require('~/server/services/Config');
 const { canAuthorSkillFiles } = require('./skillDeps');

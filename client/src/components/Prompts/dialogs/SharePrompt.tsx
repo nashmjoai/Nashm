@@ -1,14 +1,14 @@
 import React from 'react';
 import { Share2Icon } from 'lucide-react';
-import { Button, TooltipAnchor } from '@librechat/client';
+import { Button, TooltipAnchor } from '@nashm/client';
 import {
   SystemRoles,
   Permissions,
   ResourceType,
   PermissionBits,
   PermissionTypes,
-} from 'librechat-data-provider';
-import type { TPromptGroup } from 'librechat-data-provider';
+} from 'nashm-data-provider';
+import type { TPromptGroup } from 'nashm-data-provider';
 import { useAuthContext, useHasAccess, useLocalize, useResourcePermissions } from '~/hooks';
 import { GenericGrantAccessDialog } from '~/components/Sharing';
 

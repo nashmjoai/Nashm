@@ -1,5 +1,5 @@
 jest.mock(
-  'librechat-data-provider',
+  'nashm-data-provider',
   () => ({
     actionDelimiter: '_action_',
     validateAndParseOpenAPISpec: (specString: string) => {

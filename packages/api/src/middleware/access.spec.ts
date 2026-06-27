@@ -4,8 +4,8 @@ import {
   PermissionTypes,
   EModelEndpoint,
   EndpointURLs,
-} from 'librechat-data-provider';
-import type { IRole, IUser } from '@librechat/data-schemas';
+} from 'nashm-data-provider';
+import type { IRole, IUser } from '@nashm/data-schemas';
 import {
   checkAccess,
   checkAccessWithRequestCache,
@@ -14,7 +14,7 @@ import {
 } from './access';
 
 // Mock logger
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     warn: jest.fn(),
     error: jest.fn(),

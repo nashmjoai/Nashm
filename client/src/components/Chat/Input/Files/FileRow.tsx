@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { useToastContext } from '@librechat/client';
-import { EToolResources } from 'librechat-data-provider';
+import { useToastContext } from '@nashm/client';
+import { EToolResources } from 'nashm-data-provider';
 import type { ExtendedFile } from '~/common';
 import { useDeleteFilesMutation } from '~/data-provider';
 import { logger, getCachedPreview } from '~/utils';

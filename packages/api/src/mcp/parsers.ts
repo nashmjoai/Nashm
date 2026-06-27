@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
-import { Tools } from 'librechat-data-provider';
-import type { UIResource } from 'librechat-data-provider';
+import { Tools } from 'nashm-data-provider';
+import type { UIResource } from 'nashm-data-provider';
 import type * as t from './types';
 
 export const DEFAULT_MCP_IMAGE_DATA_MAX_BYTES: number = 10 * 1024 * 1024;

@@ -1,9 +1,9 @@
-import type { Agent, Assistant } from 'librechat-data-provider';
+import type { Agent, Assistant } from 'nashm-data-provider';
 import type { TMessageIcon } from '~/common';
 
 // Mock all module-level imports so we can import the pure arePropsEqual function
 // without pulling in React component dependencies
-jest.mock('librechat-data-provider', () => ({
+jest.mock('nashm-data-provider', () => ({
   getEndpointField: jest.fn(),
 }));
 jest.mock('~/components/Endpoints/ConvoIconURL', () => jest.fn());

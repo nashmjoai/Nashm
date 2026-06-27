@@ -1,4 +1,4 @@
-import type { TFeedbackRating, TFeedbackTag } from 'librechat-data-provider';
+import type { TFeedbackRating, TFeedbackTag } from 'nashm-data-provider';
 import type { Document } from 'mongoose';
 
 // @ts-ignore

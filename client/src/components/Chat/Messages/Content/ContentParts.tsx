@@ -1,11 +1,11 @@
 import { memo, useRef, useMemo, useCallback } from 'react';
-import { ContentTypes } from 'librechat-data-provider';
+import { ContentTypes } from 'nashm-data-provider';
 import type {
   TMessageContentParts,
   SearchResultData,
   TAttachment,
   Agents,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type { ToolCallGroupExpansionState } from './ToolCallGroup';
 import { ParallelContentRenderer, type PartWithIndex } from './ParallelContent';
 import { mapAttachments, groupSequentialToolCalls } from '~/utils';

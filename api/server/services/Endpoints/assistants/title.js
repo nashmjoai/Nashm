@@ -1,6 +1,6 @@
-const { isEnabled, sanitizeTitle } = require('@librechat/api');
-const { logger } = require('@librechat/data-schemas');
-const { CacheKeys } = require('librechat-data-provider');
+const { isEnabled, sanitizeTitle } = require('@nashm/api');
+const { logger } = require('@nashm/data-schemas');
+const { CacheKeys } = require('nashm-data-provider');
 const getLogStores = require('~/cache/getLogStores');
 const initializeClient = require('./initalize');
 const { saveConvo } = require('~/models');

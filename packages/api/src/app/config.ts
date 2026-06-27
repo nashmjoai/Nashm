@@ -1,11 +1,11 @@
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 import {
   EModelEndpoint,
   removeNullishValues,
   normalizeEndpointName,
-} from 'librechat-data-provider';
-import type { TCustomConfig, TEndpoint, TTransactionsConfig } from 'librechat-data-provider';
-import type { AppConfig } from '@librechat/data-schemas';
+} from 'nashm-data-provider';
+import type { TCustomConfig, TEndpoint, TTransactionsConfig } from 'nashm-data-provider';
+import type { AppConfig } from '@nashm/data-schemas';
 import { isEnabled } from '~/utils';
 
 /**

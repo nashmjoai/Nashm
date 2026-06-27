@@ -10,12 +10,12 @@
  * boundary (404 vs 403).
  */
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: { warn: jest.fn(), debug: jest.fn(), error: jest.fn(), info: jest.fn() },
   SystemCapabilities: {},
 }));
 
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   refreshS3FileUrls: jest.fn(),
   resolveUploadErrorMessage: jest.fn(),
   verifyAgentUploadPermission: jest.fn(),

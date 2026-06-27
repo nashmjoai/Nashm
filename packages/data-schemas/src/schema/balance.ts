@@ -1,5 +1,5 @@
 import { Schema } from 'mongoose';
-import { REFILL_INTERVAL_UNITS } from 'librechat-data-provider';
+import { REFILL_INTERVAL_UNITS } from 'nashm-data-provider';
 import type * as t from '~/types';
 
 const balanceSchema: Schema<t.IBalance> = new Schema<t.IBalance>({

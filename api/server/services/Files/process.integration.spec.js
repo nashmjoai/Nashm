@@ -14,11 +14,11 @@
 
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
-const { agentSchema, fileSchema, createMethods } = require('@librechat/data-schemas');
-const { FileSources } = require('librechat-data-provider');
+const { agentSchema, fileSchema, createMethods } = require('@nashm/data-schemas');
+const { FileSources } = require('nashm-data-provider');
 
-jest.mock('@librechat/data-schemas', () => {
-  const actual = jest.requireActual('@librechat/data-schemas');
+jest.mock('@nashm/data-schemas', () => {
+  const actual = jest.requireActual('@nashm/data-schemas');
   return {
     ...actual,
     logger: { warn: jest.fn(), debug: jest.fn(), error: jest.fn(), info: jest.fn() },
@@ -29,7 +29,7 @@ jest.mock('@librechat/agents', () => ({
   EnvVar: { CODE_API_KEY: 'CODE_API_KEY' },
 }));
 
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   sanitizeFilename: jest.fn((n) => n),
   parseText: jest.fn().mockResolvedValue({ text: '', bytes: 0 }),
   processAudioFile: jest.fn(),
@@ -68,7 +68,7 @@ jest.mock('~/cache', () => ({
 // mongoose-backed methods. All our in-memory models share this module.
 jest.mock('~/models', () => {
   const mongoose = require('mongoose');
-  const { createMethods } = require('@librechat/data-schemas');
+  const { createMethods } = require('@nashm/data-schemas');
   return createMethods(mongoose, {
     removeAllPermissions: jest.fn().mockResolvedValue(undefined),
   });

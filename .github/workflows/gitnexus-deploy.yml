@@ -1,4 +1,4 @@
-# Deploys GitNexus indexes to a droplet via SSH + rsync.
+﻿# Deploys GitNexus indexes to a droplet via SSH + rsync.
 #
 # Architecture:
 #   GitHub Actions (deploy)
@@ -67,7 +67,7 @@ permissions:
 # cancel-in-progress so rapid pushes to the same ref coalesced but deploys
 # targeting different refs ran in parallel. That had a data race: the
 # prune-stale-indexes step computes its active_names up front, so if
-# deploy A is rsyncing /opt/gitnexus/indexes/LibreChat-pr-12580 while
+# deploy A is rsyncing /opt/gitnexus/indexes/Nashm-pr-12580 while
 # deploy B (started slightly later with a different ref) prunes, B can
 # rm -rf a folder A is still uploading into.
 #
@@ -81,7 +81,7 @@ concurrency:
 
 env:
   GITNEXUS_VERSION: '1.6.7'
-  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/librechat-gitnexus
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/Nashm-gitnexus
 
 jobs:
   # Rebuilds the long-lived image only when Dockerfile/entrypoint/extensions
@@ -201,8 +201,8 @@ jobs:
 
             // --- main and dev branches ---
             for (const [branch, name] of [
-              ['main', 'LibreChat'],
-              ['dev', 'LibreChat-dev'],
+              ['main', 'Nashm'],
+              ['dev', 'Nashm-dev'],
             ]) {
               const artifactName = `gitnexus-index-${branch}`;
               const fresh = await latestArtifact(artifactName);
@@ -251,7 +251,7 @@ jobs:
                 --name "$artifact" \
                 --dir "$target"; then
               case "$name" in
-                LibreChat|LibreChat-dev)
+                Nashm|Nashm-dev)
                   echo "::error::Failed to download critical artifact $artifact"
                   exit 1
                   ;;
@@ -384,7 +384,7 @@ jobs:
               # is visible and the container isn't restarted with stale
               # or missing data. PR indexes are best-effort.
               case "$name" in
-                LibreChat|LibreChat-dev)
+                Nashm|Nashm-dev)
                   echo "::error::rsync failed for critical index $name — aborting deploy"
                   exit 1
                   ;;
@@ -526,13 +526,13 @@ jobs:
               }
 
               const dispatchPrNum = Number(dispatchPrRaw);
-              const servedPr = matrix.some((m) => m.name === `LibreChat-pr-${dispatchPrNum}`);
+              const servedPr = matrix.some((m) => m.name === `Nashm-pr-${dispatchPrNum}`);
 
               if (!servedPr) {
                 const body = [
                   '### GitNexus: PR deploy skipped',
                   '',
-                  'PR-specific deploys are paused; only `LibreChat` and `LibreChat-dev` are currently served.',
+                  'PR-specific deploys are paused; only `Nashm` and `Nashm-dev` are currently served.',
                   `[Deploy run](${deployUrl})`,
                 ].join('\n');
                 await github.rest.issues.createComment({
@@ -550,10 +550,10 @@ jobs:
             else if (context.eventName === 'workflow_run') {
               const triggerRunId = Number(process.env.TRIGGER_RUN_ID);
               const match = matrix.find(
-                (m) => m.runId === triggerRunId && m.name.startsWith('LibreChat-pr-'),
+                (m) => m.runId === triggerRunId && m.name.startsWith('Nashm-pr-'),
               );
               if (match) {
-                prNum = parseInt(match.name.replace('LibreChat-pr-', ''), 10);
+                prNum = parseInt(match.name.replace('Nashm-pr-', ''), 10);
               }
             }
 
@@ -567,7 +567,7 @@ jobs:
               `### GitNexus: ${ok ? '🚀 deployed' : '❌ deploy failed'}`,
               '',
               ok
-                ? `The \`LibreChat-pr-${prNum}\` index is now live on the MCP server.`
+                ? `The \`Nashm-pr-${prNum}\` index is now live on the MCP server.`
                 : `The deploy failed — the previous index (if any) continues to be served.`,
               `[Deploy run](${deployUrl})`,
             ].join('\n');

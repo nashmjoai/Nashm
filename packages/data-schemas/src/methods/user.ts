@@ -1,5 +1,5 @@
 import mongoose, { FilterQuery } from 'mongoose';
-import type { RefillIntervalUnit } from 'librechat-data-provider';
+import type { RefillIntervalUnit } from 'nashm-data-provider';
 import type { IUser, BalanceConfig, CreateUserRequest, UserDeleteResult } from '~/types';
 import { escapeRegExp } from '~/utils/string';
 import { signPayload } from '~/crypto';
@@ -77,7 +77,7 @@ export function createUserMethods(mongoose: typeof import('mongoose')): {
       personalization?: {
         memories?: boolean;
       };
-      favorites?: import('librechat-data-provider').TUserFavorite[];
+      favorites?: import('nashm-data-provider').TUserFavorite[];
       skillStates?: Record<string, boolean>;
       createdAt?: Date;
       updatedAt?: Date;
@@ -396,7 +396,7 @@ export function createUserMethods(mongoose: typeof import('mongoose')): {
       personalization?: {
         memories?: boolean;
       };
-      favorites?: import('librechat-data-provider').TUserFavorite[];
+      favorites?: import('nashm-data-provider').TUserFavorite[];
       skillStates?: Record<string, boolean>;
       createdAt?: Date;
       updatedAt?: Date;

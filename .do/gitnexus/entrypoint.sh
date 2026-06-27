@@ -1,4 +1,4 @@
-#!/bin/sh
+﻿#!/bin/sh
 set -e
 
 # Cap Node heap below the container's cgroup limit (1792m in compose),
@@ -14,10 +14,10 @@ export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=1280}"
 # metadata pointer without touching the index data.
 #
 # Registration failure handling:
-#   - main (LibreChat) and dev (LibreChat-dev) are critical. If either
+#   - main (Nashm) and dev (Nashm-dev) are critical. If either
 #     fails to register, exit 1 so docker marks the container unhealthy
 #     and the deploy workflow's readiness check surfaces the error.
-#   - PR indexes (LibreChat-pr-*) are best-effort. A corrupt PR index
+#   - PR indexes (Nashm-pr-*) are best-effort. A corrupt PR index
 #     shouldn't take the whole server down.
 if [ -d /indexes ]; then
   for dir in /indexes/*/; do
@@ -27,7 +27,7 @@ if [ -d /indexes ]; then
     echo "Registering index: $name"
     if ! gitnexus index "$dir" --allow-non-git; then
       case "$name" in
-        LibreChat|LibreChat-dev)
+        Nashm|Nashm-dev)
           echo "ERROR: failed to register critical index $name" >&2
           exit 1
           ;;

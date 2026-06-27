@@ -9,7 +9,7 @@ import {
   InfoHoverCard,
   OGDialogTrigger,
   OGDialogContent,
-} from '@librechat/client';
+} from '@nashm/client';
 import CreateKeyDialog from './CreateKeyDialog';
 import { useLocalize } from '~/hooks';
 import Admin from './Admin';

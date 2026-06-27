@@ -1,13 +1,13 @@
-jest.mock('@librechat/data-schemas', () => ({
-  ...jest.requireActual('@librechat/data-schemas'),
+jest.mock('@nashm/data-schemas', () => ({
+  ...jest.requireActual('@nashm/data-schemas'),
   logger: { error: jest.fn(), info: jest.fn(), warn: jest.fn(), debug: jest.fn() },
 }));
 
 import mongoose, { Types, Model } from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { createModels, createMethods } from '@librechat/data-schemas';
-import { PrincipalType, AccessRoleIds } from 'librechat-data-provider';
-import type { IAclEntry, ISharedLink } from '@librechat/data-schemas';
+import { createModels, createMethods } from '@nashm/data-schemas';
+import { PrincipalType, AccessRoleIds } from 'nashm-data-provider';
+import type { IAclEntry, ISharedLink } from '@nashm/data-schemas';
 import {
   autoMigrateLegacyLink,
   grantCreationPermissions,

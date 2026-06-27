@@ -12,13 +12,13 @@ import {
   tMessageSchema,
   tConvoUpdateSchema,
   isAssistantsEndpoint,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type {
   TMessage,
   TConversation,
   EventSubmission,
   TStartupConfig,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type { InfiniteData } from '@tanstack/react-query';
 import type { SetterOrUpdater } from 'recoil';
 import type { TResData, TFinalResData, ConvoGenerator } from '~/common';

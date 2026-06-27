@@ -1,8 +1,8 @@
 import React, { Fragment } from 'react';
 import { VisuallyHidden } from '@ariakit/react';
 import { CheckCircle2, EarthIcon } from 'lucide-react';
-import { isAgentsEndpoint, isAssistantsEndpoint } from 'librechat-data-provider';
-import type { TModelSpec } from 'librechat-data-provider';
+import { isAgentsEndpoint, isAssistantsEndpoint } from 'nashm-data-provider';
+import type { TModelSpec } from 'nashm-data-provider';
 import type { Endpoint } from '~/common';
 import MarketplaceItem, { marketplaceSearchMatches } from './Marketplace';
 import { useModelSelectorContext } from '../ModelSelectorContext';

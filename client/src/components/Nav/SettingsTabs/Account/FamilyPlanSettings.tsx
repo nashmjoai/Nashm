@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useGetFamilyPlanQuery, useAddFamilyMemberMutation, useRemoveFamilyMemberMutation } from '~/data-provider';
 import { useLocalize } from '~/hooks';
-import { Button, Spinner, Input, useToastContext } from '@librechat/client';
+import { Button, Spinner, Input, useToastContext } from '@nashm/client';
 import { NotificationSeverity } from '~/common';
 import { Trash2 } from 'lucide-react';
 

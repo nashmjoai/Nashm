@@ -1,8 +1,8 @@
 import { memo, useCallback, useEffect } from 'react';
-import { useToastContext } from '@librechat/client';
+import { useToastContext } from '@nashm/client';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { mergeFileConfig, fileConfig as defaultFileConfig } from 'librechat-data-provider';
-import type { AgentAvatar } from 'librechat-data-provider';
+import { mergeFileConfig, fileConfig as defaultFileConfig } from 'nashm-data-provider';
+import type { AgentAvatar } from 'nashm-data-provider';
 import type { AgentForm } from '~/common';
 import { AgentAvatarRender, NoImage, AvatarMenu } from './Images';
 import { useGetFileConfig } from '~/data-provider';

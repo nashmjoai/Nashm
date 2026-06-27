@@ -1,8 +1,8 @@
 const cookie = require('cookie');
 const jwt = require('jsonwebtoken');
-const { isEnabled } = require('@librechat/api');
-const { logger, runAsSystem } = require('@librechat/data-schemas');
-const { SystemRoles } = require('librechat-data-provider');
+const { isEnabled } = require('@nashm/api');
+const { logger, runAsSystem } = require('@nashm/data-schemas');
+const { SystemRoles } = require('nashm-data-provider');
 const { getUserById } = require('~/models');
 
 const verifyRefreshToken = (token) => {

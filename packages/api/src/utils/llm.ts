@@ -1,10 +1,10 @@
-import { librechat } from 'librechat-data-provider';
-import type { DynamicSettingProps } from 'librechat-data-provider';
+import { Nashm } from 'nashm-data-provider';
+import type { DynamicSettingProps } from 'nashm-data-provider';
 
-type LibreChatKeys = keyof typeof librechat;
+type NashmKeys = keyof typeof Nashm;
 
-type LibreChatParams = {
-  modelOptions: Omit<NonNullable<DynamicSettingProps['conversation']>, LibreChatKeys>;
+type NashmParams = {
+  modelOptions: Omit<NonNullable<DynamicSettingProps['conversation']>, NashmKeys>;
   resendFiles: boolean;
   promptPrefix?: string | null;
   maxContextTokens?: number;
@@ -13,16 +13,16 @@ type LibreChatParams = {
 };
 
 /**
- * Separates LibreChat-specific parameters from model options
+ * Separates Nashm-specific parameters from model options
  * @param options - The combined options object
  */
-export function extractLibreChatParams(
+export function extractNashmParams(
   options?: DynamicSettingProps['conversation'],
-): LibreChatParams {
+): NashmParams {
   if (!options) {
     return {
-      modelOptions: {} as Omit<NonNullable<DynamicSettingProps['conversation']>, LibreChatKeys>,
-      resendFiles: librechat.resendFiles.default as boolean,
+      modelOptions: {} as Omit<NonNullable<DynamicSettingProps['conversation']>, NashmKeys>,
+      resendFiles: Nashm.resendFiles.default as boolean,
     };
   }
 
@@ -30,7 +30,7 @@ export function extractLibreChatParams(
 
   const resendFiles =
     (delete modelOptions.resendFiles, options.resendFiles) ??
-    (librechat.resendFiles.default as boolean);
+    (Nashm.resendFiles.default as boolean);
   const promptPrefix = (delete modelOptions.promptPrefix, options.promptPrefix);
   const maxContextTokens = (delete modelOptions.maxContextTokens, options.maxContextTokens);
   const fileTokenLimit = (delete modelOptions.fileTokenLimit, options.fileTokenLimit);
@@ -39,7 +39,7 @@ export function extractLibreChatParams(
   return {
     modelOptions: modelOptions as Omit<
       NonNullable<DynamicSettingProps['conversation']>,
-      LibreChatKeys
+      NashmKeys
     >,
     maxContextTokens,
     fileTokenLimit,

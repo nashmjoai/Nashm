@@ -1,5 +1,5 @@
 const FormData = require('form-data');
-const { logger } = require('@librechat/data-schemas');
+const { logger } = require('@nashm/data-schemas');
 const { getCodeBaseURL } = require('@librechat/agents');
 const {
   logAxiosError,
@@ -10,7 +10,7 @@ const {
   appendCodeEnvFileIdentity,
   buildCodeEnvDownloadQuery,
   getCodeApiAuthHeaders,
-} = require('@librechat/api');
+} = require('@nashm/api');
 
 const axios = createAxiosInstance();
 
@@ -38,7 +38,7 @@ async function getCodeOutputDownloadStream(fileIdentifier, identity, req) {
       url: `${baseURL}/download/${fileIdentifier}${query}`,
       responseType: 'stream',
       headers: {
-        'User-Agent': 'LibreChat/1.0',
+        'User-Agent': 'Nashm/1.0',
         ...authHeaders,
       },
       httpAgent: codeServerHttpAgent,
@@ -84,7 +84,7 @@ async function deleteCodeEnvFile(req, file) {
     const baseRequest = {
       method: 'delete',
       headers: {
-        'User-Agent': 'LibreChat/1.0',
+        'User-Agent': 'Nashm/1.0',
         ...authHeaders,
       },
       httpAgent: codeServerHttpAgent,
@@ -159,7 +159,7 @@ async function uploadCodeEnvFile({ req, stream, filename, kind, id, version }) {
       headers: {
         ...form.getHeaders(),
         'Content-Type': 'multipart/form-data',
-        'User-Agent': 'LibreChat/1.0',
+        'User-Agent': 'Nashm/1.0',
         'User-Id': req.user.id,
         ...authHeaders,
       },
@@ -231,7 +231,7 @@ async function batchUploadCodeEnvFiles({ req, files, kind, id, version, read_onl
     headers: {
       ...form.getHeaders(),
       'Content-Type': 'multipart/form-data',
-      'User-Agent': 'LibreChat/1.0',
+      'User-Agent': 'Nashm/1.0',
       'User-Id': req.user.id,
       ...authHeaders,
     },

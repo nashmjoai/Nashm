@@ -1,4 +1,4 @@
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 import { OAuthReconnectionManager } from '~/mcp/oauth/OAuthReconnectionManager';
 import { GenerationJobManager } from '~/stream';
 import { MCPManager } from '~/mcp/MCPManager';

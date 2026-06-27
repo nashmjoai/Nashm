@@ -107,7 +107,7 @@ export function isValidationFailure(
  * INPUT CONVERSION
  * ============================================================================= */
 
-/** Internal message format (LibreChat-compatible) */
+/** Internal message format (Nashm-compatible) */
 export interface InternalMessage {
   role: 'system' | 'user' | 'assistant' | 'tool';
   content: string | Array<{ type: string; text?: string; image_url?: unknown }>;
@@ -179,7 +179,7 @@ export function convertInputToMessages(input: string | InputItem[]): InternalMes
         content = '';
       }
 
-      // Map developer role to system (LibreChat convention)
+      // Map developer role to system (Nashm convention)
       let role: InternalMessage['role'];
       if (messageItem.role === 'developer') {
         role = 'system';
@@ -330,7 +330,7 @@ interface StreamState {
 }
 
 /**
- * Create LibreChat event handlers that emit Open Responses events
+ * Create Nashm event handlers that emit Open Responses events
  */
 export function createResponsesEventHandlers(config: StreamHandlerConfig): {
   handlers: Record<string, { handle: (event: string, data: unknown) => void }>;

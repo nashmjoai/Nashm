@@ -5,7 +5,7 @@ import {
   AuthTypeEnum,
   AuthorizationTypeEnum,
   TokenExchangeMethodEnum,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import {
   OGDialog,
   OGDialogClose,
@@ -14,7 +14,7 @@ import {
   OGDialogContent,
   OGDialogTrigger,
   SecretInput,
-} from '@librechat/client';
+} from '@nashm/client';
 import { TranslationKeys, useLocalize } from '~/hooks';
 import { cn } from '~/utils';
 

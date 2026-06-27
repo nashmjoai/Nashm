@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const passport = require('passport');
-const { ErrorTypes } = require('librechat-data-provider');
-const { hashToken, logger } = require('@librechat/data-schemas');
+const { ErrorTypes } = require('nashm-data-provider');
+const { hashToken, logger } = require('@nashm/data-schemas');
 const { Strategy: SamlStrategy } = require('@node-saml/passport-saml');
 const {
   getBalanceConfig,
@@ -10,7 +10,7 @@ const {
   getAvatarFileStrategy,
   getAvatarSaveParams,
   resolveAppConfigForUser,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const { getStrategyFunctions } = require('~/server/services/Files/strategies');
 const { resizeAvatar } = require('~/server/services/Files/images/avatar');
 const { findUser, createUser, updateUser } = require('~/models');

@@ -1,4 +1,4 @@
-import type { TAttachment } from 'librechat-data-provider';
+import type { TAttachment } from 'nashm-data-provider';
 import {
   artifactTypeForAttachment,
   attachmentSalience,

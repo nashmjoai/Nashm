@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 const { nanoid } = require('nanoid');
 const { v4: uuidv4 } = require('uuid');
-const { agentSchema, fileSchema } = require('@librechat/data-schemas');
-const { FileSources, PermissionBits, ResourceType } = require('librechat-data-provider');
+const { agentSchema, fileSchema } = require('@nashm/data-schemas');
+const { FileSources, PermissionBits, ResourceType } = require('nashm-data-provider');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 
 // Only mock the dependencies that are not database-related
@@ -30,8 +30,8 @@ jest.mock('sharp', () =>
   })),
 );
 
-jest.mock('@librechat/api', () => ({
-  ...jest.requireActual('@librechat/api'),
+jest.mock('@nashm/api', () => ({
+  ...jest.requireActual('@nashm/api'),
   refreshS3Url: jest.fn(),
 }));
 
@@ -49,7 +49,7 @@ jest.mock('~/server/services/PermissionService', () => ({
 
 jest.mock('~/models', () => {
   const mongoose = require('mongoose');
-  const { createMethods } = require('@librechat/data-schemas');
+  const { createMethods } = require('@nashm/data-schemas');
   const methods = createMethods(mongoose, {
     removeAllPermissions: jest.fn().mockResolvedValue(undefined),
   });
@@ -85,10 +85,10 @@ const {
   getResourcePermissionsMap,
 } = require('~/server/services/PermissionService');
 
-const { refreshS3Url } = require('@librechat/api');
+const { refreshS3Url } = require('@nashm/api');
 
 /**
- * @type {import('mongoose').Model<import('@librechat/data-schemas').IAgent>}
+ * @type {import('mongoose').Model<import('@nashm/data-schemas').IAgent>}
  */
 let Agent;
 

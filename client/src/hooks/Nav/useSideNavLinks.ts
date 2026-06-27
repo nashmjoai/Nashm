@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { MCPIcon, AttachmentIcon, OpenAIMinimalIcon } from '@librechat/client';
+import { MCPIcon, AttachmentIcon, OpenAIMinimalIcon } from '@nashm/client';
 import {
   Bot,
   Brain,
@@ -16,8 +16,8 @@ import {
   isParamEndpoint,
   isAgentsEndpoint,
   isAssistantsEndpoint,
-} from 'librechat-data-provider';
-import type { TInterfaceConfig, TEndpointsConfig } from 'librechat-data-provider';
+} from 'nashm-data-provider';
+import type { TInterfaceConfig, TEndpointsConfig } from 'nashm-data-provider';
 import type { NavLink } from '~/common';
 import {
   useAgentCapabilities,

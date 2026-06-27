@@ -1,5 +1,5 @@
-import { EModelEndpoint } from 'librechat-data-provider';
-import type { TModelSpec } from 'librechat-data-provider';
+import { EModelEndpoint } from 'nashm-data-provider';
+import type { TModelSpec } from 'nashm-data-provider';
 import { getModelSpecIconURL } from '../endpoints';
 
 describe('getModelSpecIconURL', () => {

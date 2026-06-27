@@ -33,14 +33,14 @@ jest.mock('@librechat/agents', () => ({
 }));
 
 import { Providers } from '@librechat/agents';
-import { EModelEndpoint, EToolResources, Tools } from 'librechat-data-provider';
-import type { IMongoFile } from '@librechat/data-schemas';
-import type { Agent } from 'librechat-data-provider';
+import { EModelEndpoint, EToolResources, Tools } from 'nashm-data-provider';
+import type { IMongoFile } from '@nashm/data-schemas';
+import type { Agent } from 'nashm-data-provider';
 import type { ServerRequest, InitializeResultBase, EndpointTokenConfig } from '~/types';
 import type { InitializeAgentDbMethods } from '../initialize';
 import { DEFAULT_MAX_CONTEXT_TOKENS } from '../initialize';
 
-// Mock logger — `format` must be a callable factory so @librechat/data-schemas
+// Mock logger — `format` must be a callable factory so @nashm/data-schemas
 // dist module-load completes cleanly; see api/test/__mocks__/logger.js.
 jest.mock('winston', () => ({
   createLogger: jest.fn(() => ({
@@ -71,13 +71,13 @@ jest.mock('winston', () => ({
   },
 }));
 
-const mockExtractLibreChatParams = jest.fn();
+const mockExtractNashmParams = jest.fn();
 const mockGetModelMaxTokens = jest.fn();
 const mockOptionalChainWithEmptyCheck = jest.fn();
 const mockGetThreadData = jest.fn();
 
 jest.mock('~/utils', () => ({
-  extractLibreChatParams: (...args: unknown[]) => mockExtractLibreChatParams(...args),
+  extractNashmParams: (...args: unknown[]) => mockExtractNashmParams(...args),
   getModelMaxTokens: (...args: unknown[]) => mockGetModelMaxTokens(...args),
   optionalChainWithEmptyCheck: (...args: unknown[]) => mockOptionalChainWithEmptyCheck(...args),
   getThreadData: (...args: unknown[]) => mockGetThreadData(...args),
@@ -177,7 +177,7 @@ function createMocks(overrides?: {
     overrideProvider: resolvedOverrideProvider,
   });
 
-  mockExtractLibreChatParams.mockReturnValue({
+  mockExtractNashmParams.mockReturnValue({
     resendFiles: false,
     maxContextTokens,
     modelOptions: { model },
@@ -324,7 +324,7 @@ describe('initializeAgent — provider web_search precedence', () => {
     name: Tools.web_search,
   };
   const nativeGoogleSearchTool = { googleSearch: {} };
-  const libreChatWebSearchDefinition = {
+  const NashmWebSearchDefinition = {
     name: Tools.web_search,
     description: 'Search the web',
     parameters: { type: 'object', properties: {} },
@@ -362,7 +362,7 @@ describe('initializeAgent — provider web_search precedence', () => {
     );
   }
 
-  it('keeps Anthropic native web_search when LibreChat search is not selected', async () => {
+  it('keeps Anthropic native web_search when Nashm search is not selected', async () => {
     const { agent, req, res, loadTools, db } = createMocks({
       provider: Providers.ANTHROPIC,
       providerTools: [nativeWebSearchTool],
@@ -386,10 +386,10 @@ describe('initializeAgent — provider web_search precedence', () => {
     expect(countWebSearchDefinitions(result.toolDefinitions)).toBe(0);
   });
 
-  it('keeps LibreChat web_search definitions when native Anthropic search is not enabled', async () => {
+  it('keeps Nashm web_search definitions when native Anthropic search is not enabled', async () => {
     const { agent, req, res, loadTools, db } = createMocks({
       provider: Providers.ANTHROPIC,
-      loadedToolDefinitions: [libreChatWebSearchDefinition],
+      loadedToolDefinitions: [NashmWebSearchDefinition],
     });
     agent.tools = [Tools.web_search];
 
@@ -411,11 +411,11 @@ describe('initializeAgent — provider web_search precedence', () => {
     expect(countWebSearchDefinitions(result.toolDefinitions)).toBe(1);
   });
 
-  it('prefers LibreChat web_search when Anthropic native search is also enabled', async () => {
+  it('prefers Nashm web_search when Anthropic native search is also enabled', async () => {
     const { agent, req, res, loadTools, db } = createMocks({
       provider: Providers.ANTHROPIC,
       providerTools: [nativeWebSearchTool],
-      loadedToolDefinitions: [libreChatWebSearchDefinition],
+      loadedToolDefinitions: [NashmWebSearchDefinition],
     });
     agent.tools = [Tools.web_search];
 
@@ -437,7 +437,7 @@ describe('initializeAgent — provider web_search precedence', () => {
     expect(countWebSearchDefinitions(result.toolDefinitions)).toBe(1);
   });
 
-  it('keeps Google native search when LibreChat web_search is not selected', async () => {
+  it('keeps Google native search when Nashm web_search is not selected', async () => {
     const { agent, req, res, loadTools, db } = createMocks({
       provider: Providers.GOOGLE,
       model: 'gemini-3.5-flash',
@@ -584,11 +584,11 @@ describe('initializeAgent — provider web_search precedence', () => {
     await expect(initializeGoogleMixedToolAgent(model)).rejects.toThrow(/google_tool_conflict/);
   });
 
-  it('prefers LibreChat web_search when Google native search is also enabled', async () => {
+  it('prefers Nashm web_search when Google native search is also enabled', async () => {
     const { agent, req, res, loadTools, db } = createMocks({
       provider: Providers.GOOGLE,
       providerTools: [nativeGoogleSearchTool],
-      loadedToolDefinitions: [libreChatWebSearchDefinition],
+      loadedToolDefinitions: [NashmWebSearchDefinition],
     });
     agent.tools = [Tools.web_search];
 
@@ -614,7 +614,7 @@ describe('initializeAgent — provider web_search precedence', () => {
     const { agent, req, res, loadTools, db } = createMocks({
       provider: Providers.OPENAI,
       providerTools: [nativeWebSearchTool],
-      loadedToolDefinitions: [libreChatWebSearchDefinition],
+      loadedToolDefinitions: [NashmWebSearchDefinition],
     });
     agent.tools = [Tools.web_search];
 
@@ -783,7 +783,7 @@ describe('initializeAgent — attachment scoping', () => {
     const { agent, req, res, loadTools, db } = createMocks();
 
     agent.tools = [EToolResources.file_search];
-    mockExtractLibreChatParams.mockReturnValueOnce({
+    mockExtractNashmParams.mockReturnValueOnce({
       resendFiles: true,
       maxContextTokens: undefined,
       modelOptions: { model: agent.model },
@@ -1929,7 +1929,7 @@ describe('initializeAgent — code-generated file thread filter (regression)', (
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockExtractLibreChatParams.mockReset();
+    mockExtractNashmParams.mockReset();
     mockGetThreadData.mockReset();
   });
 
@@ -1942,7 +1942,7 @@ describe('initializeAgent — code-generated file thread filter (regression)', (
     /* `resendFiles: true` is the gate that opens the thread-file
      * priming block in initialize.ts. Without it the whole
      * codeGeneratedFiles fetch is skipped. */
-    mockExtractLibreChatParams.mockReturnValue({
+    mockExtractNashmParams.mockReturnValue({
       resendFiles: true,
       maxContextTokens: undefined,
       modelOptions: { model: 'test-model' },

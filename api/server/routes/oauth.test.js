@@ -58,18 +58,18 @@ jest.mock('openid-client', () => ({
   randomState: jest.fn(() => 'random-state'),
 }));
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: mockLogger,
 }));
 
-jest.mock('librechat-data-provider', () => ({
-  ...jest.requireActual('librechat-data-provider'),
+jest.mock('nashm-data-provider', () => ({
+  ...jest.requireActual('nashm-data-provider'),
   ErrorTypes: {
     AUTH_FAILED: 'auth_failed',
   },
 }));
 
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   buildOAuthFailureLog: (...args) => mockBuildOAuthFailureLog(...args),
   createOpenIDCallbackAuthenticator: (...args) => mockCreateOpenIDCallbackAuthenticator(...args),
   createSetBalanceConfig: jest.fn(() => (_req, _res, next) => next()),

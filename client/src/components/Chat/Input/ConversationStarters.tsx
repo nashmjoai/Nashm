@@ -1,5 +1,5 @@
 import { useMemo, useCallback } from 'react';
-import { EModelEndpoint, Constants } from 'librechat-data-provider';
+import { EModelEndpoint, Constants } from 'nashm-data-provider';
 import {
   useGetAssistantDocsQuery,
   useGetEndpointsQuery,

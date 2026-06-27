@@ -6,8 +6,8 @@ import {
   ToolCallTypes,
   imageGenTools,
   isImageVisionTool,
-} from 'librechat-data-provider';
-import type { TMessageContentParts, TAttachment } from 'librechat-data-provider';
+} from 'nashm-data-provider';
+import type { TMessageContentParts, TAttachment } from 'nashm-data-provider';
 import {
   ImageGen,
   ExecuteCode,

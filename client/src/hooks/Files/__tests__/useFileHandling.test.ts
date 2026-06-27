@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react';
-import { Constants, EModelEndpoint, getEndpointFileConfig } from 'librechat-data-provider';
+import { Constants, EModelEndpoint, getEndpointFileConfig } from 'nashm-data-provider';
 
 beforeAll(() => {
   global.URL.createObjectURL = jest.fn(() => 'blob:mock-url');
@@ -38,7 +38,7 @@ jest.mock('~/Providers/ChatContext', () => ({
   })),
 }));
 
-jest.mock('@librechat/client', () => ({
+jest.mock('@nashm/client', () => ({
   useToastContext: jest.fn(() => ({
     showToast: mockShowToast,
   })),

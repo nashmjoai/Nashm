@@ -1,4 +1,4 @@
-name: Docker Compose Build Latest Main Image Tag (Manual Dispatch)
+﻿name: Docker Compose Build Latest Main Image Tag (Manual Dispatch)
 
 on:
   workflow_dispatch:
@@ -15,10 +15,10 @@ jobs:
         include:
           - target: api-build
             file: Dockerfile.multi
-            image_name: librechat-api
+            image_name: Nashm-api
           - target: node
             file: Dockerfile
-            image_name: librechat
+            image_name: Nashm
 
     steps:
       - name: Checkout

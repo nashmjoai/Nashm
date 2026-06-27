@@ -2,11 +2,11 @@
  * Tests for AgentClient.recordCollectedUsage
  *
  * This is a critical function that handles token spending for agent LLM calls.
- * The client now delegates to the TS recordCollectedUsage from @librechat/api,
+ * The client now delegates to the TS recordCollectedUsage from @nashm/api,
  * passing pricing and bulkWriteOps deps.
  */
 
-const { EModelEndpoint } = require('librechat-data-provider');
+const { EModelEndpoint } = require('nashm-data-provider');
 
 const mockSpendTokens = jest.fn().mockResolvedValue();
 const mockSpendStructuredTokens = jest.fn().mockResolvedValue();
@@ -47,8 +47,8 @@ jest.mock('@librechat/agents', () => ({
   }),
 }));
 
-jest.mock('@librechat/api', () => {
-  const actual = jest.requireActual('@librechat/api');
+jest.mock('@nashm/api', () => {
+  const actual = jest.requireActual('@nashm/api');
   return {
     ...actual,
     recordCollectedUsage: (...args) => mockRecordCollectedUsage(...args),

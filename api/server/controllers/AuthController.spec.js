@@ -1,4 +1,4 @@
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: { error: jest.fn(), debug: jest.fn(), warn: jest.fn(), info: jest.fn() },
 }));
 jest.mock('~/server/services/GraphTokenService', () => ({
@@ -21,7 +21,7 @@ jest.mock('~/models', () => ({
   updateUser: jest.fn(),
   findUser: jest.fn(),
 }));
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   math: jest.fn((value, fallback) => fallback),
   isEnabled: jest.fn(),
   findOpenIDUser: jest.fn(),
@@ -40,8 +40,8 @@ jest.mock('@librechat/api', () => ({
 
 const openIdClient = require('openid-client');
 const jwt = require('jsonwebtoken');
-const { logger } = require('@librechat/data-schemas');
-const { isEnabled, findOpenIDUser, buildOpenIDRefreshParams } = require('@librechat/api');
+const { logger } = require('@nashm/data-schemas');
+const { isEnabled, findOpenIDUser, buildOpenIDRefreshParams } = require('@nashm/api');
 const { graphTokenController, refreshController } = require('./AuthController');
 const { getGraphApiToken } = require('~/server/services/GraphTokenService');
 const {
@@ -741,7 +741,7 @@ describe('refreshController – OpenID path', () => {
   });
 });
 
-describe('refreshController – LibreChat path', () => {
+describe('refreshController – Nashm path', () => {
   let req, res;
   const refreshSecret = 'test-refresh-secret';
 

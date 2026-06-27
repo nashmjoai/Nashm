@@ -1,8 +1,8 @@
 import { useMemo, useState, useEffect } from 'react';
 import { useRecoilValue } from 'recoil';
-import { Tools } from 'librechat-data-provider';
+import { Tools } from 'nashm-data-provider';
 import { Globe, ChevronDown } from 'lucide-react';
-import type { TAttachment, ValidSource, SearchResultData } from 'librechat-data-provider';
+import type { TAttachment, ValidSource, SearchResultData } from 'nashm-data-provider';
 import { FaviconImage, getCleanDomain } from '~/components/Web/SourceHovercard';
 import { StackedFavicons } from '~/components/Web/Sources';
 import { useLocalize, useExpandCollapse } from '~/hooks';

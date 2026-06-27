@@ -10,7 +10,7 @@ import {
   Input,
   Textarea,
   useToastContext,
-} from '@librechat/client';
+} from '@nashm/client';
 import { useCreateSupportTicketMutation } from '~/data-provider';
 import { useLocalize } from '~/hooks';
 import { NotificationSeverity } from '~/common';

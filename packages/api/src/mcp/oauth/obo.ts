@@ -1,6 +1,6 @@
-import { logger } from '@librechat/data-schemas';
-import { Permissions, PermissionTypes } from 'librechat-data-provider';
-import type { IUser } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
+import { Permissions, PermissionTypes } from 'nashm-data-provider';
+import type { IUser } from '@nashm/data-schemas';
 import { extractOpenIDTokenInfo, isOpenIDTokenValid } from '~/utils/oidc';
 import type { MCPOAuthTokens } from './types';
 

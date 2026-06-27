@@ -1,7 +1,7 @@
 import { useState, useMemo, memo, useCallback, useRef, useId, type MouseEvent } from 'react';
 import { useAtomValue } from 'jotai';
 import { Lightbulb, ChevronDown, ChevronUp } from 'lucide-react';
-import { Clipboard, CheckMark, TooltipAnchor } from '@librechat/client';
+import { Clipboard, CheckMark, TooltipAnchor } from '@nashm/client';
 import type { FocusEvent, FC } from 'react';
 import { useLocalize, useExpandCollapse } from '~/hooks';
 import { showThinkingAtom } from '~/store/showThinking';

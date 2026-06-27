@@ -2,8 +2,8 @@ const {
   EModelEndpoint,
   defaultOrderQuery,
   defaultAssistantsVersion,
-} = require('librechat-data-provider');
-const { logger, SystemCapabilities } = require('@librechat/data-schemas');
+} = require('nashm-data-provider');
+const { logger, SystemCapabilities } = require('@nashm/data-schemas');
 const {
   initializeClient: initAzureClient,
 } = require('~/server/services/Endpoints/azureAssistants');

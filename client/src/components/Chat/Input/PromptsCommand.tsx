@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect, useMemo, memo, useCallback } from 'react';
 import { AutoSizer, List } from 'react-virtualized';
-import { Spinner, useCombobox } from '@librechat/client';
+import { Spinner, useCombobox } from '@nashm/client';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
-import type { TPromptGroup } from 'librechat-data-provider';
+import type { TPromptGroup } from 'nashm-data-provider';
 import type { PromptOption } from '~/common';
 import useInitPopoverInput from '~/hooks/Input/useInitPopoverInput';
 import { removeCharIfLast, detectVariables } from '~/utils';

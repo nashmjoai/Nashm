@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { parseTextParts } from 'librechat-data-provider';
+import { parseTextParts } from 'nashm-data-provider';
 import { MeiliSearch, MeiliSearchTimeOutError } from 'meilisearch';
 import type { SearchResponse, SearchParams, Index, MeiliSearchErrorInfo } from 'meilisearch';
 import type {

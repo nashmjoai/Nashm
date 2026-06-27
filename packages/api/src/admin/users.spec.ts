@@ -1,13 +1,13 @@
 import { Types } from 'mongoose';
-import { PrincipalType, SystemRoles } from 'librechat-data-provider';
-import type { IUser, UserDeleteResult } from '@librechat/data-schemas';
+import { PrincipalType, SystemRoles } from 'nashm-data-provider';
+import type { IUser, UserDeleteResult } from '@nashm/data-schemas';
 import type { Response } from 'express';
 import type { ServerRequest } from '~/types/http';
 import type { AdminUsersDeps } from './users';
 import { createAdminUsersHandlers } from './users';
 
-jest.mock('@librechat/data-schemas', () => ({
-  ...jest.requireActual('@librechat/data-schemas'),
+jest.mock('@nashm/data-schemas', () => ({
+  ...jest.requireActual('@nashm/data-schemas'),
   logger: { error: jest.fn(), warn: jest.fn(), info: jest.fn(), debug: jest.fn() },
 }));
 

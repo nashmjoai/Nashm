@@ -1,4 +1,4 @@
-name: GitNexus Index
+﻿name: GitNexus Index
 
 on:
   # PR branches are NOT auto-indexed — an embeddings run is too slow to
@@ -312,7 +312,7 @@ jobs:
               `[Index run](${runUrl})`,
               '',
               indexSucceeded
-                ? 'PR-specific deploys are paused; only `LibreChat` and `LibreChat-dev` are currently served.'
+                ? 'PR-specific deploys are paused; only `Nashm` and `Nashm-dev` are currently served.'
                 : '_Index run failed — the previous index (if any) continues to be served._',
             ].join('\n');
             await github.rest.issues.createComment({

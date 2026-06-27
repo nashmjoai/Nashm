@@ -1,4 +1,4 @@
-const { createSharePolicyMiddleware } = require('@librechat/api');
+const { createSharePolicyMiddleware } = require('@nashm/api');
 const { hasCapability } = require('~/server/middleware/roles/capabilities');
 const { getRoleByName } = require('~/models');
 

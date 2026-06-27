@@ -1,6 +1,6 @@
 import { renderHook, act } from '@testing-library/react';
-import { EModelEndpoint } from 'librechat-data-provider';
-import type { TConversation, TMessage, TSubmission } from 'librechat-data-provider';
+import { EModelEndpoint } from 'nashm-data-provider';
+import type { TConversation, TMessage, TSubmission } from 'nashm-data-provider';
 import useChatFunctions from '../useChatFunctions';
 
 const mockNavigate = jest.fn();

@@ -1,6 +1,6 @@
 import path from 'path';
 import { Providers } from '@librechat/agents';
-import { EModelEndpoint, AuthKeys } from 'librechat-data-provider';
+import { EModelEndpoint, AuthKeys } from 'nashm-data-provider';
 import type {
   BaseInitializeParams,
   InitializeResultBase,
@@ -95,7 +95,7 @@ export async function initializeGoogle({
    * admin templates here — before that key-derived header is added — keeps the
    * key out of placeholder/env expansion (a user-provided `${ENV}` key can't leak
    * server env) while still resolving admin headers (env, user, conversationId).
-   * `req.body` lacks the assistant message id at init, so `{{LIBRECHAT_BODY_MESSAGEID}}`
+   * `req.body` lacks the assistant message id at init, so `{{Nashm_BODY_MESSAGEID}}`
    * is the one body placeholder unavailable here.
    */
   const mergedHeaders = mergeHeaders(allConfig?.headers, googleConfig?.headers);

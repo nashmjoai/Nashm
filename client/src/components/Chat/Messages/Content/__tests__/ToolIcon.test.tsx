@@ -1,4 +1,4 @@
-import { Constants, actionDelimiter } from 'librechat-data-provider';
+import { Constants, actionDelimiter } from 'nashm-data-provider';
 import { getToolIconType } from '../ToolOutput/ToolIcon';
 
 jest.mock('~/utils', () => ({

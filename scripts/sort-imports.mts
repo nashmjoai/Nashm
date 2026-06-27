@@ -1,6 +1,6 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 /**
- * Sorts imports across the LibreChat monorepo per project convention
+ * Sorts imports across the Nashm monorepo per project convention
  * (CLAUDE.md § Import Order):
  *
  *   1. Package value imports     — shortest line to longest (`react` always first)
@@ -9,8 +9,8 @@
  *   4. Local value imports       — longest line to shortest
  *
  * "Local" covers relative paths (`./`, `../`) and the workspace path aliases
- * (`~/`, `src/`, `test/`). Workspace packages such as `librechat-data-provider`
- * and `@librechat/*` are treated as package imports, not local.
+ * (`~/`, `src/`, `test/`). Workspace packages such as `Nashm-data-provider`
+ * and `@Nashm/*` are treated as package imports, not local.
  *
  * Runs on Node 24+ via native type-stripping (`.mts` keeps ESM semantics under
  * the CommonJS repo root):

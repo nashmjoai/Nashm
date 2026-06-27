@@ -1,13 +1,13 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
-const { logger } = require('@librechat/data-schemas');
-const { ContentTypes, isAssistantsEndpoint } = require('librechat-data-provider');
+const { logger } = require('@nashm/data-schemas');
+const { ContentTypes, isAssistantsEndpoint } = require('nashm-data-provider');
 const {
   unescapeLaTeX,
   countTokens,
   sendFeedbackScore,
   traceIdForMessage,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const { findAllArtifacts, replaceArtifactContent } = require('~/server/services/Artifacts/update');
 const { requireJwtAuth, validateMessageReq } = require('~/server/middleware');
 const db = require('~/models');
@@ -137,7 +137,7 @@ router.post('/branch', async (req, res) => {
         .json({ error: 'Message does not have parallel content with attributions' });
     }
 
-    /** @type {Array<import('librechat-data-provider').TMessageContentParts>} */
+    /** @type {Array<import('nashm-data-provider').TMessageContentParts>} */
     const filteredContent = [];
     for (const part of sourceMessage.content) {
       if (part?.agentId === agentId) {
@@ -151,7 +151,7 @@ router.post('/branch', async (req, res) => {
     }
 
     const newMessageId = uuidv4();
-    /** @type {import('librechat-data-provider').TMessage} */
+    /** @type {import('nashm-data-provider').TMessage} */
     const newMessage = {
       messageId: newMessageId,
       conversationId: sourceMessage.conversationId,

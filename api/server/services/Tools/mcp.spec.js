@@ -1,4 +1,4 @@
-const { Constants } = require('librechat-data-provider');
+const { Constants } = require('nashm-data-provider');
 
 const mockGetConnection = jest.fn();
 const mockDiscoverServerTools = jest.fn();
@@ -146,7 +146,7 @@ describe('reinitMCPServer — customUserVars gating (issue #10969)', () => {
     const tools = [{ name: 'search', inputSchema: { type: 'object', properties: {} } }];
     const serverConfig = {
       type: 'streamable-http',
-      url: 'https://thingy.example.com/messages/{{LIBRECHAT_BODY_MESSAGEID}}/mcp',
+      url: 'https://thingy.example.com/messages/{{Nashm_BODY_MESSAGEID}}/mcp',
       source: 'yaml',
     };
     mockGetConnection.mockResolvedValue({

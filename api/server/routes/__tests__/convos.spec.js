@@ -4,9 +4,9 @@ const request = require('supertest');
 const MOCKS = '../__test-utils__/convos-route-mocks';
 
 jest.mock('@librechat/agents', () => require(MOCKS).agents());
-jest.mock('@librechat/api', () => require(MOCKS).api());
-jest.mock('@librechat/data-schemas', () => require(MOCKS).dataSchemas());
-jest.mock('librechat-data-provider', () => require(MOCKS).dataProvider());
+jest.mock('@nashm/api', () => require(MOCKS).api());
+jest.mock('@nashm/data-schemas', () => require(MOCKS).dataSchemas());
+jest.mock('nashm-data-provider', () => require(MOCKS).dataProvider());
 jest.mock('~/models', () => require(MOCKS).sharedModels());
 jest.mock('~/server/middleware/requireJwtAuth', () => require(MOCKS).requireJwtAuth());
 jest.mock('~/server/middleware', () => require(MOCKS).middlewarePassthrough());
@@ -25,7 +25,7 @@ describe('Convos Routes', () => {
   const {
     deleteAllSharedLinksWithCleanup,
     deleteConvoSharedLinksWithCleanup,
-  } = require('@librechat/api');
+  } = require('@nashm/api');
 
   beforeAll(() => {
     convosRouter = require('../convos');
@@ -107,7 +107,7 @@ describe('Convos Routes', () => {
       expect(response.text).toBe('Error clearing conversations');
 
       /** Verify error was logged */
-      const { logger } = require('@librechat/data-schemas');
+      const { logger } = require('@nashm/data-schemas');
       expect(logger.error).toHaveBeenCalledWith('Error clearing conversations', expect.any(Error));
     });
 
@@ -548,7 +548,7 @@ describe('Convos Routes', () => {
       expect(response.status).toBe(500);
       expect(response.text).toBe('Error archiving conversation');
 
-      const { logger } = require('@librechat/data-schemas');
+      const { logger } = require('@nashm/data-schemas');
       expect(logger.error).toHaveBeenCalledWith('Error archiving conversation', expect.any(Error));
     });
 

@@ -1,4 +1,4 @@
-import { CacheKeys } from 'librechat-data-provider';
+import { CacheKeys } from 'nashm-data-provider';
 
 const mockKeyvRedisInstance = {
   namespace: '',
@@ -24,7 +24,7 @@ jest.mock('../../redisUtils', () => ({
   scanKeys: jest.fn(),
 }));
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     error: jest.fn(),
     warn: jest.fn(),

@@ -5,7 +5,7 @@ import {
   createMethods,
   balanceSchema,
   transactionSchema,
-} from '@librechat/data-schemas';
+} from '@nashm/data-schemas';
 import type { PricingFns, TxMetadata, PreparedEntry } from './transactions';
 import {
   prepareStructuredTokenSpend,
@@ -13,8 +13,8 @@ import {
   prepareTokenSpend,
 } from './transactions';
 
-jest.mock('@librechat/data-schemas', () => {
-  const actual = jest.requireActual('@librechat/data-schemas');
+jest.mock('@nashm/data-schemas', () => {
+  const actual = jest.requireActual('@nashm/data-schemas');
   return {
     ...actual,
     logger: {

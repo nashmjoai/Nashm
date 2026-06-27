@@ -158,7 +158,7 @@ describe('MCPServerInspector', () => {
         type: 'streamable-http',
         url: 'https://mcp-server.example.com/mcp',
         headers: {
-          'X-LibreChat-User-Email': '{{LIBRECHAT_USER_EMAIL}}',
+          'X-Nashm-User-Email': '{{Nashm_USER_EMAIL}}',
         },
       };
 
@@ -168,7 +168,7 @@ describe('MCPServerInspector', () => {
         type: 'streamable-http',
         url: 'https://mcp-server.example.com/mcp',
         headers: {
-          'X-LibreChat-User-Email': '{{LIBRECHAT_USER_EMAIL}}',
+          'X-Nashm-User-Email': '{{Nashm_USER_EMAIL}}',
         },
         requiresOAuth: false,
         oauthMetadata: undefined,
@@ -180,14 +180,14 @@ describe('MCPServerInspector', () => {
     it('should skip OAuth detection when trusted URL needs runtime user context', async () => {
       const rawConfig: t.MCPOptions = {
         type: 'streamable-http',
-        url: 'https://mcp-server.example.com/users/{{LIBRECHAT_USER_USERNAME}}/mcp',
+        url: 'https://mcp-server.example.com/users/{{Nashm_USER_USERNAME}}/mcp',
       };
 
       const result = await MCPServerInspector.inspect('test_server', rawConfig);
 
       expect(result).toEqual({
         type: 'streamable-http',
-        url: 'https://mcp-server.example.com/users/{{LIBRECHAT_USER_USERNAME}}/mcp',
+        url: 'https://mcp-server.example.com/users/{{Nashm_USER_USERNAME}}/mcp',
         initDuration: expect.any(Number),
       });
       expect(mockDetectOAuthRequirement).not.toHaveBeenCalled();
@@ -461,7 +461,7 @@ describe('MCPServerInspector', () => {
   });
 
   describe('getToolFunctions()', () => {
-    it('should convert MCP tools to LibreChat tool functions format', async () => {
+    it('should convert MCP tools to Nashm tool functions format', async () => {
       mockConnection.fetchTools = jest.fn().mockResolvedValue([
         {
           name: 'file_read',

@@ -7,7 +7,7 @@ import {
   ContentTypes,
   ToolCallTypes,
   getNonEmptyValue,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type {
   Agents,
   TMessage,
@@ -17,7 +17,7 @@ import type {
   SummaryContentPart,
   TMessageContentParts,
   SubagentUpdateEvent,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type { SetterOrUpdater } from 'recoil';
 import type { AnnounceOptions } from '~/common';
 import {
@@ -69,7 +69,7 @@ type AllContentTypes =
   | ContentTypes.SUMMARY
   | ContentTypes.ERROR;
 
-/** Mirrors `SKILL_FILE_PREFIX` in `@librechat/api` file-authoring handlers. */
+/** Mirrors `SKILL_FILE_PREFIX` in `@nashm/api` file-authoring handlers. */
 const SKILL_FILE_PREFIX = 'skills/';
 const FILE_AUTHORING_TOOLS = new Set(['create_file', 'edit_file']);
 

@@ -4,9 +4,9 @@ const {
   GenerationJobManager,
   hasPersistableAbortContent,
   buildAbortedResponseMetadata,
-} = require('@librechat/api');
-const { createSseStreamTelemetry } = require('@librechat/api/telemetry');
-const { logger } = require('@librechat/data-schemas');
+} = require('@nashm/api');
+const { createSseStreamTelemetry } = require('@nashm/api/telemetry');
+const { logger } = require('@nashm/data-schemas');
 const {
   uaParser,
   checkBan,

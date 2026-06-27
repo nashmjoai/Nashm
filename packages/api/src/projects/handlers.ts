@@ -1,4 +1,4 @@
-import { isValidObjectIdString, logger } from '@librechat/data-schemas';
+import { isValidObjectIdString, logger } from '@nashm/data-schemas';
 
 import type {
   ChatProjectMethods,
@@ -6,7 +6,7 @@ import type {
   ChatProjectSortDirection,
   CreateChatProjectInput,
   UpdateChatProjectInput,
-} from '@librechat/data-schemas';
+} from '@nashm/data-schemas';
 import type { Request, Response } from 'express';
 
 const PROJECT_NOT_FOUND = 'Project not found';

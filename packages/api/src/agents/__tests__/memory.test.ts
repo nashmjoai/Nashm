@@ -1,12 +1,12 @@
 import { Response } from 'express';
 import { Providers } from '@librechat/agents';
-import { Tools } from 'librechat-data-provider';
-import type { MemoryArtifact } from 'librechat-data-provider';
+import { Tools } from 'nashm-data-provider';
+import type { MemoryArtifact } from 'nashm-data-provider';
 import { createMemoryTool, processMemory } from '../memory';
 
 // Mock the logger
 // `winston.format` must be a callable factory (real winston returns a Format
-// constructor) so that `@librechat/data-schemas` dist code can complete its
+// constructor) so that `@nashm/data-schemas` dist code can complete its
 // module-load — see api/test/__mocks__/logger.js for the canonical shape.
 jest.mock('winston', () => ({
   createLogger: jest.fn(() => ({

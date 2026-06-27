@@ -15,13 +15,13 @@ const mockLoggerWarn = jest.fn();
 const mockLoggerError = jest.fn();
 const mockGetTenantId = jest.fn();
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: { info: mockLoggerInfo, warn: mockLoggerWarn, error: mockLoggerError },
   getTenantId: (...args) => mockGetTenantId(...args),
   webSearchKeys: [],
 }));
 
-jest.mock('@librechat/api', () => {
+jest.mock('@nashm/api', () => {
   return {
     MCPOAuthHandler: {
       revokeOAuthToken: (...args) => mockRevokeOAuthToken(...args),
@@ -46,7 +46,7 @@ jest.mock('@librechat/api', () => {
   };
 });
 
-jest.mock('librechat-data-provider', () => ({
+jest.mock('nashm-data-provider', () => ({
   Tools: {},
   CacheKeys: { FLOWS: 'flows' },
   Constants: { mcp_delimiter: '::', mcp_prefix: 'mcp_' },

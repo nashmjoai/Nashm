@@ -1,5 +1,5 @@
-const { isUserProvided, isEnabled } = require('@librechat/api');
-const { EModelEndpoint } = require('librechat-data-provider');
+const { isUserProvided, isEnabled } = require('@nashm/api');
+const { EModelEndpoint } = require('nashm-data-provider');
 const { generateConfig } = require('~/server/utils/handleText');
 
 const {

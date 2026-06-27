@@ -1,12 +1,12 @@
 const { nanoid } = require('nanoid');
-const { logger } = require('@librechat/data-schemas');
+const { logger } = require('@nashm/data-schemas');
 const {
   Tools,
   StepTypes,
   FileContext,
   ErrorTypes,
   UsageEvents,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 const {
   GraphEvents,
   GraphNodeKeys,
@@ -21,7 +21,7 @@ const {
   createToolExecuteHandler,
   HOST_FILE_AUTHORING_ARTIFACT_KEY,
   isCodeSessionToolName,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const { processFileCitations } = require('~/server/services/Files/Citations');
 const { processCodeOutput, runPreviewFinalize } = require('~/server/services/Files/Code/process');
 const { saveBase64Image } = require('~/server/services/Files/process');
@@ -882,7 +882,7 @@ function createToolEndCallback({ req, res, artifactPromises, streamId = null }) 
 }
 
 /**
- * Helper to write attachment events in Open Responses format (librechat:attachment)
+ * Helper to write attachment events in Open Responses format (Nashm:attachment)
  * @param {ServerResponse} res - The server response object
  * @param {Object} tracker - The response tracker with sequence number
  * @param {Object} attachment - The attachment data
@@ -898,7 +898,7 @@ function writeResponsesAttachment(res, tracker, attachment, metadata) {
 
 /**
  * Creates a tool end callback specifically for the Responses API.
- * Emits attachments as `librechat:attachment` events per the Open Responses extension spec.
+ * Emits attachments as `Nashm:attachment` events per the Open Responses extension spec.
  *
  * @param {Object} params
  * @param {ServerRequest} params.req
@@ -1108,7 +1108,7 @@ function createResponsesToolEndCallback({ req, res, tracker, artifactPromises })
           }
 
           /* Deferred preview rendering: extract HTML in the background
-           * and emit a follow-up `librechat:attachment` with the same
+           * and emit a follow-up `Nashm:attachment` with the same
            * `file_id` so the client merges the resolved record over the
            * pending placeholder. Fire-and-forget — survives response
            * close; polling covers the post-close gap. */

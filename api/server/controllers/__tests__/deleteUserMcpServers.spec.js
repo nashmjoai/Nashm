@@ -17,14 +17,14 @@ jest.mock('~/server/services/Config', () => ({
 }));
 
 const mongoose = require('mongoose');
-const { mcpServerSchema } = require('@librechat/data-schemas');
+const { mcpServerSchema } = require('@nashm/data-schemas');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const {
   ResourceType,
   AccessRoleIds,
   PrincipalType,
   PermissionBits,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 const permissionService = require('~/server/services/PermissionService');
 const { deleteUserMcpServers } = require('~/server/controllers/UserController');
 const { AclEntry, AccessRole } = require('~/db/models');

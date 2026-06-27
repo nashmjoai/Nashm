@@ -1,4 +1,4 @@
-import { actionDelimiter, validateAndParseOpenAPISpec } from 'librechat-data-provider';
+import { actionDelimiter, validateAndParseOpenAPISpec } from 'nashm-data-provider';
 
 export type ActionToolLike = {
   function?: {

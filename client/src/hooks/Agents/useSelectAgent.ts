@@ -6,8 +6,8 @@ import {
   dataService,
   EModelEndpoint,
   isAssistantsEndpoint,
-} from 'librechat-data-provider';
-import type { TConversation, TPreset, Agent } from 'librechat-data-provider';
+} from 'nashm-data-provider';
+import type { TConversation, TPreset, Agent } from 'nashm-data-provider';
 import useGetConversation from '~/hooks/Conversations/useGetConversation';
 import useDefaultConvo from '~/hooks/Conversations/useDefaultConvo';
 import { useAgentsMapContext } from '~/Providers/AgentsMapContext';

@@ -3,9 +3,9 @@ const { get } = require('lodash');
 const passport = require('passport');
 const client = require('openid-client');
 const jwtDecode = require('jsonwebtoken/decode');
-const { hashToken, logger, tenantStorage } = require('@librechat/data-schemas');
+const { hashToken, logger, tenantStorage } = require('@nashm/data-schemas');
 const { Strategy: OpenIDStrategy } = require('openid-client/passport');
-const { CacheKeys, ErrorTypes, SystemRoles } = require('librechat-data-provider');
+const { CacheKeys, ErrorTypes, SystemRoles } = require('nashm-data-provider');
 const {
   isEnabled,
   logHeaders,
@@ -22,8 +22,8 @@ const {
   getOpenIdProxyDispatcher,
   getOpenIdRoleSyncOptions,
   getOpenIdRolesForOpenIdSync,
-  getLibreChatRolesForOpenIdSync,
-} = require('@librechat/api');
+  getNashmRolesForOpenIdSync,
+} = require('@nashm/api');
 const { getStrategyFunctions } = require('~/server/services/Files/strategies');
 const { resizeAvatar } = require('~/server/services/Files/images/avatar');
 const { findUser, createUser, updateUser, findRolesByNames } = require('~/models');
@@ -526,7 +526,7 @@ async function applyOpenIdRoleSync({
     return;
   }
 
-  const libreChatRoles = {
+  const NashmRoles = {
     getRolesByNames: findRolesByNames,
     rolePriority: options.rolePriority,
     fallbackRole: options.fallbackRole,
@@ -536,9 +536,9 @@ async function applyOpenIdRoleSync({
   /** Role definitions are tenant-scoped, so validate configured roles in the matched user's tenant. */
   const { rolePriority, fallbackRole } = user?.tenantId
     ? await tenantStorage.run({ tenantId: user.tenantId }, async () =>
-        getLibreChatRolesForOpenIdSync(libreChatRoles),
+        getNashmRolesForOpenIdSync(NashmRoles),
       )
-    : await getLibreChatRolesForOpenIdSync(libreChatRoles);
+    : await getNashmRolesForOpenIdSync(NashmRoles);
   const result = selectOpenIdRole({
     currentRole: user.role,
     openIdRoleValues,

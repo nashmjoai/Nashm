@@ -1,6 +1,6 @@
 const express = require('express');
 const { nanoid } = require('nanoid');
-const { logger } = require('@librechat/data-schemas');
+const { logger } = require('@nashm/data-schemas');
 const {
   generateCheckAccess,
   planAgentActionUpdate,
@@ -9,7 +9,7 @@ const {
   validateActionOAuthMetadata,
   ACTION_CREDENTIAL_REFRESH_MESSAGE,
   buildActionOAuthTokenDeleteQueries,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const {
   Permissions,
   ResourceType,
@@ -19,7 +19,7 @@ const {
   removeNullishValues,
   validateActionDomain,
   validateAndParseOpenAPISpec,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 const { encryptMetadata, domainParser } = require('~/server/services/ActionService');
 const { findAccessibleResources } = require('~/server/services/PermissionService');
 const db = require('~/models');

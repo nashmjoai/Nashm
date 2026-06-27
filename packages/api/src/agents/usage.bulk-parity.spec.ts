@@ -227,7 +227,7 @@ describe('recordCollectedUsage — bulk path parity', () => {
       /** Production Anthropic wire: input_tokens is cache-inclusive (140 =
        *  100 fresh + 25 write + 15 read) and provider is tagged. The billed
        *  input must be the fresh 100, not 140 — otherwise cache is charged
-       *  twice (full input rate + cache rate). Regression for LibreChat#13795. */
+       *  twice (full input rate + cache rate). Regression for Nashm#13795. */
       const collectedUsage: UsageMetadata[] = [
         {
           input_tokens: 140,

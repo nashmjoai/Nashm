@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { ChevronRight } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
-import { Skeleton } from '@librechat/client';
-import type { TSkill } from 'librechat-data-provider';
+import { Skeleton } from '@nashm/client';
+import type { TSkill } from 'nashm-data-provider';
 import { useLocalize } from '~/hooks';
 import SkillListItem from './SkillListItem';
 import { cn } from '~/utils';

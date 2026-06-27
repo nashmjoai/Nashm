@@ -1,6 +1,6 @@
-import { logger } from '@librechat/data-schemas';
-import { ResourceType, PermissionBits, EModelEndpoint } from 'librechat-data-provider';
-import type { Agent, GraphEdge, TModelsConfig, TEndpointOption } from 'librechat-data-provider';
+import { logger } from '@nashm/data-schemas';
+import { ResourceType, PermissionBits, EModelEndpoint } from 'nashm-data-provider';
+import type { Agent, GraphEdge, TModelsConfig, TEndpointOption } from 'nashm-data-provider';
 import type { Response as ServerResponse } from 'express';
 import type { ServerRequest } from '~/types';
 import type {
@@ -105,7 +105,7 @@ export interface DiscoverConnectedAgentsDeps {
   onAgentSkipped?: (agentId: string) => void;
   /**
    * Optional override for `initializeAgent`. Exists primarily so JS callers
-   * can inject their test doubles via `jest.mock('@librechat/api')` — since
+   * can inject their test doubles via `jest.mock('@nashm/api')` — since
    * this module's own direct import would otherwise bypass that mock.
    */
   initializeAgent?: typeof defaultInitializeAgent;
@@ -318,7 +318,7 @@ export async function discoverConnectedAgents(
     /**
      * `createSequentialChainEdges` is typed against `@librechat/agents`'s
      * `GraphEdge` (which uses `BaseMessage` from `@langchain/core`) whereas
-     * `collectEdges` uses the `librechat-data-provider` variant (structural
+     * `collectEdges` uses the `nashm-data-provider` variant (structural
      * `BaseMessage`). The produced chain edges are structurally identical and
      * only carry `edgeType`, `from`, `to`, `prompt`, `excludeResults` —
      * interchangeable for edge collection purposes.

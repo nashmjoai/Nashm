@@ -1,4 +1,4 @@
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 import {
   Tools,
   Constants,
@@ -6,9 +6,9 @@ import {
   isEphemeralAgentId,
   appendAgentIdSuffix,
   encodeEphemeralAgentId,
-} from 'librechat-data-provider';
-import type { Agent, TConversation, TModelSpec } from 'librechat-data-provider';
-import type { AppConfig } from '@librechat/data-schemas';
+} from 'nashm-data-provider';
+import type { Agent, TConversation, TModelSpec } from 'nashm-data-provider';
+import type { AppConfig } from '@nashm/data-schemas';
 import { requiresEphemeralUserConnection } from '~/mcp/utils';
 import { getCustomEndpointConfig } from '~/app/config';
 

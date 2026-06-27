@@ -1,5 +1,5 @@
-import { EModelEndpoint } from 'librechat-data-provider';
-import type { TCustomEndpoints } from 'librechat-data-provider';
+import { EModelEndpoint } from 'nashm-data-provider';
+import type { TCustomEndpoints } from 'nashm-data-provider';
 import { loadCustomEndpointsConfig } from './config';
 
 const baseEndpoint = {

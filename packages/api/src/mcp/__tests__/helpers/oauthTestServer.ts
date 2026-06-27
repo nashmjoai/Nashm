@@ -4,7 +4,7 @@ import * as http from 'http';
 import { randomUUID, createHash } from 'crypto';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
-import type { TokenMethods } from '@librechat/data-schemas';
+import type { TokenMethods } from '@nashm/data-schemas';
 import type { Socket } from 'net';
 import type { FlowState } from '~/flow/types';
 

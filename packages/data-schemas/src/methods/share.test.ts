@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid';
 import mongoose from 'mongoose';
-import { Constants } from 'librechat-data-provider';
+import { Constants } from 'nashm-data-provider';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import type { SchemaWithMeiliMethods } from '~/models/plugins/mongoMeili';
 import type * as t from '~/types';
@@ -1514,7 +1514,7 @@ describe('Share Methods', () => {
     });
 
     test('should handle NO_PARENT constant correctly', async () => {
-      const { Constants } = await import('librechat-data-provider');
+      const { Constants } = await import('nashm-data-provider');
       const userId = new mongoose.Types.ObjectId().toString();
       const conversationId = `conv_${nanoid()}`;
       const shareId = `share_${nanoid()}`;

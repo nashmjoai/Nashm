@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AccessRoleIds, ResourceType } from 'librechat-data-provider';
+import { AccessRoleIds, ResourceType } from 'nashm-data-provider';
 import { Share2Icon, Users, Link, CopyCheck, UserX, UserCheck, AlertCircle } from 'lucide-react';
 import {
   Label,
@@ -13,8 +13,8 @@ import {
   OGDialogTrigger,
   TooltipAnchor,
   useToastContext,
-} from '@librechat/client';
-import type { TPrincipal } from 'librechat-data-provider';
+} from '@nashm/client';
+import type { TPrincipal } from 'nashm-data-provider';
 import {
   usePeoplePickerPermissions,
   useResourcePermissionState,

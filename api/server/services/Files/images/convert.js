@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
-const { logger } = require('@librechat/data-schemas');
-const { getStorageMetadata } = require('@librechat/api');
+const { logger } = require('@nashm/data-schemas');
+const { getStorageMetadata } = require('@nashm/api');
 const { getStrategyFunctions } = require('../strategies');
 const { resizeImageBuffer } = require('./resize');
 

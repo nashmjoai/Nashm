@@ -1,11 +1,11 @@
-import { getEndpointField, isAssistantsEndpoint, isAgentsEndpoint } from 'librechat-data-provider';
+import { getEndpointField, isAssistantsEndpoint, isAgentsEndpoint } from 'nashm-data-provider';
 import type {
   TPreset,
   TConversation,
   TAgentsMap,
   TAssistantsMap,
   TEndpointsConfig,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import ConvoIconURL from '~/components/Endpoints/ConvoIconURL';
 import MinimalIcon from '~/components/Endpoints/MinimalIcon';
 import { getAgentAvatarUrl, getIconEndpoint } from '~/utils';

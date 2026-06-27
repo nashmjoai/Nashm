@@ -1,7 +1,7 @@
-import { logger } from '@librechat/data-schemas';
-import { DEFAULT_MEMORY_MAX_INPUT_TOKENS } from 'librechat-data-provider';
+import { logger } from '@nashm/data-schemas';
+import { DEFAULT_MEMORY_MAX_INPUT_TOKENS } from 'nashm-data-provider';
 
-import type { TCustomConfig } from 'librechat-data-provider';
+import type { TCustomConfig } from 'nashm-data-provider';
 
 import { isMemoryAgentEnabled, isMemoryEnabled, loadMemoryConfig } from './config';
 

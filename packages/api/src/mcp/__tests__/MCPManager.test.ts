@@ -1,5 +1,5 @@
-import { logger } from '@librechat/data-schemas';
-import type { IUser } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
+import type { IUser } from '@nashm/data-schemas';
 import type { GraphTokenResolver } from '~/utils/graph';
 import type * as t from '~/mcp/types';
 import { OboTokenResolutionError, detectOAuthRequirement, resolveOboToken } from '~/mcp/oauth';
@@ -14,7 +14,7 @@ import * as graphUtils from '~/utils/graph';
 import { processMCPEnv } from '~/utils/env';
 
 // Mock external dependencies
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     info: jest.fn(),
     warn: jest.fn(),
@@ -482,7 +482,7 @@ describe('MCPManager', () => {
         type: 'sse',
         url: 'https://api.example.com',
         headers: {
-          Authorization: 'Bearer {{LIBRECHAT_GRAPH_ACCESS_TOKEN}}',
+          Authorization: 'Bearer {{Nashm_GRAPH_ACCESS_TOKEN}}',
           'Content-Type': 'application/json',
         },
       };
@@ -495,7 +495,7 @@ describe('MCPManager', () => {
       (graphUtils.preProcessGraphTokens as jest.Mock).mockImplementation(
         async (options, graphOptions) => {
           if (
-            options.headers?.Authorization?.includes('{{LIBRECHAT_GRAPH_ACCESS_TOKEN}}') &&
+            options.headers?.Authorization?.includes('{{Nashm_GRAPH_ACCESS_TOKEN}}') &&
             graphOptions.graphTokenResolver
           ) {
             return {
@@ -576,7 +576,7 @@ describe('MCPManager', () => {
     it('should attach request OAuth handler without reprocessing resolved config', async () => {
       const rawServerConfig = {
         type: 'sse',
-        url: 'https://api.example.com/{{LIBRECHAT_USER_ID}}',
+        url: 'https://api.example.com/{{Nashm_USER_ID}}',
         headers: {
           Authorization: 'Bearer {{USER_TOKEN}}',
         },
@@ -638,7 +638,7 @@ describe('MCPManager', () => {
         type: 'sse',
         url: 'https://api.example.com',
         headers: {
-          Authorization: 'Bearer {{LIBRECHAT_GRAPH_ACCESS_TOKEN}}',
+          Authorization: 'Bearer {{Nashm_GRAPH_ACCESS_TOKEN}}',
         },
         source: 'user',
         dbId: 'user-server-id',
@@ -666,7 +666,7 @@ describe('MCPManager', () => {
       expect(graphUtils.preProcessGraphTokens).not.toHaveBeenCalled();
       expect(mockConnection.setRequestHeaders).toHaveBeenCalledWith(
         expect.objectContaining({
-          Authorization: 'Bearer {{LIBRECHAT_GRAPH_ACCESS_TOKEN}}',
+          Authorization: 'Bearer {{Nashm_GRAPH_ACCESS_TOKEN}}',
         }),
       );
     });
@@ -747,7 +747,7 @@ describe('MCPManager', () => {
       // Headers should contain the unresolved placeholder
       expect(mockConnection.setRequestHeaders).toHaveBeenCalledWith(
         expect.objectContaining({
-          Authorization: 'Bearer {{LIBRECHAT_GRAPH_ACCESS_TOKEN}}',
+          Authorization: 'Bearer {{Nashm_GRAPH_ACCESS_TOKEN}}',
         }),
       );
     });
@@ -758,14 +758,14 @@ describe('MCPManager', () => {
         command: 'node',
         args: ['server.js'],
         env: {
-          GRAPH_TOKEN: '{{LIBRECHAT_GRAPH_ACCESS_TOKEN}}',
+          GRAPH_TOKEN: '{{Nashm_GRAPH_ACCESS_TOKEN}}',
           OTHER_VAR: 'static-value',
         },
       };
 
       // Mock resolution for env variables
       (graphUtils.preProcessGraphTokens as jest.Mock).mockImplementation(async (options) => {
-        if (options.env?.GRAPH_TOKEN?.includes('{{LIBRECHAT_GRAPH_ACCESS_TOKEN}}')) {
+        if (options.env?.GRAPH_TOKEN?.includes('{{Nashm_GRAPH_ACCESS_TOKEN}}')) {
           return {
             ...options,
             env: {
@@ -807,12 +807,12 @@ describe('MCPManager', () => {
     it('should resolve graph tokens in URL', async () => {
       const serverConfig: t.SSEOptions = {
         type: 'sse',
-        url: 'https://api.example.com?token={{LIBRECHAT_GRAPH_ACCESS_TOKEN}}',
+        url: 'https://api.example.com?token={{Nashm_GRAPH_ACCESS_TOKEN}}',
       };
 
       // Mock resolution for URL
       (graphUtils.preProcessGraphTokens as jest.Mock).mockImplementation(async (options) => {
-        if (options.url?.includes('{{LIBRECHAT_GRAPH_ACCESS_TOKEN}}')) {
+        if (options.url?.includes('{{Nashm_GRAPH_ACCESS_TOKEN}}')) {
           return {
             ...options,
             url: 'https://api.example.com?token=resolved-graph-token',
@@ -1234,7 +1234,7 @@ describe('MCPManager', () => {
         url: 'https://api.example.com/mcp',
         source: 'yaml',
         headers: {
-          'X-LibreChat-User-Email': '{{LIBRECHAT_USER_EMAIL}}',
+          'X-Nashm-User-Email': '{{Nashm_USER_EMAIL}}',
         },
       };
 
@@ -1378,7 +1378,7 @@ describe('MCPManager', () => {
 
       (mockRegistryInstance.getServerConfig as jest.Mock).mockResolvedValue({
         type: 'streamable-http',
-        url: 'https://api.example.com/messages/{{LIBRECHAT_BODY_MESSAGEID}}/mcp',
+        url: 'https://api.example.com/messages/{{Nashm_BODY_MESSAGEID}}/mcp',
         source: 'yaml',
       });
 
@@ -1574,7 +1574,7 @@ describe('MCPManager', () => {
     it('should detect OAuth after resolving trusted runtime URL placeholders', async () => {
       const runtimeUrlConfig: t.ParsedServerConfig = {
         type: 'streamable-http',
-        url: 'https://api.example.com/users/{{LIBRECHAT_USER_ID}}/mcp',
+        url: 'https://api.example.com/users/{{Nashm_USER_ID}}/mcp',
         source: 'yaml',
       };
       mockAppConnections({
@@ -1584,7 +1584,7 @@ describe('MCPManager', () => {
       mockProcessMCPEnv.mockImplementation(({ options, user }) => ({
         ...options,
         ...('url' in options && {
-          url: options.url?.replace('{{LIBRECHAT_USER_ID}}', user?.id ?? ''),
+          url: options.url?.replace('{{Nashm_USER_ID}}', user?.id ?? ''),
         }),
       }));
       mockDetectOAuthRequirement.mockResolvedValue({
@@ -1618,7 +1618,7 @@ describe('MCPManager', () => {
     it('should reject disallowed runtime URLs before OAuth detection probes them', async () => {
       const runtimeUrlConfig: t.ParsedServerConfig = {
         type: 'streamable-http',
-        url: 'https://{{LIBRECHAT_BODY_CONVERSATIONID}}.example.com/mcp',
+        url: 'https://{{Nashm_BODY_CONVERSATIONID}}.example.com/mcp',
         source: 'yaml',
       };
       mockAppConnections({
@@ -1630,7 +1630,7 @@ describe('MCPManager', () => {
         ...options,
         ...('url' in options && {
           url: options.url?.replace(
-            '{{LIBRECHAT_BODY_CONVERSATIONID}}',
+            '{{Nashm_BODY_CONVERSATIONID}}',
             body?.conversationId ?? '',
           ),
         }),
@@ -1654,7 +1654,7 @@ describe('MCPManager', () => {
     it('should reject resolved runtime URLs that fail MCP domain policy', async () => {
       const runtimeUrlConfig: t.ParsedServerConfig = {
         type: 'streamable-http',
-        url: 'https://{{LIBRECHAT_BODY_CONVERSATIONID}}.example.com/mcp',
+        url: 'https://{{Nashm_BODY_CONVERSATIONID}}.example.com/mcp',
         source: 'yaml',
         requiresOAuth: false,
       };
@@ -1667,7 +1667,7 @@ describe('MCPManager', () => {
         ...options,
         ...('url' in options && {
           url: options.url?.replace(
-            '{{LIBRECHAT_BODY_CONVERSATIONID}}',
+            '{{Nashm_BODY_CONVERSATIONID}}',
             body?.conversationId ?? '',
           ),
         }),
@@ -1696,7 +1696,7 @@ describe('MCPManager', () => {
     it('should validate resolved runtime URLs without passing resolved configs to the factory', async () => {
       const runtimeUrlConfig: t.ParsedServerConfig = {
         type: 'streamable-http',
-        url: 'https://{{LIBRECHAT_BODY_CONVERSATIONID}}.example.com/mcp',
+        url: 'https://{{Nashm_BODY_CONVERSATIONID}}.example.com/mcp',
         source: 'yaml',
         requiresOAuth: false,
       };
@@ -1709,7 +1709,7 @@ describe('MCPManager', () => {
         ...options,
         ...('url' in options && {
           url: options.url?.replace(
-            '{{LIBRECHAT_BODY_CONVERSATIONID}}',
+            '{{Nashm_BODY_CONVERSATIONID}}',
             body?.conversationId ?? '',
           ),
         }),
@@ -1734,7 +1734,7 @@ describe('MCPManager', () => {
       expect(MCPConnectionFactory.create).toHaveBeenCalledWith(
         expect.objectContaining({
           serverConfig: expect.objectContaining({
-            url: 'https://{{LIBRECHAT_BODY_CONVERSATIONID}}.example.com/mcp',
+            url: 'https://{{Nashm_BODY_CONVERSATIONID}}.example.com/mcp',
           }),
         }),
         expect.objectContaining({
@@ -1751,7 +1751,7 @@ describe('MCPManager', () => {
         dbId: 'user-server-id',
         requiresOAuth: false,
         headers: {
-          Authorization: 'Bearer {{LIBRECHAT_GRAPH_ACCESS_TOKEN}}',
+          Authorization: 'Bearer {{Nashm_GRAPH_ACCESS_TOKEN}}',
         },
       };
       mockAppConnections({
@@ -1772,7 +1772,7 @@ describe('MCPManager', () => {
         expect.objectContaining({
           serverConfig: expect.objectContaining({
             headers: {
-              Authorization: 'Bearer {{LIBRECHAT_GRAPH_ACCESS_TOKEN}}',
+              Authorization: 'Bearer {{Nashm_GRAPH_ACCESS_TOKEN}}',
             },
           }),
         }),
@@ -1783,7 +1783,7 @@ describe('MCPManager', () => {
     it('should not cache connections when request body placeholders affect the URL', async () => {
       const bodyUrlConfig: t.ParsedServerConfig = {
         type: 'streamable-http',
-        url: 'https://api.example.com/messages/{{LIBRECHAT_BODY_MESSAGEID}}/mcp',
+        url: 'https://api.example.com/messages/{{Nashm_BODY_MESSAGEID}}/mcp',
         source: 'yaml',
         requiresOAuth: false,
       };
@@ -1801,7 +1801,7 @@ describe('MCPManager', () => {
       mockProcessMCPEnv.mockImplementation(({ options, body }) => ({
         ...options,
         ...('url' in options && {
-          url: options.url?.replace('{{LIBRECHAT_BODY_MESSAGEID}}', body?.messageId ?? ''),
+          url: options.url?.replace('{{Nashm_BODY_MESSAGEID}}', body?.messageId ?? ''),
         }),
       }));
       (MCPConnectionFactory.create as jest.Mock)
@@ -1828,7 +1828,7 @@ describe('MCPManager', () => {
     it('should reuse BODY-scoped connections within a request-scoped connection store', async () => {
       const bodyUrlConfig: t.ParsedServerConfig = {
         type: 'streamable-http',
-        url: 'https://api.example.com/messages/{{LIBRECHAT_BODY_MESSAGEID}}/mcp',
+        url: 'https://api.example.com/messages/{{Nashm_BODY_MESSAGEID}}/mcp',
         source: 'yaml',
         requiresOAuth: false,
       };
@@ -1847,7 +1847,7 @@ describe('MCPManager', () => {
       mockProcessMCPEnv.mockImplementation(({ options, body }) => ({
         ...options,
         ...('url' in options && {
-          url: options.url?.replace('{{LIBRECHAT_BODY_MESSAGEID}}', body?.messageId ?? ''),
+          url: options.url?.replace('{{Nashm_BODY_MESSAGEID}}', body?.messageId ?? ''),
         }),
       }));
       (MCPConnectionFactory.create as jest.Mock).mockResolvedValue(requestScopedConnection);
@@ -1877,7 +1877,7 @@ describe('MCPManager', () => {
     it('should not clear server cooldowns for ephemeral runtime connections', async () => {
       const bodyUrlConfig: t.ParsedServerConfig = {
         type: 'streamable-http',
-        url: 'https://api.example.com/messages/{{LIBRECHAT_BODY_MESSAGEID}}/mcp',
+        url: 'https://api.example.com/messages/{{Nashm_BODY_MESSAGEID}}/mcp',
         source: 'yaml',
         requiresOAuth: false,
       };
@@ -1890,7 +1890,7 @@ describe('MCPManager', () => {
       mockProcessMCPEnv.mockImplementation(({ options, body }) => ({
         ...options,
         ...('url' in options && {
-          url: options.url?.replace('{{LIBRECHAT_BODY_MESSAGEID}}', body?.messageId ?? ''),
+          url: options.url?.replace('{{Nashm_BODY_MESSAGEID}}', body?.messageId ?? ''),
         }),
       }));
       (MCPConnectionFactory.create as jest.Mock).mockResolvedValue(mockConnection);
@@ -1941,7 +1941,7 @@ describe('MCPManager', () => {
     it('should reject BODY-scoped connections without request body context', async () => {
       const bodyUrlConfig: t.ParsedServerConfig = {
         type: 'streamable-http',
-        url: 'https://api.example.com/messages/{{LIBRECHAT_BODY_MESSAGEID}}/mcp',
+        url: 'https://api.example.com/messages/{{Nashm_BODY_MESSAGEID}}/mcp',
         source: 'yaml',
         requiresOAuth: false,
       };
@@ -1965,7 +1965,7 @@ describe('MCPManager', () => {
     it('should reject BODY-scoped connections when a referenced body field is missing', async () => {
       const bodyUrlConfig: t.ParsedServerConfig = {
         type: 'streamable-http',
-        url: 'https://api.example.com/messages/{{LIBRECHAT_BODY_MESSAGEID}}/mcp',
+        url: 'https://api.example.com/messages/{{Nashm_BODY_MESSAGEID}}/mcp',
         source: 'yaml',
         requiresOAuth: false,
       };

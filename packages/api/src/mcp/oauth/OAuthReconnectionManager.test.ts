@@ -1,11 +1,11 @@
-import { logger, TokenMethods } from '@librechat/data-schemas';
-import type { IToken } from '@librechat/data-schemas';
+import { logger, TokenMethods } from '@nashm/data-schemas';
+import type { IToken } from '@nashm/data-schemas';
 import { OAuthReconnectionManager } from './OAuthReconnectionManager';
 import { OAuthReconnectionTracker } from './OAuthReconnectionTracker';
 import { FlowStateManager, MCPConnection, MCPOptions } from '../..';
 import { MCPManager } from '../MCPManager';
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     info: jest.fn(),
     warn: jest.fn(),

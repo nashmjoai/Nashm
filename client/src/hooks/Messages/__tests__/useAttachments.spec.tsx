@@ -11,10 +11,10 @@
  */
 
 import { useEffect } from 'react';
-import { Tools } from 'librechat-data-provider';
+import { Tools } from 'nashm-data-provider';
 import { renderHook } from '@testing-library/react';
 import { RecoilRoot, useSetRecoilState } from 'recoil';
-import type { TAttachment, TFile, TAttachmentMetadata } from 'librechat-data-provider';
+import type { TAttachment, TFile, TAttachmentMetadata } from 'nashm-data-provider';
 import type { ReactNode } from 'react';
 import store from '~/store';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRecoilValue } from 'recoil';
-import { TooltipAnchor } from '@librechat/client';
+import { TooltipAnchor } from '@nashm/client';
 import { MessageCircleDashed } from 'lucide-react';
 import { useRecoilState, useRecoilCallback } from 'recoil';
 import { useLocalize } from '~/hooks';

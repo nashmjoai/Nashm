@@ -1,13 +1,13 @@
 import mongoose from 'mongoose';
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 import {
   PrincipalType,
   ResourceType,
   AccessRoleIds,
   PermissionBits,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type { Model, Types, DeleteResult, UpdateQuery } from 'mongoose';
-import type { IAclEntry, ISharedLink } from '@librechat/data-schemas';
+import type { IAclEntry, ISharedLink } from '@nashm/data-schemas';
 import { AccessControlService } from '~/acl/accessControlService';
 
 let _aclService: AccessControlService | null = null;

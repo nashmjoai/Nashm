@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useMemo, useState } from 'react';
 import { v4 } from 'uuid';
 import debounce from 'lodash/debounce';
-import { useToastContext } from '@librechat/client';
+import { useToastContext } from '@nashm/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import {
@@ -12,9 +12,9 @@ import {
   isAssistantsEndpoint,
   getEndpointFileConfig,
   defaultAssistantsVersion,
-} from 'librechat-data-provider';
-import type { EModelEndpoint, TEndpointsConfig, TError } from 'librechat-data-provider';
-import type { TConversation } from 'librechat-data-provider';
+} from 'nashm-data-provider';
+import type { EModelEndpoint, TEndpointsConfig, TError } from 'nashm-data-provider';
+import type { TConversation } from 'nashm-data-provider';
 import type { ExtendedFile, FileSetter } from '~/common';
 import { logger, validateFiles, cachePreview, getCachedPreview, removePreviewEntry } from '~/utils';
 import { useGetFileConfig, useUploadFileMutation } from '~/data-provider';

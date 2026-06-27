@@ -1,4 +1,4 @@
-const { SystemRoles } = require('librechat-data-provider');
+const { SystemRoles } = require('nashm-data-provider');
 
 // --- Capture JwtStrategy inputs ---
 let capturedStrategyOptions;
@@ -19,15 +19,15 @@ jest.mock('jwks-rsa', () => ({
 jest.mock('https-proxy-agent', () => ({
   HttpsProxyAgent: jest.fn(),
 }));
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: { info: jest.fn(), warn: jest.fn(), debug: jest.fn(), error: jest.fn() },
 }));
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   isEnabled: jest.fn(() => false),
   findOpenIDUser: jest.fn(),
-  getOpenIdEmail: jest.requireActual('@librechat/api').getOpenIdEmail,
+  getOpenIdEmail: jest.requireActual('@nashm/api').getOpenIdEmail,
   getOpenIdIssuer: jest.fn(() => 'https://issuer.example.com'),
-  normalizeOpenIdIssuer: jest.requireActual('@librechat/api').normalizeOpenIdIssuer,
+  normalizeOpenIdIssuer: jest.requireActual('@nashm/api').normalizeOpenIdIssuer,
   getHttpsProxyAgent: jest.fn(() => undefined),
   math: jest.fn((val, fallback) => fallback),
 }));
@@ -47,7 +47,7 @@ jest.mock('~/cache/getLogStores', () =>
   jest.fn().mockReturnValue({ get: jest.fn(), set: jest.fn() }),
 );
 
-const { findOpenIDUser } = require('@librechat/api');
+const { findOpenIDUser } = require('@nashm/api');
 const openIdJwtLogin = require('./openIdJwtStrategy');
 const { findUser, updateUser } = require('~/models');
 
@@ -99,52 +99,52 @@ describe('openIdJwtStrategy – token validation', () => {
   });
 
   it('requires OpenID JWTs to match the configured client audience and issuer', () => {
-    withEnv({ OPENID_CLIENT_ID: 'librechat-client-id', OPENID_AUDIENCE: undefined }, () => {
+    withEnv({ OPENID_CLIENT_ID: 'Nashm-client-id', OPENID_AUDIENCE: undefined }, () => {
       openIdJwtLogin(mockOpenIdConfig);
     });
 
     expect(capturedStrategyOptions).toMatchObject({
-      audience: 'librechat-client-id',
+      audience: 'Nashm-client-id',
       passReqToCallback: true,
     });
     expect(capturedStrategyOptions).not.toHaveProperty('issuer');
   });
 
   it('also accepts OPENID_AUDIENCE for providers that mint resource-bound JWTs', () => {
-    withEnv({ OPENID_CLIENT_ID: 'librechat-client-id', OPENID_AUDIENCE: 'api://librechat' }, () => {
+    withEnv({ OPENID_CLIENT_ID: 'Nashm-client-id', OPENID_AUDIENCE: 'api://Nashm' }, () => {
       openIdJwtLogin(mockOpenIdConfig);
     });
 
     expect(capturedStrategyOptions).toMatchObject({
-      audience: ['librechat-client-id', 'api://librechat'],
+      audience: ['Nashm-client-id', 'api://Nashm'],
     });
   });
 
   it('uses a single OPENID_AUDIENCE value when no client ID is configured', () => {
-    withEnv({ OPENID_CLIENT_ID: undefined, OPENID_AUDIENCE: 'librechat' }, () => {
+    withEnv({ OPENID_CLIENT_ID: undefined, OPENID_AUDIENCE: 'Nashm' }, () => {
       openIdJwtLogin(mockOpenIdConfig);
     });
 
-    expect(capturedStrategyOptions.audience).toBe('librechat');
+    expect(capturedStrategyOptions.audience).toBe('Nashm');
   });
 
   it('splits comma-separated OPENID_AUDIENCE values into multiple accepted audiences', () => {
-    withEnv({ OPENID_CLIENT_ID: undefined, OPENID_AUDIENCE: 'librechat,control-plane-web' }, () => {
+    withEnv({ OPENID_CLIENT_ID: undefined, OPENID_AUDIENCE: 'Nashm,control-plane-web' }, () => {
       openIdJwtLogin(mockOpenIdConfig);
     });
 
-    expect(capturedStrategyOptions.audience).toEqual(['librechat', 'control-plane-web']);
+    expect(capturedStrategyOptions.audience).toEqual(['Nashm', 'control-plane-web']);
   });
 
   it('trims whitespace around comma-separated OPENID_AUDIENCE values', () => {
     withEnv(
-      { OPENID_CLIENT_ID: undefined, OPENID_AUDIENCE: ' librechat , control-plane-web ' },
+      { OPENID_CLIENT_ID: undefined, OPENID_AUDIENCE: ' Nashm , control-plane-web ' },
       () => {
         openIdJwtLogin(mockOpenIdConfig);
       },
     );
 
-    expect(capturedStrategyOptions.audience).toEqual(['librechat', 'control-plane-web']);
+    expect(capturedStrategyOptions.audience).toEqual(['Nashm', 'control-plane-web']);
   });
 
   it('falls back to OPENID_CLIENT_ID when OPENID_AUDIENCE is empty', () => {
@@ -157,13 +157,13 @@ describe('openIdJwtStrategy – token validation', () => {
 
   it('combines OPENID_CLIENT_ID with comma-separated OPENID_AUDIENCE values and deduplicates', () => {
     withEnv(
-      { OPENID_CLIENT_ID: 'librechat', OPENID_AUDIENCE: 'librechat,control-plane-web' },
+      { OPENID_CLIENT_ID: 'Nashm', OPENID_AUDIENCE: 'Nashm,control-plane-web' },
       () => {
         openIdJwtLogin(mockOpenIdConfig);
       },
     );
 
-    expect(capturedStrategyOptions.audience).toEqual(['librechat', 'control-plane-web']);
+    expect(capturedStrategyOptions.audience).toEqual(['Nashm', 'control-plane-web']);
   });
 
   it('rejects OpenID JWTs whose issuer does not match the configured issuer', async () => {
@@ -363,7 +363,7 @@ describe('openIdJwtStrategy – OPENID_EMAIL_CLAIM', () => {
     delete process.env.OPENID_EMAIL_CLAIM;
 
     // Use real findOpenIDUser so it delegates to the findUser mock
-    const realFindOpenIDUser = jest.requireActual('@librechat/api').findOpenIDUser;
+    const realFindOpenIDUser = jest.requireActual('@nashm/api').findOpenIDUser;
     findOpenIDUser.mockImplementation(realFindOpenIDUser);
 
     findUser.mockResolvedValue(null);

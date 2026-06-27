@@ -1,4 +1,4 @@
-import { EModelEndpoint } from 'librechat-data-provider';
+import { EModelEndpoint } from 'nashm-data-provider';
 import type { EndpointTokenConfig } from '~/types';
 import { getModelMaxTokens, getModelMaxOutputTokens } from './tokens';
 

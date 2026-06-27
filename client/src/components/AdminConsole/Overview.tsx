@@ -11,7 +11,7 @@ import {
   CheckCircle2,
   XCircle,
 } from 'lucide-react';
-import { Spinner } from '@librechat/client';
+import { Spinner } from '@nashm/client';
 
 export default function AdminConsoleOverview() {
   const { data, isLoading, error } = useGetAdminConsoleOverviewQuery();

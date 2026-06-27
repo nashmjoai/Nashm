@@ -2,13 +2,13 @@ const express = require('express');
 const passport = require('passport');
 const crypto = require('node:crypto');
 const openIdClient = require('openid-client');
-const { CacheKeys } = require('librechat-data-provider');
+const { CacheKeys } = require('nashm-data-provider');
 const {
   logger,
   DEFAULT_SESSION_EXPIRY,
   SystemCapabilities,
   getTenantId,
-} = require('@librechat/data-schemas');
+} = require('@nashm/data-schemas');
 const {
   isEnabled,
   getAdminPanelUrl,
@@ -20,7 +20,7 @@ const {
   applyAdminRefresh,
   AdminRefreshError,
   buildOpenIDRefreshParams,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const { loginController } = require('~/server/controllers/auth/LoginController');
 const { hasCapability, requireCapability } = require('~/server/middleware/roles/capabilities');
 const { createOAuthHandler } = require('~/server/controllers/auth/oauth');
@@ -487,7 +487,7 @@ router.post('/oauth/exchange', middleware.loginLimiter, async (req, res) => {
  * The standard `/api/auth/refresh` controller reads the refresh token from
  * cookies, which a cross-origin admin panel can't set. This endpoint accepts
  * the refresh token in the request body, exchanges it at the IdP, mints a
- * fresh LibreChat JWT, and returns the same response shape as
+ * fresh Nashm JWT, and returns the same response shape as
  * `/api/admin/oauth/exchange`.
  *
  * POST /api/admin/oauth/refresh
@@ -497,7 +497,7 @@ router.post('/oauth/exchange', middleware.loginLimiter, async (req, res) => {
  * Errors (all responses are `{ error: string, error_code: string }`):
  *   400 MISSING_REFRESH_TOKEN  — refresh_token absent or empty
  *   401 REFRESH_FAILED         — IdP rejected the refresh grant
- *   401 USER_NOT_FOUND         — no LibreChat user matches the refreshed sub
+ *   401 USER_NOT_FOUND         — no Nashm user matches the refreshed sub
  *   401 USER_ID_MISMATCH       — supplied user_id resolves to a user with a different openidId
  *   401 ISSUER_MISMATCH        — refreshed tokenset was issued by an unexpected issuer
  *   401 TENANT_MISMATCH        — resolved user belongs to a different tenant than the request

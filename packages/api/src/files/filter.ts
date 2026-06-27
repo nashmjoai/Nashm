@@ -1,5 +1,5 @@
-import { getEndpointFileConfig, mergeFileConfig, fileConfig } from 'librechat-data-provider';
-import type { IMongoFile } from '@librechat/data-schemas';
+import { getEndpointFileConfig, mergeFileConfig, fileConfig } from 'nashm-data-provider';
+import type { IMongoFile } from '@nashm/data-schemas';
 import type { ServerRequest } from '~/types';
 
 /**

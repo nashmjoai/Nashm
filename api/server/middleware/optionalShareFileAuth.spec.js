@@ -2,12 +2,12 @@ const mockVerify = jest.fn();
 const mockGetUserById = jest.fn();
 
 jest.mock('jsonwebtoken', () => ({ verify: (...args) => mockVerify(...args) }));
-jest.mock('@librechat/api', () => ({ isEnabled: (v) => v === 'true' || v === true }));
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/api', () => ({ isEnabled: (v) => v === 'true' || v === true }));
+jest.mock('@nashm/data-schemas', () => ({
   logger: { warn: jest.fn(), error: jest.fn() },
   runAsSystem: (fn) => fn(),
 }));
-jest.mock('librechat-data-provider', () => ({ SystemRoles: { USER: 'USER' } }));
+jest.mock('nashm-data-provider', () => ({ SystemRoles: { USER: 'USER' } }));
 jest.mock('~/models', () => ({ getUserById: (...args) => mockGetUserById(...args) }));
 
 const optionalShareFileAuth = require('./optionalShareFileAuth');

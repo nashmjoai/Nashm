@@ -1,4 +1,4 @@
-import { PrincipalType, SystemRoles } from 'librechat-data-provider';
+import { PrincipalType, SystemRoles } from 'nashm-data-provider';
 import type { Types, Model, ClientSession, FilterQuery } from 'mongoose';
 import type { SystemCapability } from '~/types/admin';
 import type { ISystemGrant } from '~/types';

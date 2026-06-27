@@ -1,5 +1,5 @@
-import { logger } from '@librechat/data-schemas';
-import type { SkillSyncConfig } from 'librechat-data-provider';
+import { logger } from '@nashm/data-schemas';
+import type { SkillSyncConfig } from 'nashm-data-provider';
 import type { GitHubSkillSyncRunner } from './github';
 import { registerShutdownTask } from '~/app/shutdown';
 

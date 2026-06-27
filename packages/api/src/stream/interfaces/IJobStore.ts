@@ -1,5 +1,5 @@
 import type { StandardGraph } from '@librechat/agents';
-import type { Agents } from 'librechat-data-provider';
+import type { Agents } from 'nashm-data-provider';
 
 /**
  * Job status enum

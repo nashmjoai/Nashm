@@ -1,10 +1,10 @@
 import React from 'react';
 import * as Ariakit from '@ariakit/react';
 import { ChevronDown } from 'lucide-react';
-import { DropdownPopup, Skeleton } from '@librechat/client';
-import { AccessRoleIds, ResourceType } from 'librechat-data-provider';
-import { useGetAccessRolesQuery } from 'librechat-data-provider/react-query';
-import type { AccessRole } from 'librechat-data-provider';
+import { DropdownPopup, Skeleton } from '@nashm/client';
+import { AccessRoleIds, ResourceType } from 'nashm-data-provider';
+import { useGetAccessRolesQuery } from 'nashm-data-provider/react-query';
+import type { AccessRole } from 'nashm-data-provider';
 import type * as t from '~/common';
 import { cn, getRoleLocalizationKeys, RESOURCE_CONFIGS } from '~/utils';
 import { useLocalize } from '~/hooks';

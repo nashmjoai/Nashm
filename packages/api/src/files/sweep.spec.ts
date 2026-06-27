@@ -1,5 +1,5 @@
-import { EModelEndpoint, FileSources } from 'librechat-data-provider';
-import type { AppConfig } from '@librechat/data-schemas';
+import { EModelEndpoint, FileSources } from 'nashm-data-provider';
+import type { AppConfig } from '@nashm/data-schemas';
 import { getFileRetentionSweepInterval, startExpiredFileSweep, sweepExpiredFiles } from './sweep';
 
 describe('expired file sweep helpers', () => {

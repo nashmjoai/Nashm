@@ -8,16 +8,16 @@ const mockCache = {
 };
 const mockSaveConvo = jest.fn();
 
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   isEnabled: (val) => val === true || val === 'true',
   sanitizeTitle: (title) => title,
 }));
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: { debug: jest.fn(), info: jest.fn(), warn: jest.fn(), error: jest.fn() },
 }));
 
-jest.mock('librechat-data-provider', () => ({
+jest.mock('nashm-data-provider', () => ({
   CacheKeys: { GEN_TITLE: 'GEN_TITLE' },
 }));
 

@@ -1,5 +1,5 @@
-import { EModelEndpoint } from 'librechat-data-provider';
-import type { TConfig, TModelSpec, TEndpointsConfig } from 'librechat-data-provider';
+import { EModelEndpoint } from 'nashm-data-provider';
+import type { TConfig, TModelSpec, TEndpointsConfig } from 'nashm-data-provider';
 import { getUserKeyEndpoints, isUserProvidedEndpointConfig } from './utils';
 
 const cfg = (overrides: Partial<TConfig> = {}): TConfig => ({ order: 0, ...overrides });

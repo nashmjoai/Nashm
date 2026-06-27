@@ -1,8 +1,8 @@
 const express = require('express');
 const { nanoid } = require('nanoid');
-const { logger } = require('@librechat/data-schemas');
-const { isActionDomainAllowed, validateActionOAuthMetadata } = require('@librechat/api');
-const { actionDelimiter, EModelEndpoint, removeNullishValues } = require('librechat-data-provider');
+const { logger } = require('@nashm/data-schemas');
+const { isActionDomainAllowed, validateActionOAuthMetadata } = require('@nashm/api');
+const { actionDelimiter, EModelEndpoint, removeNullishValues } = require('nashm-data-provider');
 const {
   legacyDomainEncode,
   encryptMetadata,

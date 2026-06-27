@@ -6,7 +6,7 @@ jest.mock('~/server/middleware/roles/capabilities', () => ({
   hasCapability: jest.fn(),
 }));
 
-const { ResourceType, PermissionTypes, Permissions } = require('librechat-data-provider');
+const { ResourceType, PermissionTypes, Permissions } = require('nashm-data-provider');
 const { hasCapability } = require('~/server/middleware/roles/capabilities');
 const { checkShareAccess, checkSharePublicAccess } = require('./checkSharePublicAccess');
 const { getRoleByName } = require('~/models');

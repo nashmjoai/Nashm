@@ -1,4 +1,4 @@
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 import type * as t from '~/mcp/types';
 import { MCPServersRegistry } from '~/mcp/registry/MCPServersRegistry';
 import { MCPServerInspector } from '~/mcp/registry/MCPServerInspector';
@@ -173,7 +173,7 @@ describe('MCPServersRegistry', () => {
           type: 'streamable-http',
           url: 'https://api.example.com/mcp',
           headers: {
-            'X-LibreChat-User-Email': '{{LIBRECHAT_USER_EMAIL}}',
+            'X-Nashm-User-Email': '{{Nashm_USER_EMAIL}}',
           },
         },
         'DB',
@@ -185,7 +185,7 @@ describe('MCPServersRegistry', () => {
         expect.objectContaining({
           source: 'user',
           headers: {
-            'X-LibreChat-User-Email': '{{LIBRECHAT_USER_EMAIL}}',
+            'X-Nashm-User-Email': '{{Nashm_USER_EMAIL}}',
           },
         }),
         undefined,

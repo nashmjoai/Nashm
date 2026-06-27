@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import * as Ariakit from '@ariakit/react';
-import { TFeedback, TFeedbackTag, getTagsForRating } from 'librechat-data-provider';
+import { TFeedback, TFeedbackTag, getTagsForRating } from 'nashm-data-provider';
 import {
   AlertCircle,
   PenTool,
@@ -18,7 +18,7 @@ import {
   OGDialogTitle,
   ThumbUpIcon,
   ThumbDownIcon,
-} from '@librechat/client';
+} from '@nashm/client';
 import { useLocalize } from '~/hooks';
 import { cn } from '~/utils';
 

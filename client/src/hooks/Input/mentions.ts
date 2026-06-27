@@ -1,4 +1,4 @@
-import { EModelEndpoint, isAgentsEndpoint, isAssistantsEndpoint } from 'librechat-data-provider';
+import { EModelEndpoint, isAgentsEndpoint, isAssistantsEndpoint } from 'nashm-data-provider';
 
 export function filterMentionEndpoints({
   endpoints,

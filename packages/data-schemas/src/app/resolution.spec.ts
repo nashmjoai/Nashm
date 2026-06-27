@@ -1,4 +1,4 @@
-import { INTERFACE_PERMISSION_FIELDS, PermissionTypes } from 'librechat-data-provider';
+import { INTERFACE_PERMISSION_FIELDS, PermissionTypes } from 'nashm-data-provider';
 import type { AppConfig, IConfig } from '~/types';
 import { mergeConfigOverrides } from './resolution';
 
@@ -357,7 +357,7 @@ describe('mergeConfigOverrides', () => {
           sources: [
             {
               id: 'base-source',
-              owner: 'LibreChat',
+              owner: 'Nashm',
               repo: 'skills',
               ref: 'main',
               paths: ['skills'],

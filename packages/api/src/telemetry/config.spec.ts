@@ -6,7 +6,7 @@ describe('getTelemetryConfig', () => {
 
     expect(config.enabled).toBe(false);
     expect(config.sdkDisabled).toBe(false);
-    expect(config.serviceName).toBe('librechat');
+    expect(config.serviceName).toBe('Nashm');
     expect(config.healthPath).toBe('/health');
     expect(config.ioredisTracingEnabled).toBe(false);
   });
@@ -29,11 +29,11 @@ describe('getTelemetryConfig', () => {
 
   it('uses standard service env vars when provided', () => {
     const config = getTelemetryConfig({
-      OTEL_SERVICE_NAME: ' librechat-api ',
+      OTEL_SERVICE_NAME: ' Nashm-api ',
       OTEL_SERVICE_VERSION: ' 1.2.3 ',
     });
 
-    expect(config.serviceName).toBe('librechat-api');
+    expect(config.serviceName).toBe('Nashm-api');
     expect(config.serviceVersion).toBe('1.2.3');
   });
 

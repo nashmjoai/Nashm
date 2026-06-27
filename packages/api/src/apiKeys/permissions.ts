@@ -4,8 +4,8 @@ import {
   PrincipalType,
   PermissionBits,
   AccessRoleIds,
-} from 'librechat-data-provider';
-import { SYSTEM_TENANT_ID, getTenantId, permissionBitSupersets } from '@librechat/data-schemas';
+} from 'nashm-data-provider';
+import { SYSTEM_TENANT_ID, getTenantId, permissionBitSupersets } from '@nashm/data-schemas';
 import type { PipelineStage, AnyBulkWriteOperation } from 'mongoose';
 
 export interface Principal {

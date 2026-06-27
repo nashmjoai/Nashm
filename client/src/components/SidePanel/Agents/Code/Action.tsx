@@ -1,4 +1,4 @@
-import { AgentCapabilities } from 'librechat-data-provider';
+import { AgentCapabilities } from 'nashm-data-provider';
 import { useFormContext, Controller } from 'react-hook-form';
 import {
   Checkbox,
@@ -7,7 +7,7 @@ import {
   HoverCardContent,
   HoverCardPortal,
   HoverCardTrigger,
-} from '@librechat/client';
+} from '@nashm/client';
 import type { AgentForm } from '~/common';
 import { useLocalize } from '~/hooks';
 import { ESide } from '~/common';

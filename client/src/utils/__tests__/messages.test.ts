@@ -1,4 +1,4 @@
-import type { TMessage } from 'librechat-data-provider';
+import type { TMessage } from 'nashm-data-provider';
 import type { LocalizeFunction } from '~/common';
 import {
   isValidTimestamp,

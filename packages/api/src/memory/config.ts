@@ -1,1 +1,1 @@
-export { isMemoryAgentEnabled, isMemoryEnabled, loadMemoryConfig } from '@librechat/data-schemas';
+export { isMemoryAgentEnabled, isMemoryEnabled, loadMemoryConfig } from '@nashm/data-schemas';

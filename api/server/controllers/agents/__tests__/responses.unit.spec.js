@@ -66,7 +66,7 @@ jest.mock('uuid', () => ({
   v4: jest.fn(() => 'mock-uuid-456'),
 }));
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     debug: jest.fn(),
     error: jest.fn(),
@@ -83,7 +83,7 @@ jest.mock('@librechat/agents', () => ({
   }),
 }));
 
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   createRun: jest.fn().mockResolvedValue({
     processStream: jest.fn().mockResolvedValue(undefined),
   }),
@@ -323,7 +323,7 @@ describe('createResponse controller', () => {
     });
 
     it('should return 400 when previous_response_id is not a string', async () => {
-      const { validateResponseRequest, sendResponsesErrorResponse } = require('@librechat/api');
+      const { validateResponseRequest, sendResponsesErrorResponse } = require('@nashm/api');
       validateResponseRequest.mockReturnValueOnce({
         request: {
           model: 'agent-123',
@@ -343,7 +343,7 @@ describe('createResponse controller', () => {
     });
 
     it('should return 404 when conversation is not owned by user', async () => {
-      const { validateResponseRequest, sendResponsesErrorResponse } = require('@librechat/api');
+      const { validateResponseRequest, sendResponsesErrorResponse } = require('@nashm/api');
       const { getConvo } = require('~/models');
       validateResponseRequest.mockReturnValueOnce({
         request: {
@@ -366,7 +366,7 @@ describe('createResponse controller', () => {
     });
 
     it('should proceed when conversation is owned by user', async () => {
-      const { validateResponseRequest, sendResponsesErrorResponse } = require('@librechat/api');
+      const { validateResponseRequest, sendResponsesErrorResponse } = require('@nashm/api');
       const { getConvo } = require('~/models');
       validateResponseRequest.mockReturnValueOnce({
         request: {
@@ -389,7 +389,7 @@ describe('createResponse controller', () => {
     });
 
     it('should return 500 when getConvo throws a DB error', async () => {
-      const { validateResponseRequest, sendResponsesErrorResponse } = require('@librechat/api');
+      const { validateResponseRequest, sendResponsesErrorResponse } = require('@nashm/api');
       const { getConvo } = require('~/models');
       validateResponseRequest.mockReturnValueOnce({
         request: {
@@ -478,7 +478,7 @@ describe('createResponse controller', () => {
 
   describe('agent context parity with UI path', () => {
     it('applies agent-scoped attachment context before createRun', async () => {
-      const api = require('@librechat/api');
+      const api = require('@nashm/api');
       api.initializeAgent.mockResolvedValueOnce({
         id: 'agent-123',
         model: 'claude-3',
@@ -516,7 +516,7 @@ describe('createResponse controller', () => {
     });
 
     it('applies context to primary and discovered handoff agents', async () => {
-      const api = require('@librechat/api');
+      const api = require('@nashm/api');
       const handoffConfig = {
         id: 'agent-handoff',
         model: 'claude-3',
@@ -563,7 +563,7 @@ describe('createResponse controller', () => {
     beforeEach(() => {
       req.body.stream = true;
 
-      const api = require('@librechat/api');
+      const api = require('@nashm/api');
       api.validateResponseRequest.mockReturnValue({
         request: { model: 'agent-123', input: 'Hello', stream: true },
       });
@@ -593,7 +593,7 @@ describe('createResponse controller', () => {
 
   describe('collectedUsage population', () => {
     it('should collect usage from on_chat_model_end events', async () => {
-      const api = require('@librechat/api');
+      const api = require('@nashm/api');
 
       api.createRun.mockImplementation(async ({ customHandlers }) => {
         return {
@@ -632,7 +632,7 @@ describe('createResponse controller', () => {
         initializeAgent,
         discoverConnectedAgents,
         createToolExecuteHandler,
-      } = require('@librechat/api');
+      } = require('@nashm/api');
       const { loadToolsForExecution } = require('~/server/services/ToolService');
       const subAgent = { id: 'agent-sub', name: 'Sub Agent' };
       const subConfig = {

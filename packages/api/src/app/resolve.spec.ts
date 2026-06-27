@@ -1,6 +1,6 @@
 import type { AsyncLocalStorage } from 'async_hooks';
 
-jest.mock('@librechat/data-schemas', () => {
+jest.mock('@nashm/data-schemas', () => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { AsyncLocalStorage: ALS } = require('async_hooks');
   return { tenantStorage: new ALS() };
@@ -8,7 +8,7 @@ jest.mock('@librechat/data-schemas', () => {
 
 import { resolveAppConfigForUser } from './resolve';
 
-const { tenantStorage } = jest.requireMock('@librechat/data-schemas') as {
+const { tenantStorage } = jest.requireMock('@nashm/data-schemas') as {
   tenantStorage: AsyncLocalStorage<{ tenantId?: string }>;
 };
 

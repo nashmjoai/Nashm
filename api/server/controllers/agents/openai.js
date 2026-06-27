@@ -1,5 +1,5 @@
 const { nanoid } = require('nanoid');
-const { logger } = require('@librechat/data-schemas');
+const { logger } = require('@nashm/data-schemas');
 const { Callback, ToolEndHandler, formatAgentMessages } = require('@librechat/agents');
 const {
   EModelEndpoint,
@@ -7,7 +7,7 @@ const {
   PermissionBits,
   hasPermissions,
   AgentCapabilities,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 const {
   writeSSE,
   createRun,
@@ -35,7 +35,7 @@ const {
   resolveAgentScopedSkillIds,
   createOpenAIContentAggregator,
   isChatCompletionValidationFailure,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const {
   buildSummarizationHandlers,
   markSummarizationUsage,
@@ -193,7 +193,7 @@ const OpenAIChatCompletionController = async (req, res) => {
   const responseId = `chatcmpl-${nanoid()}`;
   const created = Math.floor(Date.now() / 1000);
 
-  /** @type {import('@librechat/api').OpenAIResponseContext} — key must be `requestId` to match the type used by createChunk/buildNonStreamingResponse */
+  /** @type {import('@nashm/api').OpenAIResponseContext} — key must be `requestId` to match the type used by createChunk/buildNonStreamingResponse */
   const context = {
     created,
     requestId: responseId,
@@ -349,7 +349,7 @@ const OpenAIChatCompletionController = async (req, res) => {
      * @type {Map<string, {
      *   agent: object,
      *   toolRegistry?: import('@librechat/agents').LCToolRegistry,
-     *   requestScopedConnections?: import('@librechat/api').RequestScopedMCPConnectionStore,
+     *   requestScopedConnections?: import('@nashm/api').RequestScopedMCPConnectionStore,
      *   userMCPAuthMap?: Record<string, Record<string, string>>,
      *   tool_resources?: object,
      *   actionsEnabled?: boolean,
@@ -472,7 +472,7 @@ const OpenAIChatCompletionController = async (req, res) => {
       : null;
 
     const collectedUsage = [];
-    /** @type {Promise<import('librechat-data-provider').TAttachment | null>[]} */
+    /** @type {Promise<import('nashm-data-provider').TAttachment | null>[]} */
     const artifactPromises = [];
 
     const toolEndCallback = createToolEndCallback({ req, res, artifactPromises, streamId: null });
@@ -524,7 +524,7 @@ const OpenAIChatCompletionController = async (req, res) => {
      * Inject manual + always-apply skill primes so the model sees SKILL.md
      * bodies for this turn — parity with AgentClient's chat path. OpenAI-
      * compatible streaming uses its own tracker/aggregator shape, so the
-     * LibreChat-style card SSE events don't apply here; only the
+     * Nashm-style card SSE events don't apply here; only the
      * message-context part carries over.
      */
     const manualSkillPrimes = primaryConfig.manualSkillPrimes;
@@ -907,11 +907,11 @@ const ListModelsController = async (req, res) => {
       id: agent.id,
       object: 'model',
       created: Math.floor(new Date(agent.createdAt || Date.now()).getTime() / 1000),
-      owned_by: 'librechat',
+      owned_by: 'Nashm',
       permission: [],
       root: agent.id,
       parent: null,
-      // LibreChat extensions
+      // Nashm extensions
       name: agent.name,
       description: agent.description,
       provider: agent.provider,
@@ -979,11 +979,11 @@ const GetModelController = async (req, res) => {
       id: agent.id,
       object: 'model',
       created: Math.floor(new Date(agent.createdAt || Date.now()).getTime() / 1000),
-      owned_by: 'librechat',
+      owned_by: 'Nashm',
       permission: [],
       root: agent.id,
       parent: null,
-      // LibreChat extensions
+      // Nashm extensions
       name: agent.name,
       description: agent.description,
       provider: agent.provider,

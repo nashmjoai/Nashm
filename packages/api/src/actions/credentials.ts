@@ -1,5 +1,5 @@
-import { AuthTypeEnum, validateAndParseOpenAPISpec } from 'librechat-data-provider';
-import type { ActionAuth, ActionMetadata } from 'librechat-data-provider';
+import { AuthTypeEnum, validateAndParseOpenAPISpec } from 'nashm-data-provider';
+import type { ActionAuth, ActionMetadata } from 'nashm-data-provider';
 
 const authBoundaryFields: Array<keyof ActionAuth> = [
   'type',

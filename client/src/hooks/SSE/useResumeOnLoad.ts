@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useSetRecoilState, useRecoilValue, useRecoilCallback } from 'recoil';
-import { Constants, tMessageSchema, isAssistantsEndpoint } from 'librechat-data-provider';
-import type { TMessage, TConversation, TSubmission, Agents } from 'librechat-data-provider';
+import { Constants, tMessageSchema, isAssistantsEndpoint } from 'nashm-data-provider';
+import type { TMessage, TConversation, TSubmission, Agents } from 'nashm-data-provider';
 import type { StreamStatusResponse } from '~/data-provider';
 import { getBranchSiblingIndexesForTarget } from '~/utils';
 import { useStreamStatus } from '~/data-provider';

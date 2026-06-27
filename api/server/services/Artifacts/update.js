@@ -3,7 +3,7 @@ const {
   ARTIFACT_END,
   findAllArtifacts,
   replaceArtifactContent,
-} = require('@librechat/api');
+} = require('@nashm/api');
 
 module.exports = {
   ARTIFACT_START,

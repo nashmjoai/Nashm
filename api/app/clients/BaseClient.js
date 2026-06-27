@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const fetch = require('node-fetch');
-const { logger } = require('@librechat/data-schemas');
+const { logger } = require('@nashm/data-schemas');
 const {
   countTokens,
   checkBalance,
@@ -11,7 +11,7 @@ const {
   encodeAndFormatAudios,
   encodeAndFormatVideos,
   encodeAndFormatDocuments,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const {
   Constants,
   FileSources,
@@ -25,7 +25,7 @@ const {
   supportsBalanceCheck,
   isBedrockDocumentType,
   getEndpointFileConfig,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 const { getStrategyFunctions } = require('~/server/services/Files/strategies');
 const { logViolation } = require('~/cache');
 const TextStream = require('./TextStream');
@@ -72,11 +72,11 @@ class BaseClient {
     this.fetchedConvo;
     /** @type {TMessage[]} */
     this.currentMessages = [];
-    /** @type {import('librechat-data-provider').VisionModes | undefined} */
+    /** @type {import('nashm-data-provider').VisionModes | undefined} */
     this.visionMode;
-    /** @type {import('librechat-data-provider').FileConfig | undefined} */
+    /** @type {import('nashm-data-provider').FileConfig | undefined} */
     this._mergedFileConfig;
-    /** @type {import('librechat-data-provider').EndpointFileConfig | undefined} */
+    /** @type {import('nashm-data-provider').EndpointFileConfig | undefined} */
     this._endpointFileConfig;
   }
 

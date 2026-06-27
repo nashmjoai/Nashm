@@ -1,4 +1,4 @@
-const { createEndpointsConfigService } = require('@librechat/api');
+const { createEndpointsConfigService } = require('@nashm/api');
 const loadDefaultEndpointsConfig = require('./loadDefaultEConfig');
 const { getAppConfig } = require('./app');
 

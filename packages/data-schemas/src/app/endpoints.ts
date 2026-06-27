@@ -1,10 +1,10 @@
-import { EModelEndpoint } from 'librechat-data-provider';
+import { EModelEndpoint } from 'nashm-data-provider';
 import type {
   TEndpoint,
   TCustomConfig,
   TAgentsEndpoint,
   TAnthropicEndpoint,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type { AppConfig } from '~/types';
 import { azureAssistantsDefaults, assistantsConfigSetup } from './assistants';
 import { agentsConfigSetup } from './agents';
@@ -21,18 +21,18 @@ export const loadEndpoints = (
   agentsDefaults?: Partial<TAgentsEndpoint>,
 ): {
   allowedAddresses?: string[];
-  openAI?: Partial<import('librechat-data-provider').TEndpoint>;
-  google?: Partial<import('librechat-data-provider').TEndpoint>;
-  bedrock?: Partial<import('librechat-data-provider').TEndpoint>;
+  openAI?: Partial<import('nashm-data-provider').TEndpoint>;
+  google?: Partial<import('nashm-data-provider').TEndpoint>;
+  bedrock?: Partial<import('nashm-data-provider').TEndpoint>;
   anthropic?: Partial<TAnthropicEndpoint> & {
-    vertexConfig?: import('librechat-data-provider').TVertexAIConfig;
+    vertexConfig?: import('nashm-data-provider').TVertexAIConfig;
   };
-  azureOpenAI?: import('librechat-data-provider').TAzureConfig;
-  assistants?: Partial<import('librechat-data-provider').TAssistantEndpoint>;
-  azureAssistants?: Partial<import('librechat-data-provider').TAssistantEndpoint>;
-  all?: Partial<import('librechat-data-provider').TEndpoint>;
+  azureOpenAI?: import('nashm-data-provider').TAzureConfig;
+  assistants?: Partial<import('nashm-data-provider').TAssistantEndpoint>;
+  azureAssistants?: Partial<import('nashm-data-provider').TAssistantEndpoint>;
+  all?: Partial<import('nashm-data-provider').TEndpoint>;
   agents?: Partial<TAgentsEndpoint>;
-  custom?: import('librechat-data-provider').TCustomEndpoints;
+  custom?: import('nashm-data-provider').TCustomEndpoints;
 } => {
   const loadedEndpoints: AppConfig['endpoints'] = {};
   const endpoints = config?.endpoints;

@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import throttle from 'lodash/throttle';
-import { isAssistantsEndpoint, isAgentsEndpoint } from 'librechat-data-provider';
+import { isAssistantsEndpoint, isAgentsEndpoint } from 'nashm-data-provider';
 import type { TMessageProps } from '~/common';
 import { useMessagesViewContext, useAssistantsMapContext, useAgentsMapContext } from '~/Providers';
 import useCopyToClipboard from './useCopyToClipboard';

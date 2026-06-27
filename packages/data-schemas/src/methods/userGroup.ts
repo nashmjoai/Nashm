@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
-import { PrincipalType } from 'librechat-data-provider';
-import type { TUser, TPrincipalSearchResult } from 'librechat-data-provider';
+import { PrincipalType } from 'nashm-data-provider';
+import type { TUser, TPrincipalSearchResult } from 'nashm-data-provider';
 import type { Model, ClientSession, FilterQuery } from 'mongoose';
 import type { IGroup, IRole, IUser } from '~/types';
 import { escapeRegExp } from '~/utils/string';

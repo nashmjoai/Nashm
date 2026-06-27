@@ -1,4 +1,4 @@
-import { AnthropicEffort, ThinkingDisplay } from 'librechat-data-provider';
+import { AnthropicEffort, ThinkingDisplay } from 'nashm-data-provider';
 import type * as t from '~/types';
 import { FINE_GRAINED_TOOL_STREAMING_BETA } from './helpers';
 import { getLLMConfig } from './llm';
@@ -1908,7 +1908,7 @@ describe('getLLMConfig', () => {
         modelOptions: { model: 'claude-sonnet-4-5' },
         reverseProxyUrl: 'https://gateway.example.com',
         headers: {
-          'cf-aig-metadata': '{"user_email":"{{LIBRECHAT_USER_EMAIL}}","app":"librechat"}',
+          'cf-aig-metadata': '{"user_email":"{{Nashm_USER_EMAIL}}","app":"Nashm"}',
         },
       });
 
@@ -1919,7 +1919,7 @@ describe('getLLMConfig', () => {
       );
       /** Custom header is attached, placeholders kept intact for request-time resolution */
       expect((clientOptions?.defaultHeaders as Record<string, string>)['cf-aig-metadata']).toBe(
-        '{"user_email":"{{LIBRECHAT_USER_EMAIL}}","app":"librechat"}',
+        '{"user_email":"{{Nashm_USER_EMAIL}}","app":"Nashm"}',
       );
       /** Native request shaping is untouched */
       expect(result.llmConfig).toHaveProperty('model', 'claude-sonnet-4-5');

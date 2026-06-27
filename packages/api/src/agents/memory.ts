@@ -1,7 +1,7 @@
 /** Memories */
 import { z } from 'zod';
-import { Tools } from 'librechat-data-provider';
-import { logger } from '@librechat/data-schemas';
+import { Tools } from 'nashm-data-provider';
+import { logger } from '@nashm/data-schemas';
 import { tool } from '@librechat/agents/langchain/tools';
 import { Run, Providers, GraphEvents } from '@librechat/agents';
 import { HumanMessage } from '@librechat/agents/langchain/messages';
@@ -15,8 +15,8 @@ import type {
 } from '@librechat/agents';
 import type { BaseMessage, ToolMessage } from '@librechat/agents/langchain/messages';
 import type { DynamicStructuredTool } from '@librechat/agents/langchain/tools';
-import type { ObjectId, MemoryMethods, IUser } from '@librechat/data-schemas';
-import type { TAttachment, MemoryArtifact } from 'librechat-data-provider';
+import type { ObjectId, MemoryMethods, IUser } from '@nashm/data-schemas';
+import type { TAttachment, MemoryArtifact } from 'nashm-data-provider';
 import type { Response as ServerResponse } from 'express';
 import type { RunLLMConfig } from '~/types';
 import { GenerationJobManager } from '~/stream/GenerationJobManager';

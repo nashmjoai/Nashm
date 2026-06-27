@@ -1,5 +1,5 @@
-import { Constants, actionDelimiter, actionDomainSeparator } from 'librechat-data-provider';
-import type { ActionMetadata } from 'librechat-data-provider';
+import { Constants, actionDelimiter, actionDomainSeparator } from 'nashm-data-provider';
+import type { ActionMetadata } from 'nashm-data-provider';
 import type { ActionToolLike } from './tools';
 import { mergeActionMetadataForUpdate } from './credentials';
 import { mergeAgentActionTools } from './tools';

@@ -1,4 +1,4 @@
-import { EModelEndpoint, AuthKeys } from 'librechat-data-provider';
+import { EModelEndpoint, AuthKeys } from 'nashm-data-provider';
 import type { BaseInitializeParams, InitializeResultBase, AnthropicConfigOptions } from '~/types';
 import { loadAnthropicVertexCredentials, getVertexCredentialOptions } from './vertex';
 import { checkUserKeyExpiry, isEnabled, mergeHeaders } from '~/utils';
@@ -26,7 +26,7 @@ export async function initializeAnthropic({
   let credentials: Record<string, unknown> = {};
   let vertexOptions: { region?: string; projectId?: string } | undefined;
 
-  /** @type {undefined | import('librechat-data-provider').TVertexAIConfig} */
+  /** @type {undefined | import('nashm-data-provider').TVertexAIConfig} */
   const vertexConfig = appConfig?.endpoints?.[EModelEndpoint.anthropic]?.vertexConfig;
 
   // Check for Vertex AI configuration: YAML config takes priority over env var

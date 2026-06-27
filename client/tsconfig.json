@@ -20,7 +20,7 @@
       "~/*": ["./src/*"],
       "test/*": ["./test/*"],
       "*": ["./*", "../../node_modules/*"],
-      "librechat-data-provider/*": ["../packages/data-provider/*"]
+      "nashm-data-provider/*": ["../packages/data-provider/*"]
     }
   },
   "types": ["node", "jest", "@testing-library/jest-dom"],

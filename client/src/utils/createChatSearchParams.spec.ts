@@ -1,5 +1,5 @@
-import { EModelEndpoint, Constants } from 'librechat-data-provider';
-import type { TConversation, TPreset } from 'librechat-data-provider';
+import { EModelEndpoint, Constants } from 'nashm-data-provider';
+import type { TConversation, TPreset } from 'nashm-data-provider';
 import createChatSearchParams from './createChatSearchParams';
 
 describe('createChatSearchParams', () => {

@@ -1,4 +1,4 @@
-import { logger, getTenantId } from '@librechat/data-schemas';
+import { logger, getTenantId } from '@nashm/data-schemas';
 
 import type { MCPOAuthFlowMetadata, MCPOAuthTokens } from './types';
 import type { FlowStateManager } from '~/flow/manager';

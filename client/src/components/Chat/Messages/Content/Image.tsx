@@ -1,6 +1,6 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
-import { Skeleton } from '@librechat/client';
-import { apiBaseUrl } from 'librechat-data-provider';
+import { Skeleton } from '@nashm/client';
+import { apiBaseUrl } from 'nashm-data-provider';
 import DialogImage from './DialogImage';
 import { cn } from '~/utils';
 

@@ -1,8 +1,8 @@
 const bcrypt = require('bcryptjs');
-const { logger } = require('@librechat/data-schemas');
-const { errorsToString } = require('librechat-data-provider');
+const { logger } = require('@nashm/data-schemas');
+const { errorsToString } = require('nashm-data-provider');
 const { Strategy: PassportLocalStrategy } = require('passport-local');
-const { isEnabled, checkEmailConfig, comparePassword } = require('@librechat/api');
+const { isEnabled, checkEmailConfig, comparePassword } = require('@nashm/api');
 const { findUser, updateUser } = require('~/models');
 const { loginSchema } = require('./validators');
 

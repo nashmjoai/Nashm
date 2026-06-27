@@ -1,10 +1,10 @@
 import { useState, useId, useMemo, useCallback } from 'react';
 import * as Menu from '@ariakit/react/menu';
 import { useFormContext } from 'react-hook-form';
-import { DropdownPopup } from '@librechat/client';
-import { specialVariables } from 'librechat-data-provider';
+import { DropdownPopup } from '@nashm/client';
+import { specialVariables } from 'nashm-data-provider';
 import { ChevronDown, Check, Sparkles } from 'lucide-react';
-import type { TSpecialVarLabel } from 'librechat-data-provider';
+import type { TSpecialVarLabel } from 'nashm-data-provider';
 import { getSpecialVariableIcon } from '~/components/Prompts/utils';
 import { extractUniqueVariables } from '~/utils';
 import { useLiveAnnouncer } from '~/Providers';

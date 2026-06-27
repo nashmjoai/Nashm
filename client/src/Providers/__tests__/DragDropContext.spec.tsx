@@ -1,7 +1,7 @@
 import React from 'react';
 import { renderHook } from '@testing-library/react';
-import { EModelEndpoint } from 'librechat-data-provider';
-import type { TEndpointsConfig, Agent } from 'librechat-data-provider';
+import { EModelEndpoint } from 'nashm-data-provider';
+import type { TEndpointsConfig, Agent } from 'nashm-data-provider';
 import { DragDropProvider, useDragDropContext } from '../DragDropContext';
 
 const mockEndpointsConfig: TEndpointsConfig = {

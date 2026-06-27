@@ -1,5 +1,5 @@
-import { EModelEndpoint } from 'librechat-data-provider';
-import type { AppConfig } from '@librechat/data-schemas';
+import { EModelEndpoint } from 'nashm-data-provider';
+import type { AppConfig } from '@nashm/data-schemas';
 import type { TokenomicsDeps } from './pricing';
 
 const mockCacheGet = jest.fn();

@@ -1,5 +1,5 @@
 const express = require('express');
-const { createSupportHandlers } = require('@librechat/api');
+const { createSupportHandlers } = require('@nashm/api');
 const { requireJwtAuth } = require('~/server/middleware');
 const dbModels = require('~/db/models');
 const sendEmail = require('~/server/utils/sendEmail');
@@ -12,7 +12,7 @@ const sendSupportEmail = async (payload) => {
       email: payload.to,
       subject: `[Support Ticket] ${payload.subject}`,
       payload: {
-        appName: process.env.APP_TITLE || 'LibreChat',
+        appName: process.env.APP_TITLE || 'Nashm',
         name: 'Admin',
         userEmail: payload.fromEmail,
         userName: payload.fromName || payload.fromEmail,

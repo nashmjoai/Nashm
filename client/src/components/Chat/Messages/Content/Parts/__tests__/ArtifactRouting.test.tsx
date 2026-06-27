@@ -1,7 +1,7 @@
 import React from 'react';
 import { RecoilRoot, useRecoilValue } from 'recoil';
 import { render, screen, fireEvent, act } from '@testing-library/react';
-import type { TAttachment } from 'librechat-data-provider';
+import type { TAttachment } from 'nashm-data-provider';
 import type { MutableSnapshot } from 'recoil';
 import Attachment, { AttachmentGroup } from '../Attachment';
 import store from '~/store';

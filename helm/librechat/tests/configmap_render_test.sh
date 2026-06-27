@@ -1,28 +1,28 @@
-#!/usr/bin/env bash
-# Regression test for the librechat ConfigMap template.
+﻿#!/usr/bin/env bash
+# Regression test for the Nashm ConfigMap template.
 #
 # Background: at one point templates/configmap.yaml ran
-# `.Values.librechat.configYamlContent | toYaml | indent 4`. Because the
+# `.Values.Nashm.configYamlContent | toYaml | indent 4`. Because the
 # value is already a YAML literal string, toYaml re-wrapped it in another `|`
-# block scalar, producing a mounted /app/librechat.yaml whose first line was
+# block scalar, producing a mounted /app/Nashm.yaml whose first line was
 # a bare `|`. js-yaml "recovered" by returning the body as a string, so
-# LibreChat silently fell back to internal defaults for every config block
+# Nashm silently fell back to internal defaults for every config block
 # (endpoints, interface, modelSpecs, ...).
 #
 # This test renders the ConfigMap with a sample configYamlContent and asserts
-# that the rendered librechat.yaml is a proper YAML object preserving nested
+# that the rendered Nashm.yaml is a proper YAML object preserving nested
 # keys.
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CHART_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
-VALUES_FILE="$(mktemp -t librechat-configmap-values.XXXXXX)"
-RENDERED_FILE="$(mktemp -t librechat-configmap-render.XXXXXX)"
+VALUES_FILE="$(mktemp -t Nashm-configmap-values.XXXXXX)"
+RENDERED_FILE="$(mktemp -t Nashm-configmap-render.XXXXXX)"
 trap 'rm -f "${VALUES_FILE}" "${RENDERED_FILE}"' EXIT
 
 cat > "${VALUES_FILE}" <<'YAML'
-librechat:
+Nashm:
   configYamlContent: |
     version: 1.3.11
     endpoints:
@@ -36,15 +36,15 @@ if ! command -v helm >/dev/null 2>&1; then
 fi
 
 # Render only the chart's templates so dependent sub-charts don't need network access.
-helm template librechat "${CHART_DIR}" \
+helm template Nashm "${CHART_DIR}" \
   --show-only templates/configmap.yaml \
   -f "${VALUES_FILE}" > "${RENDERED_FILE}"
 
-# Pull the block scalar body that lives under `librechat.yaml: |`.
+# Pull the block scalar body that lives under `Nashm.yaml: |`.
 # awk: enter the block on the header line, then emit subsequent lines while
 # they are indented (the body) and stop at the next unindented line.
 BODY="$(awk '
-  /^  librechat\.yaml: \|/ { in_block = 1; next }
+  /^  Nashm\.yaml: \|/ { in_block = 1; next }
   in_block {
     if ($0 ~ /^    /) { sub(/^    /, ""); print; next }
     if ($0 ~ /^$/)    { print; next }
@@ -53,33 +53,33 @@ BODY="$(awk '
 ' "${RENDERED_FILE}")"
 
 if [[ -z "${BODY}" ]]; then
-  echo "FAIL: could not extract librechat.yaml body from rendered ConfigMap" >&2
+  echo "FAIL: could not extract Nashm.yaml body from rendered ConfigMap" >&2
   cat "${RENDERED_FILE}" >&2
   exit 1
 fi
 
 FIRST_LINE="$(printf '%s\n' "${BODY}" | awk 'NF { print; exit }')"
 if [[ "${FIRST_LINE}" == "|" ]]; then
-  echo "FAIL: rendered librechat.yaml starts with a bare '|' — configYamlContent is double-wrapped" >&2
+  echo "FAIL: rendered Nashm.yaml starts with a bare '|' — configYamlContent is double-wrapped" >&2
   echo "----- rendered body -----" >&2
   printf '%s\n' "${BODY}" >&2
   exit 1
 fi
 
 if ! printf '%s\n' "${BODY}" | grep -qE '^version: 1\.3\.11$'; then
-  echo "FAIL: expected top-level 'version: 1.3.11' in rendered librechat.yaml" >&2
+  echo "FAIL: expected top-level 'version: 1.3.11' in rendered Nashm.yaml" >&2
   printf '%s\n' "${BODY}" >&2
   exit 1
 fi
 
 if ! printf '%s\n' "${BODY}" | grep -qE '^endpoints:$'; then
-  echo "FAIL: expected top-level 'endpoints:' key in rendered librechat.yaml" >&2
+  echo "FAIL: expected top-level 'endpoints:' key in rendered Nashm.yaml" >&2
   printf '%s\n' "${BODY}" >&2
   exit 1
 fi
 
 if ! printf '%s\n' "${BODY}" | grep -qE '^  agents:$'; then
-  echo "FAIL: expected nested 'endpoints.agents' key in rendered librechat.yaml" >&2
+  echo "FAIL: expected nested 'endpoints.agents' key in rendered Nashm.yaml" >&2
   printf '%s\n' "${BODY}" >&2
   exit 1
 fi
@@ -100,7 +100,7 @@ import os, sys, yaml
 body = os.environ["BODY"]
 doc = yaml.safe_load(body)
 if not isinstance(doc, dict):
-    sys.stderr.write(f"FAIL: parsed librechat.yaml is {type(doc).__name__}, expected dict\n")
+    sys.stderr.write(f"FAIL: parsed Nashm.yaml is {type(doc).__name__}, expected dict\n")
     sys.exit(1)
 agents = (doc.get("endpoints") or {}).get("agents")
 if not isinstance(agents, dict) or "disableBuilder" not in agents:
@@ -113,7 +113,7 @@ PY
       const yaml = require("js-yaml");
       const doc = yaml.load(process.env.BODY);
       if (doc === null || typeof doc !== "object" || Array.isArray(doc)) {
-        console.error("FAIL: parsed librechat.yaml is " + typeof doc + ", expected object");
+        console.error("FAIL: parsed Nashm.yaml is " + typeof doc + ", expected object");
         process.exit(1);
       }
       const agents = doc.endpoints && doc.endpoints.agents;
@@ -128,4 +128,4 @@ PY
     ;;
 esac
 
-echo "PASS: rendered librechat.yaml is a proper YAML document with nested keys preserved"
+echo "PASS: rendered Nashm.yaml is a proper YAML document with nested keys preserved"

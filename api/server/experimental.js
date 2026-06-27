@@ -10,7 +10,7 @@ const express = require('express');
 const passport = require('passport');
 const compression = require('compression');
 const cookieParser = require('cookie-parser');
-const { logger, runAsSystem } = require('@librechat/data-schemas');
+const { logger, runAsSystem } = require('@nashm/data-schemas');
 const mongoSanitize = require('express-mongo-sanitize');
 const {
   isEnabled,
@@ -22,7 +22,7 @@ const {
   initializeFileStorage,
   maybeInjectQueryDevtoolsBootstrap,
   preAuthTenantMiddleware,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const { connectDb, indexSync } = require('~/db');
 const initializeOAuthReconnectManager = require('./services/initializeOAuthReconnectManager');
 const { capabilityContextMiddleware } = require('./middleware/roles/capabilities');
@@ -30,7 +30,7 @@ const createValidateImageRequest = require('./middleware/validateImageRequest');
 const { startExpiredFileSweep } = require('./services/Files/process');
 const { initializeGitHubSkillSync } = require('./services/Skills/sync');
 const { jwtLogin, ldapLogin, passportLogin } = require('~/strategies');
-const { updateInterfacePermissions: updateInterfacePerms } = require('@librechat/api');
+const { updateInterfacePermissions: updateInterfacePerms } = require('@nashm/api');
 const {
   getRoleByName,
   updateAccessPermissions,

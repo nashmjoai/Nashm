@@ -1,7 +1,7 @@
 const { z } = require('zod');
 const fs = require('fs').promises;
 const { nanoid } = require('nanoid');
-const { logger } = require('@librechat/data-schemas');
+const { logger } = require('@nashm/data-schemas');
 const {
   refreshS3Url,
   agentCreateSchema,
@@ -13,7 +13,7 @@ const {
   collectToolResourceFileIds,
   convertOcrToContextInPlace,
   stripFileIdsFromToolResources,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const {
   Time,
   Tools,
@@ -30,7 +30,7 @@ const {
   AgentCapabilities,
   EModelEndpoint,
   removeNullishValues,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 const {
   findPubliclyAccessibleResources,
   getResourcePermissionsMap,

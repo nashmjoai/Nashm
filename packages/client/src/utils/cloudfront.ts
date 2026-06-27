@@ -1,5 +1,5 @@
-import { apiBaseUrl } from 'librechat-data-provider';
-import type { TStartupConfig } from 'librechat-data-provider';
+import { apiBaseUrl } from 'nashm-data-provider';
+import type { TStartupConfig } from 'nashm-data-provider';
 
 type CloudFrontCookieRefreshConfig = NonNullable<
   NonNullable<TStartupConfig['cloudFront']>['cookieRefresh']

@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import type { TConversation, TEndpointsConfig } from 'librechat-data-provider';
+import type { TConversation, TEndpointsConfig } from 'nashm-data-provider';
 import { useAgentsMapContext, useAssistantsMapContext } from '~/Providers';
 import EndpointIcon from '~/components/Endpoints/EndpointIcon';
 import { areConversationIconFieldsEqual } from './utils';

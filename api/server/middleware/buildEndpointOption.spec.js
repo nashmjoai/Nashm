@@ -3,15 +3,15 @@
  * calls and return values. Must be declared before require('./buildEndpointOption')
  * so the destructured reference in the middleware captures the wrapper.
  */
-jest.mock('librechat-data-provider', () => {
-  const actual = jest.requireActual('librechat-data-provider');
+jest.mock('nashm-data-provider', () => {
+  const actual = jest.requireActual('nashm-data-provider');
   return {
     ...actual,
     parseCompactConvo: jest.fn((...args) => actual.parseCompactConvo(...args)),
   };
 });
 
-const { EModelEndpoint, parseCompactConvo } = require('librechat-data-provider');
+const { EModelEndpoint, parseCompactConvo } = require('nashm-data-provider');
 
 const mockBuildOptions = jest.fn((_endpoint, parsedBody) => ({
   ...parsedBody,
@@ -42,8 +42,8 @@ jest.mock('~/server/services/Config', () => ({
   getEndpointsConfig: (...args) => mockGetEndpointsConfig(...args),
 }));
 
-jest.mock('@librechat/api', () => ({
-  ...jest.requireActual('@librechat/api'),
+jest.mock('@nashm/api', () => ({
+  ...jest.requireActual('@nashm/api'),
   handleError: jest.fn(),
 }));
 
@@ -330,7 +330,7 @@ describe('buildEndpointOption - defaultParamsEndpoint parsing', () => {
     );
     const res = createRes();
     const next = jest.fn();
-    const { handleError } = require('@librechat/api');
+    const { handleError } = require('@nashm/api');
 
     await buildEndpointOption(req, res, next);
 
@@ -504,7 +504,7 @@ describe('buildEndpointOption - defaultParamsEndpoint parsing', () => {
       },
     );
     const res = createRes();
-    const { handleError } = require('@librechat/api');
+    const { handleError } = require('@nashm/api');
 
     await buildEndpointOption(req, res, jest.fn());
 

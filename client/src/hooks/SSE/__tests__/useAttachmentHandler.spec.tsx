@@ -14,7 +14,7 @@
  * unrelated citations both show up.
  */
 
-import { Tools } from 'librechat-data-provider';
+import { Tools } from 'nashm-data-provider';
 import { RecoilRoot, useRecoilValue } from 'recoil';
 import { QueryClient } from '@tanstack/react-query';
 import { renderHook, act } from '@testing-library/react';
@@ -23,7 +23,7 @@ import type {
   TAttachment,
   EventSubmission,
   TAttachmentMetadata,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type { ReactNode } from 'react';
 import useAttachmentHandler from '../useAttachmentHandler';
 import store from '~/store';

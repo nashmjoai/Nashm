@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { Capabilities } from 'librechat-data-provider';
+import { Capabilities } from 'nashm-data-provider';
 import { useFormContext, Controller, useWatch } from 'react-hook-form';
 import {
   Checkbox,
@@ -8,7 +8,7 @@ import {
   HoverCardContent,
   HoverCardPortal,
   HoverCardTrigger,
-} from '@librechat/client';
+} from '@nashm/client';
 import type { AssistantForm } from '~/common';
 import OptionHover from '~/components/SidePanel/Parameters/OptionHover';
 import { useLocalize } from '~/hooks';

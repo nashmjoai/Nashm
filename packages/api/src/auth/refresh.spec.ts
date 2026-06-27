@@ -1,13 +1,13 @@
 import { Types } from 'mongoose';
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 
-import type { IUser } from '@librechat/data-schemas';
+import type { IUser } from '@nashm/data-schemas';
 import type { AdminRefreshDeps, RefreshTokenset } from './refresh';
 
 import { applyAdminRefresh, AdminRefreshError, buildOpenIDRefreshParams } from './refresh';
 
-jest.mock('@librechat/data-schemas', () => ({
-  ...jest.requireActual('@librechat/data-schemas'),
+jest.mock('@nashm/data-schemas', () => ({
+  ...jest.requireActual('@nashm/data-schemas'),
   logger: {
     debug: jest.fn(),
     info: jest.fn(),

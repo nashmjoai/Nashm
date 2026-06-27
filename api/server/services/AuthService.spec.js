@@ -1,5 +1,5 @@
 jest.mock(
-  '@librechat/data-schemas',
+  '@nashm/data-schemas',
   () => ({
     logger: { info: jest.fn(), warn: jest.fn(), debug: jest.fn(), error: jest.fn() },
     getTenantId: jest.fn(() => undefined),
@@ -9,7 +9,7 @@ jest.mock(
   { virtual: true },
 );
 jest.mock(
-  'librechat-data-provider',
+  'nashm-data-provider',
   () => ({
     ErrorTypes: {},
     SystemRoles: { USER: 'USER', ADMIN: 'ADMIN' },
@@ -18,7 +18,7 @@ jest.mock(
   { virtual: true },
 );
 jest.mock(
-  '@librechat/api',
+  '@nashm/api',
   () => ({
     isEnabled: jest.fn((val) => val === 'true' || val === true),
     checkEmailConfig: jest.fn(),
@@ -35,7 +35,7 @@ jest.mock(
       keyPairId: 'K123ABC',
     })),
     parseCloudFrontCookieScope: jest.fn(() => null),
-    CLOUDFRONT_SCOPE_COOKIE: 'LibreChat-CloudFront-Scope',
+    CLOUDFRONT_SCOPE_COOKIE: 'Nashm-CloudFront-Scope',
   }),
   { virtual: true },
 );
@@ -80,9 +80,9 @@ const {
   setCloudFrontCookies,
   getCloudFrontConfig,
   parseCloudFrontCookieScope,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const jwt = require('jsonwebtoken');
-const { logger, getTenantId } = require('@librechat/data-schemas');
+const { logger, getTenantId } = require('@nashm/data-schemas');
 const {
   findUser,
   findToken,
@@ -1044,7 +1044,7 @@ describe('CloudFront cookie integration', () => {
 
     it('uses previous CloudFront scope for stale cookie cleanup', () => {
       parseCloudFrontCookieScope.mockReturnValue({ userId: 'old-user', tenantId: 'old-tenant' });
-      const req = mockRequest({}, { 'LibreChat-CloudFront-Scope': 'encoded-scope' });
+      const req = mockRequest({}, { 'Nashm-CloudFront-Scope': 'encoded-scope' });
       const res = mockResponse();
 
       setCloudFrontAuthCookies(req, res, { _id: 'user-123', tenantId: 'tenantA' });
@@ -1283,7 +1283,7 @@ describe('CloudFront cookie integration', () => {
     it('passes the previous CloudFront cookie scope when present', async () => {
       parseCloudFrontCookieScope.mockReturnValue({ userId: 'old-user', tenantId: 'old-tenant' });
       const res = mockResponse();
-      const req = mockRequest({}, { 'LibreChat-CloudFront-Scope': 'encoded-scope' });
+      const req = mockRequest({}, { 'Nashm-CloudFront-Scope': 'encoded-scope' });
 
       await setAuthTokens('user-123', res, null, req);
 

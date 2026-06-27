@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { Button, Input, Label, SecretInput, OGDialog, OGDialogTemplate } from '@librechat/client';
+import { Button, Input, Label, SecretInput, OGDialog, OGDialogTemplate } from '@nashm/client';
 import type { ConfigFieldDetail } from '~/common';
 import {
   CONFIG_HTML_BLOCK_TAGS,

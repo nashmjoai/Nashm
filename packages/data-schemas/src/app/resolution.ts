@@ -2,8 +2,8 @@ import {
   BASE_ONLY_CONFIG_SECTIONS,
   INTERFACE_PERMISSION_FIELDS,
   PERMISSION_SUB_KEYS,
-} from 'librechat-data-provider';
-import type { TCustomConfig } from 'librechat-data-provider';
+} from 'nashm-data-provider';
+import type { TCustomConfig } from 'nashm-data-provider';
 import type { AppConfig, IConfig } from '~/types';
 
 type AnyObject = { [key: string]: unknown };

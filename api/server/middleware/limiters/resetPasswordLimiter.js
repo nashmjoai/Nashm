@@ -1,6 +1,6 @@
 const rateLimit = require('express-rate-limit');
-const { ViolationTypes } = require('librechat-data-provider');
-const { limiterCache, removePorts } = require('@librechat/api');
+const { ViolationTypes } = require('nashm-data-provider');
+const { limiterCache, removePorts } = require('@nashm/api');
 const { logViolation } = require('~/cache');
 
 const {

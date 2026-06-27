@@ -5,7 +5,7 @@ const {
   PrincipalType,
   ResourceType,
   PermissionBits,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 const {
   getUserEffectivePermissions,
   getAllEffectivePermissions,

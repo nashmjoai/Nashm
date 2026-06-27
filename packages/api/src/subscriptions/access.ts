@@ -1,13 +1,13 @@
 import { Types } from 'mongoose';
-import { SystemRoles } from 'librechat-data-provider';
+import { SystemRoles } from 'nashm-data-provider';
 import type { Model } from 'mongoose';
-import type { TModelsConfig } from 'librechat-data-provider';
+import type { TModelsConfig } from 'nashm-data-provider';
 import type {
   IFamilyPlan,
   IModelAccess,
   ISubscription,
   SubscriptionPlan,
-} from '@librechat/data-schemas';
+} from '@nashm/data-schemas';
 
 const ACTIVE_STATUSES = ['active', 'trialing'] as const;
 const FREE_MODEL_RE = /(?:^|[-_./\s])(kimi|gemini|gimini)(?:$|[-_./\s0-9])/i;
@@ -119,14 +119,12 @@ export async function filterModelsBySubscription({
   modelsConfig: TModelsConfig;
   deps: SubscriptionAccessDeps;
 }): Promise<TModelsConfig> {
-  if (user?.role === SystemRoles.ADMIN) {
-    return modelsConfig;
-  }
-
-  const effective = await getEffectiveSubscription(user, deps);
   const rules = await deps.ModelAccess.find({}).lean<IModelAccess[]>();
   const rulesByModel = new Map(rules.map((rule) => [getRuleKey(rule.endpoint, rule.model), rule]));
   const filtered: TModelsConfig = {};
+
+  const isAdmin = user?.role === SystemRoles.ADMIN;
+  const effective = isAdmin ? null : await getEffectiveSubscription(user, deps);
 
   for (const [endpoint, models] of Object.entries(modelsConfig)) {
     const allowed = models.filter((model) => {
@@ -134,10 +132,16 @@ export async function filterModelsBySubscription({
       if (rule?.enabled === false) {
         return false;
       }
-      if (rule && rule.allowedPlans.length > 0) {
-        return rule.allowedPlans.includes(effective.plan);
+      if (isAdmin) {
+        return true;
       }
-      return defaultAllowsPlan(effective.plan, model);
+      if (effective) {
+        if (rule && rule.allowedPlans.length > 0) {
+          return rule.allowedPlans.includes(effective.plan);
+        }
+        return defaultAllowsPlan(effective.plan, model);
+      }
+      return true;
     });
 
     if (allowed.length > 0) {

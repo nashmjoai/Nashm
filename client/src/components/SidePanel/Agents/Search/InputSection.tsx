@@ -1,6 +1,6 @@
 import * as Menu from '@ariakit/react/menu';
 import { ChevronDown } from 'lucide-react';
-import { Input, Label, SecretInput, DropdownPopup } from '@librechat/client';
+import { Input, Label, SecretInput, DropdownPopup } from '@nashm/client';
 import type { SearchApiKeyFormData } from '~/hooks/Plugins/useAuthSearchTool';
 import type { UseFormRegister } from 'react-hook-form';
 import type { MenuItemProps } from '~/common';

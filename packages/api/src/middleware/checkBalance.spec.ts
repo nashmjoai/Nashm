@@ -1,11 +1,11 @@
-import { ViolationTypes } from 'librechat-data-provider';
+import { ViolationTypes } from 'nashm-data-provider';
 import type { Response } from 'express';
 import type { CheckBalanceDeps } from './checkBalance';
 import type { ServerRequest } from '~/types/http';
 import { checkBalance } from './checkBalance';
 
-jest.mock('@librechat/data-schemas', () => ({
-  ...jest.requireActual('@librechat/data-schemas'),
+jest.mock('@nashm/data-schemas', () => ({
+  ...jest.requireActual('@nashm/data-schemas'),
   logger: {
     debug: jest.fn(),
     error: jest.fn(),

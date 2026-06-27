@@ -1,13 +1,13 @@
 const { nanoid } = require('nanoid');
-const { logger } = require('@librechat/data-schemas');
-const { checkAccess, loadWebSearchAuth } = require('@librechat/api');
+const { logger } = require('@nashm/data-schemas');
+const { checkAccess, loadWebSearchAuth } = require('@nashm/api');
 const {
   Tools,
   AuthType,
   Permissions,
   ToolCallTypes,
   PermissionTypes,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 const { getRoleByName, createToolCall, getToolCallsByConvo, getMessage } = require('~/models');
 const { processFileURL, uploadImageBuffer } = require('~/server/services/Files/process');
 const { getRetentionExpiry } = require('~/server/services/Files/retention');

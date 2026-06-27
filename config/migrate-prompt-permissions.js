@@ -1,7 +1,7 @@
 const path = require('path');
-const { logger } = require('@librechat/data-schemas');
-const { ensureRequiredCollectionsExist } = require('@librechat/api');
-const { AccessRoleIds, ResourceType, PrincipalType } = require('librechat-data-provider');
+const { logger } = require('@nashm/data-schemas');
+const { ensureRequiredCollectionsExist } = require('@nashm/api');
+const { AccessRoleIds, ResourceType, PrincipalType } = require('nashm-data-provider');
 
 require('module-alias')({ base: path.resolve(__dirname, '..', 'api') });
 const connect = require('./connect');

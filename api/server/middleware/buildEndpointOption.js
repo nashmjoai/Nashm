@@ -4,15 +4,15 @@ const {
   findModelSpecByName,
   isModelSpecEndpointMatch,
   resolveModelSpecPromptPrefixVariables,
-} = require('@librechat/api');
-const { logger } = require('@librechat/data-schemas');
+} = require('@nashm/api');
+const { logger } = require('@nashm/data-schemas');
 const {
   EndpointURLs,
   EModelEndpoint,
   isAgentsEndpoint,
   parseCompactConvo,
   getDefaultParamsEndpoint,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 const azureAssistants = require('~/server/services/Endpoints/azureAssistants');
 const assistants = require('~/server/services/Endpoints/assistants');
 const { getEndpointsConfig } = require('~/server/services/Config');

@@ -9,11 +9,11 @@ jest.mock('openid-client', () => ({
   refreshTokenGrant: jest.fn(),
 }));
 
-jest.mock('librechat-data-provider', () => ({
+jest.mock('nashm-data-provider', () => ({
   CacheKeys: { ADMIN_OAUTH_EXCHANGE: 'admin-oauth-exchange' },
 }));
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     debug: jest.fn(),
     error: jest.fn(),
@@ -24,7 +24,7 @@ jest.mock('@librechat/data-schemas', () => ({
   getTenantId: jest.fn(() => undefined),
 }));
 
-jest.mock('@librechat/api', () => {
+jest.mock('@nashm/api', () => {
   class AdminRefreshError extends Error {
     constructor(code, status, message) {
       super(message);
@@ -103,8 +103,8 @@ jest.mock('~/server/middleware', () => ({
 }));
 
 const openIdClient = require('openid-client');
-const { logger } = require('@librechat/data-schemas');
-const { isEnabled, applyAdminRefresh, buildOpenIDRefreshParams } = require('@librechat/api');
+const { logger } = require('@nashm/data-schemas');
+const { isEnabled, applyAdminRefresh, buildOpenIDRefreshParams } = require('@nashm/api');
 const { getOpenIdConfig } = require('~/strategies');
 const adminAuthRouter = require('./auth');
 

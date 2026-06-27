@@ -1,9 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
-import { logger } from '@librechat/data-schemas';
-import type { IUser } from '@librechat/data-schemas';
-import type { TFile } from 'librechat-data-provider';
+import { logger } from '@nashm/data-schemas';
+import type { IUser } from '@nashm/data-schemas';
+import type { TFile } from 'nashm-data-provider';
 import type { FormatEnum } from 'sharp';
 import type {
   SaveBufferFn,

@@ -113,7 +113,7 @@ describe('createSkillSyncMethods', () => {
   it('clears stale source errors after a successful sync status update', async () => {
     await methods.upsertSkillSyncStatus({
       provider: 'github',
-      sourceId: 'librechat-skills',
+      sourceId: 'Nashm-skills',
       status: 'failed',
       errorCode: 'SKILL_PARSE_FAILED',
       errorMessage: 'bad frontmatter',
@@ -121,7 +121,7 @@ describe('createSkillSyncMethods', () => {
 
     const success = await methods.upsertSkillSyncStatus({
       provider: 'github',
-      sourceId: 'librechat-skills',
+      sourceId: 'Nashm-skills',
       status: 'succeeded',
       syncedSkillCount: 1,
       syncedFileCount: 2,

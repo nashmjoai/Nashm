@@ -1,4 +1,4 @@
-const { ContentTypes } = require('librechat-data-provider');
+const { ContentTypes } = require('nashm-data-provider');
 const {
   AIMessage,
   ToolMessage,

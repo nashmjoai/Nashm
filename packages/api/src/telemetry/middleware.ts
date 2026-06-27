@@ -66,7 +66,7 @@ function setIdentityAttributes(span: Span, req: ServerRequest): void {
   }
 
   if (tenantId) {
-    attributes['librechat.tenant.id'] = tenantId;
+    attributes['Nashm.tenant.id'] = tenantId;
   }
 
   span.setAttributes(attributes);
@@ -86,7 +86,7 @@ function setCompletionAttributes(
   };
 
   if (aborted) {
-    attributes['librechat.request.aborted'] = true;
+    attributes['Nashm.request.aborted'] = true;
   }
 
   setIdentityAttributes(span, req);

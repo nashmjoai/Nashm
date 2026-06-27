@@ -12,12 +12,12 @@ const server = new McpServer({
 server.registerTool(
   'remember_fact',
   {
-    description: 'Stores a deterministic fact for LibreChat mock end-to-end tests.',
+    description: 'Stores a deterministic fact for Nashm mock end-to-end tests.',
     inputSchema: {
       fact: z.string().optional(),
     },
   },
-  async ({ fact = 'LibreChat MCP e2e fact' }) => ({
+  async ({ fact = 'Nashm MCP e2e fact' }) => ({
     content: [
       {
         type: 'text',
@@ -30,14 +30,14 @@ server.registerTool(
 server.registerTool(
   'recall_fact',
   {
-    description: 'Returns a deterministic fact for LibreChat mock end-to-end tests.',
+    description: 'Returns a deterministic fact for Nashm mock end-to-end tests.',
     inputSchema: {},
   },
   async () => ({
     content: [
       {
         type: 'text',
-        text: 'E2E MCP memory recalled: LibreChat can persist MCP tools on agents.',
+        text: 'E2E MCP memory recalled: Nashm can persist MCP tools on agents.',
       },
     ],
   }),

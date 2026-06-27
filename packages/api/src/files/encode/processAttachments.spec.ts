@@ -4,8 +4,8 @@ import {
   EModelEndpoint,
   getEndpointFileConfig,
   isBedrockDocumentType,
-} from 'librechat-data-provider';
-import type { FileConfig, EndpointFileConfig } from 'librechat-data-provider';
+} from 'nashm-data-provider';
+import type { FileConfig, EndpointFileConfig } from 'nashm-data-provider';
 
 /**
  * Mirrors the categorization logic from BaseClient.processAttachments.

@@ -8,7 +8,7 @@ import {
   InfoHoverCard,
   OGDialogTrigger,
   OGDialogContent,
-} from '@librechat/client';
+} from '@nashm/client';
 import { useGetEndpointsQuery } from '~/data-provider';
 import useProviderKeys from './useProviderKeys';
 import ProviderKeyRow from './ProviderKeyRow';

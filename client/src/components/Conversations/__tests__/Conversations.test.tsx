@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { RecoilRoot } from 'recoil';
 import type { CellMeasurerCache, List } from 'react-virtualized';
-import type { TConversation } from 'librechat-data-provider';
+import type { TConversation } from 'nashm-data-provider';
 import Conversations from '../Conversations';
 import store from '~/store';
 
@@ -81,7 +81,7 @@ jest.mock('@tanstack/react-query', () => ({
   useQueryClient: () => ({ invalidateQueries: jest.fn() }),
 }));
 
-jest.mock('@librechat/client', () => ({
+jest.mock('@nashm/client', () => ({
   Spinner: () => <div data-testid="spinner" />,
   useMediaQuery: () => false,
   TooltipAnchor: ({ render }: { render: React.ReactNode }) => render,

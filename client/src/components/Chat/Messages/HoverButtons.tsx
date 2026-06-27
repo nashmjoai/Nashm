@@ -1,7 +1,7 @@
 import React, { useState, useMemo, memo } from 'react';
 import { useRecoilState } from 'recoil';
-import { EditIcon, Clipboard, CheckMark, ContinueIcon, RegenerateIcon } from '@librechat/client';
-import type { TConversation, TMessage, TFeedback } from 'librechat-data-provider';
+import { EditIcon, Clipboard, CheckMark, ContinueIcon, RegenerateIcon } from '@nashm/client';
+import type { TConversation, TMessage, TFeedback } from 'nashm-data-provider';
 import { useGenerationsByLatest, useLocalize } from '~/hooks';
 import { Fork } from '~/components/Conversations';
 import MessageAudio from './MessageAudio';

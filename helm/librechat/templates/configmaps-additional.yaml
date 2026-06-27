@@ -1,10 +1,10 @@
-{{- range $key, $value := .Values.additionalConfigMaps }}
+﻿{{- range $key, $value := .Values.additionalConfigMaps }}
 {{- if or .data .binaryData }}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "librechat.fullname" $ }}-{{ default "custom" $key }}
+  name: {{ include "Nashm.fullname" $ }}-{{ default "custom" $key }}
   {{- with .labels }}
   labels:
     {{- toYaml . | nindent 4 }}

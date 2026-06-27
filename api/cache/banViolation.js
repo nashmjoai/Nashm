@@ -1,6 +1,6 @@
-const { logger } = require('@librechat/data-schemas');
-const { ViolationTypes } = require('librechat-data-provider');
-const { isEnabled, math, removePorts } = require('@librechat/api');
+const { logger } = require('@nashm/data-schemas');
+const { ViolationTypes } = require('nashm-data-provider');
+const { isEnabled, math, removePorts } = require('@nashm/api');
 const { deleteAllUserSessions } = require('~/models');
 const getLogStores = require('./getLogStores');
 

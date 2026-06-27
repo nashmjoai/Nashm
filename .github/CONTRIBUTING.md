@@ -1,4 +1,4 @@
-# Contributor Guidelines
+﻿# Contributor Guidelines
 
 Thank you to all the contributors who have helped make this project possible! We welcome various types of contributions, such as bug reports, documentation improvements, feature requests, and code contributions.
 
@@ -36,7 +36,7 @@ Project maintainers have the right and responsibility to remove, edit, or reject
     - Install [MongoDB Community Edition](https://www.mongodb.com/docs/manual/administration/install-community/), ensure that `mongosh` connects to your local instance.
     - Run: `npx install playwright`, then `npx playwright install`.
     - Copy `config.local`: `cp e2e/config.local.example.ts e2e/config.local.ts`.
-    - Copy `nashm.yaml`: `cp librechat.example.yaml nashm.yaml`.
+    - Copy `nashm.yaml`: `cp Nashm.example.yaml nashm.yaml`.
     - Run: `npm run e2e`.
 
 ## 2. Development Notes

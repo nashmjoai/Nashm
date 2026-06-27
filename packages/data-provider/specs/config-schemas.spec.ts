@@ -693,8 +693,8 @@ describe('configSchema skillSync', () => {
           runOnStartup: true,
           sources: [
             {
-              id: 'librechat-skills',
-              owner: 'LibreChat',
+              id: 'Nashm-skills',
+              owner: 'Nashm',
               repo: 'skills',
               ref: 'main',
               paths: ['skills', '.'],
@@ -741,8 +741,8 @@ describe('configSchema skillSync', () => {
           enabled: true,
           sources: [
             {
-              id: 'librechat-skills',
-              owner: 'LibreChat',
+              id: 'Nashm-skills',
+              owner: 'Nashm',
               repo: 'skills',
               paths: ['skills'],
               credentialKey: 'github-skills-prod',
@@ -764,8 +764,8 @@ describe('configSchema skillSync', () => {
           enabled: true,
           sources: [
             {
-              id: 'librechat-skills',
-              owner: 'LibreChat',
+              id: 'Nashm-skills',
+              owner: 'Nashm',
               repo: 'skills',
               paths: ['skills'],
               credentialKey: 'github-skills-prod',
@@ -800,8 +800,8 @@ describe('configSchema skillSync', () => {
           intervalMinutes: 4,
           sources: [
             {
-              id: 'librechat-skills',
-              owner: 'LibreChat',
+              id: 'Nashm-skills',
+              owner: 'Nashm',
               repo: 'skills',
               paths: ['skills'],
               credentialKey: 'github-skills-prod',
@@ -822,8 +822,8 @@ describe('configSchema skillSync', () => {
           intervalMinutes: SKILL_SYNC_MAX_INTERVAL_MINUTES + 1,
           sources: [
             {
-              id: 'librechat-skills',
-              owner: 'LibreChat',
+              id: 'Nashm-skills',
+              owner: 'Nashm',
               repo: 'skills',
               paths: ['skills'],
               credentialKey: 'github-skills-prod',
@@ -843,8 +843,8 @@ describe('configSchema skillSync', () => {
           enabled: true,
           sources: [
             {
-              id: 'librechat-skills',
-              owner: 'LibreChat',
+              id: 'Nashm-skills',
+              owner: 'Nashm',
               repo: 'skills',
               paths: ['../skills'],
               credentialKey: '../token',
@@ -864,8 +864,8 @@ describe('configSchema skillSync', () => {
           enabled: true,
           sources: [
             {
-              id: 'librechat-skills',
-              owner: 'LibreChat',
+              id: 'Nashm-skills',
+              owner: 'Nashm',
               repo: 'skills',
               paths: ['skills'],
             },
@@ -880,8 +880,8 @@ describe('configSchema skillSync', () => {
           enabled: true,
           sources: [
             {
-              id: 'librechat-skills',
-              owner: 'LibreChat',
+              id: 'Nashm-skills',
+              owner: 'Nashm',
               repo: 'skills',
               paths: ['skills'],
               token: 'github_pat_secret',
@@ -897,8 +897,8 @@ describe('configSchema skillSync', () => {
           enabled: true,
           sources: [
             {
-              id: 'librechat-skills',
-              owner: 'LibreChat',
+              id: 'Nashm-skills',
+              owner: 'Nashm',
               repo: 'skills',
               paths: ['skills'],
               credentialKey: 'github-skills-prod',
@@ -921,8 +921,8 @@ describe('configSchema skillSync', () => {
           enabled: true,
           sources: [
             {
-              id: 'librechat-skills',
-              owner: 'LibreChat',
+              id: 'Nashm-skills',
+              owner: 'Nashm',
               repo: 'skills',
               paths: ['skills'],
               credentialKey: 'github-skills-prod',
@@ -954,8 +954,8 @@ describe('configSchema skillSync', () => {
             enabled: true,
             sources: [
               {
-                id: 'librechat-skills',
-                owner: 'LibreChat',
+                id: 'Nashm-skills',
+                owner: 'Nashm',
                 repo: 'skills',
                 ref,
                 paths: ['skills'],

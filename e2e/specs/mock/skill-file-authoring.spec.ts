@@ -13,9 +13,9 @@ import {
 const FINAL_TEXT = 'E2E file authoring complete';
 const EDIT_FINAL_TEXT = 'E2E file edit complete';
 const DESCRIPTION =
-  'Use this skill to verify LibreChat skill file authoring in mock end-to-end tests.';
+  'Use this skill to verify Nashm skill file authoring in mock end-to-end tests.';
 const EDITED_DESCRIPTION =
-  'Use this edited skill to verify LibreChat skill file authoring in mock end-to-end tests.';
+  'Use this edited skill to verify Nashm skill file authoring in mock end-to-end tests.';
 
 type SkillSummary = {
   _id: string;

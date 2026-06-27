@@ -51,7 +51,7 @@ jest.mock('~/config', () => ({
 }));
 
 const { Calculator } = require('@librechat/agents');
-const { Constants } = require('librechat-data-provider');
+const { Constants } = require('nashm-data-provider');
 
 const { User } = require('~/db/models');
 const PluginService = require('~/server/services/PluginService');
@@ -310,7 +310,7 @@ describe('Tool Handlers', () => {
       const requestBody = { conversationId: 'conv-123', messageId: 'msg-123' };
       const serverConfig = {
         type: 'streamable-http',
-        url: 'https://api.example.com/messages/{{LIBRECHAT_BODY_MESSAGEID}}/mcp',
+        url: 'https://api.example.com/messages/{{Nashm_BODY_MESSAGEID}}/mcp',
         source: 'yaml',
       };
 
@@ -349,7 +349,7 @@ describe('Tool Handlers', () => {
       const requestBody = { conversationId: 'conv-123', messageId: 'msg-123' };
       const serverConfig = {
         type: 'streamable-http',
-        url: 'https://api.example.com/messages/{{LIBRECHAT_BODY_MESSAGEID}}/mcp',
+        url: 'https://api.example.com/messages/{{Nashm_BODY_MESSAGEID}}/mcp',
         source: 'yaml',
       };
       const runScopedTools = {
@@ -398,7 +398,7 @@ describe('Tool Handlers', () => {
       const requestBody = { conversationId: 'conv-123', messageId: 'msg-123' };
       const serverConfig = {
         type: 'streamable-http',
-        url: 'https://api.example.com/messages/{{LIBRECHAT_BODY_MESSAGEID}}/mcp',
+        url: 'https://api.example.com/messages/{{Nashm_BODY_MESSAGEID}}/mcp',
         source: 'yaml',
       };
       const discoveredTools = {

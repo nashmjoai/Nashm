@@ -3,8 +3,8 @@ import {
   getConfigDefaults,
   skillSyncConfigSchema,
   summarizationConfigSchema,
-} from 'librechat-data-provider';
-import type { TCustomConfig, FileSources, DeepPartial } from 'librechat-data-provider';
+} from 'nashm-data-provider';
+import type { TCustomConfig, FileSources, DeepPartial } from 'nashm-data-provider';
 import type { AppConfig, FunctionTool } from '~/types/app';
 import { loadDefaultInterface } from './interface';
 import { loadTurnstileConfig } from './turnstile';

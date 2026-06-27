@@ -1,5 +1,5 @@
-import { logger } from '@librechat/data-schemas';
-import type { IUser } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
+import type { IUser } from '@nashm/data-schemas';
 import {
   GRAPH_TOKEN_PLACEHOLDER,
   DEFAULT_GRAPH_SCOPES,

@@ -6,7 +6,7 @@ const {
   RetentionMode,
   openAISettings,
   anthropicSettings,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 const { getImporter, processAssistantMessage } = require('./importers');
 const { ImportBatchBuilder } = require('./importBatchBuilder');
 const { bulkSaveMessages, bulkSaveConvos: _bulkSaveConvos } = require('~/models');
@@ -846,9 +846,9 @@ describe('importChatGptConvo', () => {
   });
 });
 
-describe('importLibreChatConvo', () => {
+describe('importNashmConvo', () => {
   const jsonDataNonRecursiveBranches = JSON.parse(
-    fs.readFileSync(path.join(__dirname, '__data__', 'librechat-opts-nonr-branches.json'), 'utf8'),
+    fs.readFileSync(path.join(__dirname, '__data__', 'Nashm-opts-nonr-branches.json'), 'utf8'),
   );
 
   it('should import conversation correctly', async () => {
@@ -857,7 +857,7 @@ describe('importLibreChatConvo', () => {
     });
     const expectedNumberOfMessages = 6;
     const jsonData = JSON.parse(
-      fs.readFileSync(path.join(__dirname, '__data__', 'librechat-export.json'), 'utf8'),
+      fs.readFileSync(path.join(__dirname, '__data__', 'Nashm-export.json'), 'utf8'),
     );
     const requestUserId = 'user-123';
     const importBatchBuilder = new ImportBatchBuilder(requestUserId);
@@ -883,7 +883,7 @@ describe('importLibreChatConvo', () => {
     });
 
     const jsonData = JSON.parse(
-      fs.readFileSync(path.join(__dirname, '__data__', 'librechat-linear.json'), 'utf8'),
+      fs.readFileSync(path.join(__dirname, '__data__', 'Nashm-linear.json'), 'utf8'),
     );
     const requestUserId = 'user-123';
     const importBatchBuilder = new ImportBatchBuilder(requestUserId);
@@ -913,7 +913,7 @@ describe('importLibreChatConvo', () => {
 
   it('should maintain correct message hierarchy (tree parent/children relationship)', async () => {
     const jsonData = JSON.parse(
-      fs.readFileSync(path.join(__dirname, '__data__', 'librechat-tree.json'), 'utf8'),
+      fs.readFileSync(path.join(__dirname, '__data__', 'Nashm-tree.json'), 'utf8'),
     );
     const requestUserId = 'user-123';
     const importBatchBuilder = new ImportBatchBuilder(requestUserId);

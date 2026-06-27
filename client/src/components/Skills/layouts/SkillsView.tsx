@@ -1,5 +1,5 @@
-import { Spinner, useMediaQuery } from '@librechat/client';
-import { PermissionTypes, Permissions } from 'librechat-data-provider';
+import { Spinner, useMediaQuery } from '@nashm/client';
+import { PermissionTypes, Permissions } from 'nashm-data-provider';
 import { Navigate, useNavigate, useParams, useLocation, useSearchParams } from 'react-router-dom';
 import SkillFileViewer from '~/components/Skills/display/SkillFileViewer';
 import { CreateSkillForm, SkillForm } from '~/components/Skills/forms';

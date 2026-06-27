@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { OGDialog, OGDialogContent, OGDialogHeader, OGDialogTitle } from '@librechat/client';
+import { OGDialog, OGDialogContent, OGDialogHeader, OGDialogTitle } from '@nashm/client';
 import type { RefObject } from 'react';
 import ArchivedChatsTable from './ArchivedChatsTable';
 import { useLocalize } from '~/hooks';

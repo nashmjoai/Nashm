@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { ResourceType, PermissionBits, SystemRoles } from 'librechat-data-provider';
-import type { TSkill, TSkillSummary } from 'librechat-data-provider';
+import { ResourceType, PermissionBits, SystemRoles } from 'nashm-data-provider';
+import type { TSkill, TSkillSummary } from 'nashm-data-provider';
 import useResourcePermissions from '~/hooks/useResourcePermissions';
 import { useAuthContext } from '~/hooks/AuthContext';
 

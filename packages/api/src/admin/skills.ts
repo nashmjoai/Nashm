@@ -1,19 +1,19 @@
-import { SystemCapabilities } from '@librechat/data-schemas';
-import { skillSyncConfigSchema } from 'librechat-data-provider';
+import { SystemCapabilities } from '@nashm/data-schemas';
+import { skillSyncConfigSchema } from 'nashm-data-provider';
 import type {
   TGitHubSkillSyncStatusResponse,
   TGitHubSkillSyncSourceStatus,
   TGitHubSkillSyncCredentialSummary,
   TGitHubSkillSyncManualRunResponse,
   SkillSyncConfig,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type {
   ISkillSyncStatus,
   SkillSyncProvider,
   SkillSyncCredentialSummary,
   UpsertSkillSyncCredentialInput,
   SystemCapability,
-} from '@librechat/data-schemas';
+} from '@nashm/data-schemas';
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
 import type { Types } from 'mongoose';
 import type { GitHubSkillSyncRunner } from '~/skills/sync';

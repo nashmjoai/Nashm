@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { Label, Input, Button, SecretInput } from '@librechat/client';
+import { Label, Input, Button, SecretInput } from '@nashm/client';
 import type { Control, FieldErrors } from 'react-hook-form';
 import { useMCPAuthValuesQuery } from '~/data-provider/Tools/queries';
 import {

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { FilePenLine, FilePlus2 } from 'lucide-react';
-import type { TAttachment } from 'librechat-data-provider';
+import type { TAttachment } from 'nashm-data-provider';
 import parseJsonField, { parseJsonFieldOccurrences } from './parseJsonField';
 import ProgressText from '~/components/Chat/Messages/Content/ProgressText';
 import useToolCallState from './useToolCallState';

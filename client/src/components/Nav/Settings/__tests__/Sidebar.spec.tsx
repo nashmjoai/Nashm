@@ -1,6 +1,6 @@
 import * as Tabs from '@radix-ui/react-tabs';
 import userEvent from '@testing-library/user-event';
-import { SettingsTabValues } from 'librechat-data-provider';
+import { SettingsTabValues } from 'nashm-data-provider';
 import type { SettingsContextValue } from '../types';
 import { render, screen } from 'test/layout-test-utils';
 import Sidebar from '../Sidebar';

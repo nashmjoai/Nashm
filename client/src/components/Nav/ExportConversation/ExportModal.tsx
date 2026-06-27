@@ -8,8 +8,8 @@ import {
   Checkbox,
   Dropdown,
   OGDialogTemplate,
-} from '@librechat/client';
-import type { TConversation } from 'librechat-data-provider';
+} from '@nashm/client';
+import type { TConversation } from 'nashm-data-provider';
 import { useLocalize, useExportConversation } from '~/hooks';
 
 const TYPE_OPTIONS = [

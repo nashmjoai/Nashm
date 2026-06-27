@@ -1,5 +1,5 @@
 const express = require('express');
-const { logger } = require('@librechat/data-schemas');
+const { logger } = require('@nashm/data-schemas');
 const optionalJwtAuth = require('~/server/middleware/optionalJwtAuth');
 const { getBanner } = require('~/models');
 

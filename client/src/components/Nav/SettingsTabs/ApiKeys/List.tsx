@@ -1,6 +1,6 @@
 import { Plus, KeyRound } from 'lucide-react';
-import { Button, Spinner } from '@librechat/client';
-import { useGetAgentApiKeysQuery } from 'librechat-data-provider/react-query';
+import { Button, Spinner } from '@nashm/client';
+import { useGetAgentApiKeysQuery } from 'nashm-data-provider/react-query';
 import { useLocalize } from '~/hooks';
 import Item from './Item';
 

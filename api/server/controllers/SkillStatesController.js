@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { logger } = require('@librechat/data-schemas');
+const { logger } = require('@nashm/data-schemas');
 const {
   MAX_SKILL_STATES,
   toSkillStatesRecord,
@@ -7,8 +7,8 @@ const {
   pruneOrphanSkillStates,
   getDeploymentSkillIds,
   mergeDeploymentSkillIds,
-} = require('@librechat/api');
-const { ResourceType, PermissionBits } = require('librechat-data-provider');
+} = require('@nashm/api');
+const { ResourceType, PermissionBits } = require('nashm-data-provider');
 const { findAccessibleResources } = require('~/server/services/PermissionService');
 const { updateUser, getUserById } = require('~/models');
 

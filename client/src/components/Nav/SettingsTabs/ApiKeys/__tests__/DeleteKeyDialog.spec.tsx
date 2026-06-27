@@ -1,11 +1,11 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
-import { useDeleteAgentApiKeyMutation } from 'librechat-data-provider/react-query';
+import { useDeleteAgentApiKeyMutation } from 'nashm-data-provider/react-query';
 import { render, fireEvent, waitFor } from 'test/layout-test-utils';
 import DeleteKeyDialog from '../DeleteKeyDialog';
 
-jest.mock('librechat-data-provider/react-query', () => ({
-  ...jest.requireActual('librechat-data-provider/react-query'),
+jest.mock('nashm-data-provider/react-query', () => ({
+  ...jest.requireActual('nashm-data-provider/react-query'),
   useDeleteAgentApiKeyMutation: jest.fn(),
 }));
 

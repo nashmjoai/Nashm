@@ -1,9 +1,9 @@
-import type { TConversation, TEndpointOption } from 'librechat-data-provider';
-import type { IUser, AppConfig } from '@librechat/data-schemas';
+import type { TConversation, TEndpointOption } from 'nashm-data-provider';
+import type { IUser, AppConfig } from '@nashm/data-schemas';
 import type { Request } from 'express';
 
 /**
- * LibreChat-specific request body type that extends Express Request body
+ * Nashm-specific request body type that extends Express Request body
  * (have to use type alias because you can't extend indexed access types like Request['body'])
  */
 export type RequestBody = {

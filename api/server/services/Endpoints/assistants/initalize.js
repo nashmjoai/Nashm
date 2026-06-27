@@ -1,6 +1,6 @@
 const OpenAI = require('openai');
-const { isUserProvided, checkUserKeyExpiry, getProxyDispatcher } = require('@librechat/api');
-const { ErrorTypes, EModelEndpoint } = require('librechat-data-provider');
+const { isUserProvided, checkUserKeyExpiry, getProxyDispatcher } = require('@nashm/api');
+const { ErrorTypes, EModelEndpoint } = require('nashm-data-provider');
 const { getUserKeyValues, getUserKeyExpiry } = require('~/models');
 
 const initializeClient = async ({ req, res, version }) => {

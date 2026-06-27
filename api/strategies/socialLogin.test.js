@@ -1,13 +1,13 @@
-const { logger } = require('@librechat/data-schemas');
-const { ErrorTypes } = require('librechat-data-provider');
+const { logger } = require('@nashm/data-schemas');
+const { ErrorTypes } = require('nashm-data-provider');
 const { createSocialUser, handleExistingUser } = require('./process');
 const socialLogin = require('./socialLogin');
 const { findUser } = require('~/models');
-const { resolveAppConfigForUser } = require('@librechat/api');
+const { resolveAppConfigForUser } = require('@nashm/api');
 const { getAppConfig } = require('~/server/services/Config');
 
-jest.mock('@librechat/data-schemas', () => {
-  const actualModule = jest.requireActual('@librechat/data-schemas');
+jest.mock('@nashm/data-schemas', () => {
+  const actualModule = jest.requireActual('@nashm/data-schemas');
   return {
     ...actualModule,
     logger: {
@@ -23,8 +23,8 @@ jest.mock('./process', () => ({
   handleExistingUser: jest.fn(),
 }));
 
-jest.mock('@librechat/api', () => ({
-  ...jest.requireActual('@librechat/api'),
+jest.mock('@nashm/api', () => ({
+  ...jest.requireActual('@nashm/api'),
   isEnabled: jest.fn().mockReturnValue(true),
   isEmailDomainAllowed: jest.fn().mockReturnValue(true),
   resolveAppConfigForUser: jest.fn().mockResolvedValue({
@@ -322,7 +322,7 @@ describe('socialLogin', () => {
     });
 
     it('should block login when tenant config restricts the domain', async () => {
-      const { isEmailDomainAllowed } = require('@librechat/api');
+      const { isEmailDomainAllowed } = require('@nashm/api');
       const provider = 'google';
       const googleId = 'google-tenant-blocked';
       const email = 'blocked@example.com';

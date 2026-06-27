@@ -14,7 +14,7 @@ import type {
   TAnthropicEndpoint,
   SummarizationConfig,
   SkillSyncConfig,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 
 export type JsonSchemaType = {
   type: 'string' | 'number' | 'integer' | 'float' | 'boolean' | 'array' | 'object';

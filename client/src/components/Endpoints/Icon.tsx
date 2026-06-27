@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { UserIcon, useAvatar } from '@librechat/client';
+import { UserIcon, useAvatar } from '@nashm/client';
 import type { IconProps } from '~/common';
 import MessageEndpointIcon from './MessageEndpointIcon';
 import { useAuthContext } from '~/hooks/AuthContext';

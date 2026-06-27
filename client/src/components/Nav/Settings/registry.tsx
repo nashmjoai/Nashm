@@ -1,4 +1,4 @@
-import { SettingsTabValues } from 'librechat-data-provider';
+import { SettingsTabValues } from 'nashm-data-provider';
 import type { SettingEntry } from './types';
 import {
   TextToSpeechSwitch,

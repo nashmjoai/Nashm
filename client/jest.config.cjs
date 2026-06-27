@@ -29,8 +29,8 @@ module.exports = {
       'jest-file-loader',
     '^test/(.*)$': '<rootDir>/test/$1',
     '^~/(.*)$': '<rootDir>/src/$1',
-    '^librechat-data-provider/react-query$':
-      '<rootDir>/../node_modules/librechat-data-provider/src/react-query',
+    '^nashm-data-provider/react-query$':
+      '<rootDir>/../node_modules/nashm-data-provider/src/react-query',
   },
   maxWorkers: '50%',
   restoreMocks: true,

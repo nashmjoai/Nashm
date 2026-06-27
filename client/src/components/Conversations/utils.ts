@@ -1,4 +1,4 @@
-import type { TConversation } from 'librechat-data-provider';
+import type { TConversation } from 'nashm-data-provider';
 
 export type ConversationRenderProps = {
   conversation: TConversation;

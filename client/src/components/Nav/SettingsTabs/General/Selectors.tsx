@@ -1,5 +1,5 @@
 import { useRecoilValue } from 'recoil';
-import { Dropdown, Spinner } from '@librechat/client';
+import { Dropdown, Spinner } from '@nashm/client';
 import { useLocalize } from '~/hooks';
 import store from '~/store';
 

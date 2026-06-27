@@ -1,5 +1,5 @@
 import { Schema } from 'mongoose';
-import { PrincipalType } from 'librechat-data-provider';
+import { PrincipalType } from 'nashm-data-provider';
 import type { ISystemGrant } from '~/types';
 import { isValidCapability } from '~/admin/capabilities';
 

@@ -1,4 +1,4 @@
-name: Build Helm Charts on Tag
+﻿name: Build Helm Charts on Tag
 
 # The workflow is triggered when a tag is pushed
 on:
@@ -19,7 +19,7 @@ jobs:
       packages: write
     runs-on: ubuntu-latest
     env:
-      CHART_REPOSITORY: ${{ github.repository_owner }}/librechat-chart
+      CHART_REPOSITORY: ${{ github.repository_owner }}/Nashm-chart
     steps:
       - name: Resolve chart tag
         id: chart-version
@@ -66,9 +66,9 @@ jobs:
       
       - name: Build Subchart Deps
         run: |
-          cd helm/librechat
+          cd helm/Nashm
           helm dependency build  
-          cd ../librechat-rag-api
+          cd ../Nashm-rag-api
           helm dependency build      
 
       # Log in to GitHub Container Registry
@@ -80,26 +80,26 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       # Run Helm OCI Charts Releaser
-      # This is for the librechat chart
-      - name: Release Helm OCI Charts for librechat
+      # This is for the Nashm chart
+      - name: Release Helm OCI Charts for Nashm
         uses: appany/helm-oci-chart-releaser@v0.4.2
         with:
-          name: librechat
+          name: Nashm
           repository: ${{ env.CHART_REPOSITORY }}
           tag: ${{ steps.chart-version.outputs.CHART_VERSION }}
-          path: helm/librechat
+          path: helm/Nashm
           registry: ghcr.io
           registry_username: ${{ github.actor }}
           registry_password: ${{ secrets.GITHUB_TOKEN }}
       
-      # this is for the librechat-rag-api chart
-      - name: Release Helm OCI Charts for librechat-rag-api
+      # this is for the Nashm-rag-api chart
+      - name: Release Helm OCI Charts for Nashm-rag-api
         uses: appany/helm-oci-chart-releaser@v0.4.2
         with:
-          name: librechat-rag-api
+          name: Nashm-rag-api
           repository: ${{ env.CHART_REPOSITORY }}
           tag: ${{ steps.chart-version.outputs.CHART_VERSION }}
-          path: helm/librechat-rag-api
+          path: helm/Nashm-rag-api
           registry: ghcr.io
           registry_username: ${{ github.actor }}
           registry_password: ${{ secrets.GITHUB_TOKEN }}

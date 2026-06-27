@@ -1,4 +1,4 @@
-import type { GraphEdge } from 'librechat-data-provider';
+import type { GraphEdge } from 'nashm-data-provider';
 import {
   getEdgeKey,
   getEdgeParticipants,

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import type { UIResource } from 'librechat-data-provider';
+import type { UIResource } from 'nashm-data-provider';
 import { useConversationUIResources } from '~/hooks/Messages/useConversationUIResources';
 import UIResourceCarousel from '../Chat/Messages/Content/UIResourceCarousel';
 import { useOptionalMessagesConversation } from '~/Providers';

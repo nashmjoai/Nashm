@@ -1,5 +1,5 @@
-import { ContentTypes, ToolCallTypes } from 'librechat-data-provider';
-import type { Agents, PartMetadata, TMessageContentParts } from 'librechat-data-provider';
+import { ContentTypes, ToolCallTypes } from 'nashm-data-provider';
+import type { Agents, PartMetadata, TMessageContentParts } from 'nashm-data-provider';
 import type { ToolCall } from '@librechat/agents/langchain/messages/tool';
 import { filterMalformedContentParts } from './content';
 

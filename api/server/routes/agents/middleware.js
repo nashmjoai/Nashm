@@ -1,11 +1,11 @@
-const { PermissionTypes, Permissions } = require('librechat-data-provider');
+const { PermissionTypes, Permissions } = require('nashm-data-provider');
 const {
   generateCheckAccess,
   preAuthTenantMiddleware,
   createRequireApiKeyAuth,
   createRemoteAgentAuth,
   createCheckRemoteAgentAccess,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const { getEffectivePermissions } = require('~/server/services/PermissionService');
 const { getAppConfig } = require('~/server/services/Config');
 const db = require('~/models');

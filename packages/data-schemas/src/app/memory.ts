@@ -1,6 +1,6 @@
-import { DEFAULT_MEMORY_MAX_INPUT_TOKENS, memorySchema } from 'librechat-data-provider';
+import { DEFAULT_MEMORY_MAX_INPUT_TOKENS, memorySchema } from 'nashm-data-provider';
 
-import type { TCustomConfig, TMemoryConfig } from 'librechat-data-provider';
+import type { TCustomConfig, TMemoryConfig } from 'nashm-data-provider';
 
 import logger from '~/config/winston';
 

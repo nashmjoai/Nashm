@@ -1,5 +1,5 @@
-const { logger } = require('@librechat/data-schemas');
-const { PermissionBits, ResourceType, isEphemeralAgentId } = require('librechat-data-provider');
+const { logger } = require('@nashm/data-schemas');
+const { PermissionBits, ResourceType, isEphemeralAgentId } = require('nashm-data-provider');
 const { checkPermission } = require('~/server/services/PermissionService');
 const { getAgent, getFiles } = require('~/models');
 

@@ -12,7 +12,7 @@ jest.mock('recoil', () => ({
   useSetRecoilState: jest.fn(),
 }));
 
-jest.mock('librechat-data-provider', () => ({
+jest.mock('nashm-data-provider', () => ({
   replaceSpecialVars: jest.fn(({ text }) => text),
 }));
 

@@ -1,8 +1,8 @@
 import React, { useEffect, memo } from 'react';
 import TagManager from 'react-gtm-module';
 import ReactMarkdown from 'react-markdown';
-import { Constants } from 'librechat-data-provider';
-import type { TStartupConfig } from 'librechat-data-provider';
+import { Constants } from 'nashm-data-provider';
+import type { TStartupConfig } from 'nashm-data-provider';
 import { useGetStartupConfig } from '~/data-provider';
 import { useLocalize } from '~/hooks';
 
@@ -37,7 +37,7 @@ function Footer({ className, startupConfig }: FooterProps) {
       ? config.customFooter
       : '[NASHM نشم ' +
         Constants.VERSION +
-        '](https://librechat.ai) - ' +
+        '](https://Nashm.ai) - ' +
         localize('com_ui_latest_footer')
   ).split('|');
 

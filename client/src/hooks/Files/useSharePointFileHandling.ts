@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import type { EModelEndpoint } from 'librechat-data-provider';
+import type { EModelEndpoint } from 'nashm-data-provider';
 import type { SharePointFile } from '~/data-provider/Files/sharepoint';
 import type { FileHandlingState } from './useFileHandling';
 import useFileHandling, { useFileHandlingNoChatContext } from './useFileHandling';

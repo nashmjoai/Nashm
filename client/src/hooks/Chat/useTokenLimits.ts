@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { Providers, EModelEndpoint, isAgentsEndpoint } from 'librechat-data-provider';
-import type { TConversation, TModelTokenomics } from 'librechat-data-provider';
+import { Providers, EModelEndpoint, isAgentsEndpoint } from 'nashm-data-provider';
+import type { TConversation, TModelTokenomics } from 'nashm-data-provider';
 import { useGetStartupConfig, useTokenConfigQuery, useGetAgentByIdQuery } from '~/data-provider';
 import { getModelSpec } from '~/utils';
 

@@ -1,4 +1,4 @@
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 
 export type LangfuseFeedback = {
   rating?: 'thumbsUp' | 'thumbsDown';

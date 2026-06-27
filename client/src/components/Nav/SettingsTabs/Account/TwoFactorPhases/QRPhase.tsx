@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
-import { Button, Label, SecretInput } from '@librechat/client';
+import { Button, Label, SecretInput } from '@nashm/client';
 import { useLocalize } from '~/hooks';
 
 const fadeAnimation = {

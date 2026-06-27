@@ -1,5 +1,5 @@
-const { GenerationJobManager } = require('@librechat/api');
-const { logger } = require('@librechat/data-schemas');
+const { GenerationJobManager } = require('@nashm/api');
+const { logger } = require('@nashm/data-schemas');
 const { getConvo } = require('~/models');
 
 function hasTenantMismatch(job, user) {

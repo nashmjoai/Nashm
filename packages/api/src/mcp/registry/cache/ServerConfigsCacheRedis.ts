@@ -1,6 +1,6 @@
 import type Keyv from 'keyv';
 import { fromPairs } from 'lodash';
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 import type { IServerConfigsRepositoryInterface } from '~/mcp/registry/ServerConfigsRepositoryInterface';
 import type { ParsedServerConfig, AddServerResult } from '~/mcp/types';
 import { standardCache, keyvRedisClient } from '~/cache';

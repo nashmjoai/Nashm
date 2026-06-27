@@ -7,7 +7,7 @@ import {
   AUDIT_ACTOR_TYPES,
   MAX_AUDIT_EXPORT_ROWS,
   MAX_AUDIT_LOG_LIMIT,
-} from '@librechat/data-schemas';
+} from '@nashm/data-schemas';
 import type {
   AdminAuditLogEntry,
   AuditAction,
@@ -18,7 +18,7 @@ import type {
   AuditLogPage,
   AuditOutcome,
   AuditSeverity,
-} from '@librechat/data-schemas';
+} from '@nashm/data-schemas';
 import type { Response } from 'express';
 import type { ServerRequest } from '~/types/http';
 

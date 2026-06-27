@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { FileSources } from 'librechat-data-provider';
-import type { TFile } from 'librechat-data-provider';
+import { FileSources } from 'nashm-data-provider';
+import type { TFile } from 'nashm-data-provider';
 import type { ExtendedFile } from '~/common';
 import DataTable from '../PanelTable';
 import { columns } from '../PanelColumns';
@@ -18,7 +18,7 @@ let mockRawFileConfig: Record<string, unknown> | null = {
   },
 };
 
-jest.mock('@librechat/client', () => ({
+jest.mock('@nashm/client', () => ({
   Table: ({ children, ...props }: { children: React.ReactNode }) => (
     <table {...props}>{children}</table>
   ),

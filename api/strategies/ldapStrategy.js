@@ -1,13 +1,13 @@
 const fs = require('fs');
 const LdapStrategy = require('passport-ldapauth');
-const { logger } = require('@librechat/data-schemas');
-const { SystemRoles, ErrorTypes } = require('librechat-data-provider');
+const { logger } = require('@nashm/data-schemas');
+const { SystemRoles, ErrorTypes } = require('nashm-data-provider');
 const {
   isEnabled,
   getBalanceConfig,
   isEmailDomainAllowed,
   resolveAppConfigForUser,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const { createUser, findUser, updateUser, countUsers } = require('~/models');
 const { getAppConfig } = require('~/server/services/Config');
 

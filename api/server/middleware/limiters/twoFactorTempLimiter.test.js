@@ -19,7 +19,7 @@ const createApp = () => {
     TWO_FACTOR_TEMP_WINDOW: '5',
   };
 
-  jest.doMock('@librechat/api', () => ({
+  jest.doMock('@nashm/api', () => ({
     limiterCache: jest.fn(() => undefined),
     removePorts: (req) => req?.['ip'],
   }));
@@ -43,7 +43,7 @@ const createApp = () => {
 
 describe('twoFactorTempLimiter', () => {
   afterEach(() => {
-    jest.dontMock('@librechat/api');
+    jest.dontMock('@nashm/api');
     jest.dontMock('~/cache');
     process.env = originalEnv;
   });

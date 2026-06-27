@@ -1,6 +1,6 @@
 import { useState, memo } from 'react';
 import { useDefaultLayout } from 'react-resizable-panels';
-import { ResizablePanel, ResizablePanelGroup, useMediaQuery } from '@librechat/client';
+import { ResizablePanel, ResizablePanelGroup, useMediaQuery } from '@nashm/client';
 import ArtifactsPanel from './ArtifactsPanel';
 
 const PANEL_IDS_SINGLE = ['messages-view'];

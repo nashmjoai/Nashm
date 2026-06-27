@@ -16,7 +16,7 @@
  */
 
 import { useEffect } from 'react';
-import { Tools } from 'librechat-data-provider';
+import { Tools } from 'nashm-data-provider';
 import { renderHook } from '@testing-library/react';
 import { RecoilRoot, useRecoilValue, useSetRecoilState } from 'recoil';
 import type {
@@ -24,7 +24,7 @@ import type {
   TFile,
   TAttachmentMetadata,
   TFilePreview,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type { ReactNode } from 'react';
 import store from '~/store';
 

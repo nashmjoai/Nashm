@@ -16,7 +16,7 @@ const {
   createDeploymentSkillMethods,
   isDeploymentSkillFileSource,
   getDeploymentSkillDownloadStream,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const {
   Permissions,
   FileContext,
@@ -26,7 +26,7 @@ const {
   PrincipalType,
   PermissionTypes,
   isEphemeralAgentId,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 const { checkPermission, grantPermission } = require('~/server/services/PermissionService');
 const { getFileStrategy } = require('~/server/utils/getFileStrategy');
 const db = require('~/models');
@@ -265,8 +265,8 @@ function buildSkillPrimedIdsByName(manualSkillPrimes, alwaysApplySkillPrimes) {
  * @param {object} params
  * @param {object} params.agent
  * @param {object} params.config
- * @param {Record<string, import('@librechat/api').LCAvailableTools>} [params.config.mcpAvailableTools]
- * @param {import('@librechat/api').RequestScopedMCPConnectionStore} [params.config.requestScopedConnections]
+ * @param {Record<string, import('@nashm/api').LCAvailableTools>} [params.config.mcpAvailableTools]
+ * @param {import('@nashm/api').RequestScopedMCPConnectionStore} [params.config.requestScopedConnections]
  * @returns {object}
  */
 function buildAgentToolContext({ agent, config }) {
@@ -353,7 +353,7 @@ const skillToolDeps = {
    * and for `{firstSegment}/...` paths whose first segment isn't a known
    * skill name. The handler routes through this when the agent has code
    * execution enabled; the codeapi base URL comes from
-   * `LIBRECHAT_CODE_BASEURL` and the sandbox session id is forwarded by
+   * `Nashm_CODE_BASEURL` and the sandbox session id is forwarded by
    * the agents-side `ToolNode` via `tc.codeSessionContext`.
    */
   readSandboxFile,

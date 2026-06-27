@@ -61,8 +61,8 @@ describe('resolveConfigHeaders', () => {
     const llmConfig = {
       configuration: {
         defaultHeaders: {
-          'X-Conversation-Id': '{{LIBRECHAT_BODY_CONVERSATIONID}}',
-          'X-User-Id': '{{LIBRECHAT_USER_ID}}',
+          'X-Conversation-Id': '{{Nashm_BODY_CONVERSATIONID}}',
+          'X-User-Id': '{{Nashm_USER_ID}}',
         },
       },
     } as unknown as RunLLMConfig;
@@ -80,7 +80,7 @@ describe('resolveConfigHeaders', () => {
       clientOptions: {
         defaultHeaders: {
           'anthropic-beta': 'fine-grained-tool-streaming-2025-05-14',
-          'cf-aig-metadata': '{"conversation_id":"{{LIBRECHAT_BODY_CONVERSATIONID}}"}',
+          'cf-aig-metadata': '{"conversation_id":"{{Nashm_BODY_CONVERSATIONID}}"}',
         },
       },
     } as unknown as RunLLMConfig;
@@ -99,7 +99,7 @@ describe('resolveConfigHeaders', () => {
   it('leaves Google customHeaders untouched (resolved at init, not request time)', () => {
     const llmConfig = {
       customHeaders: {
-        'X-Conversation-Id': '{{LIBRECHAT_BODY_CONVERSATIONID}}',
+        'X-Conversation-Id': '{{Nashm_BODY_CONVERSATIONID}}',
         Authorization: 'Bearer ${SOME_KEY}',
       },
     } as unknown as RunLLMConfig;
@@ -111,7 +111,7 @@ describe('resolveConfigHeaders', () => {
     expect(
       (llmConfig as unknown as { customHeaders: Record<string, string> }).customHeaders,
     ).toEqual({
-      'X-Conversation-Id': '{{LIBRECHAT_BODY_CONVERSATIONID}}',
+      'X-Conversation-Id': '{{Nashm_BODY_CONVERSATIONID}}',
       Authorization: 'Bearer ${SOME_KEY}',
     });
   });
@@ -120,7 +120,7 @@ describe('resolveConfigHeaders', () => {
     process.env.HEADERS_SPEC_IDEMPOTENT = 'env-value';
     const reusedUser = { id: 'u', name: '${HEADERS_SPEC_IDEMPOTENT}' };
     const llmConfig = {
-      configuration: { defaultHeaders: { 'X-Name': '{{LIBRECHAT_USER_NAME}}' } },
+      configuration: { defaultHeaders: { 'X-Name': '{{Nashm_USER_NAME}}' } },
     } as unknown as RunLLMConfig;
 
     resolveConfigHeaders({ llmConfig, user: reusedUser, body });

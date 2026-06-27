@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useRecoilValue } from 'recoil';
-import { useUpdateFeedbackMutation } from 'librechat-data-provider/react-query';
+import { useUpdateFeedbackMutation } from 'nashm-data-provider/react-query';
 import {
   TFeedback,
   getTagByKey,
@@ -9,7 +9,7 @@ import {
   toMinimalFeedback,
   isAssistantsEndpoint,
   TUpdateFeedbackRequest,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type { TMessageProps } from '~/common';
 import type { TMessageChatContext } from '~/common/types';
 import { useAssistantsMapContext, useAgentsMapContext } from '~/Providers';

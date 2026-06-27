@@ -29,7 +29,7 @@ export default defineConfig({
       preventAssignment: true,
       values: {
         __IS_DEV__: process.env.NODE_ENV === 'development',
-        __LIBRECHAT_VERSION__: rootPkg.version,
+        __Nashm_VERSION__: rootPkg.version,
       },
     }),
   ],

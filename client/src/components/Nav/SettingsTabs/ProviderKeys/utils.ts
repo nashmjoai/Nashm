@@ -1,5 +1,5 @@
-import { EModelEndpoint, isAgentsEndpoint, isAssistantsEndpoint } from 'librechat-data-provider';
-import type { TConfig, TSpecsConfig, TEndpointsConfig } from 'librechat-data-provider';
+import { EModelEndpoint, isAgentsEndpoint, isAssistantsEndpoint } from 'nashm-data-provider';
+import type { TConfig, TSpecsConfig, TEndpointsConfig } from 'nashm-data-provider';
 
 /**
  * Whether an endpoint config requires a user-provided credential — an API key or

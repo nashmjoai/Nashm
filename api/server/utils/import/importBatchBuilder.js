@@ -3,13 +3,13 @@ const {
   logger,
   createFallbackRetentionDate,
   createTempChatExpirationDate,
-} = require('@librechat/data-schemas');
+} = require('@nashm/data-schemas');
 const {
   EModelEndpoint,
   Constants,
   RetentionMode,
   openAISettings,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 const { bulkIncrementTagCounts, bulkSaveConvos, bulkSaveMessages } = require('~/models');
 const { FALLBACK_MODEL_BY_ENDPOINT } = require('./defaults');
 

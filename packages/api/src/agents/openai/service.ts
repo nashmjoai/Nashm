@@ -2,12 +2,12 @@
  * OpenAI-compatible chat completions service for agents.
  *
  * This service provides an OpenAI v1/chat/completions compatible API for
- * interacting with LibreChat agents. The agent_id is passed as the "model"
+ * interacting with Nashm agents. The agent_id is passed as the "model"
  * parameter per OpenAI spec.
  *
  * Usage:
  * ```typescript
- * import { createAgentChatCompletion } from '@librechat/api';
+ * import { createAgentChatCompletion } from '@nashm/api';
  *
  * // In your Express route handler:
  * app.post('/v1/chat/completions', async (req, res) => {
@@ -19,7 +19,7 @@
  * ```
  */
 import { nanoid } from 'nanoid';
-import { AgentCapabilities } from 'librechat-data-provider';
+import { AgentCapabilities } from 'nashm-data-provider';
 import type { Response as ServerResponse, Request } from 'express';
 import type {
   ChatCompletionResponse,
@@ -85,7 +85,7 @@ export interface ChatCompletionDependencies {
 }
 
 /**
- * Agent type from librechat-data-provider
+ * Agent type from nashm-data-provider
  */
 interface Agent {
   id: string;
@@ -195,7 +195,7 @@ interface AppConfig {
 }
 
 /**
- * Convert OpenAI messages to LibreChat format
+ * Convert OpenAI messages to Nashm format
  */
 export function convertMessages(messages: ChatMessage[]): unknown[] {
   return messages.map((msg) => {
@@ -603,7 +603,7 @@ export async function listAgentModels(
       id: agent.id,
       object: 'model',
       created: Math.floor(Date.now() / 1000),
-      owned_by: 'librechat',
+      owned_by: 'Nashm',
       permission: [],
       root: agent.id,
       parent: null,

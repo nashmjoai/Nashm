@@ -1,6 +1,6 @@
 const path = require('path');
-const { logger, runAsSystem } = require('@librechat/data-schemas');
-const { ensureRequiredCollectionsExist } = require('@librechat/api');
+const { logger, runAsSystem } = require('@nashm/data-schemas');
+const { ensureRequiredCollectionsExist } = require('@nashm/api');
 
 require('module-alias')({ base: path.resolve(__dirname, '..', 'api') });
 const connect = require('./connect');
@@ -9,7 +9,7 @@ const { findRoleByIdentifier } = require('~/models');
 const { SharedLink, AclEntry } = require('~/db/models');
 
 /**
- * String literals matching `librechat-data-provider` enums so this script
+ * String literals matching `nashm-data-provider` enums so this script
  * runs standalone without requiring a built data-provider package.
  */
 const RESOURCE_TYPE_SHARED_LINK = 'sharedLink';

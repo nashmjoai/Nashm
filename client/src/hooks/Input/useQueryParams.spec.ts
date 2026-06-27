@@ -77,9 +77,9 @@ jest.mock('~/utils', () => {
   };
 });
 
-// Use actual librechat-data-provider with minimal overrides
-jest.mock('librechat-data-provider', () => {
-  const actual = jest.requireActual('librechat-data-provider');
+// Use actual nashm-data-provider with minimal overrides
+jest.mock('nashm-data-provider', () => {
+  const actual = jest.requireActual('nashm-data-provider');
   return {
     ...actual,
     // Override schema to avoid complex validation in tests

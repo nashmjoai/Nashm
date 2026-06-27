@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { MAX_SUBAGENTS, EModelEndpoint } from 'librechat-data-provider';
+import { MAX_SUBAGENTS, EModelEndpoint } from 'nashm-data-provider';
 import { X, PlusCircle, Users } from 'lucide-react';
 import {
   Switch,
@@ -9,8 +9,8 @@ import {
   ControlCombobox,
   HoverCardContent,
   HoverCardTrigger,
-} from '@librechat/client';
-import type { TMessage } from 'librechat-data-provider';
+} from '@nashm/client';
+import type { TMessage } from 'nashm-data-provider';
 import type { ControllerRenderProps } from 'react-hook-form';
 import type { AgentForm, OptionWithIcon } from '~/common';
 import MessageIcon from '~/components/Share/MessageIcon';

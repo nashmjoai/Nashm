@@ -1,6 +1,6 @@
-const { ViolationTypes } = require('librechat-data-provider');
+const { ViolationTypes } = require('nashm-data-provider');
 
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   handleError: jest.fn(),
 }));
 
@@ -16,7 +16,7 @@ jest.mock('~/cache', () => ({
   logViolation: jest.fn(),
 }));
 
-const { handleError } = require('@librechat/api');
+const { handleError } = require('@nashm/api');
 const { getModelsConfig } = require('~/server/controllers/ModelController');
 const { getEndpointsConfig } = require('~/server/services/Config');
 const { logViolation } = require('~/cache');

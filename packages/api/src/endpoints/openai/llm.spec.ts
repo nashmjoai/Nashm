@@ -4,7 +4,7 @@ import {
   ReasoningEffort,
   ReasoningSummary,
   ReasoningParameterFormat,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type * as t from '~/types';
 import { getOpenAILLMConfig, extractDefaultParams, applyDefaultParams } from './llm';
 

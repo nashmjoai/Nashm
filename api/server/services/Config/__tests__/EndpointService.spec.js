@@ -27,7 +27,7 @@ const mockDataProvider = {
 };
 
 jest.mock(
-  '@librechat/api',
+  '@nashm/api',
   () => ({
     sendEvent: jest.fn(),
     isEnabled: (value) => value === true || value === 'true' || value === '1',
@@ -36,7 +36,7 @@ jest.mock(
   { virtual: true },
 );
 
-jest.mock('librechat-data-provider', () => mockDataProvider, { virtual: true });
+jest.mock('nashm-data-provider', () => mockDataProvider, { virtual: true });
 
 jest.mock('~/server/utils/handleText', () => ({
   generateConfig: (key) => (key ? { userProvide: key === 'user_provided' } : false),

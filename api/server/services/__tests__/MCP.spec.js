@@ -10,7 +10,7 @@ jest.mock('~/config', () => ({
   getOAuthReconnectionManager: jest.fn(),
 }));
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   getTenantId: jest.fn(() => 'tenant-1'),
   logger: { debug: jest.fn(), info: jest.fn(), warn: jest.fn(), error: jest.fn() },
 }));
@@ -23,7 +23,7 @@ jest.mock('~/server/services/Config', () => ({
   loadCustomConfig: jest.fn(),
 }));
 
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   sendEvent: jest.fn(),
   MCPOAuthHandler: jest.fn(),
   isMCPDomainAllowed: jest.fn(),

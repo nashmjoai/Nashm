@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Buffer } from 'buffer';
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 import type { AxiosInstance, AxiosProxyConfig, AxiosError } from 'axios';
 
 /**

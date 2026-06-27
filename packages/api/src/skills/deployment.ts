@@ -13,9 +13,9 @@ import {
   validateSkillFrontmatter,
   validateSkillDescription,
   deriveStructuredFrontmatterFields,
-} from '@librechat/data-schemas';
-import type { ValidationIssue } from '@librechat/data-schemas';
-import type { CodeEnvRef } from 'librechat-data-provider';
+} from '@nashm/data-schemas';
+import type { ValidationIssue } from '@nashm/data-schemas';
+import type { CodeEnvRef } from 'nashm-data-provider';
 import { parseFrontmatter, guessMimeType } from './import';
 
 export const DEPLOYMENT_SKILLS_DIR_ENV = 'DEPLOYMENT_SKILLS_DIR';

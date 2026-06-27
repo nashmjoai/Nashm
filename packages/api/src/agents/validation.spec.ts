@@ -1,4 +1,4 @@
-import { MAX_SUBAGENTS } from 'librechat-data-provider';
+import { MAX_SUBAGENTS } from 'nashm-data-provider';
 import { agentCreateSchema, agentUpdateSchema, agentSubagentsSchema } from './validation';
 
 describe('agentSubagentsSchema', () => {

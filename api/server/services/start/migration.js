@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
-const { logger } = require('@librechat/data-schemas');
+const { logger } = require('@nashm/data-schemas');
 const {
   logAgentMigrationWarning,
   logPromptMigrationWarning,
   checkAgentPermissionsMigration,
   checkPromptPermissionsMigration,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const { findRoleByIdentifier } = require('~/models');
 
 /**

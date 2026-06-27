@@ -1,6 +1,6 @@
 import { Providers } from '@librechat/agents';
-import { isDocumentSupportedProvider } from 'librechat-data-provider';
-import type { IMongoFile } from '@librechat/data-schemas';
+import { isDocumentSupportedProvider } from 'nashm-data-provider';
+import type { IMongoFile } from '@nashm/data-schemas';
 import type { ServerRequest, StrategyFunctions, AudioResult } from '~/types';
 import { getFileStream, getConfiguredFileSizeLimit } from './utils';
 import { validateAudio } from '~/files/validation';

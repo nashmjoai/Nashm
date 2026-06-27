@@ -1,4 +1,4 @@
-const { getModelMaxTokens } = require('@librechat/api');
+const { getModelMaxTokens } = require('@nashm/api');
 const BaseClient = require('../BaseClient');
 
 class FakeClient extends BaseClient {

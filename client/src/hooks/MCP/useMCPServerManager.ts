@@ -1,6 +1,6 @@
 import { useCallback, useState, useMemo, useRef, useEffect } from 'react';
 import { useAtom } from 'jotai';
-import { useToastContext } from '@librechat/client';
+import { useToastContext } from '@nashm/client';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   Constants,
@@ -9,19 +9,19 @@ import {
   Permissions,
   ResourceType,
   PermissionTypes,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import {
   useCancelMCPOAuthMutation,
   useUpdateUserPluginsMutation,
   useReinitializeMCPServerMutation,
   useGetAllEffectivePermissionsQuery,
-} from 'librechat-data-provider/react-query';
+} from 'nashm-data-provider/react-query';
 import type {
   TUpdateUserPlugins,
   TPlugin,
   MCPServersResponse,
   MCPConnectionStatusResponse,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type { MCPServerInitState } from '~/store/mcp';
 import type { ConfigFieldDetail } from '~/common';
 import { useLocalize, useHasAccess, useMCPSelect, useMCPConnectionStatus } from '~/hooks';

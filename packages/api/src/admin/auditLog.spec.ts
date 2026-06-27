@@ -1,18 +1,18 @@
 import { Types } from 'mongoose';
 import { EventEmitter } from 'events';
-import { MAX_AUDIT_EXPORT_ROWS } from '@librechat/data-schemas';
+import { MAX_AUDIT_EXPORT_ROWS } from '@nashm/data-schemas';
 import type {
   AdminAuditLogEntry,
   AuditChainVerification,
   AuditLogPage,
-} from '@librechat/data-schemas';
+} from '@nashm/data-schemas';
 import type { Response } from 'express';
 import type { AdminAuditLogDeps } from './auditLog';
 import type { ServerRequest } from '~/types/http';
 import { createAdminAuditLogHandlers } from './auditLog';
 
-jest.mock('@librechat/data-schemas', () => ({
-  ...jest.requireActual('@librechat/data-schemas'),
+jest.mock('@nashm/data-schemas', () => ({
+  ...jest.requireActual('@nashm/data-schemas'),
   logger: { error: jest.fn(), warn: jest.fn(), info: jest.fn(), debug: jest.fn() },
 }));
 

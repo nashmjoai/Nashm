@@ -6,8 +6,8 @@ import {
   EToolResources,
   LocalStorageKeys,
   defaultAgentFormValues,
-} from 'librechat-data-provider';
-import type { Agent, TFile } from 'librechat-data-provider';
+} from 'nashm-data-provider';
+import type { Agent, TFile } from 'nashm-data-provider';
 import type { DropdownValueSetter, TAgentOption, ExtendedFile } from '~/common';
 
 /**

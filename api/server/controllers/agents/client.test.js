@@ -1,5 +1,5 @@
 const { Providers } = require('@librechat/agents');
-const { Constants, ContentTypes, EModelEndpoint } = require('librechat-data-provider');
+const { Constants, ContentTypes, EModelEndpoint } = require('nashm-data-provider');
 const AgentClient = require('./client');
 
 jest.mock('@librechat/agents', () => ({
@@ -10,8 +10,8 @@ jest.mock('@librechat/agents', () => ({
   }),
 }));
 
-jest.mock('@librechat/api', () => ({
-  ...jest.requireActual('@librechat/api'),
+jest.mock('@nashm/api', () => ({
+  ...jest.requireActual('@nashm/api'),
   checkAccess: jest.fn(),
   countFormattedMessageTokens: jest.fn(() => 42),
   countTokens: jest.fn((text) => Math.ceil(String(text ?? '').length / 4)),
@@ -235,7 +235,7 @@ describe('AgentClient - titleConvo', () => {
           config: {
             endpoints: {
               [EModelEndpoint.anthropic]: {
-                headers: { 'X-Conversation-Id': '{{LIBRECHAT_BODY_CONVERSATIONID}}' },
+                headers: { 'X-Conversation-Id': '{{Nashm_BODY_CONVERSATIONID}}' },
               },
             },
           },
@@ -1558,7 +1558,7 @@ describe('AgentClient - titleConvo', () => {
     beforeEach(() => {
       jest.clearAllMocks();
       mockFormatInstructions.mockResolvedValue('');
-      require('@librechat/api').countFormattedMessageTokens.mockImplementation(() => 42);
+      require('@nashm/api').countFormattedMessageTokens.mockImplementation(() => 42);
 
       mockAgent = {
         id: 'primary-agent',
@@ -1749,7 +1749,7 @@ describe('AgentClient - titleConvo', () => {
     });
 
     it('persists canonical token counts while counting request file context for the prompt', async () => {
-      const { countFormattedMessageTokens } = require('@librechat/api');
+      const { countFormattedMessageTokens } = require('@nashm/api');
       const currentFile = makeTextFile('current-file', 'current.txt', 'Current turn file body');
 
       countFormattedMessageTokens.mockImplementation(({ content }) => {
@@ -1967,7 +1967,7 @@ describe('AgentClient - titleConvo', () => {
 
     it('should handle mixed content types correctly', async () => {
       const { HumanMessage } = require('@librechat/agents/langchain/messages');
-      const { ContentTypes } = require('librechat-data-provider');
+      const { ContentTypes } = require('nashm-data-provider');
 
       const messages = [
         new HumanMessage({
@@ -2628,10 +2628,10 @@ describe('AgentClient - titleConvo', () => {
         agent: mockAgent,
       };
 
-      mockCheckAccess = require('@librechat/api').checkAccess;
-      mockLoadAgent = require('@librechat/api').loadAgent;
-      mockInitializeAgent = require('@librechat/api').initializeAgent;
-      mockCreateMemoryProcessor = require('@librechat/api').createMemoryProcessor;
+      mockCheckAccess = require('@nashm/api').checkAccess;
+      mockLoadAgent = require('@nashm/api').loadAgent;
+      mockInitializeAgent = require('@nashm/api').initializeAgent;
+      mockCreateMemoryProcessor = require('@nashm/api').createMemoryProcessor;
       mockGetFormattedMemories = require('~/models').getFormattedMemories;
       mockGetFormattedMemories.mockResolvedValue({
         withKeys: '',
@@ -2777,7 +2777,7 @@ describe('AgentClient - titleConvo', () => {
     });
 
     it('should return undefined when loading memories fails without auto-processing', async () => {
-      const { logger } = require('@librechat/data-schemas');
+      const { logger } = require('@nashm/data-schemas');
       const errorSpy = jest.spyOn(logger, 'error').mockImplementation(() => logger);
       mockReq.config.memory = {
         personalize: true,

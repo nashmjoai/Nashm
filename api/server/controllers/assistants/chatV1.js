@@ -1,13 +1,13 @@
 const { v4 } = require('uuid');
 const { sleep } = require('@librechat/agents');
-const { logger } = require('@librechat/data-schemas');
+const { logger } = require('@nashm/data-schemas');
 const {
   sendEvent,
   countTokens,
   checkBalance,
   getBalanceConfig,
   getModelMaxTokens,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const {
   Time,
   Constants,
@@ -20,7 +20,7 @@ const {
   ImageVisionTool,
   checkOpenAIStorage,
   AssistantStreamEvents,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 const {
   initThread,
   recordUsage,
@@ -87,7 +87,7 @@ const chatV1 = async (req, res) => {
   let parentMessageId = _parentId;
   /** @type {TMessage[]} */
   let previousMessages = [];
-  /** @type {import('librechat-data-provider').TConversation | null} */
+  /** @type {import('nashm-data-provider').TConversation | null} */
   let conversation = null;
   /** @type {string[]} */
   let file_ids = [];

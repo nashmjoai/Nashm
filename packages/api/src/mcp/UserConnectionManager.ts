@@ -1,4 +1,4 @@
-import { logger, getTenantId } from '@librechat/data-schemas';
+import { logger, getTenantId } from '@nashm/data-schemas';
 import { ErrorCode, McpError } from '@modelcontextprotocol/sdk/types.js';
 import type { MCPOAuthFlowMetadata } from '~/mcp/oauth';
 import type { FlowState } from '~/flow/types';
@@ -43,7 +43,7 @@ type PendingConnection = {
  * Only meant to be extended by MCPManager.
  * Much of the logic was move here from the old MCPManager to make it more manageable.
  * User connections will soon be ephemeral and not cached anymore:
- * https://github.com/danny-avila/LibreChat/discussions/8790
+ * https://github.com/danny-avila/Nashm/discussions/8790
  */
 export abstract class UserConnectionManager {
   // Connections shared by all users.

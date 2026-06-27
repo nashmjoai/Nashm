@@ -203,7 +203,7 @@ function getSafeTokenProvider(tokenProvider: unknown): string | undefined {
   if (!normalized) {
     return undefined;
   }
-  return normalized === 'openid' || normalized === 'librechat' ? normalized : 'other';
+  return normalized === 'openid' || normalized === 'Nashm' ? normalized : 'other';
 }
 
 export function buildSafeAuthLogContext(

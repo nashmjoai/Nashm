@@ -1,6 +1,6 @@
-const { logger } = require('@librechat/data-schemas');
-const { getMissingCustomUserVars, requiresEphemeralUserConnection } = require('@librechat/api');
-const { CacheKeys, Constants } = require('librechat-data-provider');
+const { logger } = require('@nashm/data-schemas');
+const { getMissingCustomUserVars, requiresEphemeralUserConnection } = require('@nashm/api');
+const { CacheKeys, Constants } = require('nashm-data-provider');
 const { getMCPManager, getMCPServersRegistry, getFlowStateManager } = require('~/config');
 const { findToken, createToken, updateToken, deleteTokens } = require('~/models');
 const { getGraphApiToken } = require('~/server/services/GraphTokenService');
@@ -23,8 +23,8 @@ const { getLogStores } = require('~/cache');
  * @param {FlowStateManager<any>} [params.flowManager]
  * @param {(authURL: string, options?: { expiresAt?: number }) => Promise<void>} [params.oauthStart]
  * @param {() => Promise<void>} [params.oauthEnd]
- * @param {import('@librechat/api').RequestBody} [params.requestBody]
- * @param {import('@librechat/api').RequestScopedMCPConnectionStore} [params.requestScopedConnections]
+ * @param {import('@nashm/api').RequestBody} [params.requestBody]
+ * @param {import('@nashm/api').RequestScopedMCPConnectionStore} [params.requestScopedConnections]
  * @param {Record<string, Record<string, string>>} [params.userMCPAuthMap]
  */
 async function reinitMCPServer({

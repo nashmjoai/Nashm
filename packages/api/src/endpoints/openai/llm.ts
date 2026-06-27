@@ -3,10 +3,10 @@ import {
   ReasoningParameterFormat,
   removeNullishValues,
   supportsAdaptiveThinking,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type { BindToolsInput } from '@librechat/agents/langchain/language_models/chat_models';
 import type { AzureOpenAIInput } from '@librechat/agents/langchain/openai';
-import type { SettingDefinition } from 'librechat-data-provider';
+import type { SettingDefinition } from 'nashm-data-provider';
 import type { OpenAI } from 'openai';
 import type * as t from '~/types';
 import { sanitizeModelName, constructAzureURL } from '~/utils/azure';

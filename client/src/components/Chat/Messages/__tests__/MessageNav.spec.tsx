@@ -38,7 +38,7 @@ jest.mock('~/hooks', () => ({
       opts ? `${key}|${JSON.stringify(opts)}` : key,
 }));
 
-jest.mock('@librechat/client', () => ({
+jest.mock('@nashm/client', () => ({
   HoverCard: ({ children }: { children: ReactNode }) => <>{children}</>,
   HoverCardTrigger: ({ children, asChild }: { children: ReactNode; asChild?: boolean }) =>
     asChild ? children : <div>{children}</div>,

@@ -13,13 +13,13 @@ jest.mock('~/server/middleware/roles/capabilities', () => ({
   hasCapability: jest.fn(),
 }));
 
-jest.mock('@librechat/data-schemas', () => ({
-  ...jest.requireActual('@librechat/data-schemas'),
+jest.mock('@nashm/data-schemas', () => ({
+  ...jest.requireActual('@nashm/data-schemas'),
   getTenantId: jest.fn(() => undefined),
 }));
 
-jest.mock('@librechat/api', () => ({
-  ...jest.requireActual('@librechat/api'),
+jest.mock('@nashm/api', () => ({
+  ...jest.requireActual('@nashm/api'),
   getCloudFrontConfig: jest.fn(() => null),
 }));
 
@@ -88,7 +88,7 @@ describe('GET /api/config RUM config', () => {
       provider: 'hyperdx',
       enabled: true,
       url: 'https://rum.example.com',
-      serviceName: 'librechat-web',
+      serviceName: 'Nashm-web',
       authMode: 'publicToken',
       publicToken: 'public-token',
       tracePropagationTargets: ['https://app.example.com', 'https://api.openai.com'],
@@ -125,7 +125,7 @@ describe('GET /api/config RUM config', () => {
       provider: 'hyperdx',
       enabled: true,
       url: '/api/rum',
-      serviceName: 'librechat-web',
+      serviceName: 'Nashm-web',
       authMode: 'proxy',
       consoleCapture: false,
       disableReplay: true,

@@ -1,7 +1,7 @@
 const { nanoid } = require('nanoid');
-const { Tools } = require('librechat-data-provider');
-const { logger } = require('@librechat/data-schemas');
-const { GenerationJobManager } = require('@librechat/api');
+const { Tools } = require('nashm-data-provider');
+const { logger } = require('@nashm/data-schemas');
+const { GenerationJobManager } = require('@nashm/api');
 
 /**
  * Helper to write attachment events either to res or to job emitter.

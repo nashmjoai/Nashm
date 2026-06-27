@@ -1,4 +1,4 @@
-const { logger } = require('@librechat/data-schemas');
+const { logger } = require('@nashm/data-schemas');
 const { Calculator, createSearchTool, createCodeExecutionTool } = require('@librechat/agents');
 const {
   checkAccess,
@@ -10,14 +10,14 @@ const {
   buildImageToolContext,
   buildWebSearchContext,
   buildWebSearchDynamicContext,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const {
   Tools,
   Constants,
   Permissions,
   EToolResources,
   PermissionTypes,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 const {
   availableTools,
   manifestToolMap,

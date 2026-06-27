@@ -13,7 +13,7 @@ import {
   selectMockEndpoint,
 } from './helpers';
 
-const DESCRIPTION = 'Use this prompt to verify LibreChat prompt creation in mock e2e tests.';
+const DESCRIPTION = 'Use this prompt to verify Nashm prompt creation in mock e2e tests.';
 const COMMAND = 'e2e-prompt';
 
 type Prompt = {

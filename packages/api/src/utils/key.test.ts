@@ -5,7 +5,7 @@ import { loadServiceKey } from './key';
 
 jest.mock('fs');
 jest.mock('axios');
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     error: jest.fn(),
   },

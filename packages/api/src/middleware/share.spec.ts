@@ -1,14 +1,14 @@
-jest.mock('@librechat/data-schemas', () => ({
-  ...jest.requireActual('@librechat/data-schemas'),
+jest.mock('@nashm/data-schemas', () => ({
+  ...jest.requireActual('@nashm/data-schemas'),
   logger: {
     warn: jest.fn(),
     error: jest.fn(),
   },
 }));
 
-import { Permissions, PermissionTypes, PrincipalType, ResourceType } from 'librechat-data-provider';
+import { Permissions, PermissionTypes, PrincipalType, ResourceType } from 'nashm-data-provider';
 import type { NextFunction, Response } from 'express';
-import type { IRole } from '@librechat/data-schemas';
+import type { IRole } from '@nashm/data-schemas';
 import type { ServerRequest } from '~/types/http';
 import type { SharePolicyDeps } from './share';
 import { createSharePolicyMiddleware } from './share';

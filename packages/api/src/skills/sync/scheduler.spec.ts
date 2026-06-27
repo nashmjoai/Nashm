@@ -1,11 +1,11 @@
-import type { SkillSyncConfig } from 'librechat-data-provider';
+import type { SkillSyncConfig } from 'nashm-data-provider';
 import type { GitHubSkillSyncRunner } from './github';
 import { SKILL_SYNC_MAX_TIMER_INTERVAL_MINUTES, startGitHubSkillSyncScheduler } from './scheduler';
 import { __resetShutdownStateForTests } from '~/app/shutdown';
 
 const source = {
-  id: 'librechat-skills',
-  owner: 'LibreChat',
+  id: 'Nashm-skills',
+  owner: 'Nashm',
   repo: 'skills',
   ref: 'main',
   paths: ['skills'],

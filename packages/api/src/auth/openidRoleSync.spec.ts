@@ -1,8 +1,8 @@
-import { SystemRoles } from 'librechat-data-provider';
+import { SystemRoles } from 'nashm-data-provider';
 import {
   getOpenIdRoleSyncOptions,
   getOpenIdRolesForOpenIdSync,
-  getLibreChatRolesForOpenIdSync,
+  getNashmRolesForOpenIdSync,
   selectOpenIdRole,
 } from './openidRoleSync';
 
@@ -195,7 +195,7 @@ describe('getOpenIdRolesForOpenIdSync', () => {
   });
 });
 
-describe('getLibreChatRolesForOpenIdSync', () => {
+describe('getNashmRolesForOpenIdSync', () => {
   it('deduplicates configured roles and returns canonical role names', async () => {
     const getRolesByNames = jest.fn(async (roleNames: string[]) =>
       roleNames.map((roleName) => ({
@@ -204,7 +204,7 @@ describe('getLibreChatRolesForOpenIdSync', () => {
     );
 
     await expect(
-      getLibreChatRolesForOpenIdSync({
+      getNashmRolesForOpenIdSync({
         getRolesByNames,
         rolePriority: [' standard-user ', 'STANDARD-USER'],
         fallbackRole: SystemRoles.USER,
@@ -225,7 +225,7 @@ describe('getLibreChatRolesForOpenIdSync', () => {
     );
 
     await expect(
-      getLibreChatRolesForOpenIdSync({
+      getNashmRolesForOpenIdSync({
         getRolesByNames,
         rolePriority: ['STANDARD-USER', 'MISSING'],
         logPrefix: '[openidStrategy]',
@@ -243,7 +243,7 @@ describe('getLibreChatRolesForOpenIdSync', () => {
     );
 
     await expect(
-      getLibreChatRolesForOpenIdSync({
+      getNashmRolesForOpenIdSync({
         getRolesByNames,
         rolePriority: ['STANDARD-USER'],
         fallbackRole: SystemRoles.USER,

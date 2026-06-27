@@ -1,5 +1,5 @@
 import React from 'react';
-import { FileSources } from 'librechat-data-provider';
+import { FileSources } from 'nashm-data-provider';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import LogLink from '../LogLink';
 
@@ -9,7 +9,7 @@ const mockDownloadFromUrl = jest.fn();
 const mockTriggerDownload = jest.fn();
 let mockShareContext: { shareId?: string } = {};
 
-jest.mock('@librechat/client', () => ({
+jest.mock('@nashm/client', () => ({
   useToastContext: () => ({ showToast: mockShowToast }),
 }));
 

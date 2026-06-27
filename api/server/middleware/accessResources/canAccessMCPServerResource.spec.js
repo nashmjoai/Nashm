@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-const { ResourceType, PrincipalType, PrincipalModel } = require('librechat-data-provider');
-const { SystemCapabilities } = require('@librechat/data-schemas');
+const { ResourceType, PrincipalType, PrincipalModel } = require('nashm-data-provider');
+const { SystemCapabilities } = require('@nashm/data-schemas');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const { canAccessMCPServerResource } = require('./canAccessMCPServerResource');
 const { User, Role, AclEntry, SystemGrant } = require('~/db/models');
@@ -513,7 +513,7 @@ describe('canAccessMCPServerResource middleware', () => {
     });
 
     test('should allow users with MANAGE_MCP_SERVERS capability to bypass permission checks', async () => {
-      const { SystemRoles } = require('librechat-data-provider');
+      const { SystemRoles } = require('nashm-data-provider');
 
       // Create an MCP server owned by another user
       const otherUser = await User.create({

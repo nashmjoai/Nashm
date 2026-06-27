@@ -1,5 +1,5 @@
 /** Note: No hard-coded values should be used in this file. */
-import { EModelEndpoint } from 'librechat-data-provider';
+import { EModelEndpoint } from 'nashm-data-provider';
 import {
   createTxMethods,
   tokenValues,
@@ -2640,4 +2640,4 @@ describe('Premium Token Pricing', () => {
 });
 
 // Cross-package sync validation tests (tokens.ts ↔ tx.ts) moved to
-// packages/api tests since they require maxTokensMap from @librechat/api.
+// packages/api tests since they require maxTokensMap from @nashm/api.

@@ -1,4 +1,4 @@
-# Removes a PR's GitNexus index from the droplet when the PR is closed
+﻿# Removes a PR's GitNexus index from the droplet when the PR is closed
 # (merged or not). The deploy workflow also prunes stale folders as a
 # safety net, but this gives us immediate cleanup without waiting for
 # the next deploy trigger.
@@ -74,7 +74,7 @@ jobs:
         run: |
           ssh -i ~/.ssh/deploy_key "$SSH_USER@$SSH_HOST" PR_NUM="$PR_NUM" bash <<'REMOTE'
             set -e
-            TARGET="/opt/gitnexus/indexes/LibreChat-pr-$PR_NUM"
+            TARGET="/opt/gitnexus/indexes/Nashm-pr-$PR_NUM"
             if [ -d "$TARGET" ]; then
               echo "Removing $TARGET"
               rm -rf "$TARGET"

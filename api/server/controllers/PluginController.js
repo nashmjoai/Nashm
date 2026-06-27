@@ -1,5 +1,5 @@
-const { logger } = require('@librechat/data-schemas');
-const { getToolkitKey, checkPluginAuth, filterUniquePlugins } = require('@librechat/api');
+const { logger } = require('@nashm/data-schemas');
+const { getToolkitKey, checkPluginAuth, filterUniquePlugins } = require('@nashm/api');
 const { getCachedTools, setCachedTools } = require('~/server/services/Config');
 const { availableTools, toolkits } = require('~/app/clients/tools');
 const { getAppConfig } = require('~/server/services/Config');

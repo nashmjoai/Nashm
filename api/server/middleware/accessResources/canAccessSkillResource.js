@@ -1,7 +1,7 @@
-const { ResourceType, PermissionBits } = require('librechat-data-provider');
+const { ResourceType, PermissionBits } = require('nashm-data-provider');
 const { canAccessResource } = require('./canAccessResource');
 const { getSkillById } = require('~/models');
-const { getDeploymentSkillById } = require('@librechat/api');
+const { getDeploymentSkillById } = require('@nashm/api');
 
 /**
  * Skill-specific middleware factory that checks skill access permissions.

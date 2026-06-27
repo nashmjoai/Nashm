@@ -1,5 +1,5 @@
 const express = require('express');
-const { createSetBalanceConfig, forceRefreshCloudFrontAuthCookies } = require('@librechat/api');
+const { createSetBalanceConfig, forceRefreshCloudFrontAuthCookies } = require('@nashm/api');
 const {
   resetPasswordRequestController,
   resetPasswordController,

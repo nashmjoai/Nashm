@@ -1,5 +1,5 @@
-import { EModelEndpoint, AuthType } from 'librechat-data-provider';
-import type { TModelSpec } from 'librechat-data-provider';
+import { EModelEndpoint, AuthType } from 'nashm-data-provider';
+import type { TModelSpec } from 'nashm-data-provider';
 
 export const data: TModelSpec[] = [
   {

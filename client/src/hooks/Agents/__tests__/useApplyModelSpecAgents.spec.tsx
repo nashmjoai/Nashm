@@ -1,8 +1,8 @@
 import React from 'react';
 import { RecoilRoot, useRecoilValue } from 'recoil';
 import { renderHook, act } from '@testing-library/react';
-import { Constants, EModelEndpoint } from 'librechat-data-provider';
-import type { TEphemeralAgent, TStartupConfig, TModelSpec } from 'librechat-data-provider';
+import { Constants, EModelEndpoint } from 'nashm-data-provider';
+import type { TEphemeralAgent, TStartupConfig, TModelSpec } from 'nashm-data-provider';
 import { ephemeralAgentByConvoId, useUpdateEphemeralAgent } from '~/store/agents';
 import { useApplyModelSpecEffects } from '../useApplyModelSpecAgents';
 

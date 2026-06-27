@@ -1,4 +1,4 @@
-import { PermissionBits } from 'librechat-data-provider';
+import { PermissionBits } from 'nashm-data-provider';
 
 /**
  * Common role combinations. Values mirror unions of `PermissionBits` flags;

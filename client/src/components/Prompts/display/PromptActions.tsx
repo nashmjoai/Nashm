@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { Send } from 'lucide-react';
-import { Button } from '@librechat/client';
-import type { TPromptGroup } from 'librechat-data-provider';
+import { Button } from '@nashm/client';
+import type { TPromptGroup } from 'nashm-data-provider';
 import { useLocalize, useSubmitMessage } from '~/hooks';
 import { useRecordPromptUsage } from '~/data-provider';
 import VariableDialog from '../dialogs/VariableDialog';

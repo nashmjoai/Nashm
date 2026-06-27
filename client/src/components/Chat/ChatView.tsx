@@ -1,10 +1,10 @@
 import { memo, useCallback } from 'react';
 import { useRecoilValue } from 'recoil';
 import { useForm } from 'react-hook-form';
-import { Spinner } from '@librechat/client';
+import { Spinner } from '@nashm/client';
 import { useParams } from 'react-router-dom';
-import { Constants, buildTree } from 'librechat-data-provider';
-import type { TChatProject, TMessage } from 'librechat-data-provider';
+import { Constants, buildTree } from 'nashm-data-provider';
+import type { TChatProject, TMessage } from 'nashm-data-provider';
 import type { ChatFormValues } from '~/common';
 import {
   useAddedResponse,

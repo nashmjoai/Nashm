@@ -1,9 +1,9 @@
 import { Keyv } from 'keyv';
-import { logger, tenantStorage } from '@librechat/data-schemas';
+import { logger, tenantStorage } from '@nashm/data-schemas';
 import { FlowStateManager } from './manager';
 
-jest.mock('@librechat/data-schemas', () => ({
-  ...jest.requireActual('@librechat/data-schemas'),
+jest.mock('@nashm/data-schemas', () => ({
+  ...jest.requireActual('@nashm/data-schemas'),
   logger: {
     info: jest.fn(),
     warn: jest.fn(),

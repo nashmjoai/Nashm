@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-const { tenantStorage } = require('@librechat/data-schemas');
-const { ResourceType, PrincipalType, PrincipalModel } = require('librechat-data-provider');
+const { tenantStorage } = require('@nashm/data-schemas');
+const { ResourceType, PrincipalType, PrincipalModel } = require('nashm-data-provider');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const { fileAccess } = require('./fileAccess');
 const { User, Role, AclEntry } = require('~/db/models');

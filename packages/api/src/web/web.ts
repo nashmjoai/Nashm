@@ -5,10 +5,10 @@ import {
   SearchProviders,
   ScraperProviders,
   extractVariableName,
-} from 'librechat-data-provider';
-import { webSearchAuth } from '@librechat/data-schemas';
-import type { RerankerTypes, TCustomConfig, TWebSearchConfig } from 'librechat-data-provider';
-import type { TWebSearchKeys, TWebSearchCategories } from '@librechat/data-schemas';
+} from 'nashm-data-provider';
+import { webSearchAuth } from '@nashm/data-schemas';
+import type { RerankerTypes, TCustomConfig, TWebSearchConfig } from 'nashm-data-provider';
+import type { TWebSearchKeys, TWebSearchCategories } from '@nashm/data-schemas';
 import { isSSRFTarget, resolveHostnameSSRF } from '../auth';
 
 /**

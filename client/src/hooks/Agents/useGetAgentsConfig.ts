@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { EModelEndpoint, AgentCapabilities } from 'librechat-data-provider';
-import type { TAgentsEndpoint, TEndpointsConfig } from 'librechat-data-provider';
+import { EModelEndpoint, AgentCapabilities } from 'nashm-data-provider';
+import type { TAgentsEndpoint, TEndpointsConfig } from 'nashm-data-provider';
 import { useGetEndpointsQuery } from '~/data-provider';
 
 interface UseGetAgentsConfigOptions {

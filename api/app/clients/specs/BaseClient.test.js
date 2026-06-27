@@ -1,4 +1,4 @@
-const { Constants } = require('librechat-data-provider');
+const { Constants } = require('nashm-data-provider');
 const { FakeClient, initializeFakeClient } = require('./FakeClient');
 
 jest.mock('~/db/connect');

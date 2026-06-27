@@ -9,7 +9,7 @@ jest.mock('~/server/middleware', () => ({
   requireRumProxyAuth: (...args) => mockRequireRumProxyAuth(...args),
 }));
 
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   getRumProxyBodyLimit: jest.fn(() => '3mb'),
   isRumProxyEnabled: (...args) => mockIsRumProxyEnabled(...args),
   proxyRumRequest: (...args) => mockProxyRumRequest(...args),

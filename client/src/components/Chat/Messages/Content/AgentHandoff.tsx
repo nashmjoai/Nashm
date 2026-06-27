@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { EModelEndpoint, Constants } from 'librechat-data-provider';
-import type { TMessage } from 'librechat-data-provider';
+import { EModelEndpoint, Constants } from 'nashm-data-provider';
+import type { TMessage } from 'nashm-data-provider';
 import MessageIcon from '~/components/Share/MessageIcon';
 import { useLocalize, useExpandCollapse } from '~/hooks';
 import { useAgentsMapContext } from '~/Providers';

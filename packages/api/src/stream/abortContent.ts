@@ -1,5 +1,5 @@
-import { Constants, ContentTypes } from 'librechat-data-provider';
-import type { Agents, TMessageContentParts } from 'librechat-data-provider';
+import { Constants, ContentTypes } from 'nashm-data-provider';
+import type { Agents, TMessageContentParts } from 'nashm-data-provider';
 
 const OAUTH_TOOL_CALL_PREFIX = `oauth${Constants.mcp_delimiter}`;
 

@@ -7,7 +7,7 @@ const mockCanAuthorSkillFiles = jest.fn();
 const mockGetAgent = jest.fn();
 const mockGetMCPServerTools = jest.fn();
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     debug: jest.fn(),
     info: jest.fn(),
@@ -16,7 +16,7 @@ jest.mock('@librechat/data-schemas', () => ({
   },
 }));
 
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   ADDED_AGENT_ID: '__added_agent__',
   initializeAgent: (...args) => mockInitializeAgent(...args),
   validateAgentModel: (...args) => mockValidateAgentModel(...args),
@@ -46,7 +46,7 @@ jest.mock('~/models', () => ({
 
 const { processAddedConvo } = require('./addedConvo');
 const db = require('~/models');
-const { Constants } = require('librechat-data-provider');
+const { Constants } = require('nashm-data-provider');
 
 const makeReq = () => ({ user: { id: 'u1', role: 'USER' } });
 

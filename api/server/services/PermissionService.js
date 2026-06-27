@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
-const { isEnabled } = require('@librechat/api');
-const { getTransactionSupport, logger } = require('@librechat/data-schemas');
-const { ResourceType, PrincipalType, PrincipalModel } = require('librechat-data-provider');
+const { isEnabled } = require('@nashm/api');
+const { getTransactionSupport, logger } = require('@nashm/data-schemas');
+const { ResourceType, PrincipalType, PrincipalModel } = require('nashm-data-provider');
 const {
   entraIdPrincipalFeatureEnabled,
   getUserOwnedEntraGroups,
@@ -44,7 +44,7 @@ const ensureLocalGroupPrincipalExists = async (principalId) => {
 };
 
 /**
- * @import { TPrincipal } from 'librechat-data-provider'
+ * @import { TPrincipal } from 'nashm-data-provider'
  */
 /**
  * Grant a permission to a principal for a resource using a role

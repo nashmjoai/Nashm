@@ -1,5 +1,5 @@
-const { logger } = require('@librechat/data-schemas');
-const { Constants, ViolationTypes, isEphemeralAgentId } = require('librechat-data-provider');
+const { logger } = require('@nashm/data-schemas');
+const { Constants, ViolationTypes, isEphemeralAgentId } = require('nashm-data-provider');
 const {
   sendEvent,
   getViolationInfo,
@@ -12,7 +12,7 @@ const {
   sanitizeMessageForTransmit,
   checkAndIncrementPendingRequest,
   isUnpersistedPreliminaryParent,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const { disposeClient, clientRegistry, requestDataMap } = require('~/server/cleanup');
 const {
   getMCPRequestContext,

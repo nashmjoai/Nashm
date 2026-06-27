@@ -2,8 +2,8 @@ import { useState, useId, useRef, memo, useCallback, useMemo } from 'react';
 import * as Ariakit from '@ariakit/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
-import { DropdownPopup, Spinner, useToastContext } from '@librechat/client';
-import { QueryKeys, PermissionTypes, Permissions } from 'librechat-data-provider';
+import { DropdownPopup, Spinner, useToastContext } from '@nashm/client';
+import { QueryKeys, PermissionTypes, Permissions } from 'nashm-data-provider';
 import {
   Ellipsis,
   Share2,
@@ -15,7 +15,7 @@ import {
   Pin,
   Trash,
 } from 'lucide-react';
-import type { TMessage } from 'librechat-data-provider';
+import type { TMessage } from 'nashm-data-provider';
 import type { MouseEvent } from 'react';
 import {
   useDuplicateConversationMutation,

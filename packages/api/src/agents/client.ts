@@ -1,5 +1,5 @@
-import { logger } from '@librechat/data-schemas';
-import { ContentTypes, isAgentsEndpoint } from 'librechat-data-provider';
+import { logger } from '@nashm/data-schemas';
+import { ContentTypes, isAgentsEndpoint } from 'nashm-data-provider';
 import {
   labelContentByAgent,
   extractImageDimensions,
@@ -9,7 +9,7 @@ import {
 } from '@librechat/agents';
 import type { BaseMessage } from '@librechat/agents/langchain/messages';
 import type { MessageContentComplex } from '@librechat/agents';
-import type { Agent, TMessage } from 'librechat-data-provider';
+import type { Agent, TMessage } from 'nashm-data-provider';
 import type { ServerRequest } from '~/types';
 import { logAxiosError, mergeQuotedText, formatQuotesAsMarkdown } from '~/utils';
 import Tokenizer from '~/utils/tokenizer';

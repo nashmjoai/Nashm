@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef } from 'react';
 import { useSetRecoilState } from 'recoil';
-import { Tools, Constants, LocalStorageKeys, AgentCapabilities } from 'librechat-data-provider';
-import type { TAgentsEndpoint, TEphemeralAgent } from 'librechat-data-provider';
+import { Tools, Constants, LocalStorageKeys, AgentCapabilities } from 'nashm-data-provider';
+import type { TAgentsEndpoint, TEphemeralAgent } from 'nashm-data-provider';
 import {
   useMCPServerManager,
   useSearchApiKeyForm,

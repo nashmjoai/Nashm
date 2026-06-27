@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { messagesView, NEW_CHAT_PATH, replyPrompt, replyText, selectModelSpec } from './helpers';
 
-/** Spec with five `conversation_starters` in e2e/config/librechat.e2e.yaml; only four may render. */
+/** Spec with five `conversation_starters` in e2e/config/Nashm.e2e.yaml; only four may render. */
 const STARTER_SPEC_LABEL = 'E2E Starters';
 const STARTER_PROMPTS = [
   replyPrompt('starter'),

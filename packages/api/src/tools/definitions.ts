@@ -6,9 +6,9 @@
  */
 
 import { Providers } from '@librechat/agents';
-import { Constants, isActionTool } from 'librechat-data-provider';
+import { Constants, isActionTool } from 'nashm-data-provider';
 import type { LCToolRegistry, JsonSchemaType, LCTool, GenericTool } from '@librechat/agents';
-import type { AgentToolOptions } from 'librechat-data-provider';
+import type { AgentToolOptions } from 'nashm-data-provider';
 import type { ToolDefinition } from './classification';
 import { resolveJsonSchemaRefs, normalizeJsonSchema, sanitizeGeminiSchema } from '~/mcp/zod';
 import { buildToolClassification } from './classification';

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { createModels } = require('@librechat/data-schemas');
+const { createModels } = require('@nashm/data-schemas');
 const { connectDb } = require('./connect');
 
 // createModels MUST run before requiring indexSync.

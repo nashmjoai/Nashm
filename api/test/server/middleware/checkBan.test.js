@@ -20,7 +20,7 @@ jest.mock('~/cache', () => ({
   getLogStores: jest.fn(() => mockBanLogs),
 }));
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     info: jest.fn(),
     warn: jest.fn(),
@@ -29,7 +29,7 @@ jest.mock('@librechat/data-schemas', () => ({
   },
 }));
 
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   isEnabled: (value) => {
     if (typeof value === 'boolean') {
       return value;
@@ -52,7 +52,7 @@ jest.mock('~/server/middleware/denyRequest', () => jest.fn().mockResolvedValue(u
 jest.mock('ua-parser-js', () => jest.fn(() => ({ browser: { name: 'Chrome' } })));
 
 const checkBan = require('~/server/middleware/checkBan');
-const { logger } = require('@librechat/data-schemas');
+const { logger } = require('@nashm/data-schemas');
 const { findUser } = require('~/models');
 
 const createReq = (overrides = {}) => ({

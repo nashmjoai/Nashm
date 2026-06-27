@@ -1,6 +1,6 @@
 import React from 'react';
 import { RecoilRoot } from 'recoil';
-import { Tools, Constants } from 'librechat-data-provider';
+import { Tools, Constants } from 'nashm-data-provider';
 import { render, screen, fireEvent } from '@testing-library/react';
 import ToolCall from '../ToolCall';
 
@@ -77,7 +77,7 @@ jest.mock('../Parts', () => ({
   ),
 }));
 
-jest.mock('@librechat/client', () => ({
+jest.mock('@nashm/client', () => ({
   Button: ({ children, onClick, ...props }: any) => (
     <button onClick={onClick} {...props}>
       {children}

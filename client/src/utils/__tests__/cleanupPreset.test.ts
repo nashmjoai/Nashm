@@ -1,8 +1,8 @@
-import { EModelEndpoint, parseConvo } from 'librechat-data-provider';
+import { EModelEndpoint, parseConvo } from 'nashm-data-provider';
 import cleanupPreset from '../cleanupPreset';
 // Mock parseConvo since we're focusing on testing the chatGptLabel migration logic
-jest.mock('librechat-data-provider', () => ({
-  ...jest.requireActual('librechat-data-provider'),
+jest.mock('nashm-data-provider', () => ({
+  ...jest.requireActual('nashm-data-provider'),
   parseConvo: jest.fn((input) => {
     const { conversation } = input;
     return {

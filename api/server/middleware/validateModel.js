@@ -1,5 +1,5 @@
-const { handleError } = require('@librechat/api');
-const { ViolationTypes } = require('librechat-data-provider');
+const { handleError } = require('@nashm/api');
+const { ViolationTypes } = require('nashm-data-provider');
 const { getModelsConfig } = require('~/server/controllers/ModelController');
 const { getEndpointsConfig } = require('~/server/services/Config');
 const { logViolation } = require('~/cache');

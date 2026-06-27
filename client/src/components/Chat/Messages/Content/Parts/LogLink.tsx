@@ -1,6 +1,6 @@
 import React from 'react';
-import { useToastContext } from '@librechat/client';
-import { FileSources, sharedFileDownload } from 'librechat-data-provider';
+import { useToastContext } from '@nashm/client';
+import { FileSources, sharedFileDownload } from 'nashm-data-provider';
 import { useCodeOutputDownload, useFileDownload } from '~/data-provider';
 import { isHttpDownloadTarget, triggerDownload } from '~/utils';
 import { useShareContext } from '~/Providers';
@@ -24,7 +24,7 @@ interface AttachmentLinkOptions {
 
 /**
  * Determines if a file is stored locally (not an external API URL).
- * Files with these sources are stored on the LibreChat server and should
+ * Files with these sources are stored on the Nashm server and should
  * use the /api/files/download endpoint instead of direct URL access.
  */
 const isLocallyStoredSource = (source?: string): boolean => {

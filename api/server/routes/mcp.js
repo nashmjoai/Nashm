@@ -1,12 +1,12 @@
 const { Router } = require('express');
-const { logger, getTenantId, tenantStorage } = require('@librechat/data-schemas');
+const { logger, getTenantId, tenantStorage } = require('@nashm/data-schemas');
 const {
   CacheKeys,
   Constants,
   PermissionBits,
   PermissionTypes,
   Permissions,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 const {
   getBasePath,
   createSafeUser,
@@ -22,7 +22,7 @@ const {
   generateCheckAccess,
   validateOAuthSession,
   OAUTH_SESSION_COOKIE,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const {
   createMCPServerController,
   updateMCPServerController,
@@ -91,7 +91,7 @@ const checkMCPCreate = generateCheckAccess({
 
 /**
  * Get all MCP tools available to the user
- * Returns only MCP tools, completely decoupled from regular LibreChat tools
+ * Returns only MCP tools, completely decoupled from regular Nashm tools
  */
 router.get('/tools', requireJwtAuth, checkMCPUsePermissions, async (req, res) => {
   return getMCPTools(req, res);

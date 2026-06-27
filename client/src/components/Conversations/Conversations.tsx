@@ -2,11 +2,11 @@ import { useMemo, memo, type FC, useCallback, useEffect, useRef } from 'react';
 import throttle from 'lodash/throttle';
 import { useRecoilValue } from 'recoil';
 import { ChevronDown } from 'lucide-react';
-import { QueryKeys } from 'librechat-data-provider';
+import { QueryKeys } from 'nashm-data-provider';
 import { useQueryClient } from '@tanstack/react-query';
 import { List, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
-import { Spinner, TooltipAnchor, NewChatIcon, useMediaQuery } from '@librechat/client';
-import type { TConversation } from 'librechat-data-provider';
+import { Spinner, TooltipAnchor, NewChatIcon, useMediaQuery } from '@nashm/client';
+import type { TConversation } from 'nashm-data-provider';
 import {
   useLocalize,
   TranslationKeys,

@@ -1,6 +1,6 @@
 import { useRecoilCallback } from 'recoil';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { dataService, QueryKeys } from 'librechat-data-provider';
+import { dataService, QueryKeys } from 'nashm-data-provider';
 import type { UseMutationResult } from '@tanstack/react-query';
 import type {
   TChatProject,
@@ -10,7 +10,7 @@ import type {
   TUpdateChatProjectRequest,
   TAssignConversationToProjectRequest,
   TAssignConversationToProjectResponse,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import store from '~/store';
 
 export const useCreateProjectMutation = (): UseMutationResult<

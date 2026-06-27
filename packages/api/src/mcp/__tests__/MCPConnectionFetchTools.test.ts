@@ -8,10 +8,10 @@
  * cursor guard) while preserving the original single-page and error behavior.
  */
 
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 import { MCPConnection } from '~/mcp/connection';
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     info: jest.fn(),
     warn: jest.fn(),

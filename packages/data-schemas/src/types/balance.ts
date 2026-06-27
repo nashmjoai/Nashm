@@ -1,4 +1,4 @@
-import type { RefillIntervalUnit } from 'librechat-data-provider';
+import type { RefillIntervalUnit } from 'nashm-data-provider';
 import type { Document, Types } from 'mongoose';
 
 export interface IBalance extends Document {

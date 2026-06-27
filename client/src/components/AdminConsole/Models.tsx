@@ -21,7 +21,7 @@ import {
   Spinner,
   Input,
   useToastContext,
-} from '@librechat/client';
+} from '@nashm/client';
 import { NotificationSeverity } from '~/common';
 
 export default function AdminConsoleModels() {

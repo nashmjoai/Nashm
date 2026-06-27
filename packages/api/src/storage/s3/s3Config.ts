@@ -1,4 +1,4 @@
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 import { DEFAULT_BASE_PATH } from '~/storage/constants';
 import { isEnabled } from '~/utils/common';
 
@@ -38,7 +38,7 @@ const parseRefreshExpiry = (): number | null => {
   return parsed;
 };
 
-// Internal module config — not part of the public @librechat/api surface
+// Internal module config — not part of the public @nashm/api surface
 export const s3Config: {
   /** AWS region for S3 */
   AWS_REGION: string;

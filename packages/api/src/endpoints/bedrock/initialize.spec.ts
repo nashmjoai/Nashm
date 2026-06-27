@@ -4,7 +4,7 @@ import {
   EModelEndpoint,
   BEDROCK_OUTPUT_128K_BETA,
   BEDROCK_FINE_GRAINED_TOOL_STREAMING_BETA,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type { BaseInitializeParams, BedrockLLMConfigResult } from '~/types';
 import { initializeBedrock } from './initialize';
 import { checkUserKeyExpiry } from '~/utils';

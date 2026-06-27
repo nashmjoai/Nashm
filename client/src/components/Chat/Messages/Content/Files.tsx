@@ -1,5 +1,5 @@
 import { useMemo, useState, useCallback, memo } from 'react';
-import type { TFile, TMessage } from 'librechat-data-provider';
+import type { TFile, TMessage } from 'nashm-data-provider';
 import FileContainer from '~/components/Chat/Input/Files/FileContainer';
 import FilePreviewDialog from './FilePreviewDialog';
 import Image from './Image';

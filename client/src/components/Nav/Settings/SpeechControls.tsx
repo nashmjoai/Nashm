@@ -1,4 +1,4 @@
-import { useGetCustomConfigSpeechQuery } from 'librechat-data-provider/react-query';
+import { useGetCustomConfigSpeechQuery } from 'nashm-data-provider/react-query';
 import { EngineSTTDropdown } from '../SettingsTabs/Speech/STT';
 import { EngineTTSDropdown } from '../SettingsTabs/Speech/TTS';
 

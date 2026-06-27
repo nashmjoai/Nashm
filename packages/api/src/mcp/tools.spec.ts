@@ -1,11 +1,11 @@
-import { Constants } from 'librechat-data-provider';
+import { Constants } from 'nashm-data-provider';
 import type { LCAvailableTools, ParsedServerConfig } from './types';
 import type { MCPToolInput, MCPToolCacheDeps } from './tools';
 import { createMCPToolCacheService } from './tools';
 
 const requestScopedConfig: ParsedServerConfig = {
   type: 'streamable-http',
-  url: 'https://mcp.example.com/{{LIBRECHAT_BODY_CONVERSATIONID}}/mcp',
+  url: 'https://mcp.example.com/{{Nashm_BODY_CONVERSATIONID}}/mcp',
   source: 'yaml',
 };
 

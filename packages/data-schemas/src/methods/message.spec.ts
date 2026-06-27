@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
-import { RetentionMode } from 'librechat-data-provider';
+import { RetentionMode } from 'nashm-data-provider';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import type { IMessage } from '..';
 import { tenantStorage, runAsSystem } from '~/config/tenantContext';

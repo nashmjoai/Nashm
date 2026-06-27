@@ -1,4 +1,4 @@
-import { Constants } from 'librechat-data-provider';
+import { Constants } from 'nashm-data-provider';
 import parseJsonField from './Parts/parseJsonField';
 
 const PYTHON_PROGRAMMATIC_LANGS = new Set(['py', 'python']);

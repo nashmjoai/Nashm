@@ -1,6 +1,6 @@
-import { logger } from '@librechat/data-schemas';
-import { FileSources } from 'librechat-data-provider';
-import type { AppConfig } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
+import { FileSources } from 'nashm-data-provider';
+import type { AppConfig } from '@nashm/data-schemas';
 import { initializeAzureBlobService } from '~/cdn/azure';
 import { initializeFirebase } from '~/cdn/firebase';
 import { initializeS3 } from '~/cdn/s3';
@@ -19,7 +19,7 @@ function initializeStrategy(strategy: FileSources, appConfig: AppConfig): void {
     const cloudfrontConfig = appConfig.cloudfront;
     if (!cloudfrontConfig) {
       logger.error(
-        '[initializeFileStorage] CloudFront strategy requires cloudfront config in librechat.yaml',
+        '[initializeFileStorage] CloudFront strategy requires cloudfront config in Nashm.yaml',
       );
       return;
     }

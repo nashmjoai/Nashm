@@ -1,4 +1,4 @@
-import { AuthType } from 'librechat-data-provider';
+import { AuthType } from 'nashm-data-provider';
 
 /**
  * Checks if the given value is truthy by being either the boolean `true` or a string

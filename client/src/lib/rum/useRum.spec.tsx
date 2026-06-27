@@ -51,10 +51,10 @@ describe('useRum', () => {
           provider: 'hyperdx',
           enabled: true,
           url: 'https://rum.example.com',
-          serviceName: 'librechat-web',
+          serviceName: 'Nashm-web',
           authMode: 'publicToken',
           publicToken: 'public-token',
-          tracePropagationTargets: ['https://librechat.example.com'],
+          tracePropagationTargets: ['https://Nashm.example.com'],
         },
       },
     });
@@ -67,8 +67,8 @@ describe('useRum', () => {
         apiKey: 'public-token',
         consoleCapture: false,
         disableReplay: true,
-        service: 'librechat-web',
-        tracePropagationTargets: ['https://librechat.example.com'],
+        service: 'Nashm-web',
+        tracePropagationTargets: ['https://Nashm.example.com'],
         url: 'https://rum.example.com',
       });
     });
@@ -78,7 +78,7 @@ describe('useRum', () => {
       role: 'USER',
       userId: 'user-123',
       orgId: 'org-123',
-      serviceName: 'librechat-web',
+      serviceName: 'Nashm-web',
     });
     expect(mockSetGlobalAttributes).not.toHaveBeenCalledWith(
       expect.objectContaining({ email: 'user@example.com' }),
@@ -92,7 +92,7 @@ describe('useRum', () => {
           provider: 'hyperdx',
           enabled: true,
           url: 'https://rum.example.com/ingest',
-          serviceName: 'librechat-web',
+          serviceName: 'Nashm-web',
           authMode: 'userJwt',
           publicToken: 'public-token',
         },
@@ -104,7 +104,7 @@ describe('useRum', () => {
     expect(mockInit).not.toHaveBeenCalled();
   });
 
-  it('initializes proxy RUM with the LibreChat bearer token for same-origin ingest', async () => {
+  it('initializes proxy RUM with the Nashm bearer token for same-origin ingest', async () => {
     const fetchMock = jest.fn(
       (_input: RequestInfo | URL, _init?: RequestInit): Promise<Response> =>
         Promise.resolve({ ok: true, status: 200 } as Response),
@@ -116,7 +116,7 @@ describe('useRum', () => {
           provider: 'hyperdx',
           enabled: true,
           url: '/api/rum',
-          serviceName: 'librechat-web',
+          serviceName: 'Nashm-web',
           authMode: 'proxy',
         },
       },
@@ -127,10 +127,10 @@ describe('useRum', () => {
     await waitFor(() => {
       expect(mockInit).toHaveBeenCalledWith({
         advancedNetworkCapture: false,
-        apiKey: 'librechat-rum-proxy',
+        apiKey: 'Nashm-rum-proxy',
         consoleCapture: false,
         disableReplay: true,
-        service: 'librechat-web',
+        service: 'Nashm-web',
         tracePropagationTargets: undefined,
         url: '/api/rum',
       });
@@ -155,7 +155,7 @@ describe('useRum', () => {
           provider: 'hyperdx',
           enabled: true,
           url: '/api/rum',
-          serviceName: 'librechat-web',
+          serviceName: 'Nashm-web',
           authMode: 'proxy',
         },
       },

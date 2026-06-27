@@ -1,7 +1,7 @@
-import { loadDefaultInterface } from '@librechat/data-schemas';
-import { SystemRoles, Permissions, PermissionTypes, roleDefaults } from 'librechat-data-provider';
-import type { TConfigDefaults, TCustomConfig } from 'librechat-data-provider';
-import type { AppConfig } from '@librechat/data-schemas';
+import { loadDefaultInterface } from '@nashm/data-schemas';
+import { SystemRoles, Permissions, PermissionTypes, roleDefaults } from 'nashm-data-provider';
+import type { TConfigDefaults, TCustomConfig } from 'nashm-data-provider';
+import type { AppConfig } from '@nashm/data-schemas';
 import { updateInterfacePermissions } from './permissions';
 
 const mockUpdateAccessPermissions = jest.fn();
@@ -2025,7 +2025,7 @@ describe('updateInterfacePermissions - permissions', () => {
       },
     });
 
-    // Config uses boolean (not object), simulating `agents: true` in librechat.yaml
+    // Config uses boolean (not object), simulating `agents: true` in Nashm.yaml
     const config = {
       interface: {
         agents: true, // Boolean config - should only update USE, not reset SHARE/SHARE_PUBLIC

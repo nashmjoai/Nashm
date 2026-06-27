@@ -1,7 +1,7 @@
 const express = require('express');
-const { logger } = require('@librechat/data-schemas');
-const { generateCheckAccess } = require('@librechat/api');
-const { PermissionTypes, Permissions } = require('librechat-data-provider');
+const { logger } = require('@nashm/data-schemas');
+const { generateCheckAccess } = require('@nashm/api');
+const { PermissionTypes, Permissions } = require('nashm-data-provider');
 const {
   updateTagsForConversation,
   updateConversationTag,

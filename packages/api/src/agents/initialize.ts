@@ -1,5 +1,5 @@
 import { Providers } from '@librechat/agents';
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 import {
   Tools,
   Constants,
@@ -10,7 +10,7 @@ import {
   isAgentsEndpoint,
   replaceSpecialVars,
   providerEndpointMap,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type {
   AgentToolResources,
   AgentToolOptions,
@@ -19,10 +19,10 @@ import type {
   TFile,
   Agent,
   TUser,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type { GenericTool, LCToolRegistry, ToolMap, LCTool } from '@librechat/agents';
 import type { Response as ServerResponse } from 'express';
-import type { IMongoFile } from '@librechat/data-schemas';
+import type { IMongoFile } from '@nashm/data-schemas';
 import type {
   ServerRequest,
   EndpointDbMethods,
@@ -41,7 +41,7 @@ import {
 } from './skills';
 import {
   optionalChainWithEmptyCheck,
-  extractLibreChatParams,
+  extractNashmParams,
   getModelMaxTokens,
   getThreadData,
 } from '~/utils';
@@ -216,7 +216,7 @@ function resolveProviderToolConflicts({
 
   if (removed > 0) {
     logger.debug(
-      `[initializeAgent] Removed ${removed} ${provider} native web search tool(s); LibreChat web_search is enabled.`,
+      `[initializeAgent] Removed ${removed} ${provider} native web search tool(s); Nashm web_search is enabled.`,
     );
   }
 
@@ -538,7 +538,7 @@ export interface InitializeAgentDbMethods extends EndpointDbMethods {
  * Initializes an agent for use in requests.
  * Handles file processing, tool loading, provider configuration, and context token calculations.
  *
- * This function is exported from @librechat/api and replaces the CJS version from
+ * This function is exported from @nashm/api and replaces the CJS version from
  * api/server/services/Endpoints/agents/agent.js
  *
  * @param params - Initialization parameters
@@ -588,7 +588,7 @@ export async function initializeAgent(
     ),
   );
 
-  const { resendFiles, maxContextTokens, modelOptions } = extractLibreChatParams(
+  const { resendFiles, maxContextTokens, modelOptions } = extractNashmParams(
     _modelOptions as Record<string, unknown>,
   );
 
@@ -920,7 +920,7 @@ export async function initializeAgent(
    * Tolerant filter: anything `loadTools` couldn't resolve (capability
    * disabled, plugin missing, name unknown to the registry) is silently
    * dropped with an attributed debug log. Cross-ecosystem skills authored
-   * against tools LibreChat hasn't shipped yet (Claude Code's `edit_file`,
+   * against tools Nashm hasn't shipped yet (Claude Code's `edit_file`,
    * etc.) import without breaking — they light up automatically once
    * support lands. Skips when there were no extras to begin with.
    */

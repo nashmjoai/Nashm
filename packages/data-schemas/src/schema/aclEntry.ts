@@ -1,5 +1,5 @@
 import { Schema } from 'mongoose';
-import { PrincipalType, PrincipalModel, ResourceType } from 'librechat-data-provider';
+import { PrincipalType, PrincipalModel, ResourceType } from 'nashm-data-provider';
 import type { IAclEntry } from '~/types';
 import { MAX_PERM_BITS } from '~/common/permissions';
 

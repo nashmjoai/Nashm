@@ -1,4 +1,4 @@
-import type { SkillSyncConfig } from 'librechat-data-provider';
+import type { SkillSyncConfig } from 'nashm-data-provider';
 import type { SkillSyncTriggerRunnerFactoryInput } from './orchestrator';
 import type { GitHubSkillSyncRunner } from './github';
 import { createSkillSyncTriggerOrchestrator } from './orchestrator';
@@ -8,7 +8,7 @@ type RunnerRunResult = Awaited<ReturnType<GitHubSkillSyncRunner['runOnce']>>;
 
 const source = {
   id: 'tenant-skills',
-  owner: 'LibreChat',
+  owner: 'Nashm',
   repo: 'skills',
   ref: 'main',
   paths: ['skills'],
@@ -265,7 +265,7 @@ describe('createSkillSyncTriggerOrchestrator', () => {
         },
         {
           id: 'shared-source',
-          owner: 'LibreChat',
+          owner: 'Nashm',
           repo: 'skills',
           ref: 'main',
           paths: ['skills'],
@@ -302,7 +302,7 @@ describe('createSkillSyncTriggerOrchestrator', () => {
       },
       {
         id: 'shared-source',
-        owner: 'LibreChat',
+        owner: 'Nashm',
         repo: 'skills',
         ref: 'main',
         paths: ['skills'],

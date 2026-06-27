@@ -1,6 +1,6 @@
 import { useContext, useMemo } from 'react';
-import { ThemeContext, isDark } from '@librechat/client';
-import { removeNullishValues } from 'librechat-data-provider';
+import { ThemeContext, isDark } from '@nashm/client';
+import { removeNullishValues } from 'nashm-data-provider';
 import type { Artifact } from '~/common';
 import {
   getKey,

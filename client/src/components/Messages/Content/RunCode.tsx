@@ -1,9 +1,9 @@
 import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import debounce from 'lodash/debounce';
 import { useRecoilCallback } from 'recoil';
-import { Tools } from 'librechat-data-provider';
+import { Tools } from 'nashm-data-provider';
 import { TerminalSquareIcon, Check, X } from 'lucide-react';
-import { Spinner, TooltipAnchor, useToastContext } from '@librechat/client';
+import { Spinner, TooltipAnchor, useToastContext } from '@nashm/client';
 import type { CodeBarProps } from '~/common';
 import { useToolCallMutation } from '~/data-provider';
 import { useLocalize } from '~/hooks';

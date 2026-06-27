@@ -7,7 +7,7 @@
  * defer-while-active, and the post-completion `resetQueries` remount — are
  * deterministically locked down without timer/async flakiness.
  *
- * `~/utils` re-exports from `@librechat/client` (framer-motion peer, absent in
+ * `~/utils` re-exports from `@nashm/client` (framer-motion peer, absent in
  * jsdom); mocked to the two symbols the hook uses. react-query is mocked so we
  * control `activeJobIds`, the per-conversation query results, and spy the
  * QueryClient — the hook's own React effects still run for real.
@@ -54,7 +54,7 @@ jest.mock('~/utils', () => ({
   updateConvoInAllQueries: (...args: unknown[]) => mockUpdateConvoInAllQueries(...args),
 }));
 
-jest.mock('librechat-data-provider', () => ({
+jest.mock('nashm-data-provider', () => ({
   apiBaseUrl: () => '',
   QueryKeys: { conversation: 'conversation', activeJobs: 'activeJobs' },
   request: { get: jest.fn() },

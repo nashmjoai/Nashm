@@ -6,7 +6,7 @@ import {
   Permissions,
   PermissionBits,
   ResourceType,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import {
   Label,
   Button,
@@ -18,8 +18,8 @@ import {
   OGDialogHeader,
   useToastContext,
   OGDialogContent,
-} from '@librechat/client';
-import type { TSharedLinkGetResponse } from 'librechat-data-provider';
+} from '@nashm/client';
+import type { TSharedLinkGetResponse } from 'nashm-data-provider';
 import {
   useCreateSharedLinkMutation,
   useUpdateSharedLinkMutation,

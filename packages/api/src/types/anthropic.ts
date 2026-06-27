@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { Dispatcher } from 'undici';
-import { AuthKeys, anthropicSchema, TVertexAISchema } from 'librechat-data-provider';
-import type { ThinkingDisplayWireValue } from 'librechat-data-provider';
+import { AuthKeys, anthropicSchema, TVertexAISchema } from 'nashm-data-provider';
+import type { ThinkingDisplayWireValue } from 'nashm-data-provider';
 import type { AnthropicClientOptions } from '@librechat/agents';
 import type { GoogleServiceKey } from '../utils/key';
 import type { LLMConfigResult } from './openai';

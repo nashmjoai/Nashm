@@ -1,8 +1,8 @@
 import { memo, useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { ChevronUp, ChevronDown } from 'lucide-react';
-import { ContentTypes } from 'librechat-data-provider';
-import { HoverCard, HoverCardTrigger, HoverCardPortal, HoverCardContent } from '@librechat/client';
-import type { TMessage, TMessageContentParts } from 'librechat-data-provider';
+import { ContentTypes } from 'nashm-data-provider';
+import { HoverCard, HoverCardTrigger, HoverCardPortal, HoverCardContent } from '@nashm/client';
+import type { TMessage, TMessageContentParts } from 'nashm-data-provider';
 import { useMessagesConversation, useMessagesSubmission } from '~/Providers';
 import { useGetMessagesByConvoId } from '~/data-provider';
 import { useLocalize } from '~/hooks';

@@ -1,9 +1,9 @@
 const sharp = require('sharp');
 const fs = require('fs').promises;
 const fetch = require('node-fetch');
-const { logger } = require('@librechat/data-schemas');
-const { EImageOutputType } = require('librechat-data-provider');
-const { createSSRFSafeAgents } = require('@librechat/api');
+const { logger } = require('@nashm/data-schemas');
+const { EImageOutputType } = require('nashm-data-provider');
+const { createSSRFSafeAgents } = require('@nashm/api');
 const { resizeAndConvert } = require('./resize');
 
 const ALLOWED_AVATAR_PROTOCOLS = new Set(['http:', 'https:']);

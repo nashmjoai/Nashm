@@ -1,6 +1,6 @@
-apiVersion: v2
-name: librechat-rag-api
-description: A Helm chart for LibreChat
+﻿apiVersion: v2
+name: Nashm-rag-api
+description: A Helm chart for Nashm
 
 # A chart can be either an 'application' or a 'library' chart.
 #
@@ -21,10 +21,10 @@ version: 0.5.3
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 
-# renovate: image=registry.librechat.ai/danny-avila/librechat-rag-api-dev
+# renovate: image=registry.Nashm.ai/danny-avila/Nashm-rag-api-dev
 appVersion: "v0.4.0"
 
-home: https://www.librechat.ai
+home: https://www.Nashm.ai
 
 dependencies:
   - name: postgresql

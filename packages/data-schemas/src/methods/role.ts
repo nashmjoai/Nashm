@@ -4,7 +4,7 @@ import {
   roleDefaults,
   permissionsSchema,
   removeNullishValues,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type { Model } from 'mongoose';
 import type { IRole, IUser } from '~/types';
 import { scopedCacheKey, getTenantId, runAsSystem, SYSTEM_TENANT_ID } from '~/config/tenantContext';

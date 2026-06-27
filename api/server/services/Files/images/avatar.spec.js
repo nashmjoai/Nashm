@@ -8,16 +8,16 @@
  * handling cannot silently break the protection.
  */
 jest.mock('node-fetch');
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   createSSRFSafeAgents: jest.fn(() => ({
     httpAgent: { __kind: 'http' },
     httpsAgent: { __kind: 'https' },
   })),
 }));
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: { info: jest.fn(), warn: jest.fn(), error: jest.fn(), debug: jest.fn() },
 }));
-jest.mock('librechat-data-provider', () => ({
+jest.mock('nashm-data-provider', () => ({
   EImageOutputType: { PNG: 'png' },
 }));
 jest.mock('./resize', () => ({
@@ -29,7 +29,7 @@ jest.mock('sharp', () => {
 });
 
 const fetch = require('node-fetch');
-const { createSSRFSafeAgents } = require('@librechat/api');
+const { createSSRFSafeAgents } = require('@nashm/api');
 const sharp = require('sharp');
 const { resizeAvatar } = require('./avatar');
 

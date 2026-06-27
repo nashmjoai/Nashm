@@ -1,15 +1,15 @@
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 import {
   EModelEndpoint,
   FileSources,
   MAX_SUBAGENT_DEPTH,
   MAX_SUBAGENT_RUN_CONFIGS,
-} from 'librechat-data-provider';
-import type { SummarizationConfig, TEndpoint } from 'librechat-data-provider';
-import type { AppConfig } from '@librechat/data-schemas';
+} from 'nashm-data-provider';
+import type { SummarizationConfig, TEndpoint } from 'nashm-data-provider';
+import type { AppConfig } from '@nashm/data-schemas';
 import { createRun } from '~/agents/run';
 
-// Mock winston logger — `format` must be callable so @librechat/data-schemas
+// Mock winston logger — `format` must be callable so @nashm/data-schemas
 // dist module-load completes cleanly; see api/test/__mocks__/logger.js.
 jest.mock('winston', () => ({
   createLogger: jest.fn(() => ({
@@ -46,8 +46,8 @@ jest.mock('~/utils/env', () => ({
   createSafeUser: jest.fn(() => ({})),
 }));
 
-jest.mock('@librechat/data-schemas', () => ({
-  ...jest.requireActual('@librechat/data-schemas'),
+jest.mock('@nashm/data-schemas', () => ({
+  ...jest.requireActual('@nashm/data-schemas'),
   logger: {
     debug: jest.fn(),
     warn: jest.fn(),
@@ -175,7 +175,7 @@ type TestCustomEndpoint = Partial<TEndpoint> & {
 };
 
 /**
- * Shape of summarization parameters used in tests. The LibreChat config
+ * Shape of summarization parameters used in tests. The Nashm config
  * schema restricts yaml `parameters` to primitive values, but the SDK
  * passes any record through as-is — tests need the wider shape to exercise
  * cross-endpoint `configuration` merging.
@@ -1151,7 +1151,7 @@ describe('Langfuse run config', () => {
     });
     expect(callArgs.langfuse).toEqual({
       deterministicTraceId: true,
-      metadata: { 'librechat.tenant.id': 'tenant-1' },
+      metadata: { 'Nashm.tenant.id': 'tenant-1' },
       tags: ['tenant:tenant-1'],
     });
   });
@@ -1164,7 +1164,7 @@ describe('Langfuse run config', () => {
     });
     expect(callArgs.langfuse).toEqual({
       deterministicTraceId: true,
-      metadata: { 'librechat.tenant.id': 'tenant-2' },
+      metadata: { 'Nashm.tenant.id': 'tenant-2' },
       tags: ['tenant:tenant-2'],
     });
   });

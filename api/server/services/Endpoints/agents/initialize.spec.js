@@ -7,7 +7,7 @@ const {
   MAX_SUBAGENT_DEPTH,
   MAX_SUBAGENT_GRAPH_NODES,
   Constants,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 
 const mockInitializeAgent = jest.fn();
@@ -21,8 +21,8 @@ jest.mock('@librechat/agents', () => ({
   })),
 }));
 
-jest.mock('@librechat/api', () => ({
-  ...jest.requireActual('@librechat/api'),
+jest.mock('@nashm/api', () => ({
+  ...jest.requireActual('@nashm/api'),
   initializeAgent: (...args) => mockInitializeAgent(...args),
   validateAgentModel: (...args) => mockValidateAgentModel(...args),
   GenerationJobManager: { setCollectedUsage: jest.fn() },
@@ -70,7 +70,7 @@ jest.mock('~/cache', () => ({
 
 const { initializeClient } = require('./initialize');
 const { getSkillToolDeps } = require('./skillDeps');
-const { logger } = require('@librechat/data-schemas');
+const { logger } = require('@nashm/data-schemas');
 const { User, AclEntry } = require('~/db/models');
 const { createAgent, createSkill } = require('~/models');
 

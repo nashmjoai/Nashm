@@ -1,6 +1,6 @@
 import { memo, useMemo, useState, useCallback, useRef, useId } from 'react';
 import { useAtomValue } from 'jotai';
-import { ContentTypes } from 'librechat-data-provider';
+import { ContentTypes } from 'nashm-data-provider';
 import type { MouseEvent, FocusEvent } from 'react';
 import { ThinkingContent, ThinkingButton, FloatingThinkingBar } from './Thinking';
 import { useLocalize, useExpandCollapse } from '~/hooks';

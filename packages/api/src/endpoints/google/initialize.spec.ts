@@ -1,5 +1,5 @@
 import { Providers } from '@librechat/agents';
-import { AuthKeys, EModelEndpoint } from 'librechat-data-provider';
+import { AuthKeys, EModelEndpoint } from 'nashm-data-provider';
 import type { EndpointDbMethods, ServerRequest } from '~/types';
 
 const mockGetGoogleConfig = jest.fn(
@@ -141,8 +141,8 @@ describe('initializeGoogle', () => {
           [EModelEndpoint.google]: {
             headers: {
               'X-Override': 'google',
-              'X-Conversation-Id': '{{LIBRECHAT_BODY_CONVERSATIONID}}',
-              'X-User-Id': '{{LIBRECHAT_USER_ID}}',
+              'X-Conversation-Id': '{{Nashm_BODY_CONVERSATIONID}}',
+              'X-User-Id': '{{Nashm_USER_ID}}',
             },
           },
         },

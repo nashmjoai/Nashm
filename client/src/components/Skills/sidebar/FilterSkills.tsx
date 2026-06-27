@@ -1,6 +1,6 @@
 import React from 'react';
-import { FilterInput } from '@librechat/client';
-import { SystemRoles, PermissionTypes, Permissions } from 'librechat-data-provider';
+import { FilterInput } from '@nashm/client';
+import { SystemRoles, PermissionTypes, Permissions } from 'nashm-data-provider';
 import { AdminSettings, CreateSkillMenu } from '~/components/Skills/buttons';
 import { useHasAccess, useAuthContext, useLocalize } from '~/hooks';
 import { cn } from '~/utils';

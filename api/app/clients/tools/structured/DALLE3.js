@@ -2,7 +2,7 @@ const path = require('path');
 const OpenAI = require('openai');
 const { v4: uuidv4 } = require('uuid');
 const { fetch } = require('undici');
-const { logger } = require('@librechat/data-schemas');
+const { logger } = require('@nashm/data-schemas');
 const { Tool } = require('@librechat/agents/langchain/tools');
 const {
   getImageBasename,
@@ -10,8 +10,8 @@ const {
   getProxyDispatcher,
   getEnvProxyDispatcher,
   createMinimalRetentionRequest,
-} = require('@librechat/api');
-const { FileContext, ContentTypes } = require('librechat-data-provider');
+} = require('@nashm/api');
+const { FileContext, ContentTypes } = require('nashm-data-provider');
 
 const dalle3JsonSchema = {
   type: 'object',

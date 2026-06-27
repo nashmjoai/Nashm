@@ -1,7 +1,7 @@
 const cookies = require('cookie');
 const jwksRsa = require('jwks-rsa');
-const { logger } = require('@librechat/data-schemas');
-const { SystemRoles } = require('librechat-data-provider');
+const { logger } = require('@nashm/data-schemas');
+const { SystemRoles } = require('nashm-data-provider');
 const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt');
 const {
   isEnabled,
@@ -11,7 +11,7 @@ const {
   normalizeOpenIdIssuer,
   getHttpsProxyAgent,
   math,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const { updateUser, findUser } = require('~/models');
 
 const getOpenIdJwtAudience = () => {
@@ -86,7 +86,7 @@ const openIdJwtLogin = (openIdConfig) => {
       passReqToCallback: true,
     },
     /**
-     * @param {import('@librechat/api').ServerRequest} req
+     * @param {import('@nashm/api').ServerRequest} req
      * @param {import('openid-client').IDToken} payload
      * @param {import('passport-jwt').VerifyCallback} done
      */

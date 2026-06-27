@@ -1,5 +1,5 @@
 jest.mock(
-  'librechat-data-provider',
+  'nashm-data-provider',
   () => ({
     AuthTypeEnum: {
       ServiceHttp: 'service_http',
@@ -28,8 +28,8 @@ import {
   AuthTypeEnum,
   AuthorizationTypeEnum,
   TokenExchangeMethodEnum,
-} from 'librechat-data-provider';
-import type { ActionMetadata } from 'librechat-data-provider';
+} from 'nashm-data-provider';
+import type { ActionMetadata } from 'nashm-data-provider';
 import { mergeActionMetadataForUpdate } from './credentials';
 
 const specFor = (serverUrl: string): string =>

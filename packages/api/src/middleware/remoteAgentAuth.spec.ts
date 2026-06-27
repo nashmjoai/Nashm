@@ -1,12 +1,12 @@
-import type { AppConfig, IUser, UserMethods } from '@librechat/data-schemas';
-import type { TAgentsEndpoint } from 'librechat-data-provider';
+import type { AppConfig, IUser, UserMethods } from '@nashm/data-schemas';
+import type { TAgentsEndpoint } from 'nashm-data-provider';
 import type { JwtPayload, VerifyOptions } from 'jsonwebtoken';
 import type { Request, Response } from 'express';
 import type { RequestInit } from 'undici';
 import type { RemoteAgentAuthDeps } from './remoteAgentAuth';
 
-jest.mock('@librechat/data-schemas', () => {
-  const actual = jest.requireActual('@librechat/data-schemas');
+jest.mock('@nashm/data-schemas', () => {
+  const actual = jest.requireActual('@nashm/data-schemas');
   return {
     ...actual,
     logger: {
@@ -51,9 +51,9 @@ jest.mock('../auth/openid', () => {
 
 import jwt from 'jsonwebtoken';
 import jwksRsa from 'jwks-rsa';
-import { SystemRoles } from 'librechat-data-provider';
+import { SystemRoles } from 'nashm-data-provider';
 import { fetch as undiciFetch } from 'undici';
-import { logger, tenantStorage } from '@librechat/data-schemas';
+import { logger, tenantStorage } from '@nashm/data-schemas';
 import { clearRemoteAgentAuthCache, createRemoteAgentAuth } from './remoteAgentAuth';
 import { findOpenIDUser, getOpenIdEmail } from '../auth/openid';
 import { isEnabled, math } from '~/utils';
@@ -712,7 +712,7 @@ describe('createRemoteAgentAuth', () => {
 
       expect(deps.apiKeyMiddleware).toHaveBeenCalled();
       expect(logger.warn).toHaveBeenCalledWith(
-        expect.stringContaining('no matching LibreChat user'),
+        expect.stringContaining('no matching Nashm user'),
       );
     });
 

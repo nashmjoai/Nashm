@@ -1,7 +1,7 @@
 import { useRecoilValue } from 'recoil';
-import { QueryKeys } from 'librechat-data-provider';
+import { QueryKeys } from 'nashm-data-provider';
 import { useQueryClient } from '@tanstack/react-query';
-import { TooltipAnchor, Button, NewChatIcon } from '@librechat/client';
+import { TooltipAnchor, Button, NewChatIcon } from '@nashm/client';
 import { useLocalize, useNewConvo } from '~/hooks';
 import { clearMessagesCache, cn } from '~/utils';
 import store from '~/store';

@@ -4,8 +4,8 @@ import {
   isBedrockDocumentType,
   bedrockDocumentFormats,
   isDocumentSupportedProvider,
-} from 'librechat-data-provider';
-import type { IMongoFile } from '@librechat/data-schemas';
+} from 'nashm-data-provider';
+import type { IMongoFile } from '@nashm/data-schemas';
 import type {
   DocumentBlock,
   AnthropicDocumentBlock,

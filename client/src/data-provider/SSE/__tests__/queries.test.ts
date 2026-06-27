@@ -1,5 +1,5 @@
 /**
- * `~/utils` re-exports from `@librechat/client`, which pulls in framer-motion (an
+ * `~/utils` re-exports from `@nashm/client`, which pulls in framer-motion (an
  * external peer not present in the jsdom test env). Provide a minimal mock with the
  * two symbols `queries.ts` uses. `isNotFoundError` mirrors the real axios-only
  * implementation in `~/utils/errors`.
@@ -15,7 +15,7 @@ jest.mock('~/utils', () => {
   return { isNotFoundError, updateConvoInAllQueries: jest.fn() };
 });
 
-jest.mock('librechat-data-provider', () => ({
+jest.mock('nashm-data-provider', () => ({
   apiBaseUrl: () => '',
   QueryKeys: { conversation: 'conversation', activeJobs: 'activeJobs' },
   request: { get: jest.fn() },

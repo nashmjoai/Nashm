@@ -1,5 +1,5 @@
 import { forwardRef } from 'react';
-import { Input, Label, SecretInput } from '@librechat/client';
+import { Input, Label, SecretInput } from '@nashm/client';
 import type { ChangeEvent, FC, Ref } from 'react';
 import { cn } from '~/utils/';
 import { useLocalize } from '~/hooks';

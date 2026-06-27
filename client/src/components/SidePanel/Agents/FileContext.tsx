@@ -1,7 +1,7 @@
 import { memo, useMemo, useRef, useState } from 'react';
 import { Folder } from 'lucide-react';
 import * as Ariakit from '@ariakit/react';
-import { EModelEndpoint, EToolResources } from 'librechat-data-provider';
+import { EModelEndpoint, EToolResources } from 'nashm-data-provider';
 import {
   HoverCard,
   DropdownPopup,
@@ -11,7 +11,7 @@ import {
   HoverCardPortal,
   HoverCardContent,
   HoverCardTrigger,
-} from '@librechat/client';
+} from '@nashm/client';
 import type { ExtendedFile } from '~/common';
 import { useSharePointFileHandlingNoChatContext } from '~/hooks/Files/useSharePointFileHandling';
 import { useFileHandlingNoChatContext } from '~/hooks/Files/useFileHandling';

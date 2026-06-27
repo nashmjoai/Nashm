@@ -518,7 +518,7 @@ describe('requiresUserScopedConnection', () => {
       requiresUserScopedConnection({
         source: 'yaml',
         headers: {
-          'X-LibreChat-User-Email': '{{LIBRECHAT_USER_EMAIL}}',
+          'X-Nashm-User-Email': '{{Nashm_USER_EMAIL}}',
         },
       }),
     ).toBe(true);
@@ -530,7 +530,7 @@ describe('requiresUserScopedConnection', () => {
         source: 'user',
         dbId: 'server-123',
         headers: {
-          'X-LibreChat-User-Email': '{{LIBRECHAT_USER_EMAIL}}',
+          'X-Nashm-User-Email': '{{Nashm_USER_EMAIL}}',
         },
       }),
     ).toBe(false);
@@ -551,10 +551,10 @@ describe('hasRuntimeContextPlaceholders', () => {
     expect(
       hasRuntimeContextPlaceholders({
         source: 'config',
-        url: 'https://example.com/{{LIBRECHAT_BODY_MESSAGEID}}/mcp',
+        url: 'https://example.com/{{Nashm_BODY_MESSAGEID}}/mcp',
         headers: {
-          Authorization: 'Bearer {{LIBRECHAT_OPENID_ID_TOKEN}}',
-          'X-Graph-Access-Token': '{{LIBRECHAT_GRAPH_ACCESS_TOKEN}}',
+          Authorization: 'Bearer {{Nashm_OPENID_ID_TOKEN}}',
+          'X-Graph-Access-Token': '{{Nashm_GRAPH_ACCESS_TOKEN}}',
         },
       }),
     ).toBe(true);
@@ -566,7 +566,7 @@ describe('hasRuntimeContextPlaceholders', () => {
         source: 'yaml',
         url: 'https://example.com/mcp',
         oauth_headers: {
-          'X-User': '{{LIBRECHAT_USER_ID}}',
+          'X-User': '{{Nashm_USER_ID}}',
         },
       }),
     ).toBe(true);
@@ -589,7 +589,7 @@ describe('hasRuntimeContextPlaceholders', () => {
         source: 'user',
         dbId: 'server-123',
         headers: {
-          Authorization: 'Bearer {{LIBRECHAT_OPENID_ID_TOKEN}}',
+          Authorization: 'Bearer {{Nashm_OPENID_ID_TOKEN}}',
         },
       }),
     ).toBe(false);
@@ -601,7 +601,7 @@ describe('hasRuntimeUrlPlaceholders', () => {
     expect(
       hasRuntimeUrlPlaceholders({
         source: 'yaml',
-        url: 'https://example.com/users/{{LIBRECHAT_USER_USERNAME}}/mcp',
+        url: 'https://example.com/users/{{Nashm_USER_USERNAME}}/mcp',
       }),
     ).toBe(true);
   });
@@ -611,7 +611,7 @@ describe('hasRuntimeUrlPlaceholders', () => {
       hasRuntimeUrlPlaceholders({
         source: 'user',
         dbId: 'server-123',
-        url: 'https://example.com/users/{{LIBRECHAT_USER_USERNAME}}/mcp',
+        url: 'https://example.com/users/{{Nashm_USER_USERNAME}}/mcp',
       }),
     ).toBe(false);
   });
@@ -622,7 +622,7 @@ describe('hasRuntimeBodyPlaceholders', () => {
     expect(
       hasRuntimeBodyPlaceholders({
         source: 'yaml',
-        url: 'https://example.com/conversations/{{LIBRECHAT_BODY_CONVERSATIONID}}/mcp',
+        url: 'https://example.com/conversations/{{Nashm_BODY_CONVERSATIONID}}/mcp',
       }),
     ).toBe(true);
 
@@ -630,7 +630,7 @@ describe('hasRuntimeBodyPlaceholders', () => {
       hasRuntimeBodyPlaceholders({
         source: 'config',
         headers: {
-          'X-Message': '{{LIBRECHAT_BODY_MESSAGEID}}',
+          'X-Message': '{{Nashm_BODY_MESSAGEID}}',
         },
       }),
     ).toBe(true);
@@ -641,7 +641,7 @@ describe('hasRuntimeBodyPlaceholders', () => {
       hasRuntimeBodyPlaceholders({
         source: 'user',
         dbId: 'server-123',
-        url: 'https://example.com/{{LIBRECHAT_BODY_MESSAGEID}}/mcp',
+        url: 'https://example.com/{{Nashm_BODY_MESSAGEID}}/mcp',
       }),
     ).toBe(false);
   });
@@ -650,10 +650,10 @@ describe('hasRuntimeBodyPlaceholders', () => {
 describe('getMissingRuntimeBodyPlaceholderFields', () => {
   const config = {
     source: 'yaml',
-    url: 'https://example.com/conversations/{{LIBRECHAT_BODY_CONVERSATIONID}}/mcp',
+    url: 'https://example.com/conversations/{{Nashm_BODY_CONVERSATIONID}}/mcp',
     headers: {
-      'X-Message': '{{LIBRECHAT_BODY_MESSAGEID}}',
-      'X-Parent': '{{LIBRECHAT_BODY_PARENTMESSAGEID}}',
+      'X-Message': '{{Nashm_BODY_MESSAGEID}}',
+      'X-Parent': '{{Nashm_BODY_PARENTMESSAGEID}}',
     },
   } as const;
 
@@ -679,7 +679,7 @@ describe('getMissingRuntimeBodyPlaceholderFields', () => {
       getMissingRuntimeBodyPlaceholderFields({
         source: 'user',
         dbId: 'server-123',
-        url: 'https://example.com/{{LIBRECHAT_BODY_MESSAGEID}}/mcp',
+        url: 'https://example.com/{{Nashm_BODY_MESSAGEID}}/mcp',
       }),
     ).toEqual([]);
   });
@@ -692,7 +692,7 @@ describe('requiresEphemeralUserConnection', () => {
         source: 'yaml',
         url: 'https://example.com/mcp',
         oauth_headers: {
-          'X-Message': '{{LIBRECHAT_BODY_MESSAGEID}}',
+          'X-Message': '{{Nashm_BODY_MESSAGEID}}',
         },
       }),
     ).toBe(true);
@@ -702,7 +702,7 @@ describe('requiresEphemeralUserConnection', () => {
     expect(
       requiresEphemeralUserConnection({
         source: 'yaml',
-        url: 'https://example.com/messages/{{LIBRECHAT_BODY_MESSAGEID}}/mcp',
+        url: 'https://example.com/messages/{{Nashm_BODY_MESSAGEID}}/mcp',
       }),
     ).toBe(true);
   });
@@ -712,7 +712,7 @@ describe('requiresEphemeralUserConnection', () => {
       requiresEphemeralUserConnection({
         source: 'config',
         env: {
-          GRAPH_TOKEN: '{{LIBRECHAT_GRAPH_ACCESS_TOKEN}}',
+          GRAPH_TOKEN: '{{Nashm_GRAPH_ACCESS_TOKEN}}',
         },
       }),
     ).toBe(false);
@@ -722,7 +722,7 @@ describe('requiresEphemeralUserConnection', () => {
     expect(
       requiresEphemeralUserConnection({
         source: 'yaml',
-        args: ['--id-token={{LIBRECHAT_OPENID_ID_TOKEN}}'],
+        args: ['--id-token={{Nashm_OPENID_ID_TOKEN}}'],
       }),
     ).toBe(false);
 
@@ -730,7 +730,7 @@ describe('requiresEphemeralUserConnection', () => {
       requiresEphemeralUserConnection({
         source: 'yaml',
         headers: {
-          Authorization: 'Bearer {{LIBRECHAT_OPENID_ACCESS_TOKEN}}',
+          Authorization: 'Bearer {{Nashm_OPENID_ACCESS_TOKEN}}',
         },
       }),
     ).toBe(false);
@@ -741,7 +741,7 @@ describe('requiresEphemeralUserConnection', () => {
       requiresEphemeralUserConnection({
         source: 'yaml',
         headers: {
-          'X-Message': '{{LIBRECHAT_BODY_MESSAGEID}}',
+          'X-Message': '{{Nashm_BODY_MESSAGEID}}',
         },
       }),
     ).toBe(true);

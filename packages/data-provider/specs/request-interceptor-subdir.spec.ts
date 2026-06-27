@@ -45,7 +45,7 @@ afterAll(() => {
 afterEach(() => {
   delete axios.defaults.headers.common['Authorization'];
   window.localStorage.clear();
-  delete (window as Window & { __librechatAuthRecovery?: unknown }).__librechatAuthRecovery;
+  delete (window as Window & { __NashmAuthRecovery?: unknown }).__NashmAuthRecovery;
   Object.defineProperty(window, 'location', {
     value: savedLocation,
     writable: true,

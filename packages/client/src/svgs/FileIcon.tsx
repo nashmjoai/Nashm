@@ -1,5 +1,5 @@
 import { JSX } from 'react/jsx-runtime';
-import type { TFile } from 'librechat-data-provider';
+import type { TFile } from 'nashm-data-provider';
 
 export default function FileIcon({
   file,

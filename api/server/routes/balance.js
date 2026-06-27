@@ -1,5 +1,5 @@
 const express = require('express');
-const { createSetBalanceConfig } = require('@librechat/api');
+const { createSetBalanceConfig } = require('@nashm/api');
 const router = express.Router();
 const controller = require('../controllers/Balance');
 const { requireJwtAuth } = require('../middleware/');

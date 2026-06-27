@@ -1,6 +1,6 @@
 const { nanoid } = require('nanoid');
 const { v4: uuidv4 } = require('uuid');
-const { logger } = require('@librechat/data-schemas');
+const { logger } = require('@nashm/data-schemas');
 const { Callback, ToolEndHandler, formatAgentMessages } = require('@librechat/agents');
 const {
   EModelEndpoint,
@@ -8,7 +8,7 @@ const {
   PermissionBits,
   hasPermissions,
   AgentCapabilities,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 const {
   createRun,
   applyContextToAgent,
@@ -46,7 +46,7 @@ const {
   sendResponsesErrorResponse,
   createResponsesEventHandlers,
   createAggregatorEventHandlers,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const {
   createResponsesToolEndCallback,
   buildSummarizationHandlers,
@@ -109,7 +109,7 @@ function createToolLoader(signal, definitionsOnly = true) {
 
 /**
  * Convert Open Responses input items to internal messages
- * @param {import('@librechat/api').InputItem[]} input
+ * @param {import('@nashm/api').InputItem[]} input
  * @returns {Array} Internal messages
  */
 function convertToInternalMessages(input) {
@@ -189,7 +189,7 @@ async function saveInputMessages(req, conversationId, inputMessages, agentId) {
  * @param {import('express').Request} req
  * @param {string} conversationId
  * @param {string} responseId
- * @param {import('@librechat/api').Response} response
+ * @param {import('@nashm/api').Response} response
  * @param {string} agentId
  * @returns {Promise<void>}
  */
@@ -473,7 +473,7 @@ const createResponse = async (req, res) => {
      * @type {Map<string, {
      *   agent: object,
      *   toolRegistry?: import('@librechat/agents').LCToolRegistry,
-     *   requestScopedConnections?: import('@librechat/api').RequestScopedMCPConnectionStore,
+     *   requestScopedConnections?: import('@nashm/api').RequestScopedMCPConnectionStore,
      *   userMCPAuthMap?: Record<string, Record<string, string>>,
      *   tool_resources?: object,
      *   actionsEnabled?: boolean,
@@ -629,7 +629,7 @@ const createResponse = async (req, res) => {
     /**
      * Inject manual + always-apply skill primes so the model sees SKILL.md
      * bodies for this turn — parity with AgentClient's chat path. The
-     * Responses API uses its own response-builder shape, so LibreChat-
+     * Responses API uses its own response-builder shape, so Nashm-
      * style card SSE events don't apply; only the message-context part
      * carries over.
      */
@@ -692,9 +692,9 @@ const createResponse = async (req, res) => {
       const collectedUsage = [];
 
       // Artifact promises for processing tool outputs
-      /** @type {Promise<import('librechat-data-provider').TAttachment | null>[]} */
+      /** @type {Promise<import('nashm-data-provider').TAttachment | null>[]} */
       const artifactPromises = [];
-      // Use Responses API-specific callback that emits librechat:attachment events
+      // Use Responses API-specific callback that emits Nashm:attachment events
       const toolEndCallback = createResponsesToolEndCallback({
         req,
         res,
@@ -879,7 +879,7 @@ const createResponse = async (req, res) => {
       // Collect usage for balance tracking
       const collectedUsage = [];
 
-      /** @type {Promise<import('librechat-data-provider').TAttachment | null>[]} */
+      /** @type {Promise<import('nashm-data-provider').TAttachment | null>[]} */
       const artifactPromises = [];
       const toolEndCallback = createToolEndCallback({ req, res, artifactPromises, streamId: null });
 
@@ -1106,7 +1106,7 @@ const listModels = async (req, res) => {
       id: agent.id,
       object: 'model',
       created: Math.floor(new Date(agent.createdAt).getTime() / 1000),
-      owned_by: agent.author ?? 'librechat',
+      owned_by: agent.author ?? 'Nashm',
       // Additional metadata
       name: agent.name,
       description: agent.description,
@@ -1132,7 +1132,7 @@ const listModels = async (req, res) => {
  * Get Response - GET /v1/responses/:id
  *
  * Retrieves a stored response by its ID.
- * The response ID maps to a conversationId in LibreChat's storage.
+ * The response ID maps to a conversationId in Nashm's storage.
  *
  * @param {import('express').Request} req
  * @param {import('express').Response} res

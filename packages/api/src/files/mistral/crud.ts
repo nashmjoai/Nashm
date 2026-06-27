@@ -1,14 +1,14 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import FormData from 'form-data';
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 import {
   FileSources,
   envVarRegex,
   extractEnvVariable,
   extractVariableName,
-} from 'librechat-data-provider';
-import type { TCustomConfig } from 'librechat-data-provider';
+} from 'nashm-data-provider';
+import type { TCustomConfig } from 'nashm-data-provider';
 import type { AxiosError, AxiosRequestConfig } from 'axios';
 import type {
   MistralFileUploadResponse,

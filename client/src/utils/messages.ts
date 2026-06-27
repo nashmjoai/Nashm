@@ -6,13 +6,13 @@ import {
   isEphemeralAgentId,
   appendAgentIdSuffix,
   encodeEphemeralAgentId,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type {
   TMessage,
   TConversation,
   TEndpointsConfig,
   TMessageContentParts,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type { QueryClient } from '@tanstack/react-query';
 import type { LocalizeFunction } from '~/common';
 

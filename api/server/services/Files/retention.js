@@ -1,8 +1,8 @@
 const {
   getRetentionExpiry: getRetentionExpiryWithDeps,
   getAgentFileRetentionExpiry: getAgentFileRetentionExpiryWithDeps,
-} = require('@librechat/api');
-const { logger, createTempChatExpirationDate } = require('@librechat/data-schemas');
+} = require('@nashm/api');
+const { logger, createTempChatExpirationDate } = require('@nashm/data-schemas');
 const db = require('~/models');
 
 const getRetentionDependencies = () => ({

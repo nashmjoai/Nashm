@@ -5,7 +5,7 @@
  * particularly for parallel agents (addedConvo) where multiple
  * models need their tokens spent.
  *
- * spendCollectedUsage delegates to recordCollectedUsage from @librechat/api,
+ * spendCollectedUsage delegates to recordCollectedUsage from @nashm/api,
  * passing pricing + bulkWriteOps deps, with context: 'abort'.
  * After spending, it clears the collectedUsage array to prevent double-spending
  * from the AgentClient finally block (which shares the same array reference).
@@ -20,7 +20,7 @@ const mockRecordCollectedUsage = jest
 const mockGetMultiplier = jest.fn().mockReturnValue(1);
 const mockGetCacheMultiplier = jest.fn().mockReturnValue(null);
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     debug: jest.fn(),
     error: jest.fn(),
@@ -29,7 +29,7 @@ jest.mock('@librechat/data-schemas', () => ({
   },
 }));
 
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   countTokens: jest.fn().mockResolvedValue(100),
   isEnabled: jest.fn().mockReturnValue(false),
   sendEvent: jest.fn(),
@@ -40,7 +40,7 @@ jest.mock('@librechat/api', () => ({
   sanitizeMessageForTransmit: jest.fn((msg) => msg),
 }));
 
-jest.mock('librechat-data-provider', () => ({
+jest.mock('nashm-data-provider', () => ({
   isAssistantsEndpoint: jest.fn().mockReturnValue(false),
   ErrorTypes: { INVALID_REQUEST: 'INVALID_REQUEST', NO_SYSTEM_MESSAGES: 'NO_SYSTEM_MESSAGES' },
 }));

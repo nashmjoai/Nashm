@@ -8,20 +8,20 @@ const mockGetMCPManager = jest.fn();
 const mockGetFlowStateManager = jest.fn();
 const mockGetMCPServersRegistry = jest.fn();
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: { error: jest.fn(), info: jest.fn(), warn: jest.fn() },
   getTenantId: jest.fn(),
   webSearchKeys: [],
 }));
 
-jest.mock('librechat-data-provider', () => ({
+jest.mock('nashm-data-provider', () => ({
   Tools: {},
   CacheKeys: { FLOWS: 'flows' },
   Constants: { mcp_delimiter: '_mcp_', mcp_prefix: 'mcp_' },
   FileSources: {},
 }));
 
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   MCPOAuthHandler: {
     generateFlowId: jest.fn((userId, serverName, tenantId) => {
       const flowId = `${userId}:${serverName}`;
@@ -86,8 +86,8 @@ jest.mock('~/cache', () => ({
   getLogStores: (...args) => mockGetLogStores(...args),
 }));
 
-const { logger, getTenantId } = require('@librechat/data-schemas');
-const { MCPTokenStorage, MCPOAuthHandler } = require('@librechat/api');
+const { logger, getTenantId } = require('@nashm/data-schemas');
+const { MCPTokenStorage, MCPOAuthHandler } = require('@nashm/api');
 const { updateUserPluginsController } = require('~/server/controllers/UserController');
 
 function createResponse() {

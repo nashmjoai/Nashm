@@ -1,6 +1,6 @@
 import { ShieldEllipsis } from 'lucide-react';
-import { Button, useToastContext } from '@librechat/client';
-import { Permissions, PermissionTypes } from 'librechat-data-provider';
+import { Button, useToastContext } from '@nashm/client';
+import { Permissions, PermissionTypes } from 'nashm-data-provider';
 import type { PermissionConfig } from '~/components/ui';
 import { useUpdateRemoteAgentsPermissionsMutation } from '~/data-provider';
 import { AdminSettingsDialog } from '~/components/ui';

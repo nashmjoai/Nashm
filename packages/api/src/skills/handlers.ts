@@ -1,10 +1,10 @@
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 import {
   ResourceType,
   AccessRoleIds,
   PrincipalType,
   PermissionBits,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type {
   TSkill,
   TSkillFile,
@@ -17,7 +17,7 @@ import type {
   TDeleteSkillFileResponse,
   TSkillConflictResponse,
   TSkillFileContentResponse,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type {
   ISkill,
   ISkillFile,
@@ -28,7 +28,7 @@ import type {
   ListSkillsByAccessResult,
   UpdateSkillResult,
   ValidationIssue,
-} from '@librechat/data-schemas';
+} from '@nashm/data-schemas';
 import type { Response } from 'express';
 import type { Types } from 'mongoose';
 import type { ServerRequest, StrategyFunctions } from '~/types';
@@ -46,7 +46,7 @@ type DuplicateKeyError = Error & { code?: number | string };
  * stay pure — no direct imports of mongoose, no direct filesystem I/O.
  */
 export interface SkillsHandlersDeps {
-  /** Skill CRUD — from `@librechat/data-schemas` `createMethods` output. */
+  /** Skill CRUD — from `@nashm/data-schemas` `createMethods` output. */
   createSkill: (data: CreateSkillInput) => Promise<CreateSkillResult>;
   getSkillById: (id: string | Types.ObjectId) => Promise<(ISkill & { _id: Types.ObjectId }) | null>;
   listSkillsByAccess: (params: {

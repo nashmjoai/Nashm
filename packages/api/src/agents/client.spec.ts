@@ -1,4 +1,4 @@
-import { ContentTypes } from 'librechat-data-provider';
+import { ContentTypes } from 'nashm-data-provider';
 import { prependFileContext, prependQuotes, type FormattedMessageWithContent } from './client';
 
 describe('prependFileContext', () => {

@@ -1,7 +1,7 @@
 const cookies = require('cookie');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
-const { logger } = require('@librechat/data-schemas');
+const { logger } = require('@nashm/data-schemas');
 const {
   isEnabled,
   tenantContextMiddleware,
@@ -11,7 +11,7 @@ const {
   formatAuthLogMessage,
   maybeRefreshCloudFrontAuthCookiesMiddleware,
   recordRumProxyRequest,
-} = require('@librechat/api');
+} = require('@nashm/api');
 
 const hasPassportStrategy = (strategy) =>
   typeof passport._strategy === 'function' && passport._strategy(strategy) != null;

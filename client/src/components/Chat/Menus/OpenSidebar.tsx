@@ -1,6 +1,6 @@
 import { startTransition } from 'react';
 import { useSetRecoilState } from 'recoil';
-import { TooltipAnchor, Button, Sidebar } from '@librechat/client';
+import { TooltipAnchor, Button, Sidebar } from '@nashm/client';
 import { useLocalize } from '~/hooks';
 import { cn } from '~/utils';
 import store from '~/store';

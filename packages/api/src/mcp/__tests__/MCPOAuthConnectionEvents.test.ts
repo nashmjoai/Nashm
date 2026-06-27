@@ -12,7 +12,7 @@ import { MCPConnectionFactory } from '~/mcp/MCPConnectionFactory';
 import { createOAuthMCPServer } from './helpers/oauthTestServer';
 import { MCPConnection } from '~/mcp/connection';
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     info: jest.fn(),
     warn: jest.fn(),

@@ -1,4 +1,4 @@
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 import { getSignedCookies } from '@aws-sdk/cloudfront-signer';
 import type { NextFunction, Response } from 'express';
 import { INLINE_AVATAR_PATH_PREFIX, INLINE_IMAGE_PATH_PREFIX } from '~/storage/constants';
@@ -14,7 +14,7 @@ const REQUIRED_CF_COOKIES = [
   'CloudFront-Key-Pair-Id',
 ] as const;
 
-export const CLOUDFRONT_SCOPE_COOKIE = 'LibreChat-CloudFront-Scope';
+export const CLOUDFRONT_SCOPE_COOKIE = 'Nashm-CloudFront-Scope';
 const unsafePolicySegmentPattern = /[?*[\]\s]/;
 
 export interface CloudFrontCookieScope {

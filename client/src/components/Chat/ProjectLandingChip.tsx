@@ -1,8 +1,8 @@
 import { useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Folder, X } from 'lucide-react';
-import { ControlCombobox, TooltipAnchor } from '@librechat/client';
-import type { TChatProject } from 'librechat-data-provider';
+import { ControlCombobox, TooltipAnchor } from '@nashm/client';
+import type { TChatProject } from 'nashm-data-provider';
 import type { OptionWithIcon } from '~/common';
 import { useProjectsInfiniteQuery } from '~/data-provider';
 import { useChatContext } from '~/Providers';

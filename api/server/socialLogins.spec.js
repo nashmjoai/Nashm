@@ -32,18 +32,18 @@ jest.mock('passport', () => ({
   use: (...args) => mockPassportUse(...args),
   session: (...args) => mockPassportSession(...args),
 }));
-jest.mock('librechat-data-provider', () => ({
+jest.mock('nashm-data-provider', () => ({
   CacheKeys: {
     OPENID_SESSION: 'openid-session',
     SAML_SESSION: 'saml-session',
   },
 }));
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   math: (...args) => mockMath(...args),
   isEnabled: (...args) => mockIsEnabled(...args),
   shouldUseSecureCookie: (...args) => mockShouldUseSecureCookie(...args),
 }));
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   DEFAULT_SESSION_EXPIRY: 900000,
   logger: { error: jest.fn(), info: jest.fn() },
 }));

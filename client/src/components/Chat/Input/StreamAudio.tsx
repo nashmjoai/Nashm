@@ -1,9 +1,9 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useCallback } from 'react';
-import { QueryKeys } from 'librechat-data-provider';
+import { QueryKeys } from 'nashm-data-provider';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import type { TMessage } from 'librechat-data-provider';
+import type { TMessage } from 'nashm-data-provider';
 import { useCustomAudioRef, MediaSourceAppender, usePauseGlobalAudio } from '~/hooks/Audio';
 import { useLatestMessage } from '~/hooks/Messages/useLatestMessage';
 import { getLatestText, logger } from '~/utils';

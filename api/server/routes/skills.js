@@ -9,15 +9,15 @@ const {
   getStorageMetadata,
   resolveRequestTenantId,
   restoreTenantContextFromReq,
-} = require('@librechat/api');
-const { isValidObjectIdString, logger } = require('@librechat/data-schemas');
+} = require('@nashm/api');
+const { isValidObjectIdString, logger } = require('@nashm/data-schemas');
 const {
   PermissionBits,
   PermissionTypes,
   Permissions,
   FileContext,
   mergeFileConfig,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 const {
   createSkill,
   getSkillById,

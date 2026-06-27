@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import type { TModelSpec } from 'librechat-data-provider';
+import type { TModelSpec } from 'nashm-data-provider';
 import { ModelSpecItem } from '../ModelSpecItem';
 
 const mockHandleSelectSpec = jest.fn();

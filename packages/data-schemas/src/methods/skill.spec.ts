@@ -7,7 +7,7 @@ import {
   AccessRoleIds,
   PrincipalType,
   PermissionBits,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import {
   validateSkillName,
   validateSkillDescription,
@@ -622,10 +622,10 @@ describe('Skill CRUD methods', () => {
   });
 
   it('findSkillBySourceIdentity searches only the requested tenant bucket', async () => {
-    const upstreamId = 'librechat-skills:skills/research';
+    const upstreamId = 'Nashm-skills:skills/research';
     const sourceMetadata = {
       provider: 'github',
-      sourceId: 'librechat-skills',
+      sourceId: 'Nashm-skills',
       upstreamId,
     };
     const author = new mongoose.Types.ObjectId();

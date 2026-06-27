@@ -1,9 +1,9 @@
 import { memo, useMemo, useState, useCallback, useRef, useId, useEffect } from 'react';
 import { useAtomValue } from 'jotai';
-import { Clipboard, CheckMark, TooltipAnchor } from '@librechat/client';
+import { Clipboard, CheckMark, TooltipAnchor } from '@nashm/client';
 import { ScrollText, ChevronDown, ChevronUp } from 'lucide-react';
 import type { MouseEvent, FocusEvent } from 'react';
-import type { SummaryContentPart } from 'librechat-data-provider';
+import type { SummaryContentPart } from 'nashm-data-provider';
 import { fontSizeAtom } from '~/store/fontSize';
 import { useMessageContext } from '~/Providers';
 import { useLocalize } from '~/hooks';

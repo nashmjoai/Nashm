@@ -1,6 +1,6 @@
-import { logger } from '@librechat/data-schemas';
-import { Constants } from 'librechat-data-provider';
-import type { JsonSchemaType } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
+import { Constants } from 'nashm-data-provider';
+import type { JsonSchemaType } from '@nashm/data-schemas';
 import type { MCPConnection } from '~/mcp/connection';
 import type * as t from '~/mcp/types';
 import {
@@ -162,10 +162,10 @@ export class MCPServerInspector {
   }
 
   /**
-   * Converts server tools to LibreChat-compatible tool functions format.
+   * Converts server tools to Nashm-compatible tool functions format.
    * @param serverName - The name of the server
    * @param connection - The MCP connection
-   * @returns Tool functions formatted for LibreChat
+   * @returns Tool functions formatted for Nashm
    */
   public static async getToolFunctions(
     serverName: string,

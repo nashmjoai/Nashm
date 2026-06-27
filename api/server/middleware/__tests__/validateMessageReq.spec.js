@@ -2,13 +2,13 @@ jest.mock('~/models', () => ({
   getConvo: jest.fn(),
 }));
 
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   GenerationJobManager: {
     getJob: jest.fn(),
   },
 }));
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     warn: jest.fn(),
   },
@@ -16,8 +16,8 @@ jest.mock('@librechat/data-schemas', () => ({
 
 const validateMessageReq = require('../validateMessageReq');
 const { getConvo } = require('~/models');
-const { GenerationJobManager } = require('@librechat/api');
-const { logger } = require('@librechat/data-schemas');
+const { GenerationJobManager } = require('@nashm/api');
+const { logger } = require('@nashm/data-schemas');
 
 function createResponse() {
   const res = {

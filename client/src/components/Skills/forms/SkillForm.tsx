@@ -2,14 +2,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { Info, AlertTriangle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
-import { Input, Button, Skeleton, TextareaAutosize, useToastContext } from '@librechat/client';
+import { Input, Button, Skeleton, TextareaAutosize, useToastContext } from '@nashm/client';
 import {
   InvocationMode,
   SKILL_NAME_PATTERN,
   SKILL_NAME_MAX_LENGTH,
   SKILL_DESCRIPTION_MAX_LENGTH,
-} from 'librechat-data-provider';
-import type { TSkill, TSkillWarning, TUpdateSkillPayload } from 'librechat-data-provider';
+} from 'nashm-data-provider';
+import type { TSkill, TSkillWarning, TUpdateSkillPayload } from 'nashm-data-provider';
 import { useGetSkillQuery, useUpdateSkillMutation } from '~/data-provider';
 import { useLocalize, useSkillPermissions } from '~/hooks';
 import SkillContentEditor from './SkillContentEditor';

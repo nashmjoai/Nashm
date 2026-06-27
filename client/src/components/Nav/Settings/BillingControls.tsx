@@ -1,4 +1,4 @@
-import type { TBalanceResponse } from 'librechat-data-provider';
+import type { TBalanceResponse } from 'nashm-data-provider';
 import AutoRefillSettings from '../SettingsTabs/Balance/AutoRefillSettings';
 import { useGetStartupConfig, useGetUserBalance } from '~/data-provider';
 import TokenCreditsItem from '../SettingsTabs/Balance/TokenCreditsItem';

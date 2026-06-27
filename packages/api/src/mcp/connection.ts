@@ -1,6 +1,6 @@
 import { isIP } from 'node:net';
 import { EventEmitter } from 'events';
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 import { fetch as undiciFetch, Agent, ProxyAgent } from 'undici';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js';
@@ -578,9 +578,9 @@ function getMCPProxyConfig(options: t.MCPOptions): MCPProxyConfig | undefined {
     return { type: 'explicit', proxyUrl: configuredProxy };
   }
 
-  const libreChatProxy = process.env.PROXY?.trim() ?? '';
-  if (libreChatProxy) {
-    return { type: 'explicit', proxyUrl: libreChatProxy };
+  const NashmProxy = process.env.PROXY?.trim() ?? '';
+  if (NashmProxy) {
+    return { type: 'explicit', proxyUrl: NashmProxy };
   }
 
   const httpProxy = getTrimmedEnv('http_proxy', 'HTTP_PROXY');
@@ -1249,7 +1249,7 @@ export class MCPConnection extends EventEmitter {
     }
     this.client = new Client(
       {
-        name: '@librechat/api-client',
+        name: '@nashm/api-client',
         version: '1.2.3',
       },
       {

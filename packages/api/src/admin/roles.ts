@@ -1,5 +1,5 @@
-import { PrincipalType, SystemRoles } from 'librechat-data-provider';
-import { logger, isValidObjectIdString, RoleConflictError } from '@librechat/data-schemas';
+import { PrincipalType, SystemRoles } from 'nashm-data-provider';
+import { logger, isValidObjectIdString, RoleConflictError } from '@nashm/data-schemas';
 import type {
   IRole,
   IUser,
@@ -8,7 +8,7 @@ import type {
   ISystemGrant,
   RecordAuditEntryInput,
   RecordAuditEntryOptions,
-} from '@librechat/data-schemas';
+} from '@nashm/data-schemas';
 import type { FilterQuery, Types } from 'mongoose';
 import type { Response } from 'express';
 import type { ServerRequest } from '~/types/http';

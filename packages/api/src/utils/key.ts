@@ -1,7 +1,7 @@
 import path from 'path';
 import axios from 'axios';
-import { ErrorTypes } from 'librechat-data-provider';
-import { logger } from '@librechat/data-schemas';
+import { ErrorTypes } from 'nashm-data-provider';
+import { logger } from '@nashm/data-schemas';
 import { readFileAsString } from './files';
 
 export interface GoogleServiceKey {

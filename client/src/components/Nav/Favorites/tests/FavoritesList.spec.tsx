@@ -4,10 +4,10 @@ import '@testing-library/jest-dom';
 import { RecoilRoot } from 'recoil';
 import { DndProvider } from 'react-dnd';
 import { BrowserRouter } from 'react-router-dom';
-import { dataService } from 'librechat-data-provider';
+import { dataService } from 'nashm-data-provider';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import type { Agent } from 'librechat-data-provider';
+import type { Agent } from 'nashm-data-provider';
 
 // Mock store before importing FavoritesList
 jest.mock('~/store', () => {
@@ -37,8 +37,8 @@ type FavoriteItem = {
 };
 
 // Mock dataService
-jest.mock('librechat-data-provider', () => ({
-  ...jest.requireActual('librechat-data-provider'),
+jest.mock('nashm-data-provider', () => ({
+  ...jest.requireActual('nashm-data-provider'),
   dataService: {
     getAgentById: jest.fn(),
   },

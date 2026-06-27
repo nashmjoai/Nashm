@@ -9,8 +9,8 @@ import {
   OGDialogHeader,
   OGDialogTitle,
   Progress,
-} from '@librechat/client';
-import type { TUser, TVerify2FARequest } from 'librechat-data-provider';
+} from '@nashm/client';
+import type { TUser, TVerify2FARequest } from 'nashm-data-provider';
 import type { Variants } from 'framer-motion';
 import {
   useConfirmTwoFactorMutation,

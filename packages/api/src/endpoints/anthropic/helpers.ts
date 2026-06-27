@@ -1,4 +1,4 @@
-import { logger } from '@librechat/data-schemas';
+import { logger } from '@nashm/data-schemas';
 import { AnthropicClientOptions } from '@librechat/agents';
 import {
   EModelEndpoint,
@@ -8,7 +8,7 @@ import {
   isMythosClassModel,
   resolveThinkingDisplay,
   supportsAdaptiveThinking,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import { matchModelName } from '~/utils/tokens';
 
 const FINE_GRAINED_TOOL_STREAMING_BETA = 'fine-grained-tool-streaming-2025-05-14';
@@ -103,7 +103,7 @@ function configureReasoning(
     /**
      * For Opus 4.7+, Anthropic omits thinking content from responses by
      * default. Resolver returns `'summarized'` for those models (so the
-     * LibreChat "Thoughts" UI keeps working) and leaves the field off for
+     * Nashm "Thoughts" UI keeps working) and leaves the field off for
      * older adaptive models, while honoring an explicit user choice.
      *
      * https://platform.claude.com/docs/en/about-claude/models/whats-new-claude-4-7#thinking-content-omitted-by-default

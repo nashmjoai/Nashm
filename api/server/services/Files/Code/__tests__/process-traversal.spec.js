@@ -1,6 +1,6 @@
 jest.mock('uuid', () => ({ v4: jest.fn(() => 'mock-uuid') }));
 
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: { warn: jest.fn(), debug: jest.fn(), error: jest.fn() },
 }));
 
@@ -16,7 +16,7 @@ const mockAxios = jest.fn().mockResolvedValue({
 });
 mockAxios.post = jest.fn();
 
-jest.mock('@librechat/api', () => {
+jest.mock('@nashm/api', () => {
   const http = require('http');
   const https = require('https');
   return {
@@ -55,8 +55,8 @@ jest.mock('@librechat/api', () => {
   };
 });
 
-jest.mock('librechat-data-provider', () => ({
-  ...jest.requireActual('librechat-data-provider'),
+jest.mock('nashm-data-provider', () => ({
+  ...jest.requireActual('nashm-data-provider'),
   mergeFileConfig: jest.fn(() => ({ serverFileSizeLimit: 100 * 1024 * 1024 })),
   getEndpointFileConfig: jest.fn(() => ({
     fileSizeLimit: 100 * 1024 * 1024,

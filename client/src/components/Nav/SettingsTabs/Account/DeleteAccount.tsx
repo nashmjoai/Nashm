@@ -15,8 +15,8 @@ import {
   Button,
   Label,
   Input,
-} from '@librechat/client';
-import type { TDeleteUserRequest } from 'librechat-data-provider';
+} from '@nashm/client';
+import type { TDeleteUserRequest } from 'nashm-data-provider';
 import { useDeleteUserMutation } from '~/data-provider';
 import { useAuthContext } from '~/hooks/AuthContext';
 import { LocalizeFunction } from '~/common';

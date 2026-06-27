@@ -1,5 +1,5 @@
-import { PrincipalType, PrincipalModel } from 'librechat-data-provider';
-import type { TCustomConfig } from 'librechat-data-provider';
+import { PrincipalType, PrincipalModel } from 'nashm-data-provider';
+import type { TCustomConfig } from 'nashm-data-provider';
 import type { Document, Types } from 'mongoose';
 
 /**
@@ -16,7 +16,7 @@ export type Config = {
   principalModel: PrincipalModel;
   /** Priority level for determining merge order (higher = more specific) */
   priority: number;
-  /** Configuration overrides matching librechat.yaml structure */
+  /** Configuration overrides matching Nashm.yaml structure */
   overrides: Partial<TCustomConfig>;
   /** Dot-paths that suppress inherited config values during resolution */
   tombstones?: string[];

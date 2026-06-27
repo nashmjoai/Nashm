@@ -1,4 +1,4 @@
-const { logger, redactMessage } = require('@librechat/data-schemas');
+const { logger, redactMessage } = require('@nashm/data-schemas');
 const { tool: toolFn, DynamicStructuredTool } = require('@librechat/agents/langchain/tools');
 const {
   sleep,
@@ -28,7 +28,7 @@ const {
   buildMCPAuthRunStepDeltaEvent,
   buildMCPAuthRunStepCompletedEvent,
   isFileAuthoringToolDefinition,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const {
   Time,
   Tools,
@@ -49,7 +49,7 @@ const {
   actionDomainSeparator,
   defaultAgentCapabilities,
   validateAndParseOpenAPISpec,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 const {
   createActionTool,
   legacyDomainEncode,
@@ -506,7 +506,7 @@ async function processRequiredActions(client, requiredActions) {
  *   hasDeferredTools?: boolean;
  * }>} The agent tools and registry.
  */
-/** Native LibreChat tools that are not in the manifest */
+/** Native Nashm tools that are not in the manifest */
 const nativeTools = new Set([Tools.execute_code, Tools.file_search, Tools.web_search]);
 
 /** Checks if a tool name is a known built-in tool */
@@ -527,9 +527,9 @@ const isBuiltInTool = (toolName) =>
  * @param {Object} params.agent - The agent configuration
  * @param {string|null} [params.streamId] - Stream ID for resumable mode
  * @returns {Promise<{
- *   toolDefinitions?: import('@librechat/api').LCTool[];
- *   toolRegistry?: Map<string, import('@librechat/api').LCTool>;
- *   mcpAvailableTools?: Record<string, import('@librechat/api').LCAvailableTools>;
+ *   toolDefinitions?: import('@nashm/api').LCTool[];
+ *   toolRegistry?: Map<string, import('@nashm/api').LCTool>;
+ *   mcpAvailableTools?: Record<string, import('@nashm/api').LCAvailableTools>;
  *   userMCPAuthMap?: Record<string, Record<string, string>>;
  *   hasDeferredTools?: boolean;
  * }>}
@@ -605,7 +605,7 @@ async function loadToolDefinitionsWrapper({ req, res, agent, streamId = null, to
   const emittedOAuthStarts = new Map();
   const oauthToolCallIds = new Map();
   const oauthStepIndexes = new Map();
-  /** @type {Record<string, import('@librechat/api').LCAvailableTools>} */
+  /** @type {Record<string, import('@nashm/api').LCAvailableTools>} */
   const mcpAvailableTools = {};
   const requestScopedConnections = getMCPRequestContext(req, res);
   const rememberMCPAvailableTools = (serverName, availableTools) => {
@@ -818,7 +818,7 @@ async function loadToolDefinitionsWrapper({ req, res, agent, streamId = null, to
       if (!isDomainAllowed) {
         logger.warn(
           `[Actions] Domain "${action.metadata.domain}" not in allowedDomains. ` +
-            `Add it to librechat.yaml actions.allowedDomains to enable this action.`,
+            `Add it to Nashm.yaml actions.allowedDomains to enable this action.`,
         );
         continue;
       }
@@ -1418,8 +1418,8 @@ async function loadAgentTools({
  * @param {Object} params.agent - The agent object
  * @param {string[]} params.toolNames - Names of tools to load
  * @param {Map} [params.toolRegistry] - Tool registry
- * @param {Record<string, import('@librechat/api').LCAvailableTools>} [params.mcpAvailableTools] - Run-scoped MCP tool definitions
- * @param {import('@librechat/api').RequestScopedMCPConnectionStore} [params.requestScopedConnections] - Run-scoped MCP connections
+ * @param {Record<string, import('@nashm/api').LCAvailableTools>} [params.mcpAvailableTools] - Run-scoped MCP tool definitions
+ * @param {import('@nashm/api').RequestScopedMCPConnectionStore} [params.requestScopedConnections] - Run-scoped MCP connections
  * @param {Record<string, Record<string, string>>} [params.userMCPAuthMap] - User MCP auth map
  * @param {Object} [params.tool_resources] - Tool resources
  * @param {string|null} [params.streamId] - Stream ID for web search callbacks
@@ -1483,7 +1483,7 @@ async function loadToolsForExecution({
     configurable.toolRegistry = toolRegistry;
     try {
       /**
-       * LibreChat threads per-request Code API auth through the agents
+       * Nashm threads per-request Code API auth through the agents
        * library so PTC calls share the same managed auth context.
        */
       for (const name of ptcToolNames) {
@@ -1659,7 +1659,7 @@ async function loadActionToolsForExecution({
     if (!isDomainAllowed) {
       logger.warn(
         `[Actions] Domain "${action.metadata.domain}" not in allowedDomains. ` +
-          `Add it to librechat.yaml actions.allowedDomains to enable this action.`,
+          `Add it to Nashm.yaml actions.allowedDomains to enable this action.`,
       );
       continue;
     }

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { TriangleAlert } from 'lucide-react';
-import { Button, Label, SecretInput } from '@librechat/client';
-import type { TAgentApiKeyCreateResponse } from 'librechat-data-provider';
+import { Button, Label, SecretInput } from '@nashm/client';
+import type { TAgentApiKeyCreateResponse } from 'nashm-data-provider';
 import CopyButton from '~/components/Messages/Content/CopyButton';
 import { useLocalize, useCopyToClipboard } from '~/hooks';
 

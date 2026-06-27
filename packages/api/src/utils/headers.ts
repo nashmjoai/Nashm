@@ -1,5 +1,5 @@
 import type { AnthropicClientOptions } from '@librechat/agents';
-import type { IUser } from '@librechat/data-schemas';
+import type { IUser } from '@nashm/data-schemas';
 import type { RequestBody, RunLLMConfig } from '~/types';
 import { resolveHeaders } from './env';
 
@@ -87,7 +87,7 @@ const resolvedHeaderMaps = new WeakSet<object>();
  * expansion.
  *
  * Resolution runs at request time so request-body placeholders (e.g.
- * `{{LIBRECHAT_BODY_CONVERSATIONID}}`) resolve against the live request. It is a
+ * `{{Nashm_BODY_CONVERSATIONID}}`) resolve against the live request. It is a
  * no-op for header values without placeholders, and idempotent under config reuse.
  */
 export function resolveConfigHeaders({

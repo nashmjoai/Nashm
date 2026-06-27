@@ -1,4 +1,4 @@
-name: Publish `@librechat/data-schemas` to NPM
+﻿name: Publish `@nashm/data-schemas` to NPM
 
 on:
   push:
@@ -40,7 +40,7 @@ jobs:
         working-directory: packages/data-schemas
         run: |
           PACKAGE_VERSION=$(node -p "require('./package.json').version")
-          PUBLISHED_VERSION=$(npm view @librechat/data-schemas version 2>/dev/null || echo "0.0.0")
+          PUBLISHED_VERSION=$(npm view @nashm/data-schemas version 2>/dev/null || echo "0.0.0")
           if [ "$PACKAGE_VERSION" = "$PUBLISHED_VERSION" ]; then
             echo "No version change, skipping publish"
             echo "skip=true" >> $GITHUB_OUTPUT
@@ -60,7 +60,7 @@ jobs:
         if: steps.check.outputs.skip != 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: librechat-data-schemas-package
+          name: Nashm-data-schemas-package
           path: npm-package/*.tgz
           if-no-files-found: error
           retention-days: 2
@@ -86,7 +86,7 @@ jobs:
       - name: Download package
         uses: actions/download-artifact@v4
         with:
-          name: librechat-data-schemas-package
+          name: Nashm-data-schemas-package
           path: npm-package
 
       - name: Publish

@@ -9,13 +9,13 @@ import {
   marketplacePermissionsSchema,
   peoplePickerPermissionsSchema,
   remoteAgentsPermissionsSchema,
-} from 'librechat-data-provider';
+} from 'nashm-data-provider';
 import type {
   QueryObserverResult,
   UseMutationResult,
   UseQueryOptions,
 } from '@tanstack/react-query';
-import type * as t from 'librechat-data-provider';
+import type * as t from 'nashm-data-provider';
 
 export const useGetRole = (
   roleName: string,

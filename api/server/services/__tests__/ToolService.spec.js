@@ -6,7 +6,7 @@ const {
   actionDelimiter,
   AgentCapabilities,
   defaultAgentCapabilities,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 
 const mockGetEndpointsConfig = jest.fn();
 const mockGetMCPServerTools = jest.fn();
@@ -21,8 +21,8 @@ jest.mock('~/server/services/Config', () => ({
 
 const mockLoadToolDefinitions = jest.fn();
 const mockGetUserMCPAuthMap = jest.fn();
-jest.mock('@librechat/api', () => ({
-  ...jest.requireActual('@librechat/api'),
+jest.mock('@nashm/api', () => ({
+  ...jest.requireActual('@nashm/api'),
   loadToolDefinitions: (...args) => mockLoadToolDefinitions(...args),
   getUserMCPAuthMap: (...args) => mockGetUserMCPAuthMap(...args),
   sendEvent: (...args) => mockSendEvent(...args),
@@ -101,7 +101,7 @@ const {
   resolveAgentCapabilities,
 } = require('../ToolService');
 const { reinitMCPServer } = require('~/server/services/Tools/mcp');
-const { PENDING_STALE_MS } = require('@librechat/api');
+const { PENDING_STALE_MS } = require('@nashm/api');
 
 function createMockReq(capabilities) {
   return {
@@ -434,7 +434,7 @@ describe('ToolService - Action Capability Gating', () => {
       mockGetEndpointsConfig.mockResolvedValue(createEndpointsConfig(capabilities));
       mockGetServerConfig.mockResolvedValue({
         type: 'streamable-http',
-        url: 'https://demo.librechat.ai/mcp',
+        url: 'https://demo.Nashm.ai/mcp',
         requiresOAuth: true,
       });
       mockGetMCPServerTools.mockResolvedValue({
@@ -517,7 +517,7 @@ describe('ToolService - Action Capability Gating', () => {
       mockGetEndpointsConfig.mockResolvedValue(createEndpointsConfig(capabilities));
       mockGetServerConfig.mockResolvedValue({
         type: 'streamable-http',
-        url: 'https://demo.librechat.ai/mcp',
+        url: 'https://demo.Nashm.ai/mcp',
         requiresOAuth: true,
       });
       mockGetMCPServerTools.mockResolvedValue(null);
@@ -685,7 +685,7 @@ describe('ToolService - Action Capability Gating', () => {
       mockGetEndpointsConfig.mockResolvedValue(createEndpointsConfig(capabilities));
       mockGetServerConfig.mockResolvedValue({
         type: 'streamable-http',
-        url: 'https://demo.librechat.ai/mcp',
+        url: 'https://demo.Nashm.ai/mcp',
         requiresOAuth: true,
       });
       mockGetMCPServerTools.mockResolvedValue(null);
@@ -737,7 +737,7 @@ describe('ToolService - Action Capability Gating', () => {
       mockGetEndpointsConfig.mockResolvedValue(createEndpointsConfig(capabilities));
       mockGetServerConfig.mockResolvedValue({
         type: 'streamable-http',
-        url: 'https://demo.librechat.ai/messages/{{LIBRECHAT_BODY_MESSAGEID}}/mcp',
+        url: 'https://demo.Nashm.ai/messages/{{Nashm_BODY_MESSAGEID}}/mcp',
         source: 'yaml',
       });
       mockGetMCPServerTools.mockResolvedValue(null);
@@ -768,7 +768,7 @@ describe('ToolService - Action Capability Gating', () => {
         req.user.id,
         serverName,
         expect.objectContaining({
-          url: expect.stringContaining('LIBRECHAT_BODY_MESSAGEID'),
+          url: expect.stringContaining('Nashm_BODY_MESSAGEID'),
         }),
       );
     });
@@ -792,7 +792,7 @@ describe('ToolService - Action Capability Gating', () => {
       mockGetEndpointsConfig.mockResolvedValue(createEndpointsConfig(capabilities));
       mockGetServerConfig.mockResolvedValue({
         type: 'streamable-http',
-        url: 'https://mcp.example.com/{{LIBRECHAT_BODY_MESSAGEID}}/mcp',
+        url: 'https://mcp.example.com/{{Nashm_BODY_MESSAGEID}}/mcp',
         source: 'yaml',
       });
       mockGetMCPServerTools.mockResolvedValue(null);
@@ -819,7 +819,7 @@ describe('ToolService - Action Capability Gating', () => {
         req.user.id,
         serverName,
         expect.objectContaining({
-          url: expect.stringContaining('LIBRECHAT_BODY_MESSAGEID'),
+          url: expect.stringContaining('Nashm_BODY_MESSAGEID'),
         }),
       );
     });
@@ -835,7 +835,7 @@ describe('ToolService - Action Capability Gating', () => {
       mockGetEndpointsConfig.mockResolvedValue(createEndpointsConfig(capabilities));
       mockGetServerConfig.mockResolvedValue({
         type: 'streamable-http',
-        url: 'https://demo.librechat.ai/mcp',
+        url: 'https://demo.Nashm.ai/mcp',
         requiresOAuth: true,
       });
       mockGetMCPServerTools.mockResolvedValue(null);

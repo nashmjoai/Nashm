@@ -1,5 +1,5 @@
-import { Constants, LocalStorageKeys } from 'librechat-data-provider';
-import type { TModelSpec, TEphemeralAgent } from 'librechat-data-provider';
+import { Constants, LocalStorageKeys } from 'nashm-data-provider';
+import type { TModelSpec, TEphemeralAgent } from 'nashm-data-provider';
 import { applyModelSpecEphemeralAgent } from '../endpoints';
 import { setTimestamp } from '../timestamps';
 

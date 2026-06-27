@@ -7,7 +7,7 @@ const mockUseHasAccess = jest.fn((..._args: unknown[]) => true);
 const mockUseMediaQuery = jest.fn((_query: string) => false);
 
 jest.mock(
-  'librechat-data-provider',
+  'nashm-data-provider',
   () => ({
     PermissionTypes: { SKILLS: 'skills' },
     Permissions: { USE: 'use', CREATE: 'create' },
@@ -16,7 +16,7 @@ jest.mock(
 );
 
 jest.mock(
-  '@librechat/client',
+  '@nashm/client',
   () => ({
     Spinner: () => <div data-testid="spinner" />,
     useMediaQuery: (query: string) => mockUseMediaQuery(query),

@@ -1,5 +1,5 @@
 import React, { memo, useState } from 'react';
-import { ControlCombobox } from '@librechat/client';
+import { ControlCombobox } from '@nashm/client';
 import {
   useWatch,
   FieldPath,

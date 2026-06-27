@@ -1,7 +1,7 @@
 import { memo, useMemo, useRef, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { AttachmentIcon } from '@librechat/client';
-import { EToolResources, EModelEndpoint, AgentCapabilities } from 'librechat-data-provider';
+import { AttachmentIcon } from '@nashm/client';
+import { EToolResources, EModelEndpoint, AgentCapabilities } from 'nashm-data-provider';
 import type { ExtendedFile, AgentForm } from '~/common';
 import { useFileHandlingNoChatContext } from '~/hooks/Files/useFileHandling';
 import { useAgentFileConfig, useLocalize, useLazyEffect } from '~/hooks';

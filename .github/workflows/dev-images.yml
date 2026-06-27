@@ -1,4 +1,4 @@
-name: Docker Dev Images Build
+﻿name: Docker Dev Images Build
 
 on:
   workflow_dispatch:
@@ -27,10 +27,10 @@ jobs:
         include:
           - target: api-build
             file: Dockerfile.multi
-            image_name: librechat-dev-api
+            image_name: Nashm-dev-api
           - target: node
             file: Dockerfile
-            image_name: librechat-dev
+            image_name: Nashm-dev
 
     steps:
       # Check out the repository

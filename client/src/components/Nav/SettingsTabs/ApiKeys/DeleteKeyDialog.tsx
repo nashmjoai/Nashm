@@ -1,5 +1,5 @@
-import { useDeleteAgentApiKeyMutation } from 'librechat-data-provider/react-query';
-import { Spinner, OGDialog, OGDialogTemplate, useToastContext } from '@librechat/client';
+import { useDeleteAgentApiKeyMutation } from 'nashm-data-provider/react-query';
+import { Spinner, OGDialog, OGDialogTemplate, useToastContext } from '@nashm/client';
 import type { RefObject } from 'react';
 import { useLocalize } from '~/hooks';
 

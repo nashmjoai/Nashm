@@ -3,12 +3,12 @@ import '@testing-library/jest-dom/extend-expect';
 import {
   useGetAgentApiKeysQuery,
   useDeleteAgentApiKeyMutation,
-} from 'librechat-data-provider/react-query';
+} from 'nashm-data-provider/react-query';
 import { render, fireEvent } from 'test/layout-test-utils';
 import List from '../List';
 
-jest.mock('librechat-data-provider/react-query', () => ({
-  ...jest.requireActual('librechat-data-provider/react-query'),
+jest.mock('nashm-data-provider/react-query', () => ({
+  ...jest.requireActual('nashm-data-provider/react-query'),
   useGetAgentApiKeysQuery: jest.fn(),
   useDeleteAgentApiKeyMutation: jest.fn(),
 }));

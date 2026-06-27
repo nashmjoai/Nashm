@@ -1,11 +1,11 @@
-import { createMethods } from '@librechat/data-schemas';
-import { ResourceType, PermissionBits, hasPermissions } from 'librechat-data-provider';
+import { createMethods } from '@nashm/data-schemas';
+import { ResourceType, PermissionBits, hasPermissions } from 'nashm-data-provider';
 import type {
   AgentApiKeyListItem,
   AgentApiKeyCreateResult,
   AllMethods,
   IUser,
-} from '@librechat/data-schemas';
+} from '@nashm/data-schemas';
 import type { Types } from 'mongoose';
 
 export interface ApiKeyServiceDependencies {

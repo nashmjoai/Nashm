@@ -1,5 +1,5 @@
-import { imageExtRegex } from 'librechat-data-provider';
-import type { TAttachment, TAttachmentMetadata, TFile } from 'librechat-data-provider';
+import { imageExtRegex } from 'nashm-data-provider';
+import type { TAttachment, TAttachmentMetadata, TFile } from 'nashm-data-provider';
 import type { ToolArtifactType } from '~/utils/artifacts';
 import { detectArtifactTypeFromFile } from '~/utils/artifacts';
 

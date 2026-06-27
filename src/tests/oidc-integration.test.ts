@@ -8,11 +8,11 @@ import {
   type OpenIDTokenInfo,
 } from '../packages/api/src/utils/oidc';
 import { processMCPEnv, resolveHeaders } from '../packages/api/src/utils/env';
-import type { TUser } from 'librechat-data-provider';
-import type { IUser } from '@librechat/data-schemas';
+import type { TUser } from 'nashm-data-provider';
+import type { IUser } from '@nashm/data-schemas';
 
 // Mock logger to avoid console output during tests
-jest.mock('@librechat/data-schemas', () => ({
+jest.mock('@nashm/data-schemas', () => ({
   logger: {
     error: jest.fn(),
     warn: jest.fn(),
@@ -164,19 +164,19 @@ describe('OpenID Connect Federated Provider Token Integration', () => {
     };
 
     it('should replace OpenID Connect token placeholders', () => {
-      const template = 'Bearer {{LIBRECHAT_OPENID_TOKEN}}';
+      const template = 'Bearer {{Nashm_OPENID_TOKEN}}';
       const result = processOpenIDPlaceholders(template, tokenInfo);
       expect(result).toBe('Bearer cognito-access-token-123');
     });
 
     it('should replace specific OpenID Connect placeholders', () => {
       const template = `
-        Access: {{LIBRECHAT_OPENID_ACCESS_TOKEN}}
-        ID: {{LIBRECHAT_OPENID_ID_TOKEN}}
-        User: {{LIBRECHAT_OPENID_USER_ID}}
-        Email: {{LIBRECHAT_OPENID_USER_EMAIL}}
-        Name: {{LIBRECHAT_OPENID_USER_NAME}}
-        Expires: {{LIBRECHAT_OPENID_EXPIRES_AT}}
+        Access: {{Nashm_OPENID_ACCESS_TOKEN}}
+        ID: {{Nashm_OPENID_ID_TOKEN}}
+        User: {{Nashm_OPENID_USER_ID}}
+        Email: {{Nashm_OPENID_USER_EMAIL}}
+        Name: {{Nashm_OPENID_USER_NAME}}
+        Expires: {{Nashm_OPENID_EXPIRES_AT}}
       `;
 
       const result = processOpenIDPlaceholders(template, tokenInfo);
@@ -195,14 +195,14 @@ describe('OpenID Connect Federated Provider Token Integration', () => {
         userId: 'user-123',
       };
 
-      const template = 'Token: {{LIBRECHAT_OPENID_TOKEN}}, Email: {{LIBRECHAT_OPENID_USER_EMAIL}}';
+      const template = 'Token: {{Nashm_OPENID_TOKEN}}, Email: {{Nashm_OPENID_USER_EMAIL}}';
       const result = processOpenIDPlaceholders(template, partialTokenInfo);
 
       expect(result).toBe('Token: partial-cognito-token, Email: ');
     });
 
     it('should return original value for null token info', () => {
-      const template = 'Bearer {{LIBRECHAT_OPENID_TOKEN}}';
+      const template = 'Bearer {{Nashm_OPENID_TOKEN}}';
       const result = processOpenIDPlaceholders(template, null);
       expect(result).toBe(template);
     });
@@ -273,9 +273,9 @@ describe('OpenID Connect Federated Provider Token Integration', () => {
   describe('Integration with resolveHeaders', () => {
     it('should resolve OpenID Connect placeholders in headers for Cognito', () => {
       const headers = {
-        Authorization: '{{LIBRECHAT_OPENID_TOKEN}}',
-        'X-User-ID': '{{LIBRECHAT_OPENID_USER_ID}}',
-        'X-User-Email': '{{LIBRECHAT_OPENID_USER_EMAIL}}',
+        Authorization: '{{Nashm_OPENID_TOKEN}}',
+        'X-User-ID': '{{Nashm_OPENID_USER_ID}}',
+        'X-User-Email': '{{Nashm_OPENID_USER_EMAIL}}',
       };
 
       const resolvedHeaders = resolveHeaders({
@@ -290,7 +290,7 @@ describe('OpenID Connect Federated Provider Token Integration', () => {
 
     it('should work with Bearer token format for Cognito', () => {
       const headers = {
-        Authorization: 'Bearer {{LIBRECHAT_OPENID_TOKEN}}',
+        Authorization: 'Bearer {{Nashm_OPENID_TOKEN}}',
       };
 
       const resolvedHeaders = resolveHeaders({
@@ -303,8 +303,8 @@ describe('OpenID Connect Federated Provider Token Integration', () => {
 
     it('should work with specific access token placeholder', () => {
       const headers = {
-        Authorization: 'Bearer {{LIBRECHAT_OPENID_ACCESS_TOKEN}}',
-        'X-Cognito-ID-Token': '{{LIBRECHAT_OPENID_ID_TOKEN}}',
+        Authorization: 'Bearer {{Nashm_OPENID_ACCESS_TOKEN}}',
+        'X-Cognito-ID-Token': '{{Nashm_OPENID_ID_TOKEN}}',
       };
 
       const resolvedHeaders = resolveHeaders({
@@ -325,9 +325,9 @@ describe('OpenID Connect Federated Provider Token Integration', () => {
         command: 'node',
         args: ['server.js'],
         env: {
-          COGNITO_ACCESS_TOKEN: '{{LIBRECHAT_OPENID_TOKEN}}',
-          USER_ID: '{{LIBRECHAT_OPENID_USER_ID}}',
-          USER_EMAIL: '{{LIBRECHAT_OPENID_USER_EMAIL}}',
+          COGNITO_ACCESS_TOKEN: '{{Nashm_OPENID_TOKEN}}',
+          USER_ID: '{{Nashm_OPENID_USER_ID}}',
+          USER_EMAIL: '{{Nashm_OPENID_USER_EMAIL}}',
         },
       };
 
@@ -346,9 +346,9 @@ describe('OpenID Connect Federated Provider Token Integration', () => {
         type: 'sse' as const,
         url: 'https://api.example.com/mcp',
         headers: {
-          Authorization: 'Bearer {{LIBRECHAT_OPENID_ACCESS_TOKEN}}',
-          'X-Cognito-User-Info': '{{LIBRECHAT_OPENID_USER_EMAIL}}',
-          'X-Cognito-ID-Token': '{{LIBRECHAT_OPENID_ID_TOKEN}}',
+          Authorization: 'Bearer {{Nashm_OPENID_ACCESS_TOKEN}}',
+          'X-Cognito-User-Info': '{{Nashm_OPENID_USER_EMAIL}}',
+          'X-Cognito-ID-Token': '{{Nashm_OPENID_ID_TOKEN}}',
         },
       };
 
@@ -369,9 +369,9 @@ describe('OpenID Connect Federated Provider Token Integration', () => {
         command: 'node',
         args: ['aws-mcp-server.js'],
         env: {
-          AWS_COGNITO_TOKEN: '{{LIBRECHAT_OPENID_ACCESS_TOKEN}}',
-          AWS_COGNITO_ID_TOKEN: '{{LIBRECHAT_OPENID_ID_TOKEN}}',
-          COGNITO_USER_SUB: '{{LIBRECHAT_OPENID_USER_ID}}',
+          AWS_COGNITO_TOKEN: '{{Nashm_OPENID_ACCESS_TOKEN}}',
+          AWS_COGNITO_ID_TOKEN: '{{Nashm_OPENID_ID_TOKEN}}',
+          COGNITO_USER_SUB: '{{Nashm_OPENID_USER_ID}}',
         },
       };
 
@@ -391,7 +391,7 @@ describe('OpenID Connect Federated Provider Token Integration', () => {
   describe('Security and Edge Cases', () => {
     it('should not process OpenID Connect placeholders for expired tokens', () => {
       const headers = {
-        Authorization: 'Bearer {{LIBRECHAT_OPENID_TOKEN}}',
+        Authorization: 'Bearer {{Nashm_OPENID_TOKEN}}',
       };
 
       const resolvedHeaders = resolveHeaders({
@@ -400,7 +400,7 @@ describe('OpenID Connect Federated Provider Token Integration', () => {
       });
 
       // Should not replace placeholder if token is expired
-      expect(resolvedHeaders['Authorization']).toBe('Bearer {{LIBRECHAT_OPENID_TOKEN}}');
+      expect(resolvedHeaders['Authorization']).toBe('Bearer {{Nashm_OPENID_TOKEN}}');
     });
 
     it('should handle malformed federated token data gracefully', () => {
@@ -412,7 +412,7 @@ describe('OpenID Connect Federated Provider Token Integration', () => {
       };
 
       const headers = {
-        Authorization: 'Bearer {{LIBRECHAT_OPENID_TOKEN}}',
+        Authorization: 'Bearer {{Nashm_OPENID_TOKEN}}',
       };
 
       const resolvedHeaders = resolveHeaders({
@@ -421,12 +421,12 @@ describe('OpenID Connect Federated Provider Token Integration', () => {
       });
 
       // Should not replace placeholder if token extraction fails
-      expect(resolvedHeaders['Authorization']).toBe('Bearer {{LIBRECHAT_OPENID_TOKEN}}');
+      expect(resolvedHeaders['Authorization']).toBe('Bearer {{Nashm_OPENID_TOKEN}}');
     });
 
     it('should handle multiple placeholder instances in same string', () => {
       const template =
-        '{{LIBRECHAT_OPENID_TOKEN}}-{{LIBRECHAT_OPENID_TOKEN}}-{{LIBRECHAT_OPENID_USER_ID}}';
+        '{{Nashm_OPENID_TOKEN}}-{{Nashm_OPENID_TOKEN}}-{{Nashm_OPENID_USER_ID}}';
 
       const tokenInfo: OpenIDTokenInfo = {
         accessToken: 'cognito-token123',
@@ -447,7 +447,7 @@ describe('OpenID Connect Federated Provider Token Integration', () => {
       };
 
       const headers = {
-        Authorization: 'Bearer {{LIBRECHAT_OPENID_TOKEN}}',
+        Authorization: 'Bearer {{Nashm_OPENID_TOKEN}}',
       };
 
       const resolvedHeaders = resolveHeaders({
@@ -456,7 +456,7 @@ describe('OpenID Connect Federated Provider Token Integration', () => {
       });
 
       // Should not replace placeholder if no tokens available
-      expect(resolvedHeaders['Authorization']).toBe('Bearer {{LIBRECHAT_OPENID_TOKEN}}');
+      expect(resolvedHeaders['Authorization']).toBe('Bearer {{Nashm_OPENID_TOKEN}}');
     });
 
     it('should prioritize federatedTokens over openidTokens', () => {

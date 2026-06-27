@@ -1,4 +1,4 @@
-const { verifyFamilyAccess } = require('@librechat/api');
+const { verifyFamilyAccess } = require('@nashm/api');
 const db = require('~/models');
 
 /**

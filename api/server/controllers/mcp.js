@@ -1,11 +1,11 @@
 /**
  * MCP Tools Controller
- * Handles MCP-specific tool endpoints, decoupled from regular LibreChat tools
+ * Handles MCP-specific tool endpoints, decoupled from regular Nashm tools
  *
- * @import { MCPServerRegistry } from '@librechat/api'
- * @import { MCPServerDocument } from 'librechat-data-provider'
+ * @import { MCPServerRegistry } from '@nashm/api'
+ * @import { MCPServerDocument } from 'nashm-data-provider'
  */
-const { logger, SystemCapabilities } = require('@librechat/data-schemas');
+const { logger, SystemCapabilities } = require('@nashm/data-schemas');
 const {
   checkAccess,
   isUserSourced,
@@ -14,7 +14,7 @@ const {
   redactAllServerSecrets,
   isMCPDomainNotAllowedError,
   isMCPInspectionFailedError,
-} = require('@librechat/api');
+} = require('@nashm/api');
 const {
   Constants,
   Permissions,
@@ -23,7 +23,7 @@ const {
   PermissionTypes,
   MCP_USER_INPUT_FIELDS,
   MCPServerUserInputSchema,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 const {
   resolveConfigServers,
   resolveMcpConfigNames,

@@ -1,4 +1,4 @@
-import type { TFile } from 'librechat-data-provider';
+import type { TFile } from 'nashm-data-provider';
 import type { ServerRequest } from '~/types';
 
 export interface SaveBufferParams {

@@ -1,5 +1,5 @@
 const express = require('express');
-const { createProjectHandlers } = require('@librechat/api');
+const { createProjectHandlers } = require('@nashm/api');
 const requireJwtAuth = require('~/server/middleware/requireJwtAuth');
 const db = require('~/models');
 

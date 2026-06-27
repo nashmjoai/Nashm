@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
-import { Checkbox, Label } from '@librechat/client';
+import { Checkbox, Label } from '@nashm/client';
 import { useLocalize, useLocalizedConfig } from '~/hooks';
 import { useGetStartupConfig } from '~/data-provider';
 import { createConfigHtmlSanitizer } from '~/utils/configHtml';

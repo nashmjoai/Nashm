@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import * as Ariakit from '@ariakit/react';
 import { ShieldEllipsis } from 'lucide-react';
 import { useForm, Controller } from 'react-hook-form';
-import { Permissions, SystemRoles, PermissionTypes } from 'librechat-data-provider';
+import { Permissions, SystemRoles, PermissionTypes } from 'nashm-data-provider';
 import {
   Button,
   Switch,
@@ -12,7 +12,7 @@ import {
   OGDialogContent,
   OGDialogTrigger,
   useToastContext,
-} from '@librechat/client';
+} from '@nashm/client';
 import type { Control, UseFormSetValue, UseFormGetValues } from 'react-hook-form';
 import { useUpdatePeoplePickerPermissionsMutation } from '~/data-provider';
 import { useLocalize, useAuthContext, useRoleSelector } from '~/hooks';

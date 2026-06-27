@@ -1,6 +1,6 @@
 const express = require('express');
-const { createAdminAuditLogHandlers } = require('@librechat/api');
-const { SystemCapabilities } = require('@librechat/data-schemas');
+const { createAdminAuditLogHandlers } = require('@nashm/api');
+const { SystemCapabilities } = require('@nashm/data-schemas');
 const { requireCapability } = require('~/server/middleware/roles/capabilities');
 const { requireJwtAuth } = require('~/server/middleware');
 const db = require('~/models');

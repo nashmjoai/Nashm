@@ -1,5 +1,5 @@
 /** Note: No hard-coded values should be used in this file. */
-const { EModelEndpoint } = require('librechat-data-provider');
+const { EModelEndpoint } = require('nashm-data-provider');
 const {
   maxTokensMap,
   matchModelName,
@@ -7,7 +7,7 @@ const {
   getModelMaxTokens,
   maxOutputTokensMap,
   findMatchingPattern,
-} = require('@librechat/api');
+} = require('@nashm/api');
 
 describe('getModelMaxTokens', () => {
   test('should return correct tokens for exact match', () => {
@@ -567,7 +567,7 @@ describe('getModelMaxTokens', () => {
   });
 
   test('should return correct max output tokens for GPT-5 models', () => {
-    const { getModelMaxOutputTokens } = require('@librechat/api');
+    const { getModelMaxOutputTokens } = require('@nashm/api');
     const gpt5Models = [
       'gpt-5',
       'gpt-5.1',
@@ -594,7 +594,7 @@ describe('getModelMaxTokens', () => {
   });
 
   test('should return correct max output tokens for GPT-OSS models', () => {
-    const { getModelMaxOutputTokens } = require('@librechat/api');
+    const { getModelMaxOutputTokens } = require('@nashm/api');
     ['gpt-oss-20b', 'gpt-oss-120b'].forEach((model) => {
       expect(getModelMaxOutputTokens(model)).toBe(maxOutputTokensMap[EModelEndpoint.openAI][model]);
       expect(getModelMaxOutputTokens(model, EModelEndpoint.openAI)).toBe(
@@ -1032,7 +1032,7 @@ describe('Meta Models Tests', () => {
   });
 
   describe('DeepSeek Max Output Tokens', () => {
-    const { getModelMaxOutputTokens } = require('@librechat/api');
+    const { getModelMaxOutputTokens } = require('@nashm/api');
 
     test('should return correct max output tokens for deepseek-chat', () => {
       const expected = maxOutputTokensMap[EModelEndpoint.openAI]['deepseek-chat'];
@@ -1419,7 +1419,7 @@ describe('Claude Model Tests', () => {
   });
 
   it('should return correct max output tokens for Claude Opus 4.6 (128K)', () => {
-    const { getModelMaxOutputTokens } = require('@librechat/api');
+    const { getModelMaxOutputTokens } = require('@nashm/api');
     expect(getModelMaxOutputTokens('claude-opus-4-6', EModelEndpoint.anthropic)).toBe(
       maxOutputTokensMap[EModelEndpoint.anthropic]['claude-opus-4-6'],
     );
@@ -1469,7 +1469,7 @@ describe('Claude Model Tests', () => {
   });
 
   it('should return correct max output tokens for Claude Opus 4.7 (128K)', () => {
-    const { getModelMaxOutputTokens } = require('@librechat/api');
+    const { getModelMaxOutputTokens } = require('@nashm/api');
     expect(getModelMaxOutputTokens('claude-opus-4-7', EModelEndpoint.anthropic)).toBe(
       maxOutputTokensMap[EModelEndpoint.anthropic]['claude-opus-4-7'],
     );
@@ -1500,7 +1500,7 @@ describe('Claude Model Tests', () => {
   });
 
   it('should return correct max output tokens for Claude Opus 4.8 (128K)', () => {
-    const { getModelMaxOutputTokens } = require('@librechat/api');
+    const { getModelMaxOutputTokens } = require('@nashm/api');
     expect(getModelMaxOutputTokens('claude-opus-4-8', EModelEndpoint.anthropic)).toBe(
       maxOutputTokensMap[EModelEndpoint.anthropic]['claude-opus-4-8'],
     );
@@ -1531,7 +1531,7 @@ describe('Claude Model Tests', () => {
   });
 
   it('should return correct max output tokens for Claude Fable 5 (128K)', () => {
-    const { getModelMaxOutputTokens } = require('@librechat/api');
+    const { getModelMaxOutputTokens } = require('@nashm/api');
     expect(getModelMaxOutputTokens('claude-fable-5', EModelEndpoint.anthropic)).toBe(
       maxOutputTokensMap[EModelEndpoint.anthropic]['claude-fable-5'],
     );
@@ -1562,7 +1562,7 @@ describe('Claude Model Tests', () => {
   });
 
   it('should return correct max output tokens for Claude Mythos 5 (128K)', () => {
-    const { getModelMaxOutputTokens } = require('@librechat/api');
+    const { getModelMaxOutputTokens } = require('@nashm/api');
     expect(getModelMaxOutputTokens('claude-mythos-5', EModelEndpoint.anthropic)).toBe(
       maxOutputTokensMap[EModelEndpoint.anthropic]['claude-mythos-5'],
     );
@@ -1596,7 +1596,7 @@ describe('Claude Model Tests', () => {
   });
 
   it('should return correct max output tokens for Claude Sonnet 4.6 (64K)', () => {
-    const { getModelMaxOutputTokens } = require('@librechat/api');
+    const { getModelMaxOutputTokens } = require('@nashm/api');
     expect(getModelMaxOutputTokens('claude-sonnet-4-6', EModelEndpoint.anthropic)).toBe(
       maxOutputTokensMap[EModelEndpoint.anthropic]['claude-sonnet-4-6'],
     );

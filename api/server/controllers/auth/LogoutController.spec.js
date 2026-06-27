@@ -7,11 +7,11 @@ const mockGetOpenIdConfig = jest.fn();
 const mockClearCloudFrontCookies = jest.fn();
 
 jest.mock('cookie');
-jest.mock('@librechat/api', () => ({
+jest.mock('@nashm/api', () => ({
   isEnabled: (...args) => mockIsEnabled(...args),
   clearCloudFrontCookies: (...args) => mockClearCloudFrontCookies(...args),
 }));
-jest.mock('@librechat/data-schemas', () => ({ logger: mockLogger }));
+jest.mock('@nashm/data-schemas', () => ({ logger: mockLogger }));
 jest.mock('~/server/services/AuthService', () => ({
   logoutUser: (...args) => mockLogoutUser(...args),
 }));

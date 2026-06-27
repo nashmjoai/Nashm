@@ -3,7 +3,7 @@ const request = require('supertest');
 const mongoose = require('mongoose');
 const { Readable } = require('stream');
 const { v4: uuidv4 } = require('uuid');
-const { createMethods, tenantStorage } = require('@librechat/data-schemas');
+const { createMethods, tenantStorage } = require('@nashm/data-schemas');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const {
   SystemRoles,
@@ -11,7 +11,7 @@ const {
   AccessRoleIds,
   PrincipalType,
   FileSources,
-} = require('librechat-data-provider');
+} = require('nashm-data-provider');
 const { createAgent, createFile } = require('~/models');
 
 // Only mock the external dependencies that we don't want to test
@@ -42,8 +42,8 @@ jest.mock('sharp', () =>
   })),
 );
 
-jest.mock('@librechat/api', () => ({
-  ...jest.requireActual('@librechat/api'),
+jest.mock('@nashm/api', () => ({
+  ...jest.requireActual('@nashm/api'),
   refreshS3FileUrls: jest.fn(),
 }));
 
@@ -87,7 +87,7 @@ describe('File Routes - Delete with Agent Access', () => {
     await mongoose.connect(mongoUri);
 
     // Initialize all models using createModels
-    const { createModels } = require('@librechat/data-schemas');
+    const { createModels } = require('@nashm/data-schemas');
     const models = createModels(mongoose);
 
     // Track which models we're adding

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import * as Tabs from '@radix-ui/react-tabs';
 import { X, ChevronLeft } from 'lucide-react';
-import { useMediaQuery } from '@librechat/client';
-import { SettingsTabValues } from 'librechat-data-provider';
+import { useMediaQuery } from '@nashm/client';
+import { SettingsTabValues } from 'nashm-data-provider';
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 import type { TDialogProps } from '~/common';
 import type { SettingsTab } from './types';

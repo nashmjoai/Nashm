@@ -89,7 +89,7 @@ afterAll(() => {
 afterEach(() => {
   delete axios.defaults.headers.common['Authorization'];
   window.localStorage.clear();
-  delete (window as Window & { __librechatAuthRecovery?: unknown }).__librechatAuthRecovery;
+  delete (window as Window & { __NashmAuthRecovery?: unknown }).__NashmAuthRecovery;
   Object.defineProperty(window, 'location', {
     value: savedLocation,
     writable: true,
@@ -562,7 +562,7 @@ describe('axios 401 interceptor — Authorization header guard', () => {
     });
 
     await axios.get('/api/messages').catch(() => undefined);
-    window.localStorage.setItem('librechat.auth.redirect.startedAt', 'not-a-number');
+    window.localStorage.setItem('Nashm.auth.redirect.startedAt', 'not-a-number');
     await axios.get('/api/convos').catch(() => undefined);
 
     expect(getCallsForUrl('/api/auth/refresh')).toHaveLength(1);

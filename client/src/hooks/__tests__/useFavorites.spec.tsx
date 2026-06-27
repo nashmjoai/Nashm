@@ -14,8 +14,8 @@ const mockMutateAsync = jest.fn();
 const mockShowToast = jest.fn();
 const mockRefetch = jest.fn();
 
-jest.mock('@librechat/client', () => ({
-  ...jest.requireActual('@librechat/client'),
+jest.mock('@nashm/client', () => ({
+  ...jest.requireActual('@nashm/client'),
   useToastContext: () => ({ showToast: mockShowToast }),
 }));
 

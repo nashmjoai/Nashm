@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { ContentTypes } from 'librechat-data-provider';
-import type { TMessageContentParts } from 'librechat-data-provider';
+import { ContentTypes } from 'nashm-data-provider';
+import type { TMessageContentParts } from 'nashm-data-provider';
 
 jest.mock('~/utils', () => ({
   mapAttachments: () => ({}),

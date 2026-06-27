@@ -9,8 +9,8 @@ const {
   AccessRoleIds,
   PrincipalType,
   PermissionBits,
-} = require('librechat-data-provider');
-const { SystemCapabilities } = require('@librechat/data-schemas');
+} = require('nashm-data-provider');
+const { SystemCapabilities } = require('@nashm/data-schemas');
 
 // Mock modules before importing
 jest.mock('~/server/services/Config', () => ({
@@ -19,7 +19,7 @@ jest.mock('~/server/services/Config', () => ({
 
 jest.mock('~/models', () => {
   const mongoose = require('mongoose');
-  const { createMethods } = require('@librechat/data-schemas');
+  const { createMethods } = require('@nashm/data-schemas');
   const methods = createMethods(mongoose, {
     removeAllPermissions: async ({ resourceType, resourceId }) => {
       const AclEntry = mongoose.models.AclEntry;

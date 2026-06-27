@@ -1,15 +1,15 @@
 import mongoose from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { Constants, FileSources } from 'librechat-data-provider';
-import { agentSchema, createMethods } from '@librechat/data-schemas';
+import { Constants, FileSources } from 'nashm-data-provider';
+import { agentSchema, createMethods } from '@nashm/data-schemas';
 import type {
-  Agent as LibreChatAgent,
+  Agent as NashmAgent,
   AgentModelParameters,
   TEphemeralAgent,
   TConversation,
-} from 'librechat-data-provider';
-import type { AppConfig } from '@librechat/data-schemas';
+} from 'nashm-data-provider';
+import type { AppConfig } from '@nashm/data-schemas';
 import type { LoadAgentParams, LoadAgentDeps } from '../load';
 import { loadAddedAgent } from '../added';
 import { loadAgent } from '../load';
@@ -21,7 +21,7 @@ let getAgent: ReturnType<typeof createMethods>['getAgent'];
 const mockGetMCPServerTools = jest.fn();
 
 const deps: LoadAgentDeps = {
-  getAgent: (searchParameter) => getAgent(searchParameter) as Promise<LibreChatAgent | null>,
+  getAgent: (searchParameter) => getAgent(searchParameter) as Promise<NashmAgent | null>,
   getMCPServerTools: mockGetMCPServerTools,
 };
 
@@ -140,7 +140,7 @@ describe('loadAgent', () => {
         mcpConfig: {
           'body-scoped': {
             type: 'streamable-http' as const,
-            url: 'https://mcp.example.com/{{LIBRECHAT_BODY_CONVERSATIONID}}/mcp',
+            url: 'https://mcp.example.com/{{Nashm_BODY_CONVERSATIONID}}/mcp',
           },
         },
       } as unknown as AppConfig,
@@ -452,7 +452,7 @@ describe('loadAgent', () => {
           model: 'gpt-4',
           ephemeralAgent: { subagents: { enabled: true, allowSelf: true, agent_ids: [] } },
         } as unknown as TConversation,
-        primaryAgent: { id: EPHEMERAL_AGENT_ID as string, tools: ['web_search'] } as LibreChatAgent,
+        primaryAgent: { id: EPHEMERAL_AGENT_ID as string, tools: ['web_search'] } as NashmAgent,
       },
       deps,
     );
@@ -617,7 +617,7 @@ describe('loadAgent', () => {
           model: 'gpt-4',
           spec: 'mirrored-scoped-skills',
         } as unknown as TConversation,
-        primaryAgent: { id: EPHEMERAL_AGENT_ID as string, tools: ['web_search'] } as LibreChatAgent,
+        primaryAgent: { id: EPHEMERAL_AGENT_ID as string, tools: ['web_search'] } as NashmAgent,
       },
       deps,
     );

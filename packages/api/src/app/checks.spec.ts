@@ -1,20 +1,21 @@
-jest.mock('librechat-data-provider', () => ({
-  ...jest.requireActual('librechat-data-provider'),
+jest.mock('nashm-data-provider', () => ({
+  ...jest.requireActual('nashm-data-provider'),
   extractVariableName: jest.fn(),
 }));
 
-jest.mock('@librechat/data-schemas', () => ({
-  ...jest.requireActual('@librechat/data-schemas'),
+jest.mock('@nashm/data-schemas', () => ({
+  ...jest.requireActual('@nashm/data-schemas'),
   logger: {
     debug: jest.fn(),
     warn: jest.fn(),
+    info: jest.fn(),
   },
 }));
 
 import { handleRateLimits } from './limits';
-import { checkWebSearchConfig } from './checks';
-import { logger } from '@librechat/data-schemas';
-import { extractVariableName as extract } from 'librechat-data-provider';
+import { checkWebSearchConfig, checkHealth } from './checks';
+import { logger } from '@nashm/data-schemas';
+import { extractVariableName as extract } from 'nashm-data-provider';
 
 const extractVariableName = extract as jest.MockedFunction<typeof extract>;
 
@@ -147,7 +148,7 @@ describe('checkWebSearchConfig', () => {
 
       expect(logger.warn).toHaveBeenCalledWith(
         expect.stringContaining(
-          'More info: https://www.librechat.ai/docs/configuration/librechat_yaml/web_search',
+          'More info: https://www.Nashm.ai/docs/configuration/Nashm_yaml/web_search',
         ),
       );
     });
@@ -355,4 +356,53 @@ describe('handleRateLimits', () => {
     expect(process.env.STT_USER_MAX).toEqual('30');
     expect(process.env.STT_USER_WINDOW).toEqual('20');
   });
+
+  describe('checkHealth', () => {
+    let fetchSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      fetchSpy = jest.spyOn(global, 'fetch').mockImplementation();
+      jest.clearAllMocks();
+    });
+
+    afterEach(() => {
+      fetchSpy.mockRestore();
+    });
+
+    it('should return early and not call fetch or log anything when RAG_API_URL is undefined', async () => {
+      delete process.env.RAG_API_URL;
+      await checkHealth();
+      expect(fetchSpy).not.toHaveBeenCalled();
+      expect(logger.info).not.toHaveBeenCalled();
+      expect(logger.warn).not.toHaveBeenCalled();
+    });
+
+    it('should log info when RAG_API_URL is defined and health check succeeds', async () => {
+      process.env.RAG_API_URL = 'http://test-rag-api';
+      fetchSpy.mockResolvedValue({
+        ok: true,
+        status: 200,
+      } as Response);
+
+      await checkHealth();
+
+      expect(fetchSpy).toHaveBeenCalledWith('http://test-rag-api/health');
+      expect(logger.info).toHaveBeenCalledWith('RAG API is running and reachable at http://test-rag-api.');
+      expect(logger.warn).not.toHaveBeenCalled();
+    });
+
+    it('should log warning when RAG_API_URL is defined but health check fails', async () => {
+      process.env.RAG_API_URL = 'http://test-rag-api';
+      fetchSpy.mockRejectedValue(new Error('Network error'));
+
+      await checkHealth();
+
+      expect(fetchSpy).toHaveBeenCalledWith('http://test-rag-api/health');
+      expect(logger.warn).toHaveBeenCalledWith(
+        'RAG API is either not running or not reachable at http://test-rag-api, you may experience errors with file uploads.',
+      );
+      expect(logger.info).not.toHaveBeenCalled();
+    });
+  });
 });
+

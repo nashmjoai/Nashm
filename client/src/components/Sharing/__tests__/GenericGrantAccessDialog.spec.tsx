@@ -1,5 +1,5 @@
 import React from 'react';
-import { ResourceType } from 'librechat-data-provider';
+import { ResourceType } from 'nashm-data-provider';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import GenericGrantAccessDialog from '../GenericGrantAccessDialog';
@@ -41,8 +41,8 @@ jest.mock('~/hooks', () => ({
   useCopyToClipboard: () => jest.fn(),
 }));
 
-jest.mock('@librechat/client', () => ({
-  ...jest.requireActual('@librechat/client'),
+jest.mock('@nashm/client', () => ({
+  ...jest.requireActual('@nashm/client'),
   useToastContext: () => ({ showToast: jest.fn() }),
 }));
 

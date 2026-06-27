@@ -1,12 +1,12 @@
 const { EventSource } = require('eventsource');
-const { Time } = require('librechat-data-provider');
+const { Time } = require('nashm-data-provider');
 const {
   mcpConfig,
   MCPManager,
   FlowStateManager,
   MCPServersRegistry,
   OAuthReconnectionManager,
-} = require('@librechat/api');
+} = require('@nashm/api');
 
 global.EventSource = EventSource;
 
