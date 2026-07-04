@@ -30,7 +30,7 @@ import {
   findBranchSnapshotAnchor,
 } from '~/utils';
 import { useLatestMessageId } from '~/hooks/Messages/useLatestMessage';
-import { useContextProjectionQuery } from '~/data-provider';
+import { useContextProjectionQuery, useGetStartupConfig, useGetUserBalance } from '~/data-provider';
 import useTokenLimits from './useTokenLimits';
 
 export interface TokenUsageParams {
@@ -85,6 +85,13 @@ export default function useTokenUsage({
   const setBranchTotals = useSetAtom(branchTotalsFamily(conversationKey));
   const setTotalUsage = useSetAtom(totalUsageFamily(conversationKey));
   const limits = useTokenLimits(conversation);
+  const { data: startupConfig } = useGetStartupConfig();
+  const balanceQuery = useGetUserBalance({
+    enabled: !!startupConfig?.balance?.enabled,
+  });
+  const balanceData = balanceQuery.data;
+  const plan = balanceData?.plan;
+  const planQuota = plan === 'free' ? 100000 : balanceData?.quota;
 
   /** Deepest persisted/live snapshot on the viewed branch (present only for
    *  turns generated with the feature on). Gates the projection fetch and is a
@@ -264,11 +271,15 @@ export default function useTokenUsage({
 
     if (effective != null) {
       const breakdown = effective.breakdown;
-      const maxTokens = effective.contextBudget ?? breakdown.maxContextTokens;
+      const originalMaxTokens = effective.contextBudget ?? breakdown.maxContextTokens;
+      let maxTokens = originalMaxTokens;
+      if (planQuota != null && planQuota > 0) {
+        maxTokens = planQuota;
+      }
       const instructionTokens = effective.effectiveInstructionTokens ?? breakdown.instructionTokens;
       const baseUsed =
         effective.remainingContextTokens != null
-          ? maxTokens - effective.remainingContextTokens
+          ? originalMaxTokens - effective.remainingContextTokens
           : instructionTokens + breakdown.messageTokens;
       /** The snapshot/projection is pre-invoke: in-flight output rides on
        *  `liveTokens` (0 unless streaming this branch), the last call's finalized
@@ -300,7 +311,10 @@ export default function useTokenUsage({
      *  otherwise pins the gauge at 100% forever after a compaction). */
     const usedTokens =
       branchTotals.input + branchTotals.output + branchTotals.summaryBaseline + liveTokens;
-    const maxTokens = limits.maxContextTokens;
+    let maxTokens = limits.maxContextTokens;
+    if (planQuota != null && planQuota > 0) {
+      maxTokens = planQuota;
+    }
     return {
       usedTokens,
       maxTokens,
@@ -329,5 +343,6 @@ export default function useTokenUsage({
     limits,
     branchSnapshot,
     projection,
+    planQuota,
   ]);
 }

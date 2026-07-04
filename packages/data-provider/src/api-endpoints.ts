@@ -533,6 +533,14 @@ export const adminConsoleTickets = (params?: Record<string, unknown>) =>
   `${BASE_URL}/api/admin/console/tickets${params ? buildQuery(params) : ''}`;
 export const adminConsoleTicketUpdate = (id: string) =>
   `${BASE_URL}/api/admin/console/tickets/${encodeURIComponent(id)}`;
+export const adminConsolePlans = () => `${BASE_URL}/api/admin/console/plans`;
+export const adminConsolePlan = (plan: string) =>
+  `${BASE_URL}/api/admin/console/plans/${encodeURIComponent(plan)}`;
+export const publicPlans = () => `${BASE_URL}/api/plans`;
+export const adminConsoleAdmins = () => `${BASE_URL}/api/admin/console/admins`;
+export const adminConsoleAdminUser = (userId: string) =>
+  `${BASE_URL}/api/admin/console/admins/${encodeURIComponent(userId)}`;
+
 
 // Support Ticket Endpoints
 export const supportTicket = () => `${BASE_URL}/api/support`;

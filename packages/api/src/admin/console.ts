@@ -9,9 +9,12 @@ import type {
   IModelAccess,
   ISubscription,
   ISupportTicket,
+  IPlanConfig,
+  IBalance,
   SubscriptionPlan,
   SubscriptionStatus,
   SupportTicketStatus,
+  RenewalPeriod,
 } from '@nashm/data-schemas';
 import type { ServerRequest } from '~/types/http';
 import { getDefaultAllowedPlans, getEffectiveSubscription } from '~/subscriptions';
@@ -21,7 +24,10 @@ const ACTIVE_STATUSES = ['active', 'trialing'] as const;
 const PLANS = ['free', 'individual', 'family', 'developer'] as const;
 const SUBSCRIPTION_STATUSES = ['active', 'trialing', 'past_due', 'cancelled'] as const;
 const SUPPORT_STATUSES = ['open', 'reviewed', 'resolved'] as const;
+const RENEWAL_PERIODS = ['daily', 'weekly', 'monthly', 'yearly'] as const;
+const ADMIN_ROLES = ['ADMIN', 'EDITOR'] as const;
 const USER_FIELDS = '_id name username email avatar role provider createdAt updatedAt';
+
 
 type SessionDoc = { user: Types.ObjectId; expiration: Date };
 type TransactionDoc = {
@@ -61,6 +67,8 @@ export type AdminConsoleDeps = {
   Subscription: Model<ISubscription>;
   FamilyPlan: Model<IFamilyPlan>;
   ModelAccess: Model<IModelAccess>;
+  PlanConfig: Model<IPlanConfig>;
+  Balance: Model<IBalance>;
   SupportTicket: Model<ISupportTicket>;
   loadModels: (req: ServerRequest) => Promise<TModelsConfig>;
   sendSupportEmail?: SupportEmailSender;
@@ -82,7 +90,9 @@ type SubscriptionPayload = {
   expiresAt?: string | null;
   notes?: string;
   allowedModels?: Array<{ endpoint: string; model: string }>;
+  tokenBalance?: number;
 };
+
 
 type SupportPayload = { subject?: string; message?: string };
 
@@ -105,6 +115,15 @@ function isSubscriptionStatus(value: string | undefined): value is SubscriptionS
 function isSupportStatus(value: string | undefined): value is SupportTicketStatus {
   return SUPPORT_STATUSES.includes(value as SupportTicketStatus);
 }
+
+function isRenewalPeriod(value: string | undefined): value is RenewalPeriod {
+  return RENEWAL_PERIODS.includes(value as RenewalPeriod);
+}
+
+function isAdminRole(value: string | undefined): value is 'ADMIN' | 'EDITOR' {
+  return ADMIN_ROLES.includes(value as 'ADMIN' | 'EDITOR');
+}
+
 
 function getActorId(req: ServerRequest): Types.ObjectId | undefined {
   const id = req.user?.id ?? req.user?._id?.toString();
@@ -258,6 +277,12 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
   updateModel: (req: ServerRequest, res: Response) => Promise<Response>;
   supportTickets: (req: ServerRequest, res: Response) => Promise<Response>;
   updateSupportTicket: (req: ServerRequest, res: Response) => Promise<Response>;
+  getPlans: (req: ServerRequest, res: Response) => Promise<Response>;
+  updatePlan: (req: ServerRequest, res: Response) => Promise<Response>;
+  getAdmins: (req: ServerRequest, res: Response) => Promise<Response>;
+  addAdmin: (req: ServerRequest, res: Response) => Promise<Response>;
+  updateAdmin: (req: ServerRequest, res: Response) => Promise<Response>;
+  removeAdmin: (req: ServerRequest, res: Response) => Promise<Response>;
 } {
   async function overview(req: ServerRequest, res: Response): Promise<Response> {
     try {
@@ -339,7 +364,7 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
       ]);
 
       const userIds = usersList.map((user) => user._id);
-      const [tokenTotals, sessions, subscriptions, familyPlans] = await Promise.all([
+      const [tokenTotals, sessions, subscriptions, familyPlans, balances] = await Promise.all([
         getTokenTotalsByUser(deps.Transaction, userIds),
         getActiveSessionsByUser(deps.Session, userIds),
         deps.Subscription.find({ user: { $in: userIds } }).lean<ISubscription[]>(),
@@ -347,7 +372,12 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
           status: { $in: ACTIVE_STATUSES },
           $or: [{ owner: { $in: userIds } }, { 'members.user': { $in: userIds } }],
         }).lean<IFamilyPlan[]>(),
+        deps.Balance.find({ user: { $in: userIds } }).lean<IBalance[]>(),
       ]);
+
+      const balanceMap = new Map(
+        balances.map((b) => [b.user.toString(), b.tokenCredits]),
+      );
 
       const subscriptionMap = new Map(
         subscriptions.map((subscription) => [subscription.user.toString(), subscription]),
@@ -394,10 +424,12 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
             totalTokens: usage?.totalTokens ?? 0,
             tokenValue: usage?.tokenValue ?? 0,
           },
+          tokenBalance: balanceMap.get(id) ?? 0,
           subscription: mapSubscription(directSubscription) ??
             familySubscription ?? { userId: id, plan: 'free', status: 'active', source: 'none' },
         };
       });
+
 
       return res.status(200).json({ users: mapped, total, limit, offset });
     } catch (error) {
@@ -450,12 +482,21 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
         await deps.FamilyPlan.updateMany({ owner: user._id }, { $set: { status: 'cancelled' } });
       }
 
+      if (typeof body.tokenBalance === 'number') {
+        await deps.Balance.findOneAndUpdate(
+          { user: user._id },
+          { $set: { tokenCredits: body.tokenBalance } },
+          { new: true, upsert: true },
+        );
+      }
+
       const effective = await getEffectiveSubscription(user._id.toString(), deps);
       return res.status(200).json({ subscription: mapSubscription(subscription), effective });
     } catch (error) {
       logger.error('[adminConsole] upsertSubscription error:', error);
       return res.status(500).json({ error: 'Failed to save subscription' });
     }
+
   }
 
   async function models(req: ServerRequest, res: Response): Promise<Response> {
@@ -584,8 +625,9 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
 
   async function updateSupportTicket(req: ServerRequest, res: Response): Promise<Response> {
     try {
-      const id = req.params.id;
-      const status = asString(req.body?.status);
+      const { id } = req.params as { id: string };
+      const status = asString((req.body as any)?.status);
+
       if (!Types.ObjectId.isValid(id)) {
         return res.status(400).json({ error: 'Invalid ticket id' });
       }
@@ -610,6 +652,246 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
     }
   }
 
+  async function getPlans(_req: ServerRequest, res: Response): Promise<Response> {
+    try {
+      const defaultConfigs: Array<{ plan: SubscriptionPlan; tokenQuota: number; renewalPeriod: string }> = [
+        { plan: 'free', tokenQuota: 50000, renewalPeriod: 'monthly' },
+        { plan: 'individual', tokenQuota: 500000, renewalPeriod: 'monthly' },
+        { plan: 'family', tokenQuota: 1000000, renewalPeriod: 'monthly' },
+        { plan: 'developer', tokenQuota: 2000000, renewalPeriod: 'monthly' },
+      ];
+
+      const existing = await deps.PlanConfig.find({}).lean<IPlanConfig[]>();
+      const existingByPlan = new Map(existing.map((p) => [p.plan, p]));
+
+      const plans = defaultConfigs.map(({ plan, tokenQuota, renewalPeriod }) => {
+        const config = existingByPlan.get(plan);
+        return config
+          ? {
+              plan: config.plan,
+              displayName: config.displayName,
+              priceText: config.priceText,
+              features: config.features,
+              tokenQuota: config.tokenQuota,
+              renewalPeriod: config.renewalPeriod,
+              familyMinMembers: config.familyMinMembers,
+              familyMemberTokenQuota: config.familyMemberTokenQuota,
+              familyMemberRenewalPeriod: config.familyMemberRenewalPeriod,
+              modelTokenLimits: config.modelTokenLimits,
+            }
+          : { plan, tokenQuota, renewalPeriod, familyMinMembers: plan === 'family' ? 2 : undefined, familyMemberTokenQuota: undefined, familyMemberRenewalPeriod: undefined, modelTokenLimits: [], features: [] };
+      });
+
+      return res.status(200).json({ plans });
+    } catch (error) {
+      logger.error('[adminConsole] getPlans error:', error);
+      return res.status(500).json({ error: 'Failed to load plan configs' });
+    }
+  }
+
+  async function updatePlan(req: ServerRequest, res: Response): Promise<Response> {
+    try {
+      const { plan } = req.params as { plan: string };
+      if (!isPlan(plan)) {
+        return res.status(400).json({ error: 'Valid plan is required' });
+      }
+
+      const body = req.body as {
+        displayName?: string;
+        priceText?: string;
+        features?: string[];
+        tokenQuota?: number;
+        renewalPeriod?: string;
+        familyMinMembers?: number;
+        familyMemberTokenQuota?: number;
+        familyMemberRenewalPeriod?: string;
+        modelTokenLimits?: Array<{ endpoint: string; model: string; tokensPerPeriod: number }>;
+      };
+
+      const renewalPeriod = asString(body.renewalPeriod);
+      if (renewalPeriod !== undefined && !isRenewalPeriod(renewalPeriod)) {
+        return res.status(400).json({ error: 'Valid renewalPeriod is required' });
+      }
+
+      const $set: Partial<IPlanConfig> = { plan };
+      if (typeof body.displayName === 'string') {
+        $set.displayName = body.displayName.trim();
+      }
+      if (typeof body.priceText === 'string') {
+        $set.priceText = body.priceText.trim();
+      }
+      if (Array.isArray(body.features)) {
+        $set.features = body.features.map(f => String(f).trim());
+      }
+      if (typeof body.tokenQuota === 'number') {
+        $set.tokenQuota = Math.max(0, body.tokenQuota);
+      }
+      if (renewalPeriod) {
+        $set.renewalPeriod = renewalPeriod;
+      }
+      if (plan === 'family') {
+        if (typeof body.familyMinMembers === 'number') {
+          $set.familyMinMembers = Math.max(2, body.familyMinMembers);
+        }
+        if (typeof body.familyMemberTokenQuota === 'number') {
+          $set.familyMemberTokenQuota = Math.max(0, body.familyMemberTokenQuota);
+        }
+        const familyMemberRenewalPeriod = asString(body.familyMemberRenewalPeriod);
+        if (familyMemberRenewalPeriod && isRenewalPeriod(familyMemberRenewalPeriod)) {
+          $set.familyMemberRenewalPeriod = familyMemberRenewalPeriod;
+        }
+      }
+      if (Array.isArray(body.modelTokenLimits)) {
+        $set.modelTokenLimits = body.modelTokenLimits.map((m) => ({
+          endpoint: String(m.endpoint).trim(),
+          model: String(m.model).trim(),
+          tokensPerPeriod: Math.max(0, Number(m.tokensPerPeriod) || 0),
+        }));
+      }
+
+      const updated = await deps.PlanConfig.findOneAndUpdate(
+        { plan },
+        { $set },
+        { new: true, upsert: true },
+      ).lean<IPlanConfig>();
+
+      return res.status(200).json({ plan: updated });
+    } catch (error) {
+      logger.error('[adminConsole] updatePlan error:', error);
+      return res.status(500).json({ error: 'Failed to update plan config' });
+    }
+  }
+
+  async function getAdmins(_req: ServerRequest, res: Response): Promise<Response> {
+    try {
+      const admins = await deps.User.find({ role: { $in: ADMIN_ROLES } })
+        .select('_id name username email avatar role provider createdAt')
+        .lean<UserLean[]>();
+
+      return res.status(200).json({
+        admins: admins.map((u) => ({
+          id: u._id.toString(),
+          name: u.name ?? '',
+          username: u.username ?? '',
+          email: u.email ?? '',
+          avatar: u.avatar ?? '',
+          role: u.role ?? 'USER',
+          provider: u.provider ?? 'local',
+          createdAt: dateToIso(u.createdAt),
+        })),
+      });
+    } catch (error) {
+      logger.error('[adminConsole] getAdmins error:', error);
+      return res.status(500).json({ error: 'Failed to load admin users' });
+    }
+  }
+
+  async function addAdmin(req: ServerRequest, res: Response): Promise<Response> {
+    try {
+      const { email, role } = req.body as { email?: string; role?: string };
+      const trimmedEmail = email?.trim().toLowerCase();
+      if (!trimmedEmail) {
+        return res.status(400).json({ error: 'Email is required' });
+      }
+      if (!isAdminRole(role)) {
+        return res.status(400).json({ error: 'Role must be ADMIN or EDITOR' });
+      }
+
+      const user = await deps.User.findOneAndUpdate(
+        { email: trimmedEmail },
+        { $set: { role } },
+        { new: true },
+      ).lean<UserLean | null>();
+
+      if (!user) {
+        return res.status(404).json({ error: 'No registered user found with that email address' });
+      }
+
+      return res.status(200).json({
+        admin: {
+          id: user._id.toString(),
+          name: user.name ?? '',
+          username: user.username ?? '',
+          email: user.email ?? '',
+          avatar: user.avatar ?? '',
+          role: user.role ?? role,
+          provider: user.provider ?? 'local',
+        },
+      });
+    } catch (error) {
+      logger.error('[adminConsole] addAdmin error:', error);
+      return res.status(500).json({ error: 'Failed to add admin user' });
+    }
+  }
+
+  async function updateAdmin(req: ServerRequest, res: Response): Promise<Response> {
+    try {
+      const { userId } = req.params as { userId: string };
+      if (!Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ error: 'Invalid user ID' });
+      }
+
+      const { role } = req.body as { role?: string };
+      if (!isAdminRole(role)) {
+        return res.status(400).json({ error: 'Role must be ADMIN or EDITOR' });
+      }
+
+      const callerId = req.user?.id ?? req.user?._id?.toString();
+      if (callerId === userId) {
+        return res.status(403).json({ error: 'Cannot modify your own role' });
+      }
+
+      const user = await deps.User.findByIdAndUpdate(
+        userId,
+        { $set: { role } },
+        { new: true },
+      ).lean<UserLean | null>();
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      return res.status(200).json({
+        admin: {
+          id: user._id.toString(),
+          name: user.name ?? '',
+          email: user.email ?? '',
+          role: user.role ?? role,
+        },
+      });
+    } catch (error) {
+      logger.error('[adminConsole] updateAdmin error:', error);
+      return res.status(500).json({ error: 'Failed to update admin user' });
+    }
+  }
+
+  async function removeAdmin(req: ServerRequest, res: Response): Promise<Response> {
+    try {
+      const { userId } = req.params as { userId: string };
+      if (!Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ error: 'Invalid user ID' });
+      }
+
+      const callerId = req.user?.id ?? req.user?._id?.toString();
+      if (callerId === userId) {
+        return res.status(403).json({ error: 'Cannot remove your own admin role' });
+      }
+
+      const adminCount = await deps.User.countDocuments({ role: 'ADMIN' });
+      const [targetUser] = await deps.User.find({ _id: userId }).select('role').limit(1).lean();
+      if (targetUser?.role === 'ADMIN' && adminCount <= 1) {
+        return res.status(400).json({ error: 'Cannot remove the last admin user' });
+      }
+
+      await deps.User.findByIdAndUpdate(userId, { $set: { role: 'USER' } });
+
+      return res.status(200).json({ message: 'Admin role removed successfully' });
+    } catch (error) {
+      logger.error('[adminConsole] removeAdmin error:', error);
+      return res.status(500).json({ error: 'Failed to remove admin role' });
+    }
+  }
+
   return {
     overview,
     users,
@@ -618,6 +900,12 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
     updateModel,
     supportTickets,
     updateSupportTicket,
+    getPlans,
+    updatePlan,
+    getAdmins,
+    addAdmin,
+    updateAdmin,
+    removeAdmin,
   };
 }
 

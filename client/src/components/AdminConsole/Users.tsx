@@ -45,6 +45,8 @@ export default function AdminConsoleUsers() {
   const [selectedStatus, setSelectedStatus] = useState('');
   const [expiresAt, setExpiresAt] = useState('');
   const [notes, setNotes] = useState('');
+  const [tokenBalance, setTokenBalance] = useState('');
+
 
   const upsertSubscriptionMutation = useUpsertAdminSubscriptionMutation({
     onSuccess: () => {
@@ -70,6 +72,7 @@ export default function AdminConsoleUsers() {
     setSelectedPlan(user.subscription?.plan || 'free');
     setSelectedStatus(user.subscription?.status || 'active');
     setNotes(user.subscription?.notes || '');
+    setTokenBalance(String(user.tokenBalance ?? 0));
     if (user.subscription?.expiresAt) {
       // Format ISO string to yyyy-MM-dd
       setExpiresAt(new Date(user.subscription.expiresAt).toISOString().split('T')[0]);
@@ -77,6 +80,7 @@ export default function AdminConsoleUsers() {
       setExpiresAt('');
     }
   };
+
 
   const handleSaveSubscription = (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,8 +92,10 @@ export default function AdminConsoleUsers() {
       status: selectedStatus,
       expiresAt: expiresAt || null,
       notes,
+      tokenBalance: Number(tokenBalance) || 0,
     });
   };
+
 
   if (isLoading && page === 1) {
     return (
@@ -139,15 +145,18 @@ export default function AdminConsoleUsers() {
                 <th className="p-4">Active Sessions</th>
                 <th className="p-4">Subscription</th>
                 <th className="p-4">Tokens Used</th>
+                <th className="p-4">Tokens Balance</th>
                 <th className="p-4 text-center">Actions</th>
               </tr>
             </thead>
+
             <tbody className="divide-y divide-border-light">
               {users.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="p-8 text-center text-text-secondary italic">
+                  <td colSpan={8} className="p-8 text-center text-text-secondary italic">
                     No users found matching search criteria.
                   </td>
+
                 </tr>
               ) : (
                 users.map((user: any) => (
@@ -207,6 +216,10 @@ export default function AdminConsoleUsers() {
                     <td className="p-4 font-mono font-medium text-text-secondary text-xs">
                       {user.tokenUsage?.totalTokens?.toLocaleString() || 0}
                     </td>
+                    <td className="p-4 font-mono font-medium text-text-secondary text-xs">
+                      {user.tokenBalance?.toLocaleString() || 0}
+                    </td>
+
                     <td className="p-4 text-center">
                       <button
                         onClick={() => handleEditClick(user)}
@@ -293,6 +306,19 @@ export default function AdminConsoleUsers() {
                     <option value="cancelled">Cancelled</option>
                   </select>
                 </div>
+              </div>
+
+              {/* Token Balance */}
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-semibold text-text-secondary uppercase">Token Balance</label>
+                <Input
+                  type="number"
+                  value={tokenBalance}
+                  onChange={(e) => setTokenBalance(e.target.value)}
+                  min={0}
+                  className="w-full"
+                  disabled={upsertSubscriptionMutation.isLoading}
+                />
               </div>
 
               {/* Expiration Date */}

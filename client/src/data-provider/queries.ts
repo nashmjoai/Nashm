@@ -577,6 +577,34 @@ export const useGetAdminConsoleTicketsQuery = (
   });
 };
 
+export const useGetAdminConsolePlansQuery = (
+  config?: UseQueryOptions<any>,
+): QueryObserverResult<any> => {
+  return useQuery<any>(['adminConsolePlans'], () => dataService.getAdminConsolePlans(), {
+    refetchOnWindowFocus: false,
+    ...config,
+  });
+};
+
+export const useGetPublicPlansQuery = (
+  config?: UseQueryOptions<any>,
+): QueryObserverResult<any> => {
+  return useQuery<any>(['publicPlans'], () => dataService.getPublicPlans(), {
+    refetchOnWindowFocus: false,
+    ...config,
+  });
+};
+
+export const useGetAdminConsoleAdminsQuery = (
+  config?: UseQueryOptions<any>,
+): QueryObserverResult<any> => {
+  return useQuery<any>(['adminConsoleAdmins'], () => dataService.getAdminConsoleAdmins(), {
+    refetchOnWindowFocus: false,
+    ...config,
+  });
+};
+
+
 export const useGetFamilyPlanQuery = (
   config?: UseQueryOptions<any>,
 ): QueryObserverResult<any> => {

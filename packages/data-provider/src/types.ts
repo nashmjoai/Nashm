@@ -764,6 +764,9 @@ export type TBalanceResponse = {
   refillIntervalUnit?: RefillIntervalUnit;
   lastRefill?: Date | string;
   refillAmount?: number;
+  plan?: string;
+  quota?: number;
+  consumed?: number;
 };
 
 /* -------------------------------------------------------------------------- */

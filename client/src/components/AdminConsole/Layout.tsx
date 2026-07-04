@@ -7,6 +7,8 @@ import {
   Ticket,
   ArrowLeft,
   ShieldCheck,
+  CreditCard,
+  ShieldPlus,
 } from 'lucide-react';
 import { useAuthContext } from '~/hooks';
 
@@ -30,7 +32,9 @@ export default function AdminConsoleLayout() {
   const navItems = [
     { path: 'overview', label: 'Overview', icon: LayoutDashboard },
     { path: 'users', label: 'Users & Subscriptions', icon: UsersIcon },
+    { path: 'plans', label: 'Plans & Tokens', icon: CreditCard },
     { path: 'models', label: 'Models Access', icon: Sliders },
+    { path: 'admins', label: 'Admin Management', icon: ShieldPlus },
     { path: 'tickets', label: 'Support Tickets', icon: Ticket },
   ];
 

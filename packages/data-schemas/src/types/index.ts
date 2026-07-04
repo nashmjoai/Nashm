@@ -47,3 +47,4 @@ export * from './familyPlan';
 export * from './subscription';
 export * from './supportTicket';
 export * from './modelAccess';
+export * from './planConfig';

@@ -1192,6 +1192,71 @@ export const useUpdateAdminConsoleTicketMutation = (
   );
 };
 
+export const useUpdateAdminConsolePlanMutation = (
+  options?: any,
+): UseMutationResult<any, unknown, { plan: string; payload: any }, unknown> => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    ({ plan, payload }: { plan: string; payload: any }) => dataService.updateAdminConsolePlan(plan, payload),
+    {
+      ...options,
+      onSuccess: (data, variables, context) => {
+        queryClient.invalidateQueries(['adminConsolePlans']);
+        options?.onSuccess?.(data, variables, context);
+      },
+    },
+  );
+};
+
+export const useAddAdminConsoleAdminMutation = (
+  options?: any,
+): UseMutationResult<any, unknown, { email: string; role: string }, unknown> => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    (payload: { email: string; role: string }) => dataService.addAdminConsoleAdmin(payload),
+    {
+      ...options,
+      onSuccess: (data, variables, context) => {
+        queryClient.invalidateQueries(['adminConsoleAdmins']);
+        options?.onSuccess?.(data, variables, context);
+      },
+    },
+  );
+};
+
+export const useUpdateAdminConsoleAdminMutation = (
+  options?: any,
+): UseMutationResult<any, unknown, { userId: string; role: string }, unknown> => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    ({ userId, role }: { userId: string; role: string }) => dataService.updateAdminConsoleAdmin(userId, { role }),
+    {
+      ...options,
+      onSuccess: (data, variables, context) => {
+        queryClient.invalidateQueries(['adminConsoleAdmins']);
+        options?.onSuccess?.(data, variables, context);
+      },
+    },
+  );
+};
+
+export const useRemoveAdminConsoleAdminMutation = (
+  options?: any,
+): UseMutationResult<any, unknown, string, unknown> => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    (userId: string) => dataService.removeAdminConsoleAdmin(userId),
+    {
+      ...options,
+      onSuccess: (data, variables, context) => {
+        queryClient.invalidateQueries(['adminConsoleAdmins']);
+        options?.onSuccess?.(data, variables, context);
+      },
+    },
+  );
+};
+
+
 export const useAddFamilyMemberMutation = (
   options?: any,
 ): UseMutationResult<any, unknown, string, unknown> => {

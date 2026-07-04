@@ -1407,6 +1407,34 @@ export function updateAdminConsoleTicket(id: string, status: string): Promise<an
   return request.post(endpoints.adminConsoleTicketUpdate(id), { status });
 }
 
+export function getAdminConsolePlans(): Promise<any> {
+  return request.get(endpoints.adminConsolePlans());
+}
+
+export const updateAdminConsolePlan = (plan: string, payload: any) => {
+  return request.put(endpoints.adminConsolePlan(plan), payload);
+};
+export const getPublicPlans = () => {
+  return request.get(endpoints.publicPlans());
+};
+
+export function getAdminConsoleAdmins(): Promise<any> {
+  return request.get(endpoints.adminConsoleAdmins());
+}
+
+export function addAdminConsoleAdmin(payload: { email: string; role: string }): Promise<any> {
+  return request.post(endpoints.adminConsoleAdmins(), payload);
+}
+
+export function updateAdminConsoleAdmin(userId: string, payload: { role: string }): Promise<any> {
+  return request.put(endpoints.adminConsoleAdminUser(userId), payload);
+}
+
+export function removeAdminConsoleAdmin(userId: string): Promise<any> {
+  return request.delete(endpoints.adminConsoleAdminUser(userId));
+}
+
+
 // Support Ticket Request
 export function createSupportTicket(payload: { subject: string; message: string }): Promise<any> {
   return request.post(endpoints.supportTicket(), payload);

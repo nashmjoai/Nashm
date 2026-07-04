@@ -5,10 +5,12 @@ import { LinkIcon, GearIcon, DropdownMenuSeparator, Avatar } from '@nashm/client
 import { ArchivedChatsModal } from '~/components/Nav/SettingsTabs/General/ArchivedChatsModal';
 import { MyFilesModal } from '~/components/Chat/Input/Files/MyFilesModal';
 import { SupportModal } from './SupportModal';
+import { UpgradeModal } from './UpgradeModal';
 import { useGetStartupConfig, useGetUserBalance } from '~/data-provider';
 import { useAuthContext } from '~/hooks/AuthContext';
 import { useLocalize } from '~/hooks';
 import Settings from './Settings';
+import { Award } from 'lucide-react';
 
 function AccountSettings({ collapsed = false }: { collapsed?: boolean }) {
   const localize = useLocalize();
@@ -21,6 +23,7 @@ function AccountSettings({ collapsed = false }: { collapsed?: boolean }) {
   const [showFiles, setShowFiles] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
+  const [showUpgrade, setShowUpgrade] = useState(false);
   const accountSettingsButtonRef = useRef<HTMLButtonElement>(null);
 
   return (
@@ -96,6 +99,17 @@ function AccountSettings({ collapsed = false }: { collapsed?: boolean }) {
             {localize('com_ui_admin_panel')}
           </Menu.MenuItem>
         )}
+        {startupConfig?.balance?.enabled === true && balanceQuery.data != null && (
+          <Menu.MenuItem onClick={() => setShowUpgrade(true)} className="select-item text-sm">
+            <Award className="icon-md" aria-hidden="true" />
+            <span className="flex items-center gap-1.5">
+              <span>{localize('com_nav_subscription' as any) || 'Plan'}:</span>
+              <span className="font-semibold capitalize text-green-600 dark:text-green-400">
+                {balanceQuery.data.plan || 'Free'}
+              </span>
+            </span>
+          </Menu.MenuItem>
+        )}
         <Menu.MenuItem onClick={() => setShowSettings(true)} className="select-item text-sm">
           <GearIcon className="icon-md" aria-hidden="true" />
           {localize('com_nav_settings')}
@@ -123,6 +137,14 @@ function AccountSettings({ collapsed = false }: { collapsed?: boolean }) {
       {showSettings && <Settings open={showSettings} onOpenChange={setShowSettings} />}
       {showSupport && (
         <SupportModal open={showSupport} onOpenChange={setShowSupport} />
+      )}
+      {showUpgrade && balanceQuery.data != null && (
+        <UpgradeModal
+          open={showUpgrade}
+          onOpenChange={setShowUpgrade}
+          currentPlan={balanceQuery.data.plan || 'free'}
+          onUpgradeSuccess={() => balanceQuery.refetch()}
+        />
       )}
     </Menu.MenuProvider>
   );

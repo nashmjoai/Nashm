@@ -1,7 +1,9 @@
 import type { TokenUsageView } from '~/hooks/Chat/useTokenUsage';
 import type { CurrencyConfig } from '~/utils';
 import { groupToolTokens, formatTokens, formatCost } from '~/utils';
-import { useLocalize } from '~/hooks';
+import { useLocalize, useAuthContext } from '~/hooks';
+import { useGetStartupConfig, useGetUserBalance } from '~/data-provider';
+
 
 interface RowProps {
   label: string;
@@ -34,7 +36,16 @@ interface BreakdownProps {
 
 export default function Breakdown({ view, showCost, currency }: BreakdownProps) {
   const localize = useLocalize();
+  const { isAuthenticated } = useAuthContext();
+  const { data: startupConfig } = useGetStartupConfig();
+  const balanceQuery = useGetUserBalance({
+    enabled: !!isAuthenticated && !!startupConfig?.balance?.enabled,
+  });
+  const balanceData = balanceQuery.data;
+
   const { usedTokens, maxTokens, percent, snapshot, snapshotActive, branchUsage, hasUsage } = view;
+
+
   /** Show the all-branches total only when it (a) exceeds the active branch —
    *  epsilon guards against float summation order surfacing a spurious row in an
    *  unbranched conversation — and (b) has COMPLETE cost coverage, so a sibling
@@ -197,6 +208,47 @@ export default function Breakdown({ view, showCost, currency }: BreakdownProps) 
           </div>
         </>
       )}
+
+      {/* Subscription Quota Section */}
+      {balanceData && (
+        <>
+          <div className="border-t border-border-light" role="separator" />
+          <div className="space-y-1.5 text-xs text-text-secondary">
+            <div className="flex justify-between items-center text-sm font-semibold text-text-primary">
+              <span className="capitalize">{balanceData.plan} Plan</span>
+              <span className="text-[10px] text-blue-500 uppercase font-semibold">Active</span>
+            </div>
+            
+            <div className="flex justify-between items-center text-xs">
+              <span>Consumed Quota:</span>
+              <span className="font-mono font-medium text-text-primary">
+                {formatTokens(balanceData.consumed || 0)} / {formatTokens(balanceData.quota || 0)}
+              </span>
+            </div>
+            
+            <div className="flex justify-between items-center text-xs">
+              <span>Remaining Quota:</span>
+              <span className="font-mono font-bold text-green-500">
+                {formatTokens(balanceData.tokenCredits || 0)}
+              </span>
+            </div>
+            
+            {/* Progress bar for plan quota */}
+            <div className="h-1.5 w-full bg-surface-tertiary rounded-full overflow-hidden mt-1">
+              <div 
+                className="h-full bg-green-500 rounded-full transition-all duration-300"
+                style={{
+                  width: `${Math.min(
+                    ((balanceData.tokenCredits || 0) / (balanceData.quota || 1)) * 100,
+                    100
+                  )}%`
+                }}
+              />
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
+

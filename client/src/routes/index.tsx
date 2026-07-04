@@ -12,6 +12,7 @@ import { MarketplaceProvider } from '~/components/Agents/MarketplaceContext';
 import AgentMarketplace from '~/components/Agents/Marketplace';
 import { OAuthSuccess, OAuthError } from '~/components/OAuth';
 import { AuthContextProvider } from '~/hooks/AuthContext';
+import LandingPage from '~/components/LandingPage';
 import WithRum from '~/lib/rum/WithRum';
 import RouteErrorBoundary from './RouteErrorBoundary';
 import StartupLayout from './Layouts/Startup';
@@ -76,6 +77,17 @@ const loadAdminConsoleTickets = () =>
     Component: m.default,
   }));
 
+const loadAdminConsolePlans = () =>
+  import('~/components/AdminConsole/Plans').then((m) => ({
+    Component: m.default,
+  }));
+
+const loadAdminConsoleAdmins = () =>
+  import('~/components/AdminConsole/Admins').then((m) => ({
+    Component: m.default,
+  }));
+
+
 const baseEl = document.querySelector('base');
 const baseHref = baseEl?.getAttribute('href') || '/';
 
@@ -105,6 +117,10 @@ export const router = createBrowserRouter(
       element: <StartupLayout />,
       errorElement: <RouteErrorBoundary />,
       children: [
+        {
+          index: true,
+          element: <LandingPage />,
+        },
         {
           path: 'register',
           element: <Registration />,
@@ -164,11 +180,20 @@ export const router = createBrowserRouter(
               lazy: loadAdminConsoleModels,
             },
             {
+              path: 'plans',
+              lazy: loadAdminConsolePlans,
+            },
+            {
+              path: 'admins',
+              lazy: loadAdminConsoleAdmins,
+            },
+            {
               path: 'tickets',
               lazy: loadAdminConsoleTickets,
             },
           ],
         },
+
         {
           path: '/',
           element: <Root />,

@@ -179,3 +179,8 @@ claude-flow
 hive-mind-prompt-*.txt
 CLAUDE.md
 .gsd
+
+# Local media/recordings
+*.mp4
+*.png
+video_viewer.html

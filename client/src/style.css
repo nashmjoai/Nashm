@@ -3356,3 +3356,575 @@ html {
 .dark .nashm-glow-orb-2 {
   background: radial-gradient(circle, rgba(160, 18, 42, 0.07) 0%, transparent 70%);
 }
+
+/* Redesigned Landing Page Modern Styles */
+.nashm-grid-bg {
+  background-image:
+    linear-gradient(to right, rgba(196, 30, 58, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(196, 30, 58, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse at center top, black 50%, transparent 95%);
+  -webkit-mask-image: radial-gradient(ellipse at center top, black 50%, transparent 95%);
+}
+
+.dark .nashm-grid-bg {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+}
+
+.nashm-glow-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.nashm-glow-button::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
+  transform: scale(0.5);
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.nashm-glow-button:hover::after {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* Custom scrollbar for mock UI components */
+.nashm-mini-scroll::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.nashm-mini-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.nashm-mini-scroll::-webkit-scrollbar-thumb {
+  background: rgba(196, 30, 58, 0.15);
+  border-radius: 4px;
+}
+
+.dark .nashm-mini-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Gradient section divider */
+.nashm-gradient-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(196, 30, 58, 0.3) 50%, transparent 100%);
+}
+
+.dark .nashm-gradient-divider {
+  background: linear-gradient(90deg, transparent 0%, rgba(196, 30, 58, 0.2) 50%, transparent 100%);
+}
+
+/* Marquee ticker animation */
+@keyframes nashm-marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes nashm-marquee-reverse {
+  0% {
+    transform: translateX(-50%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.nashm-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: nashm-marquee 35s linear infinite;
+  will-change: transform;
+}
+
+.nashm-marquee-track-reverse {
+  display: flex;
+  width: max-content;
+  animation: nashm-marquee-reverse 35s linear infinite;
+  will-change: transform;
+}
+
+.nashm-marquee-track:hover,
+.nashm-marquee-track-reverse:hover {
+  animation-play-state: paused;
+}
+
+/* Glow border card for dark sections */
+.nashm-glow-card {
+  position: relative;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.nashm-glow-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(196, 30, 58, 0.3) 0%, transparent 50%, rgba(196, 30, 58, 0.15) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  opacity: 0.5;
+}
+
+.nashm-glow-card:hover::before {
+  opacity: 1;
+}
+
+/* Final CTA glow backdrop */
+.nashm-cta-glow {
+  position: relative;
+}
+
+.nashm-cta-glow::before {
+  content: '';
+  position: absolute;
+  inset: -40px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(196, 30, 58, 0.08) 0%, transparent 70%);
+  filter: blur(60px);
+  pointer-events: none;
+}
+
+.dark .nashm-cta-glow::before {
+  background: radial-gradient(circle, rgba(196, 30, 58, 0.12) 0%, transparent 70%);
+}
+
+/* Navbar scroll state */
+.nashm-nav-scrolled {
+  border-bottom-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.dark .nashm-nav-scrolled {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* ═══════════════════════════════════════════════
+   REDSUN-STYLE LANDING PAGE — Nashm Edition
+   ═══════════════════════════════════════════════ */
+
+/* Hero "What's New" badge */
+.nashm-badge-new {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.85rem 0.3rem 0.4rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(196, 30, 58, 0.08);
+  border: 1px solid rgba(196, 30, 58, 0.2);
+  color: #C41E3A;
+  transition: background 0.2s;
+}
+
+.nashm-badge-new .badge-pill {
+  background: #C41E3A;
+  color: #fff;
+  border-radius: 9999px;
+  padding: 0.15rem 0.55rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.dark .nashm-badge-new {
+  background: rgba(196, 30, 58, 0.12);
+  border-color: rgba(196, 30, 58, 0.3);
+  color: #f87171;
+}
+
+.dark .nashm-badge-new .badge-pill {
+  background: #C41E3A;
+  color: #fff;
+}
+
+/* ── Hero Section Styles ── */
+.nashm-hero-section {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: var(--presentation);
+}
+
+.dark .nashm-hero-section {
+  background: var(--presentation);
+}
+
+/* Radial gradient backdrop */
+.nashm-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(196, 30, 58, 0.07) 0%, transparent 70%);
+}
+
+.dark .nashm-hero-bg {
+  background:
+    radial-gradient(ellipse 80% 55% at 50% -5%, rgba(196, 30, 58, 0.18) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 40% at 80% 80%, rgba(196, 30, 58, 0.06) 0%, transparent 70%);
+}
+
+/* Grid lines */
+.nashm-hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(196, 30, 58, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(196, 30, 58, 0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, black 30%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, black 30%, transparent 100%);
+}
+
+.dark .nashm-hero-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+}
+
+/* Hero heading gradient text */
+.nashm-hero-title {
+  background: linear-gradient(135deg, #1a1a1a 0%, #4a4a4a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dark .nashm-hero-title {
+  background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.75) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Floating Chat Visual Card ── */
+.nashm-chat-visual {
+  position: relative;
+  width: 100%;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.06),
+    0 32px 80px rgba(0, 0, 0, 0.12),
+    0 8px 24px rgba(196, 30, 58, 0.06);
+  transform: perspective(1000px) rotateX(2deg) rotateY(-2deg);
+  transition: transform 0.6s ease, box-shadow 0.6s ease;
+  animation: nashm-float 6s ease-in-out infinite;
+}
+
+.nashm-chat-visual:hover {
+  transform: perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1.01);
+  box-shadow:
+    0 0 0 1px rgba(196, 30, 58, 0.15),
+    0 40px 100px rgba(0, 0, 0, 0.18),
+    0 12px 32px rgba(196, 30, 58, 0.1);
+}
+
+.dark .nashm-chat-visual {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 32px 80px rgba(0, 0, 0, 0.5),
+    0 8px 24px rgba(196, 30, 58, 0.12);
+}
+
+.dark .nashm-chat-visual:hover {
+  box-shadow:
+    0 0 0 1px rgba(196, 30, 58, 0.3),
+    0 40px 100px rgba(0, 0, 0, 0.6),
+    0 12px 32px rgba(196, 30, 58, 0.2);
+}
+
+@keyframes nashm-float {
+
+  0%,
+  100% {
+    transform: perspective(1000px) rotateX(2deg) rotateY(-2deg) translateY(0px);
+  }
+
+  50% {
+    transform: perspective(1000px) rotateX(2deg) rotateY(-2deg) translateY(-8px);
+  }
+}
+
+/* Chat visual glow behind it */
+.nashm-chat-glow {
+  position: absolute;
+  inset: 10% 5%;
+  background: radial-gradient(ellipse at center, rgba(196, 30, 58, 0.08) 0%, transparent 70%);
+  filter: blur(40px);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.dark .nashm-chat-glow {
+  background: radial-gradient(ellipse at center, rgba(196, 30, 58, 0.2) 0%, transparent 70%);
+}
+
+/* Typing animation dots */
+@keyframes nashm-typing-dot {
+
+  0%,
+  80%,
+  100% {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.nashm-typing-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #C41E3A;
+  animation: nashm-typing-dot 1.4s ease-in-out infinite;
+}
+
+.nashm-typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.nashm-typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Message bubble appear animation */
+@keyframes nashm-msg-appear {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.nashm-msg-appear {
+  animation: nashm-msg-appear 0.4s ease-out forwards;
+}
+
+/* ── Features Section Styles ── */
+.nashm-features-section {
+  background: var(--presentation);
+  position: relative;
+}
+
+.dark .nashm-features-section {
+  background: var(--presentation);
+}
+
+/* Feature big card — RedSun style */
+.nashm-feature-big-card {
+  border-radius: 1.25rem;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: #ffffff;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  cursor: default;
+}
+
+.nashm-feature-big-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(196, 30, 58, 0.06);
+  border-color: rgba(196, 30, 58, 0.2);
+}
+
+.dark .nashm-feature-big-card {
+  background: #111111;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.dark .nashm-feature-big-card:hover {
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(196, 30, 58, 0.12);
+  border-color: rgba(196, 30, 58, 0.3);
+}
+
+/* Feature icon accent */
+.nashm-feat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(196, 30, 58, 0.2);
+  background: rgba(196, 30, 58, 0.08);
+  color: #C41E3A;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.nashm-feat-icon:hover,
+.nashm-feature-big-card:hover .nashm-feat-icon {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(196, 30, 58, 0.15);
+}
+
+.dark .nashm-feat-icon {
+  background: rgba(196, 30, 58, 0.12);
+  border-color: rgba(196, 30, 58, 0.25);
+}
+
+/* Two-column features list card (RedSun style) */
+.nashm-feat-list-card {
+  border-radius: 1rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  background: #ffffff;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+}
+
+.nashm-feat-list-card:hover {
+  background: #fdf8f8;
+  border-color: rgba(196, 30, 58, 0.15);
+  transform: translateX(4px);
+}
+
+.dark .nashm-feat-list-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.dark .nashm-feat-list-card:hover {
+  background: rgba(196, 30, 58, 0.05);
+  border-color: rgba(196, 30, 58, 0.2);
+  transform: translateX(4px);
+}
+
+/* Feature list icon */
+.nashm-feat-list-icon {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+
+.nashm-feat-list-card:hover .nashm-feat-list-icon {
+  transform: scale(1.08);
+}
+
+/* "Powerful Features" heading — RedSun italic style */
+.nashm-features-heading {
+  font-size: clamp(2.2rem, 5vw, 4rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.nashm-features-heading em {
+  font-style: italic;
+  color: #C41E3A;
+}
+
+.dark .nashm-features-heading em {
+  color: #f87171;
+}
+
+/* Stats chip in hero */
+.nashm-stat-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.875rem;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.nashm-stat-chip:hover {
+  border-color: rgba(196, 30, 58, 0.2);
+  transform: translateY(-2px);
+}
+
+.dark .nashm-stat-chip {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.dark .nashm-stat-chip:hover {
+  border-color: rgba(196, 30, 58, 0.3);
+}
+
+/* Animated scan line for chat visual */
+@keyframes nashm-scan {
+  0% {
+    transform: translateY(-100%);
+  }
+
+  100% {
+    transform: translateY(400%);
+  }
+}
+
+.nashm-scan-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(196, 30, 58, 0.4), transparent);
+  animation: nashm-scan 4s linear infinite;
+  pointer-events: none;
+}
+
+/* Pulse ring for live indicator */
+@keyframes nashm-pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.nashm-pulse-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: currentColor;
+  animation: nashm-pulse-ring 1.5s ease-out infinite;
+}

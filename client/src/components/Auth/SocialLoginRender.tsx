@@ -1,17 +1,5 @@
-import {
-  GoogleIcon,
-  FacebookIcon,
-  OpenIDIcon,
-  GithubIcon,
-  DiscordIcon,
-  AppleIcon,
-  SamlIcon,
-} from '@nashm/client';
-
-import SocialButton from './SocialButton';
-
+import { GoogleIcon } from '@nashm/client';
 import { useLocalize } from '~/hooks';
-
 import { TStartupConfig } from 'nashm-data-provider';
 
 function SocialLoginRender({
@@ -25,117 +13,40 @@ function SocialLoginRender({
     return null;
   }
 
-  const providerComponents = {
-    discord: startupConfig.discordLoginEnabled && (
-      <SocialButton
-        key="discord"
-        enabled={startupConfig.discordLoginEnabled}
-        serverDomain={startupConfig.serverDomain}
-        oauthPath="discord"
-        Icon={DiscordIcon}
-        label={localize('com_auth_discord_login')}
-        id="discord"
-      />
-    ),
-    facebook: startupConfig.facebookLoginEnabled && (
-      <SocialButton
-        key="facebook"
-        enabled={startupConfig.facebookLoginEnabled}
-        serverDomain={startupConfig.serverDomain}
-        oauthPath="facebook"
-        Icon={FacebookIcon}
-        label={localize('com_auth_facebook_login')}
-        id="facebook"
-      />
-    ),
-    github: startupConfig.githubLoginEnabled && (
-      <SocialButton
-        key="github"
-        enabled={startupConfig.githubLoginEnabled}
-        serverDomain={startupConfig.serverDomain}
-        oauthPath="github"
-        Icon={GithubIcon}
-        label={localize('com_auth_github_login')}
-        id="github"
-      />
-    ),
-    google: startupConfig.googleLoginEnabled && (
-      <SocialButton
-        key="google"
-        enabled={startupConfig.googleLoginEnabled}
-        serverDomain={startupConfig.serverDomain}
-        oauthPath="google"
-        Icon={GoogleIcon}
-        label={localize('com_auth_google_login')}
-        id="google"
-      />
-    ),
-    apple: startupConfig.appleLoginEnabled && (
-      <SocialButton
-        key="apple"
-        enabled={startupConfig.appleLoginEnabled}
-        serverDomain={startupConfig.serverDomain}
-        oauthPath="apple"
-        Icon={AppleIcon}
-        label={localize('com_auth_apple_login')}
-        id="apple"
-      />
-    ),
-    openid: startupConfig.openidLoginEnabled && (
-      <SocialButton
-        key="openid"
-        enabled={startupConfig.openidLoginEnabled}
-        serverDomain={startupConfig.serverDomain}
-        oauthPath="openid"
-        Icon={() =>
-          startupConfig.openidImageUrl ? (
-            <img src={startupConfig.openidImageUrl} alt="OpenID Logo" className="h-5 w-5" />
-          ) : (
-            <OpenIDIcon />
-          )
-        }
-        label={startupConfig.openidLabel}
-        id="openid"
-      />
-    ),
-    saml: startupConfig.samlLoginEnabled && (
-      <SocialButton
-        key="saml"
-        enabled={startupConfig.samlLoginEnabled}
-        serverDomain={startupConfig.serverDomain}
-        oauthPath="saml"
-        Icon={() =>
-          startupConfig.samlImageUrl ? (
-            <img src={startupConfig.samlImageUrl} alt="SAML Logo" className="h-5 w-5" />
-          ) : (
-            <SamlIcon />
-          )
-        }
-        label={startupConfig.samlLabel ? startupConfig.samlLabel : localize('com_auth_saml_login')}
-        id="saml"
-      />
-    ),
-  };
+  const serverDomain = startupConfig.serverDomain || '';
+
+  const showGoogle = startupConfig.googleLoginEnabled;
+
+  if (!showGoogle) {
+    return null;
+  }
 
   return (
-    startupConfig.socialLoginEnabled && (
-      <>
-        {startupConfig.emailLoginEnabled && (
-          <>
-            <div className="relative mt-6 flex w-full items-center justify-center border border-t border-gray-300 uppercase dark:border-gray-600">
-              <div className="absolute bg-white px-3 text-xs text-black dark:bg-gray-900 dark:text-white">
-                Or
-              </div>
-            </div>
-            <div className="mt-8" />
-          </>
-        )}
-        <div className="mt-2">
-          {startupConfig.socialLogins?.map((provider) => providerComponents[provider] || null)}
+    <div className="w-full mt-6">
+      {startupConfig.emailLoginEnabled && (
+        <div className="relative flex py-4 items-center">
+          <div className="flex-grow border-t border-gray-200 dark:border-gray-800"></div>
+          <span className="flex-shrink mx-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+            {localize('com_auth_or' as any) || 'Or'}
+          </span>
+          <div className="flex-grow border-t border-gray-200 dark:border-gray-800"></div>
         </div>
-      </>
-    )
+      )}
+      
+      <div className="mt-2">
+        <a
+          aria-label="Sign in with Google"
+          className="flex w-full items-center justify-center gap-3 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 px-5 py-3 text-sm font-semibold text-gray-700 dark:text-gray-200 shadow-sm transition-all duration-300 hover:bg-gray-50 dark:hover:bg-gray-900 hover:border-gray-300 dark:hover:border-gray-700 hover:shadow active:scale-[0.98]"
+          href={`${serverDomain}/oauth/google`}
+          data-testid="google"
+        >
+          <GoogleIcon />
+          <span>{localize('com_auth_google_login' as any) || 'Sign in with Google'}</span>
+        </a>
+      </div>
+    </div>
   );
 }
 
 export default SocialLoginRender;
+

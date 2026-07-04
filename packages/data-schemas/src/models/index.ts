@@ -3,6 +3,7 @@ import { createFamilyPlanModel } from './familyPlan';
 import { createSubscriptionModel } from './subscription';
 import { createSupportTicketModel } from './supportTicket';
 import { createModelAccessModel } from './modelAccess';
+import { createPlanConfigModel } from './planConfig';
 import { createSkillSyncStatusModel } from './skillSyncStatus';
 import { createConversationTagModel } from './conversationTag';
 import { createAgentCategoryModel } from './agentCategory';
@@ -83,6 +84,7 @@ export function createModels(mongoose: typeof import('mongoose')): {
   Subscription: ReturnType<typeof createSubscriptionModel>;
   SupportTicket: ReturnType<typeof createSupportTicketModel>;
   ModelAccess: ReturnType<typeof createModelAccessModel>;
+  PlanConfig: ReturnType<typeof createPlanConfigModel>;
 } {
   return {
     User: createUserModel(mongoose),
@@ -125,5 +127,6 @@ export function createModels(mongoose: typeof import('mongoose')): {
     Subscription: createSubscriptionModel(mongoose),
     SupportTicket: createSupportTicketModel(mongoose),
     ModelAccess: createModelAccessModel(mongoose),
+    PlanConfig: createPlanConfigModel(mongoose),
   };
 }

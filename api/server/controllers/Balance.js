@@ -1,4 +1,5 @@
-const { findBalanceByUser } = require('~/models');
+const { findBalanceByUser, PlanConfig, Subscription, FamilyPlan } = require('~/models');
+const { getEffectiveSubscription } = require('@nashm/api');
 
 async function balanceController(req, res) {
   const balanceLocals = res.locals || {};
@@ -13,7 +14,9 @@ async function balanceController(req, res) {
     return res.status(404).json({ error: 'Balance not found' });
   }
 
-  const { _id: _, ...result } = balanceData;
+  const result = balanceData.toObject != null ? balanceData.toObject() : balanceData;
+  delete result._id;
+  delete result.__v;
 
   if (!result.autoRefillEnabled) {
     delete result.refillIntervalValue;
@@ -22,7 +25,40 @@ async function balanceController(req, res) {
     delete result.refillAmount;
   }
 
-  res.status(200).json(result);
+  let plan = 'free';
+  let quota = 50000;
+
+  try {
+    const effective = await getEffectiveSubscription(req.user.id, {
+      Subscription,
+      FamilyPlan,
+    });
+    if (effective && effective.plan) {
+      plan = effective.plan;
+      const planConfig = await PlanConfig.findOne({ plan }).lean();
+      quota = planConfig?.tokenQuota ?? (
+        plan === 'free' ? 50000 :
+        plan === 'individual' ? 500000 :
+        plan === 'family' ? 1000000 :
+        plan === 'developer' ? 2000000 : 50000
+      );
+      if (plan === 'family' && planConfig?.familyMemberTokenQuota) {
+        quota = planConfig.familyMemberTokenQuota;
+      }
+    }
+  } catch (error) {
+    // Fallback to default
+  }
+
+  const remaining = Math.max(0, result.tokenCredits || 0);
+  const consumed = Math.max(0, quota - remaining);
+
+  res.status(200).json({
+    ...result,
+    plan,
+    quota,
+    consumed,
+  });
 }
 
 module.exports = balanceController;

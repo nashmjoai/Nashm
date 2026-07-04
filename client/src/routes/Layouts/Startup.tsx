@@ -28,6 +28,7 @@ export default function StartupLayout({ isAuthenticated }: { isAuthenticated?: b
   const localize = useLocalize();
   const navigate = useNavigate();
   const location = useLocation();
+  const isLandingPath = location.pathname === '/';
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -61,6 +62,10 @@ export default function StartupLayout({ isAuthenticated }: { isAuthenticated?: b
     startupConfig,
     isFetching,
   };
+
+  if (isLandingPath) {
+    return <Outlet context={contextValue} />;
+  }
 
   return (
     <AuthLayout

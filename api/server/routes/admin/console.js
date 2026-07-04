@@ -18,6 +18,8 @@ const handlers = createAdminConsoleHandlers({
   Subscription: dbModels.Subscription,
   FamilyPlan: dbModels.FamilyPlan,
   ModelAccess: dbModels.ModelAccess,
+  PlanConfig: dbModels.PlanConfig,
+  Balance: dbModels.Balance,
   SupportTicket: dbModels.SupportTicket,
   loadModels,
 });
@@ -31,5 +33,15 @@ router.get('/models', handlers.models);
 router.post('/model', handlers.updateModel);
 router.get('/tickets', handlers.supportTickets);
 router.post('/tickets/:id', handlers.updateSupportTicket);
+
+// Plans management
+router.get('/plans', handlers.getPlans);
+router.put('/plans/:plan', handlers.updatePlan);
+
+// Admin users management
+router.get('/admins', handlers.getAdmins);
+router.post('/admins', handlers.addAdmin);
+router.put('/admins/:userId', handlers.updateAdmin);
+router.delete('/admins/:userId', handlers.removeAdmin);
 
 module.exports = router;

@@ -1,4 +1,4 @@
-﻿# NASHM Configuration
+# NASHM Configuration
 # For full documentation: https://www.Nashm.ai/docs/configuration/Nashm_yaml
 
 # Configuration version (required)
@@ -6,6 +6,17 @@ version: 1.3.13
 
 # Cache settings
 cache: true
+
+# Default Model Specifications
+modelSpecs:
+  list:
+    - name: "gemini-3.5-flash"
+      label: "Gemini 3.5 Flash"
+      description: "نموذج Google المتقدم والسريع"
+      default: true
+      preset:
+        endpoint: "google"
+        model: "gemini-3.5-flash"
 
 # Custom interface configuration
 interface:

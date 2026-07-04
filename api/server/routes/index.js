@@ -39,6 +39,7 @@ const user = require('./user');
 const familyPlan = require('./familyPlan');
 const mcp = require('./mcp');
 const rum = require('./rum');
+const plans = require('./plans');
 
 module.exports = {
   rum,
@@ -82,4 +83,5 @@ module.exports = {
   staticRoute,
   accessPermissions,
   familyPlan,
+  plans,
 };

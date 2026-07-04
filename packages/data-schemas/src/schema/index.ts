@@ -33,3 +33,4 @@ export { default as configSchema } from './config';
 export { default as subscriptionSchema } from './subscription';
 export { default as supportTicketSchema } from './supportTicket';
 export { default as modelAccessSchema } from './modelAccess';
+export { default as planConfigSchema } from './planConfig';
