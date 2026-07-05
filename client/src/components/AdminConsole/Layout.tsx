@@ -79,7 +79,7 @@ export default function AdminConsoleLayout() {
         {/* Footer actions */}
         <div className="p-4 border-t border-border-light">
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/c/new')}
             className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium text-text-secondary hover:bg-surface-tertiary hover:text-text-primary transition-all duration-200"
           >
             <ArrowLeft className="size-5" />

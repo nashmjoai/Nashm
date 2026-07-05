@@ -205,7 +205,11 @@ const AuthContextProvider = ({
         if (authConfig?.test === true) {
           return;
         }
-        navigate(buildLoginRedirectUrl());
+        const publicPaths = ['/', '/register', '/forgot-password', '/reset-password'];
+        const isPublicPath = publicPaths.includes(window.location.pathname);
+        if (!isPublicPath) {
+          navigate(buildLoginRedirectUrl());
+        }
       },
       onError: (error) => {
         if (isExternalRedirectRef.current) {
@@ -215,7 +219,11 @@ const AuthContextProvider = ({
         if (authConfig?.test === true) {
           return;
         }
-        navigate(buildLoginRedirectUrl());
+        const publicPaths = ['/', '/register', '/forgot-password', '/reset-password'];
+        const isPublicPath = publicPaths.includes(window.location.pathname);
+        if (!isPublicPath) {
+          navigate(buildLoginRedirectUrl());
+        }
       },
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- deps are stable at mount; adding refreshToken causes infinite re-fire
@@ -229,7 +237,11 @@ const AuthContextProvider = ({
       setUser(userQuery.data);
     } else if (userQuery.isError) {
       doSetError((userQuery.error as Error).message);
-      navigate(buildLoginRedirectUrl(), { replace: true });
+      const publicPaths = ['/', '/register', '/forgot-password', '/reset-password'];
+      const isPublicPath = publicPaths.includes(window.location.pathname);
+      if (!isPublicPath) {
+        navigate(buildLoginRedirectUrl(), { replace: true });
+      }
     }
     if (error != null && error && isAuthenticated) {
       doSetError(undefined);

@@ -17,7 +17,7 @@ const domains = {
   server: process.env.DOMAIN_SERVER,
 };
 
-function createOAuthHandler(redirectUri = domains.client) {
+function createOAuthHandler(redirectUri = `${domains.client}/c/new`) {
   /**
    * A handler to process OAuth authentication results.
    * @type {Function}
