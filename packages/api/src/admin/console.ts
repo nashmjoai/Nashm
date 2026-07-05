@@ -748,12 +748,106 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
           tokensPerPeriod: Math.max(0, Number(m.tokensPerPeriod) || 0),
         }));
       }
-
       const updated = await deps.PlanConfig.findOneAndUpdate(
         { plan },
         { $set },
         { new: true, upsert: true },
       ).lean<IPlanConfig>();
+
+      // Update balances for all users with this plan
+      if (typeof body.tokenQuota === 'number' || (plan === 'family' && typeof body.familyMemberTokenQuota === 'number')) {
+        const newQuota = plan === 'family' && typeof body.familyMemberTokenQuota === 'number'
+          ? body.familyMemberTokenQuota
+          : body.tokenQuota;
+
+        if (typeof newQuota === 'number') {
+          if (plan === 'free') {
+            // Find non-free direct active users
+            const nonFreeDirectUsers = await deps.Subscription.find({
+              plan: { $in: ['individual', 'family', 'developer'] },
+              status: 'active',
+            }).distinct('user');
+
+            // Find all active family plan owners/members
+            const activeFamilyPlans = await deps.FamilyPlan.find({ status: 'active' }).lean();
+            const familyUserIds = new Set<string>();
+            for (const fp of activeFamilyPlans) {
+              if (fp.owner) {
+                familyUserIds.add(fp.owner.toString());
+              }
+              if (fp.members) {
+                for (const m of fp.members) {
+                  if (m.user) {
+                    familyUserIds.add(m.user.toString());
+                  }
+                }
+              }
+            }
+
+            const excludedUserIds = Array.from(
+              new Set([
+                ...nonFreeDirectUsers.map((id) => id.toString()),
+                ...Array.from(familyUserIds),
+              ])
+            ).map((id) => new Types.ObjectId(id));
+
+            // Update balance for free users (those who don't have non-free plans/subscriptions)
+            await deps.Balance.updateMany(
+              { user: { $nin: excludedUserIds } },
+              { $set: { tokenCredits: newQuota } },
+            );
+          } else if (plan === 'family') {
+            // Find direct family subscribers
+            const directUserIds = await deps.Subscription.find({
+              plan: 'family',
+              status: 'active',
+            }).distinct('user');
+
+            // Find all active family plan owners/members
+            const activeFamilyPlans = await deps.FamilyPlan.find({ status: 'active' }).lean();
+            const familyUserIds = new Set<string>();
+            for (const fp of activeFamilyPlans) {
+              if (fp.owner) {
+                familyUserIds.add(fp.owner.toString());
+              }
+              if (fp.members) {
+                for (const m of fp.members) {
+                  if (m.user) {
+                    familyUserIds.add(m.user.toString());
+                  }
+                }
+              }
+            }
+
+            const allFamilyUsers = Array.from(
+              new Set([
+                ...directUserIds.map((id) => id.toString()),
+                ...Array.from(familyUserIds),
+              ])
+            ).map((id) => new Types.ObjectId(id));
+
+            await deps.Balance.updateMany(
+              { user: { $in: allFamilyUsers } },
+              { $set: { tokenCredits: newQuota } },
+            );
+          } else {
+            // For individual / developer plans
+            const activeSubscribedUsers = await deps.Subscription.find({
+              plan,
+              status: 'active',
+            }).distinct('user');
+
+            const activeSubscribedUserObjectIds = activeSubscribedUsers.map(
+              (id) => new Types.ObjectId(id.toString()),
+            );
+
+            await deps.Balance.updateMany(
+              { user: { $in: activeSubscribedUserObjectIds } },
+              { $set: { tokenCredits: newQuota } },
+            );
+          }
+        }
+      }
 
       return res.status(200).json({ plan: updated });
     } catch (error) {
