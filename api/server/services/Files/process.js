@@ -428,6 +428,7 @@ const processFileURL = async ({
         tenantId,
         width: dimensions.width,
         height: dimensions.height,
+        data: typeof savedFile === 'string' ? undefined : savedFile.data,
       },
       true,
     );
@@ -539,6 +540,7 @@ const uploadImageBuffer = async ({ req, context, metadata = {}, resize = true })
       ...(await getRetentionExpiry(req)),
       height,
       tenantId: req.user.tenantId,
+      data: buffer,
     },
     true,
   );
@@ -583,6 +585,7 @@ const processFileUpload = async ({ req, res, metadata }) => {
     embedded,
     height,
     width,
+    data,
   } = await sanitizedUploadFn({
     req,
     file,
@@ -645,6 +648,7 @@ const processFileUpload = async ({ req, res, metadata }) => {
       height,
       width,
       tenantId: req.user.tenantId,
+      data,
     },
     true,
   );
@@ -915,6 +919,7 @@ const processAgentFileUpload = async ({ req, res, metadata }) => {
     storageRegion: _storageRegion,
     height,
     width,
+    data,
   } = storageResult;
   // For RAG files, use embedding result; for others, use storage result
   let embedded = storageResult.embedded;
@@ -979,6 +984,7 @@ const processAgentFileUpload = async ({ req, res, metadata }) => {
       height,
       width,
       tenantId: req.user.tenantId,
+      data,
     }),
     ...retentionExpiry,
   };

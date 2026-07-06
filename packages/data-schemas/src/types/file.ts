@@ -8,6 +8,7 @@ export interface IMongoFile extends Omit<Document, 'model'> {
   file_id: string;
   temp_file_id?: string;
   bytes: number;
+  data?: Buffer;
   text?: string;
   /**
    * Format of the `text` field — `'html'` when the backend produced

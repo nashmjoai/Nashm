@@ -53,7 +53,7 @@ async function uploadLocalImage({ req, file, file_id, endpoint, resolution = 'hi
     const bytes = Buffer.byteLength(resizedBuffer);
     await fs.promises.writeFile(newPath, resizedBuffer);
     const filepath = path.posix.join('/', 'images', req.user.id, path.basename(newPath));
-    return { filepath, bytes, width, height };
+    return { filepath, bytes, width, height, data: resizedBuffer };
   }
 
   const outputFilePath = newPath.replace(extension, targetExtension);
@@ -62,7 +62,7 @@ async function uploadLocalImage({ req, file, file_id, endpoint, resolution = 'hi
   const bytes = Buffer.byteLength(data);
   const filepath = path.posix.join('/', 'images', req.user.id, path.basename(outputFilePath));
   await fs.promises.unlink(inputFilePath);
-  return { filepath, bytes, width, height };
+  return { filepath, bytes, width, height, data };
 }
 
 /**

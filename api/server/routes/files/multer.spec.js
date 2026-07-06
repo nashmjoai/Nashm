@@ -467,7 +467,9 @@ describe('Multer Configuration', () => {
 
     it('should handle file system errors when directory creation fails', () => {
       // Test with a non-existent parent directory to simulate fs issues
-      const invalidPath = '/nonexistent/path/that/should/not/exist';
+      const invalidPath = process.platform === 'win32'
+        ? 'Z:\\nonexistent\\path\\that\\should\\not\\exist'
+        : '/nonexistent/path/that/should/not/exist';
       mockReq.config.paths.uploads = invalidPath;
 
       // The current implementation doesn't catch errors, so they're thrown synchronously

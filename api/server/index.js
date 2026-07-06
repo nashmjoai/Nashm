@@ -266,7 +266,47 @@ const startServer = async () => {
   app.use('/api/config', preAuthTenantMiddleware, optionalJwtAuth, routes.config);
   app.use('/api/assistants', routes.assistants);
   app.use('/api/files', await routes.files.initialize());
-  app.use('/images/', createValidateImageRequest(appConfig.secureImageLinks), routes.staticRoute);
+  const restoreImageFromDB = async (req, res, next) => {
+    try {
+      if (appConfig.fileStrategy !== 'local') {
+        return next();
+      }
+      const imageOutput = appConfig.paths.imageOutput;
+      const fullPath = path.join(imageOutput, req.path);
+
+      // Prevent path traversal
+      const rel = path.relative(imageOutput, fullPath);
+      if (rel.startsWith('..') || path.isAbsolute(rel) || rel.includes(`..${path.sep}`)) {
+        return next();
+      }
+
+      if (!fs.existsSync(fullPath)) {
+        const db = require('~/models');
+        const dbFilepath = path.posix.join('/images', req.path);
+        const files = await db.getFiles({ filepath: dbFilepath }, null, { data: 1 });
+        const fileRecord = files && files[0];
+        if (fileRecord && fileRecord.data) {
+          const dir = path.dirname(fullPath);
+          if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+          }
+          fs.writeFileSync(fullPath, fileRecord.data);
+          logger.info(`[restoreImageFromDB] Lazily restored missing image from DB to disk: ${fullPath}`);
+        }
+      }
+      next();
+    } catch (error) {
+      logger.error('[restoreImageFromDB] Error restoring image:', error);
+      next();
+    }
+  };
+
+  app.use(
+    '/images/',
+    createValidateImageRequest(appConfig.secureImageLinks),
+    restoreImageFromDB,
+    routes.staticRoute,
+  );
   app.use('/api/share', preAuthTenantMiddleware, routes.share);
   app.use('/api/roles', routes.roles);
   app.use('/api/agents/chat', rejectChatStartsUntilReady);

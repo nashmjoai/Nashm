@@ -93,7 +93,7 @@ export function createFileMethods(mongoose: typeof import('mongoose')): {
     if (selectFields != null) {
       query.select(selectFields);
     } else {
-      query.select({ text: 0 });
+      query.select({ text: 0, data: 0 });
     }
     return await query.sort(sortOptions).lean<IMongoFile[]>();
   }
@@ -304,6 +304,12 @@ export function createFileMethods(mongoose: typeof import('mongoose')): {
       ...data,
       expiresAt: new Date(Date.now() + 3600 * 1000),
     };
+
+    const MAX_DB_SIZE = 15 * 1024 * 1024; // 15MB
+    if (fileData.data && fileData.bytes && fileData.bytes > MAX_DB_SIZE) {
+      logger.warn(`[createFile] File ${fileData.filename || data.file_id} size exceeds 15MB limit. Skipping binary storage in MongoDB.`);
+      delete fileData.data;
+    }
 
     if (disableTTL) {
       delete fileData.expiresAt;

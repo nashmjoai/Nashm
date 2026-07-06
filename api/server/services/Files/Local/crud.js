@@ -146,6 +146,7 @@ async function saveFileFromURL({ userId, URL, fileName, basePath = 'images' }) {
       bytes,
       type,
       dimensions,
+      data: buffer,
     };
   } catch (error) {
     logger.error('[saveFileFromURL] Error while saving the file:', error);
@@ -299,7 +300,7 @@ async function uploadLocalFile({ req, file, file_id }) {
     }
   }
 
-  return { filepath, bytes, height, width };
+  return { filepath, bytes, height, width, data: inputBuffer };
 }
 
 /**
@@ -309,6 +310,32 @@ async function uploadLocalFile({ req, file, file_id }) {
  * @param {string} filepath - The filepath.
  * @returns {ReadableStream} A readable stream of the file.
  */
+/**
+ * Helper to check if a local file exists on disk, and if not, restore it from MongoDB.
+ *
+ * @param {string} fullPath - The expected destination path on disk.
+ * @param {string} filepath - The DB filepath to match.
+ */
+async function checkAndRestoreFile(fullPath, filepath) {
+  try {
+    if (!fs.existsSync(fullPath)) {
+      const db = require('~/models');
+      const files = await db.getFiles({ filepath }, null, { data: 1 });
+      const fileRecord = files && files[0];
+      if (fileRecord && fileRecord.data) {
+        const dir = path.dirname(fullPath);
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
+        }
+        fs.writeFileSync(fullPath, fileRecord.data);
+        logger.info(`[restoreFile] Lazily restored missing file from DB to disk: ${fullPath}`);
+      }
+    }
+  } catch (err) {
+    logger.error(`[restoreFile] Error restoring file from DB: ${filepath}`, err);
+  }
+}
+
 async function getLocalFileStream(req, filepath) {
   try {
     const appConfig = req.config;
@@ -329,6 +356,8 @@ async function getLocalFileStream(req, filepath) {
         throw new Error(`Invalid file path: ${filepath}`);
       }
 
+      await checkAndRestoreFile(fullPath, filepath);
+
       return fs.createReadStream(fullPath);
     } else if (filepath.includes('/images/')) {
       const basePath = filepath.split('/images/')[1];
@@ -346,6 +375,8 @@ async function getLocalFileStream(req, filepath) {
         logger.warn(`Invalid relative file path: ${filepath}`);
         throw new Error(`Invalid file path: ${filepath}`);
       }
+
+      await checkAndRestoreFile(fullPath, filepath);
 
       return fs.createReadStream(fullPath);
     }

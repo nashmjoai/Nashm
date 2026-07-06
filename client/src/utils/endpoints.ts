@@ -366,6 +366,7 @@ export function applyModelSpecEphemeralAgent({
   const agent: t.TEphemeralAgent = {
     mcp: modelSpec.mcpServers ?? [],
     web_search: modelSpec.webSearch ?? false,
+    gemini_image_gen: false,
     file_search: modelSpec.fileSearch ?? false,
     execute_code: modelSpec.executeCode ?? false,
     artifacts: modelSpec.artifacts === true ? 'default' : modelSpec.artifacts || '',
@@ -378,6 +379,7 @@ export function applyModelSpecEphemeralAgent({
     const toolStorageMap: Array<[keyof t.TEphemeralAgent, string]> = [
       ['execute_code', LocalStorageKeys.LAST_CODE_TOGGLE_],
       ['web_search', LocalStorageKeys.LAST_WEB_SEARCH_TOGGLE_],
+      ['gemini_image_gen', LocalStorageKeys.LAST_GEMINI_IMAGE_TOGGLE_],
       ['file_search', LocalStorageKeys.LAST_FILE_SEARCH_TOGGLE_],
       ['artifacts', LocalStorageKeys.LAST_ARTIFACTS_TOGGLE_],
     ];

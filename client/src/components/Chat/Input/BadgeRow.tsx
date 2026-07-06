@@ -12,6 +12,7 @@ import { Badge } from '@nashm/client';
 import { useRecoilValue, useRecoilCallback } from 'recoil';
 import type { LucideIcon } from 'lucide-react';
 import CodeInterpreter from './CodeInterpreter';
+import GeminiImage from './GeminiImage';
 import { BadgeRowProvider } from '~/Providers';
 import ToolsDropdown from './ToolsDropdown';
 import type { BadgeItem } from '~/common';
@@ -372,6 +373,7 @@ function BadgeRow({
         {showEphemeralBadges === true && (
           <>
             <WebSearch />
+            <GeminiImage />
             <CodeInterpreter />
             <FileSearch />
             <Skills />

@@ -92,13 +92,14 @@ export async function loadAddedAgent(
     promptPrefix?: string;
     spec?: string;
     modelLabel?: string;
-    ephemeralAgent?: {
-      mcp?: string[];
-      execute_code?: boolean;
-      file_search?: boolean;
-      web_search?: boolean;
-      artifacts?: unknown;
-    };
+      ephemeralAgent?: {
+        mcp?: string[];
+        execute_code?: boolean;
+        file_search?: boolean;
+        web_search?: boolean;
+        gemini_image_gen?: boolean;
+        artifacts?: unknown;
+      };
     [key: string]: unknown;
   };
 
@@ -114,6 +115,7 @@ export async function loadAddedAgent(
         execute_code?: boolean;
         file_search?: boolean;
         web_search?: boolean;
+        gemini_image_gen?: boolean;
         artifacts?: unknown;
       }
     | undefined;
@@ -178,6 +180,9 @@ export async function loadAddedAgent(
   }
   if (ephemeralAgent?.web_search === true || modelSpec?.webSearch === true) {
     tools.push(Tools.web_search);
+  }
+  if (ephemeralAgent?.gemini_image_gen === true) {
+    tools.push(Tools.gemini_image_gen);
   }
 
   const addedServers = new Set<string>();

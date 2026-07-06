@@ -18,6 +18,7 @@ interface BadgeRowContextType {
   agentsConfig?: TAgentsEndpoint | null;
   skills: ReturnType<typeof useToolToggle>;
   webSearch: ReturnType<typeof useToolToggle>;
+  geminiImage: ReturnType<typeof useToolToggle>;
   artifacts: ReturnType<typeof useToolToggle>;
   fileSearch: ReturnType<typeof useToolToggle>;
   codeInterpreter: ReturnType<typeof useToolToggle>;
@@ -97,12 +98,14 @@ export default function BadgeRowProvider({
 
       const codeToggleKey = `${LocalStorageKeys.LAST_CODE_TOGGLE_}${storageSuffix}`;
       const webSearchToggleKey = `${LocalStorageKeys.LAST_WEB_SEARCH_TOGGLE_}${storageSuffix}`;
+      const geminiImageToggleKey = `${LocalStorageKeys.LAST_GEMINI_IMAGE_TOGGLE_}${storageSuffix}`;
       const fileSearchToggleKey = `${LocalStorageKeys.LAST_FILE_SEARCH_TOGGLE_}${storageSuffix}`;
       const artifactsToggleKey = `${LocalStorageKeys.LAST_ARTIFACTS_TOGGLE_}${storageSuffix}`;
       const skillsToggleKey = `${LocalStorageKeys.LAST_SKILLS_TOGGLE_}${storageSuffix}`;
 
       const codeToggleValue = getTimestampedValue(codeToggleKey);
       const webSearchToggleValue = getTimestampedValue(webSearchToggleKey);
+      const geminiImageToggleValue = getTimestampedValue(geminiImageToggleKey);
       const fileSearchToggleValue = getTimestampedValue(fileSearchToggleKey);
       const artifactsToggleValue = getTimestampedValue(artifactsToggleKey);
       const skillsToggleValue = getTimestampedValue(skillsToggleKey);
@@ -122,6 +125,14 @@ export default function BadgeRowProvider({
           initialValues[Tools.web_search] = JSON.parse(webSearchToggleValue);
         } catch (e) {
           console.error('Failed to parse web search toggle value:', e);
+        }
+      }
+
+      if (geminiImageToggleValue !== null) {
+        try {
+          initialValues[Tools.gemini_image_gen] = JSON.parse(geminiImageToggleValue);
+        } catch (e) {
+          console.error('Failed to parse Gemini image toggle value:', e);
         }
       }
 
@@ -223,6 +234,14 @@ export default function BadgeRowProvider({
     },
   });
 
+  const geminiImage = useToolToggle({
+    conversationId,
+    storageContextKey,
+    toolKey: Tools.gemini_image_gen,
+    localStorageKey: LocalStorageKeys.LAST_GEMINI_IMAGE_TOGGLE_,
+    isAuthenticated: true,
+  });
+
   /** FileSearch hook */
   const fileSearch = useToolToggle({
     conversationId,
@@ -255,6 +274,7 @@ export default function BadgeRowProvider({
   const value: BadgeRowContextType = {
     skills,
     webSearch,
+    geminiImage,
     artifacts,
     fileSearch,
     agentsConfig,

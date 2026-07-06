@@ -38,16 +38,16 @@ export default function ProgressText({
       if (progress >= 1) {
         return localize('com_ui_image_created');
       }
-      if (progress >= 0.7) {
-        return localize('com_ui_final_touch');
+      if (progress >= 0.75) {
+        return localize('com_ui_finalizing_image');
       }
       if (progress >= 0.5) {
-        return localize('com_ui_adding_details');
+        return localize('com_ui_refining_image');
       }
-      if (progress >= 0.3) {
-        return localize('com_ui_creating_image');
+      if (progress >= 0.25) {
+        return localize('com_ui_composing_image');
       }
-      return localize('com_ui_getting_started');
+      return localize('com_ui_preparing_image_prompt');
     }
 
     if (AGENT_STYLE_TOOLS.has(toolName)) {

@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import * as Ariakit from '@ariakit/react';
+import { useRecoilValue } from 'recoil';
 import { TooltipAnchor, DropdownPopup, PinIcon, VectorIcon } from '@nashm/client';
-import { Globe, ScrollText, Settings, Settings2, TerminalSquareIcon } from 'lucide-react';
+import { Globe, ImageIcon, ScrollText, Settings, Settings2, TerminalSquareIcon } from 'lucide-react';
 import type { MenuItemProps } from '~/common';
 import {
   AuthType,
@@ -9,13 +10,15 @@ import {
   ArtifactModes,
   PermissionTypes,
   defaultAgentCapabilities,
+  EModelEndpoint,
 } from 'nashm-data-provider';
 import { useLocalize, useHasAccess, useAgentCapabilities } from '~/hooks';
 import ArtifactsSubMenu from '~/components/Chat/Input/ArtifactsSubMenu';
 import MCPSubMenu from '~/components/Chat/Input/MCPSubMenu';
-import { useGetStartupConfig } from '~/data-provider';
+import { useGetStartupConfig, useAvailableToolsQuery } from '~/data-provider';
 import { useBadgeRowContext } from '~/Providers';
 import { cn } from '~/utils';
+import store from '~/store';
 
 interface ToolsDropdownProps {
   disabled?: boolean;
@@ -25,6 +28,7 @@ const ToolsDropdown = ({ disabled }: ToolsDropdownProps) => {
   const localize = useLocalize();
   const context = useBadgeRowContext();
   const { data: startupConfig } = useGetStartupConfig();
+  const { data: availableTools } = useAvailableToolsQuery(EModelEndpoint.agents);
 
   const { codeEnabled, webSearchEnabled, artifactsEnabled, fileSearchEnabled, skillsEnabled } =
     useAgentCapabilities(context?.agentsConfig?.capabilities ?? defaultAgentCapabilities);
@@ -61,6 +65,7 @@ const ToolsDropdown = ({ disabled }: ToolsDropdownProps) => {
     webSearch,
     artifacts,
     fileSearch,
+    geminiImage,
     mcpServerManager,
     codeInterpreter,
     searchApiKeyForm,
@@ -73,6 +78,7 @@ const ToolsDropdown = ({ disabled }: ToolsDropdownProps) => {
     setIsPinned: setIsSearchPinned,
     authData: webSearchAuthData,
   } = webSearch ?? {};
+  const { isPinned: isImagePinned, setIsPinned: setIsImagePinned } = geminiImage ?? {};
   const { isPinned: isCodePinned, setIsPinned: setIsCodePinned } = codeInterpreter ?? {};
   const { isPinned: isFileSearchPinned, setIsPinned: setIsFileSearchPinned } = fileSearch ?? {};
   const { isPinned: isArtifactsPinned, setIsPinned: setIsArtifactsPinned } = artifacts ?? {};
@@ -88,6 +94,11 @@ const ToolsDropdown = ({ disabled }: ToolsDropdownProps) => {
     const newValue = !webSearch?.toggleState;
     webSearch?.debouncedChange({ value: newValue });
   }, [webSearch]);
+
+  const handleGeminiImageToggle = useCallback(() => {
+    const newValue = !geminiImage?.toggleState;
+    geminiImage?.debouncedChange({ value: newValue });
+  }, [geminiImage]);
 
   const handleCodeInterpreterToggle = useCallback(() => {
     const newValue = !codeInterpreter?.toggleState;
@@ -132,6 +143,9 @@ const ToolsDropdown = ({ disabled }: ToolsDropdownProps) => {
   }, [skills]);
 
   const mcpPlaceholder = startupConfig?.interface?.mcpServers?.placeholder;
+  const hasGeminiImageTool = useMemo(() => {
+    return availableTools?.some((tool) => tool.pluginKey === 'gemini_image_gen') ?? false;
+  }, [availableTools]);
 
   const dropdownItems: MenuItemProps[] = [];
 
@@ -216,6 +230,38 @@ const ToolsDropdown = ({ disabled }: ToolsDropdownProps) => {
               </div>
             </button>
           </div>
+        </div>
+      ),
+    });
+  }
+
+  if (hasGeminiImageTool && geminiImage) {
+    dropdownItems.push({
+      onClick: handleGeminiImageToggle,
+      hideOnClick: false,
+      render: (props) => (
+        <div {...props}>
+          <div className="flex items-center gap-2">
+            <ImageIcon className="icon-md" aria-hidden="true" />
+            <span>{localize('com_ui_generate_image')}</span>
+          </div>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsImagePinned?.(!isImagePinned);
+            }}
+            className={cn(
+              'rounded p-1 transition-all duration-200',
+              'hover:bg-surface-secondary hover:shadow-sm',
+              !isImagePinned && 'text-text-secondary hover:text-text-primary',
+            )}
+            aria-label={isImagePinned ? localize('com_ui_unpin') : localize('com_ui_pin')}
+          >
+            <div className="h-4 w-4">
+              <PinIcon unpin={isImagePinned} />
+            </div>
+          </button>
         </div>
       ),
     });

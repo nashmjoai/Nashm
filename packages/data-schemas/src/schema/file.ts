@@ -31,6 +31,9 @@ const file: Schema<IMongoFile> = new Schema(
       type: Number,
       required: true,
     },
+    data: {
+      type: Buffer,
+    },
     filename: {
       type: String,
       required: true,

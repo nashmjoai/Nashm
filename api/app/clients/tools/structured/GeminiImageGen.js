@@ -46,6 +46,11 @@ function getDefaultServiceKeyPath() {
 const displayMessage =
   "Gemini displayed an image. All generated images are already plainly visible, so don't repeat the descriptions in detail. Do not list download links as they are available in the UI already. The user may download the images by clicking on them, but do not mention anything about downloading to the user.";
 
+const DEFAULT_GEMINI_IMAGE_MODEL = 'gemini-3.1-flash-image';
+
+const safeFailureMessage =
+  'Image generation failed. Please verify Gemini image generation is enabled for your account, billing/quota is available, and try again.';
+
 /**
  * Replaces unwanted characters from the input string
  * @param {string} inputString - The input string to process
@@ -207,6 +212,145 @@ async function convertImagesToInlineData({ imageFiles, image_ids, req, fileStrat
 }
 
 /**
+ * Convert inlineData parts into Interactions API input content blocks
+ * @param {Array} inlineDataArray - Gemini inlineData parts
+ * @returns {Array} - Interactions image content blocks
+ */
+function convertInlineDataToInteractionInput(inlineDataArray) {
+  return inlineDataArray
+    .map((part) => part?.inlineData)
+    .filter((inlineData) => inlineData?.data)
+    .map((inlineData) => ({
+      type: 'image',
+      data: inlineData.data,
+      mime_type: inlineData.mimeType || 'image/png',
+    }));
+}
+
+/**
+ * Convert output format into a MIME type
+ * @param {string} format - Normalized image format
+ * @returns {string} - MIME type
+ */
+function getImageMimeType(format) {
+  return format === 'jpeg' ? 'image/jpeg' : `image/${format}`;
+}
+
+/**
+ * Check if a model uses the legacy Imagen generation endpoint
+ * @param {string} model - Model name
+ * @returns {boolean}
+ */
+function isImagenModel(model) {
+  return /^imagen(?:-|_|\b)/i.test(model);
+}
+
+/**
+ * Build image response format for the Interactions API
+ * @param {Object} params - Parameters
+ * @returns {Object}
+ */
+function buildImageResponseFormat({ aspectRatio, imageSize }) {
+  const format = {
+    type: 'image',
+    delivery: 'inline',
+  };
+
+  if (aspectRatio) {
+    format.aspect_ratio = aspectRatio;
+  }
+
+  if (imageSize) {
+    format.image_size = imageSize;
+  }
+
+  return format;
+}
+
+/**
+ * Extract base64 image data from a Gemini generateContent response
+ * @param {Object} response - Gemini response
+ * @returns {{ data?: string, mimeType?: string }}
+ */
+function extractGenerateContentImage(response) {
+  const inlineData = response?.candidates?.[0]?.content?.parts?.find((p) => p.inlineData)
+    ?.inlineData;
+
+  return {
+    data: inlineData?.data,
+    mimeType: inlineData?.mimeType,
+  };
+}
+
+/**
+ * Extract base64 image data from an Interactions API response
+ * @param {Object} interaction - Interactions response
+ * @returns {{ data?: string, mimeType?: string }}
+ */
+function extractInteractionImage(interaction) {
+  if (interaction?.output_image?.data) {
+    return {
+      data: interaction.output_image.data,
+      mimeType: interaction.output_image.mime_type,
+    };
+  }
+
+  const outputImage = interaction?.outputs?.find((output) => output?.type === 'image');
+  if (outputImage?.data) {
+    return {
+      data: outputImage.data,
+      mimeType: outputImage.mime_type,
+    };
+  }
+
+  const stepImage = interaction?.steps
+    ?.flatMap((step) => step?.content ?? [])
+    .find((content) => content?.type === 'image' && content?.data);
+
+  return {
+    data: stepImage?.data,
+    mimeType: stepImage?.mime_type,
+  };
+}
+
+/**
+ * Extract base64 image data from a generateImages response
+ * @param {Object} response - Imagen response
+ * @returns {{ data?: string, mimeType?: string }}
+ */
+function extractGenerateImagesImage(response) {
+  const image = response?.generatedImages?.[0]?.image;
+  return {
+    data: image?.imageBytes,
+    mimeType: image?.mimeType,
+  };
+}
+
+/**
+ * Create a user-safe error message without leaking credentials or file paths
+ * @param {Error} error - API error
+ * @returns {string}
+ */
+function getSafeGeminiErrorMessage(error) {
+  const status = error?.status || error?.code;
+  const message = String(error?.message ?? '').toLowerCase();
+
+  if (status === 429 || message.includes('quota') || message.includes('billing')) {
+    return 'Gemini image generation quota was exceeded or billing is not enabled for this account.';
+  }
+
+  if (status === 401 || status === 403 || message.includes('permission')) {
+    return 'Gemini image generation is not authorized. Please verify the Gemini API key or service account permissions.';
+  }
+
+  if (message.includes('safety') || message.includes('blocked')) {
+    return 'Image blocked by content safety filters. Please try different content.';
+  }
+
+  return safeFailureMessage;
+}
+
+/**
  * Check for safety blocks in API response
  * @param {Object} response - The API response
  * @returns {Object|null} - Safety block info or null
@@ -269,16 +413,24 @@ async function recordTokenUsage({ usageMetadata, req, userId, conversationId, mo
 
   const promptTokens = usageMetadata.prompt_token_count || usageMetadata.promptTokenCount || 0;
   const completionTokens =
-    usageMetadata.candidates_token_count || usageMetadata.candidatesTokenCount || 0;
+    usageMetadata.candidates_token_count ||
+    usageMetadata.candidatesTokenCount ||
+    usageMetadata.responseTokenCount ||
+    0;
 
-  if (promptTokens === 0 && completionTokens === 0) {
+  const interactionPromptTokens = usageMetadata.total_input_tokens || 0;
+  const interactionCompletionTokens = usageMetadata.total_output_tokens || 0;
+  const effectivePromptTokens = promptTokens || interactionPromptTokens;
+  const effectiveCompletionTokens = completionTokens || interactionCompletionTokens;
+
+  if (effectivePromptTokens === 0 && effectiveCompletionTokens === 0) {
     logger.debug('[GeminiImageGen] No tokens to record');
     return;
   }
 
   logger.debug('[GeminiImageGen] Recording token usage:', {
-    promptTokens,
-    completionTokens,
+    promptTokens: effectivePromptTokens,
+    completionTokens: effectiveCompletionTokens,
     model,
     conversationId,
   });
@@ -295,8 +447,8 @@ async function recordTokenUsage({ usageMetadata, req, userId, conversationId, mo
         transactions,
       },
       {
-        promptTokens,
-        completionTokens,
+        promptTokens: effectivePromptTokens,
+        completionTokens: effectiveCompletionTokens,
       },
     );
   } catch (error) {
@@ -342,10 +494,12 @@ function createGeminiImageTool(fields = {}) {
         ];
       }
 
-      const contents = [{ text: replaceUnwantedChars(prompt) }];
+      const sanitizedPrompt = replaceUnwantedChars(prompt);
+      const contents = [{ text: sanitizedPrompt }];
+      let contextImages = [];
 
       if (image_ids?.length > 0) {
-        const contextImages = await convertImagesToInlineData({
+        contextImages = await convertImagesToInlineData({
           imageFiles,
           image_ids,
           req,
@@ -356,7 +510,8 @@ function createGeminiImageTool(fields = {}) {
       }
 
       let apiResponse;
-      const geminiModel = process.env.GEMINI_IMAGE_MODEL || 'gemini-2.5-flash-image';
+      let rawImage;
+      const geminiModel = process.env.GEMINI_IMAGE_MODEL || DEFAULT_GEMINI_IMAGE_MODEL;
       const config = {
         responseModalities: ['TEXT', 'IMAGE'],
       };
@@ -383,15 +538,69 @@ function createGeminiImageTool(fields = {}) {
       }
 
       try {
-        apiResponse = await ai.models.generateContent({
-          model: geminiModel,
-          contents,
-          config,
-        });
+        if (isImagenModel(geminiModel)) {
+          if (contextImages.length > 0) {
+            return [
+              [
+                {
+                  type: ContentTypes.TEXT,
+                  text:
+                    'This image model only supports text-to-image. Use a Gemini image model to edit or reference existing images.',
+                },
+              ],
+              { content: [], file_ids: [] },
+            ];
+          }
+
+          apiResponse = await ai.models.generateImages({
+            model: geminiModel,
+            prompt: sanitizedPrompt,
+            config: {
+              numberOfImages: 1,
+              aspectRatio,
+              imageSize,
+              abortSignal: derivedSignal,
+            },
+          });
+          rawImage = extractGenerateImagesImage(apiResponse);
+        } else if (ai.interactions?.create && !GEMINI_API_KEY && !GOOGLE_KEY) {
+          apiResponse = await ai.interactions.create(
+            {
+              model: geminiModel,
+              input: [
+                { type: 'text', text: sanitizedPrompt },
+                ...convertInlineDataToInteractionInput(contextImages),
+              ],
+              response_modalities: ['image'],
+              response_format: buildImageResponseFormat({ aspectRatio, imageSize }),
+            },
+            derivedSignal ? { signal: derivedSignal } : undefined,
+          );
+
+          if (
+            apiResponse?.status &&
+            !['completed', 'incomplete'].includes(apiResponse.status) &&
+            apiResponse.status !== 'in_progress'
+          ) {
+            logger.warn('[GeminiImageGen] Interaction ended without completion:', {
+              status: apiResponse.status,
+              model: geminiModel,
+            });
+          }
+
+          rawImage = extractInteractionImage(apiResponse);
+        } else {
+          apiResponse = await ai.models.generateContent({
+            model: geminiModel,
+            contents,
+            config,
+          });
+          rawImage = extractGenerateContentImage(apiResponse);
+        }
       } catch (error) {
         logger.error('[GeminiImageGen] API error:', error);
         return [
-          [{ type: ContentTypes.TEXT, text: `Image generation failed: ${error.message}` }],
+          [{ type: ContentTypes.TEXT, text: getSafeGeminiErrorMessage(error) }],
           { content: [], file_ids: [] },
         ];
       } finally {
@@ -400,17 +609,14 @@ function createGeminiImageTool(fields = {}) {
         }
       }
 
-      const safetyBlock = checkForSafetyBlock(apiResponse);
-      if (safetyBlock) {
+      const safetyBlock = isImagenModel(geminiModel) ? null : checkForSafetyBlock(apiResponse);
+      if (!rawImage?.data && safetyBlock) {
         logger.warn('[GeminiImageGen] Safety block:', safetyBlock);
         const errorMsg = 'Image blocked by content safety filters. Please try different content.';
         return [[{ type: ContentTypes.TEXT, text: errorMsg }], { content: [], file_ids: [] }];
       }
 
-      const rawImageData = apiResponse.candidates?.[0]?.content?.parts?.find((p) => p.inlineData)
-        ?.inlineData?.data;
-
-      if (!rawImageData) {
+      if (!rawImage?.data) {
         logger.warn('[GeminiImageGen] No image data in response');
         return [
           [{ type: ContentTypes.TEXT, text: 'No image was generated. Please try again.' }],
@@ -418,13 +624,13 @@ function createGeminiImageTool(fields = {}) {
         ];
       }
 
-      const rawBuffer = Buffer.from(rawImageData, 'base64');
+      const rawBuffer = Buffer.from(rawImage.data, 'base64');
       const { buffer: convertedBuffer, format: outputFormat } = await convertImageFormat(
         rawBuffer,
         imageOutputType,
       );
       const imageData = convertedBuffer.toString('base64');
-      const mimeType = outputFormat === 'jpeg' ? 'image/jpeg' : `image/${outputFormat}`;
+      const mimeType = getImageMimeType(outputFormat);
 
       const dataUrl = `data:${mimeType};base64,${imageData}`;
       const file_ids = [v4()];
@@ -450,7 +656,7 @@ function createGeminiImageTool(fields = {}) {
         runnableConfig?.configurable?.run_id ??
         runnableConfig?.configurable?.requestBody?.messageId;
       recordTokenUsage({
-        usageMetadata: apiResponse.usageMetadata,
+        usageMetadata: apiResponse.usageMetadata || apiResponse.usage,
         req,
         userId,
         messageId,
