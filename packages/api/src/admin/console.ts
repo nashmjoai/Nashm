@@ -399,15 +399,15 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
           familyPlan == null
             ? undefined
             : {
-                id: familyPlan._id.toString(),
-                userId: id,
-                plan: 'family',
-                status: familyPlan.status,
-                source: 'family',
-                expiresAt: dateToIso(familyPlan.currentPeriodEnd),
-                createdAt: dateToIso(familyPlan.createdAt),
-                updatedAt: dateToIso(familyPlan.updatedAt),
-              };
+              id: familyPlan._id.toString(),
+              userId: id,
+              plan: 'family',
+              status: familyPlan.status,
+              source: 'family',
+              expiresAt: dateToIso(familyPlan.currentPeriodEnd),
+              createdAt: dateToIso(familyPlan.createdAt),
+              updatedAt: dateToIso(familyPlan.updatedAt),
+            };
 
         return {
           id,
@@ -668,17 +668,18 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
         const config = existingByPlan.get(plan);
         return config
           ? {
-              plan: config.plan,
-              displayName: config.displayName,
-              priceText: config.priceText,
-              features: config.features,
-              tokenQuota: config.tokenQuota,
-              renewalPeriod: config.renewalPeriod,
-              familyMinMembers: config.familyMinMembers,
-              familyMemberTokenQuota: config.familyMemberTokenQuota,
-              familyMemberRenewalPeriod: config.familyMemberRenewalPeriod,
-              modelTokenLimits: config.modelTokenLimits,
-            }
+            plan: config.plan,
+            displayName: config.displayName,
+            description: config.description,
+            priceText: config.priceText,
+            features: config.features,
+            tokenQuota: config.tokenQuota,
+            renewalPeriod: config.renewalPeriod,
+            familyMinMembers: config.familyMinMembers,
+            familyMemberTokenQuota: config.familyMemberTokenQuota,
+            familyMemberRenewalPeriod: config.familyMemberRenewalPeriod,
+            modelTokenLimits: config.modelTokenLimits,
+          }
           : { plan, tokenQuota, renewalPeriod, familyMinMembers: plan === 'family' ? 2 : undefined, familyMemberTokenQuota: undefined, familyMemberRenewalPeriod: undefined, modelTokenLimits: [], features: [] };
       });
 
@@ -698,6 +699,7 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
 
       const body = req.body as {
         displayName?: string;
+        description?: string;
         priceText?: string;
         features?: string[];
         tokenQuota?: number;
@@ -716,6 +718,9 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
       const $set: Partial<IPlanConfig> = { plan };
       if (typeof body.displayName === 'string') {
         $set.displayName = body.displayName.trim();
+      }
+      if (typeof body.description === 'string') {
+        $set.description = body.description.trim();
       }
       if (typeof body.priceText === 'string') {
         $set.priceText = body.priceText.trim();

@@ -47,6 +47,7 @@ export default function AdminConsolePlans() {
 
   const [editingPlan, setEditingPlan] = useState<any>(null);
   const [displayName, setDisplayName] = useState('');
+  const [description, setDescription] = useState('');
   const [priceText, setPriceText] = useState('');
   const [features, setFeatures] = useState<string[]>([]);
   const [tokenQuota, setTokenQuota] = useState('');
@@ -71,6 +72,7 @@ export default function AdminConsolePlans() {
   const handleEditClick = (plan: any) => {
     setEditingPlan(plan);
     setDisplayName(plan.displayName || '');
+    setDescription(plan.description || '');
     setPriceText(plan.priceText || '');
     setFeatures(plan.features || []);
     setTokenQuota(String(plan.tokenQuota ?? 0));
@@ -99,6 +101,7 @@ export default function AdminConsolePlans() {
       plan: editingPlan.plan,
       payload: {
         displayName,
+        description,
         priceText,
         features: features.filter(f => f.trim() !== ''),
         tokenQuota: Number(tokenQuota) || 0,
@@ -270,6 +273,19 @@ export default function AdminConsolePlans() {
                     disabled={updatePlanMutation.isLoading}
                   />
                 </div>
+              </div>
+
+              {/* Description summary */}
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-semibold text-text-secondary uppercase">Description / Plan Summary</label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Summarize the plan's access, quotas, and limits"
+                  rows={2}
+                  className="w-full rounded-lg border border-border-light bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring-primary"
+                  disabled={updatePlanMutation.isLoading}
+                />
               </div>
 
               {/* Features List */}

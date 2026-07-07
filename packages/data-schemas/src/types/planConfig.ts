@@ -14,6 +14,7 @@ export interface IPlanConfig extends Document {
   _id: Types.ObjectId;
   plan: SubscriptionPlan;
   displayName?: string;
+  description?: string;
   priceText?: string;
   features?: string[];
   tokenQuota: number;

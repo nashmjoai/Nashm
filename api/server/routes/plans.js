@@ -22,6 +22,7 @@ router.get('/', async (req, res) => {
         ? {
             plan: config.plan,
             displayName: config.displayName,
+            description: config.description,
             priceText: config.priceText,
             features: config.features,
           }

@@ -25,6 +25,10 @@ const planConfigSchema: Schema<IPlanConfig> = new Schema<IPlanConfig>(
       type: String,
       trim: true,
     },
+    description: {
+      type: String,
+      trim: true,
+    },
     priceText: {
       type: String,
       trim: true,

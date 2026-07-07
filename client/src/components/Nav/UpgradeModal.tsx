@@ -11,6 +11,7 @@ import {
 } from '@nashm/client';
 import { NotificationSeverity } from '~/common';
 import { useLocalize } from '~/hooks';
+import { useGetPublicPlansQuery } from '~/data-provider';
 
 type UpgradeModalProps = {
   open: boolean;
@@ -23,6 +24,7 @@ export function UpgradeModal({ open, onOpenChange, currentPlan, onUpgradeSuccess
   const localize = useLocalize();
   const { showToast } = useToastContext();
   const [isLoading, setIsLoading] = useState<string | null>(null);
+  const { data: publicPlansData } = useGetPublicPlansQuery();
 
   const plans = [
     {
@@ -113,6 +115,25 @@ export function UpgradeModal({ open, onOpenChange, currentPlan, onUpgradeSuccess
     },
   ];
 
+  const backendPlans = publicPlansData?.plans || [];
+  const dynamicPlans = backendPlans.length > 0
+    ? backendPlans.map((bp: any) => {
+        const basePlan = plans.find((p) => p.id.toLowerCase() === bp.plan.toLowerCase()) || plans[0];
+        return {
+          id: bp.plan,
+          name: bp.displayName || basePlan.name,
+          nameAr: bp.displayName || basePlan.nameAr,
+          price: bp.priceText || basePlan.price,
+          priceDetail: bp.priceText ? '' : basePlan.priceDetail,
+          priceDetailAr: bp.priceText ? '' : basePlan.priceDetailAr,
+          context: basePlan.context,
+          quota: bp.tokenQuota !== undefined && bp.tokenQuota !== null ? bp.tokenQuota.toLocaleString() : basePlan.quota,
+          features: bp.features && bp.features.length > 0 ? bp.features : basePlan.features,
+          featuresAr: bp.features && bp.features.length > 0 ? bp.features : basePlan.featuresAr,
+        };
+      })
+    : plans;
+
   const handleUpgrade = async (planId: string) => {
     if (planId === currentPlan) return;
     setIsLoading(planId);
@@ -166,7 +187,7 @@ export function UpgradeModal({ open, onOpenChange, currentPlan, onUpgradeSuccess
         </OGDialogHeader>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 my-4">
-          {plans.map((plan) => {
+          {dynamicPlans.map((plan) => {
             const isCurrent = currentPlan.toLowerCase() === plan.id.toLowerCase();
             return (
               <div

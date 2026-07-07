@@ -1695,7 +1695,7 @@ export default function LandingPage() {
           icon: basePlan.icon,
           title: bp.displayName || bp.plan,
           badge: basePlan.badge,
-          body: basePlan.body,
+          body: bp.description || basePlan.body,
           features: bp.features && bp.features.length > 0 ? bp.features : basePlan.features,
           featured: bp.plan === 'individual',
           priceText: bp.priceText,
