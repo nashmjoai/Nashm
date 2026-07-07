@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { useQueryClient, useIsFetching } from '@tanstack/react-query';
 import {
   LayoutDashboard,
   Users as UsersIcon,
@@ -11,6 +12,7 @@ import {
   ShieldPlus,
   Menu,
   X,
+  RefreshCw,
 } from 'lucide-react';
 import { useAuthContext } from '~/hooks';
 
@@ -19,6 +21,43 @@ export default function AdminConsoleLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  const queryClient = useQueryClient();
+
+  const isFetchingAdmin = useIsFetching({
+    predicate: (query) => {
+      const key = query.queryKey[0];
+      return typeof key === 'string' && key.startsWith('adminConsole');
+    },
+  }) > 0;
+
+  const handleReload = () => {
+    queryClient.refetchQueries({
+      type: 'active',
+      predicate: (query) => {
+        const key = query.queryKey[0];
+        return typeof key === 'string' && key.startsWith('adminConsole');
+      },
+    });
+  };
+
+  useEffect(() => {
+    if (!autoRefresh) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      queryClient.refetchQueries({
+        type: 'active',
+        predicate: (query) => {
+          const key = query.queryKey[0];
+          return typeof key === 'string' && key.startsWith('adminConsole');
+        },
+      });
+    }, 10000); // 10 seconds
+
+    return () => clearInterval(interval);
+  }, [autoRefresh, queryClient]);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -133,6 +172,33 @@ export default function AdminConsoleLayout() {
             </h2>
           </div>
           <div className="flex items-center gap-3">
+            {/* Auto-Refresh Toggle Pill */}
+            <button
+              onClick={() => setAutoRefresh(!autoRefresh)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-300 ${
+                autoRefresh
+                  ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/25 dark:text-emerald-400 dark:border-emerald-500/30 shadow-[0_0_12px_-3px_rgba(16,185,129,0.25)]'
+                  : 'bg-surface-tertiary text-text-secondary border-border-light'
+              }`}
+              title={autoRefresh ? 'Disable automatic updates' : 'Enable automatic updates (every 10s)'}
+            >
+              <span className={`size-2 rounded-full ${autoRefresh ? 'bg-emerald-500 animate-pulse' : 'bg-text-secondary'}`} />
+              <span className="hidden xs:inline">Auto-Refresh</span>
+            </button>
+            
+            {/* Manual Reload Button */}
+            <button
+              onClick={handleReload}
+              disabled={isFetchingAdmin}
+              className={`p-2 rounded-xl text-text-secondary hover:text-text-primary hover:bg-surface-tertiary border border-border-light bg-surface-primary flex items-center justify-center transition-all active:scale-95 disabled:opacity-50 ${
+                isFetchingAdmin ? 'text-blue-500' : ''
+              }`}
+              aria-label="Reload dashboard data"
+              title="Reload current page data"
+            >
+              <RefreshCw className={`size-4 ${isFetchingAdmin ? 'animate-spin' : ''}`} />
+            </button>
+
             <span className="text-xs px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-500 font-semibold border border-blue-500/20 flex-shrink-0">
               System Admin
             </span>

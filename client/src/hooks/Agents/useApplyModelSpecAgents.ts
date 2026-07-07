@@ -102,7 +102,7 @@ export function useApplyAgentTemplate() {
         web_search: ephemeralAgent?.web_search ?? modelSpec.webSearch ?? false,
         file_search: ephemeralAgent?.file_search ?? modelSpec.fileSearch ?? false,
         execute_code: ephemeralAgent?.execute_code ?? modelSpec.executeCode ?? false,
-        gemini_image_gen: ephemeralAgent?.gemini_image_gen ?? modelSpec.geminiImageGen ?? false,
+        gemini_image_gen: ephemeralAgent?.gemini_image_gen ?? false,
         artifacts:
           ephemeralAgent?.artifacts ??
           (modelSpec.artifacts === true ? 'default' : modelSpec.artifacts || ''),

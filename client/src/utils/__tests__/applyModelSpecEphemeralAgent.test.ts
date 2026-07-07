@@ -132,13 +132,13 @@ describe('applyModelSpecEphemeralAgent', () => {
       expect('subagents' in agent).toBe(false);
     });
 
-    it('should map geminiImageGen correctly', () => {
+    it('should initialize gemini_image_gen as false even if modelSpec.geminiImageGen is true', () => {
       const modelSpec = createModelSpec({ geminiImageGen: true });
 
       applyModelSpecEphemeralAgent({ convoId: null, modelSpec, updateEphemeralAgent });
 
       const agent = updateEphemeralAgent.mock.calls[0][1] as TEphemeralAgent;
-      expect(agent.gemini_image_gen).toBe(true);
+      expect(agent.gemini_image_gen).toBe(false);
     });
   });
 

@@ -366,7 +366,7 @@ export function applyModelSpecEphemeralAgent({
   const agent: t.TEphemeralAgent = {
     mcp: modelSpec.mcpServers ?? [],
     web_search: modelSpec.webSearch ?? false,
-    gemini_image_gen: modelSpec.geminiImageGen ?? false,
+    gemini_image_gen: false,
     file_search: modelSpec.fileSearch ?? false,
     execute_code: modelSpec.executeCode ?? false,
     artifacts: modelSpec.artifacts === true ? 'default' : modelSpec.artifacts || '',
