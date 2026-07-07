@@ -396,6 +396,59 @@ router.put('/:conversationId/:messageId/feedback', validateMessageReq, async (re
       { context: 'updateFeedback' },
     );
 
+    // Automatically create or update a support ticket if feedback is provided
+    if (feedback) {
+      try {
+        const { SupportTicket } = require('~/db/models');
+        const userDoc = await db.getUserById(req.user.id);
+        const email = userDoc ? userDoc.email : 'unknown@user.com';
+        const name = userDoc ? (userDoc.name || userDoc.username || 'User') : 'User';
+
+        const subject = `Message Feedback (Message ID: ${messageId})`;
+        const ratingLabel = feedback.rating === 'thumbsUp' ? 'Thumbs Up (Good)' : 'Thumbs Down (Bad)';
+        const tagLabel = feedback.tag?.label || feedback.tag?.key || 'N/A';
+        const feedbackText = feedback.text || '(No comments left)';
+
+        const originalText = updatedMessage?.text || (updatedMessage?.content && Array.isArray(updatedMessage.content)
+          ? updatedMessage.content.map(p => p.text || p.think || '').join('\n')
+          : '');
+
+        const ticketMessage = `Message ID: ${messageId}
+Rating: ${ratingLabel}
+Tag/Reason: ${tagLabel}
+User Comments: ${feedbackText}
+
+--- Original AI Message ---
+${originalText}`;
+
+        // Try to find an existing support ticket for this feedback
+        let ticket = await SupportTicket.findOne({
+          user: req.user.id,
+          subject: subject,
+        });
+
+        if (ticket) {
+          ticket.message = ticketMessage.substring(0, 8000);
+          await ticket.save();
+          logger.info(`[feedback-ticket] Updated existing feedback ticket for message ${messageId}`);
+        } else {
+          ticket = new SupportTicket({
+            user: req.user.id,
+            email,
+            name,
+            subject,
+            message: ticketMessage.substring(0, 8000),
+            status: 'open',
+            emailStatus: 'skipped',
+          });
+          await ticket.save();
+          logger.info(`[feedback-ticket] Created new feedback ticket for message ${messageId}`);
+        }
+      } catch (err) {
+        logger.error('Error creating support ticket from feedback:', err);
+      }
+    }
+
     // Best-effort: Assistants messages do not have deterministic AgentRun traces.
     if (!isAssistantsEndpoint(updatedMessage.endpoint)) {
       sendFeedbackScore({

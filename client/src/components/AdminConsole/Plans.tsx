@@ -249,7 +249,7 @@ export default function AdminConsolePlans() {
             </OGDialogHeader>
             <form onSubmit={handleSave} className="flex flex-col gap-5 mt-4">
               {/* Dynamic Info */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1">
                   <label className="text-xs font-semibold text-text-secondary uppercase">Display Name</label>
                   <Input
@@ -308,7 +308,7 @@ export default function AdminConsolePlans() {
               </div>
 
               {/* Base Settings */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1">
                   <label className="text-xs font-semibold text-text-secondary uppercase">Token Quota</label>
                   <Input
@@ -341,7 +341,7 @@ export default function AdminConsolePlans() {
                   <h3 className="text-sm font-bold text-green-500 flex items-center gap-2">
                     <Users className="size-4" /> Family Plan Settings
                   </h3>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="flex flex-col gap-1">
                       <label className="text-xs font-semibold text-text-secondary uppercase">Min Members</label>
                       <Input

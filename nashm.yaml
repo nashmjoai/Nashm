@@ -17,6 +17,7 @@ modelSpecs:
       preset:
         endpoint: "google"
         model: "gemini-3.5-flash"
+      geminiImageGen: true
 
 # Custom interface configuration
 interface:

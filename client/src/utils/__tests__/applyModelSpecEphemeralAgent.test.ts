@@ -23,6 +23,7 @@ const createModelSpec = (overrides: Partial<TModelSpec> = {}): TModelSpec =>
     executeCode: true,
     fileSearch: false,
     artifacts: true,
+    geminiImageGen: false,
     ...overrides,
   }) as TModelSpec;
 
@@ -51,6 +52,7 @@ describe('applyModelSpecEphemeralAgent', () => {
         webSearch: false,
         fileSearch: true,
         artifacts: true,
+        geminiImageGen: false,
       });
 
       applyModelSpecEphemeralAgent({
@@ -65,6 +67,7 @@ describe('applyModelSpecEphemeralAgent', () => {
         web_search: false,
         file_search: true,
         artifacts: 'default',
+        gemini_image_gen: false,
       });
     });
 
@@ -127,6 +130,15 @@ describe('applyModelSpecEphemeralAgent', () => {
 
       const agent = updateEphemeralAgent.mock.calls[0][1] as TEphemeralAgent;
       expect('subagents' in agent).toBe(false);
+    });
+
+    it('should map geminiImageGen correctly', () => {
+      const modelSpec = createModelSpec({ geminiImageGen: true });
+
+      applyModelSpecEphemeralAgent({ convoId: null, modelSpec, updateEphemeralAgent });
+
+      const agent = updateEphemeralAgent.mock.calls[0][1] as TEphemeralAgent;
+      expect(agent.gemini_image_gen).toBe(true);
     });
   });
 
@@ -228,6 +240,7 @@ describe('applyModelSpecEphemeralAgent', () => {
         web_search: false,
         file_search: true,
         artifacts: 'default',
+        gemini_image_gen: false,
       });
     });
 

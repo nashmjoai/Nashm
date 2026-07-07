@@ -73,7 +73,7 @@ export async function loadEphemeralAgent(
   if (ephemeralAgent?.web_search === true || modelSpec?.webSearch === true) {
     tools.push(Tools.web_search);
   }
-  if (ephemeralAgent?.gemini_image_gen === true) {
+  if (ephemeralAgent?.gemini_image_gen === true || modelSpec?.geminiImageGen === true) {
     tools.push(Tools.gemini_image_gen);
   }
 

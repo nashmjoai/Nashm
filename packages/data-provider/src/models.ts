@@ -48,6 +48,7 @@ export type TModelSpec = {
   mcpServers?: string[];
   skills?: boolean | string[];
   subagents?: AgentSubagentsConfig;
+  geminiImageGen?: boolean;
 };
 
 export const modelSpecSubagentsSchema = z.object({
@@ -80,6 +81,7 @@ export const tModelSpecSchema = z.object({
   mcpServers: z.array(z.string()).optional(),
   skills: z.union([z.boolean(), z.array(z.string())]).optional(),
   subagents: modelSpecSubagentsSchema.optional(),
+  geminiImageGen: z.boolean().optional(),
 });
 
 export const specsConfigSchema = z.object({
