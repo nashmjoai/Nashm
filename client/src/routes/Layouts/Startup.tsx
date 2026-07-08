@@ -38,7 +38,15 @@ export default function StartupLayout({ isAuthenticated: propIsAuthenticated }: 
         new URLSearchParams(window.location.search).has(REDIRECT_PARAM) ||
         sessionStorage.getItem(SESSION_KEY) != null;
       if (!hasPendingRedirect) {
-        navigate('/c/new', { replace: true });
+        // Check for a pending prompt saved by the Landing Page prompt box
+        const pendingPrompt = localStorage.getItem('nashm_pending_prompt');
+        if (pendingPrompt) {
+          localStorage.removeItem('nashm_pending_prompt');
+          const encodedPrompt = encodeURIComponent(pendingPrompt);
+          navigate(`/c/new?prompt=${encodedPrompt}&submit=true`, { replace: true });
+        } else {
+          navigate('/c/new', { replace: true });
+        }
       }
     }
     if (data) {
