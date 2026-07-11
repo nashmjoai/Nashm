@@ -457,6 +457,9 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
         return res.status(404).json({ error: 'User not found' });
       }
 
+      const currentSubscription = await deps.Subscription.findOne({ user: user._id }).lean<ISubscription | null>();
+      const planChanged = !currentSubscription || currentSubscription.plan !== body.plan;
+
       const expiresAt = parseOptionalDate(body.expiresAt);
       const subscription = await deps.Subscription.findOneAndUpdate(
         { user: user._id },
@@ -483,9 +486,20 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
       }
 
       if (typeof body.tokenBalance === 'number') {
+        let tokenCredits = body.tokenBalance;
+        if (planChanged && tokenCredits === 0) {
+          const planConfig = await deps.PlanConfig.findOne({ plan: body.plan }).lean();
+          tokenCredits = planConfig?.tokenQuota ?? (
+            body.plan === 'free' ? 50000 :
+            body.plan === 'individual' ? 500000 :
+            body.plan === 'family' ? 1000000 :
+            body.plan === 'developer' ? 2000000 : 50000
+          );
+        }
+
         await deps.Balance.findOneAndUpdate(
           { user: user._id },
-          { $set: { tokenCredits: body.tokenBalance } },
+          { $set: { tokenCredits } },
           { new: true, upsert: true },
         );
       }

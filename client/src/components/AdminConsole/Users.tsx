@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {
   useGetAdminConsoleUsersQuery,
   useUpsertAdminSubscriptionMutation,
+  useGetAdminConsolePlansQuery,
 } from '~/data-provider';
 import {
   Search,
@@ -47,6 +48,25 @@ export default function AdminConsoleUsers() {
   const [notes, setNotes] = useState('');
   const [tokenBalance, setTokenBalance] = useState('');
 
+  // Query plans for default quotas
+  const { data: plansData } = useGetAdminConsolePlansQuery();
+
+  const handlePlanChange = (newPlan: string) => {
+    setSelectedPlan(newPlan);
+
+    // Find the default quota for this plan
+    const fallbackQuota =
+      newPlan === 'free' ? 50000 :
+      newPlan === 'individual' ? 500000 :
+      newPlan === 'family' ? 1000000 :
+      newPlan === 'developer' ? 2000000 : 50000;
+
+    const planConfig = plansData?.plans?.find((p: any) => p.plan === newPlan);
+    const quota = planConfig?.tokenQuota ?? fallbackQuota;
+
+    setTokenBalance(String(quota));
+  };
+
 
   const upsertSubscriptionMutation = useUpsertAdminSubscriptionMutation({
     onSuccess: () => {
@@ -67,12 +87,29 @@ export default function AdminConsoleUsers() {
     },
   });
 
+  const getDefaultQuota = (plan: string) => {
+    const fallbackQuota =
+      plan === 'free' ? 50000 :
+      plan === 'individual' ? 500000 :
+      plan === 'family' ? 1000000 :
+      plan === 'developer' ? 2000000 : 50000;
+    const planConfig = plansData?.plans?.find((p: any) => p.plan === plan);
+    return planConfig?.tokenQuota ?? fallbackQuota;
+  };
+
   const handleEditClick = (user: any) => {
     setEditingUser(user);
-    setSelectedPlan(user.subscription?.plan || 'free');
+    const plan = user.subscription?.plan || 'free';
+    setSelectedPlan(plan);
     setSelectedStatus(user.subscription?.status || 'active');
     setNotes(user.subscription?.notes || '');
-    setTokenBalance(String(user.tokenBalance ?? 0));
+    // If user balance is 0 and plan is not free, pre-fill with plan's default quota
+    const currentBalance = user.tokenBalance ?? 0;
+    if (currentBalance === 0 && plan !== 'free') {
+      setTokenBalance(String(getDefaultQuota(plan)));
+    } else {
+      setTokenBalance(String(currentBalance));
+    }
     if (user.subscription?.expiresAt) {
       // Format ISO string to yyyy-MM-dd
       setExpiresAt(new Date(user.subscription.expiresAt).toISOString().split('T')[0]);
@@ -282,7 +319,7 @@ export default function AdminConsoleUsers() {
                   <label className="text-xs font-semibold text-text-secondary uppercase">Plan</label>
                   <select
                     value={selectedPlan}
-                    onChange={(e) => setSelectedPlan(e.target.value)}
+                    onChange={(e) => handlePlanChange(e.target.value)}
                     className="w-full rounded-lg border border-border-light bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring-primary"
                   >
                     <option value="free">Free</option>
