@@ -14,6 +14,7 @@ jest.mock('~/server/controllers/AuthController', () => ({
   resetPasswordController: jest.fn((req, res) => res.status(200).end()),
   resetPasswordRequestController: jest.fn((req, res) => res.status(200).end()),
   graphTokenController: jest.fn((req, res) => res.status(200).end()),
+  verifyOTPController: jest.fn((req, res) => res.status(200).end()),
 }));
 
 jest.mock('~/server/controllers/TwoFactorController', () => ({

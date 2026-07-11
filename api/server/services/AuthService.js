@@ -40,9 +40,14 @@ const { registerSchema } = require('~/strategies/validators');
 const { getAppConfig } = require('~/server/services/Config');
 const { sendEmail } = require('~/server/utils');
 
+const clientDomain = process.env.DOMAIN_CLIENT || 'http://localhost:3080';
 const domains = {
-  client: process.env.DOMAIN_CLIENT,
-  server: process.env.DOMAIN_SERVER,
+  client:
+    process.env.NODE_ENV === 'development' &&
+    (clientDomain === 'http://localhost:3080' || clientDomain.includes(':3080'))
+      ? 'http://localhost:3090'
+      : clientDomain,
+  server: process.env.DOMAIN_SERVER || 'http://localhost:3080',
 };
 
 const AuthTokenTypes = Object.freeze({
@@ -247,6 +252,26 @@ const sendVerificationEmail = async (user) => {
 };
 
 /**
+ * Send Welcome Email
+ * @param {Partial<IUser>} user
+ * @returns {Promise<void>}
+ */
+const sendWelcomeEmail = async (user) => {
+  await sendEmail({
+    email: user.email,
+    subject: `Welcome to ${process.env.APP_TITLE || 'Nashm'}`,
+    payload: {
+      appName: process.env.APP_TITLE || 'Nashm',
+      name: user.name || user.username || user.email,
+      loginLink: `${domains.client}/login`,
+      year: new Date().getFullYear(),
+    },
+    template: 'welcomeEmail.handlebars',
+  });
+  logger.info(`[sendWelcomeEmail] Welcome email sent. [Email: ${user.email}]`);
+};
+
+/**
  * Verify Email
  * @param {ServerRequest} req
  */
@@ -316,6 +341,14 @@ const verifyEmail = async (req) => {
     return new Error(invalidEmailVerificationMessage);
   }
 
+  // Send welcome email after email verification is successful
+  if (checkEmailConfig()) {
+    sendWelcomeEmail({
+      email: updatedUser.email,
+      name: updatedUser.name || updatedUser.username || updatedUser.email,
+    }).catch((err) => logger.error('[verifyEmail] Welcome email failed:', err));
+  }
+
   await deleteTokens(getEmailVerificationTokenDeleteQuery(emailVerificationData));
   logger.info(`[verifyEmail] Email verification successful [Email: ${decodedEmail}]`);
   return { message: 'Email verification was successful', status: 'success' };
@@ -354,7 +387,7 @@ const registerUser = async (user, additionalData = {}) => {
       return { status: 403, message: errorMessage };
     }
 
-    const existingUser = await findUser({ email }, 'email _id');
+    const existingUser = await findUser({ email }, 'email _id provider');
 
     if (existingUser) {
       logger.info(
@@ -362,6 +395,10 @@ const registerUser = async (user, additionalData = {}) => {
         { name: 'Request params:', value: user },
         { name: 'Existing user:', value: existingUser },
       );
+
+      if (existingUser.provider === 'google') {
+        return { status: 400, message: 'com_auth_error_register_google' };
+      }
 
       // Sleep for 1 second
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -396,6 +433,13 @@ const registerUser = async (user, additionalData = {}) => {
       });
     } else {
       await updateUser(newUserId, { emailVerified: true });
+      // If verification is not required/disabled, welcome email is sent immediately
+      if (emailEnabled) {
+        sendWelcomeEmail({
+          email,
+          name,
+        }).catch((err) => logger.error('[registerUser] Welcome email failed:', err));
+      }
     }
 
     return { status: 200, message: genericVerificationMessage };
@@ -474,7 +518,9 @@ const requestPasswordReset = async (req) => {
     deleteTokens({ userId: user._id, email: null, identifier: null, type: null }),
   ]);
 
-  const [resetToken, hash] = createTokenHash();
+  // Generate 6-digit OTP code
+  const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+  const hash = bcrypt.hashSync(otpCode, 10);
 
   await createToken({
     userId: user._id,
@@ -484,8 +530,6 @@ const requestPasswordReset = async (req) => {
     expiresIn: 900,
   });
 
-  const link = `${domains.client}/reset-password?token=${resetToken}&userId=${user._id}`;
-
   if (emailEnabled) {
     await sendEmail({
       email: user.email,
@@ -493,24 +537,39 @@ const requestPasswordReset = async (req) => {
       payload: {
         appName: process.env.APP_TITLE || 'Nashm',
         name: user.name || user.username || user.email,
-        link: link,
+        otpCode: otpCode,
         year: new Date().getFullYear(),
       },
-      template: 'requestPasswordReset.handlebars',
+      template: 'otpPasswordReset.handlebars',
     });
     logger.info(
-      `[requestPasswordReset] Link emailed. [Email: ${email}] [ID: ${user._id}] [IP: ${req.ip}]`,
+      `[requestPasswordReset] OTP emailed. [Email: ${email}] [ID: ${user._id}] [IP: ${req.ip}]`,
     );
   } else {
     logger.info(
-      `[requestPasswordReset] Link issued. [Email: ${email}] [ID: ${user._id}] [IP: ${req.ip}]`,
+      `[requestPasswordReset] OTP issued. [Email: ${email}] [ID: ${user._id}] [IP: ${req.ip}]`,
     );
-    return { link };
+    return { otpCode, userId: user._id };
   }
 
   return {
-    message: 'If an account with that email exists, a password reset link has been sent to it.',
+    userId: user._id,
+    message: 'If an account with that email exists, a password reset verification code has been sent to it.',
   };
+};
+
+/**
+ * Verify OTP code
+ * @param {String} userId
+ * @param {String} otpCode
+ * @returns {Promise<boolean>}
+ */
+const verifyOTP = async (userId, otpCode) => {
+  const passwordResetToken = await findPasswordResetToken(userId);
+  if (!passwordResetToken) {
+    return false;
+  }
+  return bcrypt.compareSync(otpCode, passwordResetToken.token);
 };
 
 /**
@@ -916,4 +975,6 @@ module.exports = {
   setCloudFrontAuthCookies,
   requestPasswordReset,
   resendVerificationEmail,
+  sendWelcomeEmail,
+  verifyOTP,
 };

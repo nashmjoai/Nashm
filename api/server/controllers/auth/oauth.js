@@ -12,9 +12,14 @@ const getLogStores = require('~/cache/getLogStores');
 const { checkBan } = require('~/server/middleware');
 const { generateToken } = require('~/models');
 
+const clientDomain = process.env.DOMAIN_CLIENT || 'http://localhost:3080';
 const domains = {
-  client: process.env.DOMAIN_CLIENT,
-  server: process.env.DOMAIN_SERVER,
+  client:
+    process.env.NODE_ENV === 'development' &&
+    (clientDomain === 'http://localhost:3080' || clientDomain.includes(':3080'))
+      ? 'http://localhost:3090'
+      : clientDomain,
+  server: process.env.DOMAIN_SERVER || 'http://localhost:3080',
 };
 
 function createOAuthHandler(redirectUri = `${domains.client}/c/new`) {

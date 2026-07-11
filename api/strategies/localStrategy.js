@@ -33,6 +33,9 @@ async function passportLogin(req, email, password, done) {
     if (!user.password) {
       logError('Passport Local Strategy - User has no password', { email });
       logger.error(`[Login] [Login failed] [Username: ${email}] [Request-IP: ${req.ip}]`);
+      if (user.provider === 'google') {
+        return done(null, false, { message: 'com_auth_error_login_google' });
+      }
       return done(null, false, { message: 'Email does not exist.' });
     }
 

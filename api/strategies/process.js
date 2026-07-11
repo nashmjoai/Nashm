@@ -1,8 +1,19 @@
-const { getBalanceConfig } = require('@nashm/api');
+const { getBalanceConfig, checkEmailConfig } = require('@nashm/api');
 const { FileSources } = require('nashm-data-provider');
 const { getStrategyFunctions } = require('~/server/services/Files/strategies');
 const { resizeAvatar } = require('~/server/services/Files/images/avatar');
 const { updateUser, createUser, getUserById } = require('~/models');
+const { sendEmail } = require('~/server/utils');
+const { logger } = require('@nashm/data-schemas');
+
+const clientDomain = process.env.DOMAIN_CLIENT || 'http://localhost:3080';
+const domains = {
+  client:
+    process.env.NODE_ENV === 'development' &&
+    (clientDomain === 'http://localhost:3080' || clientDomain.includes(':3080'))
+      ? 'http://localhost:3090'
+      : clientDomain,
+};
 
 /**
  * Updates the avatar URL and email of an existing user. If the user's avatar URL does not include the query parameter
@@ -114,6 +125,21 @@ const createSocialUser = async ({
       manual: 'false',
     });
     await updateUser(newUserId, { avatar });
+  }
+
+  const emailEnabled = checkEmailConfig();
+  if (emailEnabled && provider === 'google') {
+    sendEmail({
+      email,
+      subject: `Welcome to ${process.env.APP_TITLE || 'Nashm'}`,
+      payload: {
+        appName: process.env.APP_TITLE || 'Nashm',
+        name: name || username || email,
+        loginLink: `${domains.client}/login`,
+        year: new Date().getFullYear(),
+      },
+      template: 'welcomeEmail.handlebars',
+    }).catch((err) => logger.error('[createSocialUser] Welcome email failed:', err));
   }
 
   return await getUserById(newUserId);

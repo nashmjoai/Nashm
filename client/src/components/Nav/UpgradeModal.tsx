@@ -9,6 +9,7 @@ import {
   Spinner,
   useToastContext,
 } from '@nashm/client';
+import { useQueryClient } from '@tanstack/react-query';
 import { NotificationSeverity } from '~/common';
 import { useLocalize } from '~/hooks';
 import { useGetPublicPlansQuery } from '~/data-provider';
@@ -23,6 +24,7 @@ type UpgradeModalProps = {
 export function UpgradeModal({ open, onOpenChange, currentPlan, onUpgradeSuccess }: UpgradeModalProps) {
   const localize = useLocalize();
   const { showToast } = useToastContext();
+  const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const { data: publicPlansData } = useGetPublicPlansQuery();
 
@@ -155,6 +157,14 @@ export function UpgradeModal({ open, onOpenChange, currentPlan, onUpgradeSuccess
         severity: NotificationSeverity.SUCCESS,
         showIcon: true,
       });
+
+      // Invalidate all subscription-related cache to reflect new plan benefits immediately
+      await Promise.all([
+        queryClient.invalidateQueries(['balance']),
+        queryClient.invalidateQueries(['familyPlan']),
+        queryClient.invalidateQueries(['familyPlanActivity']),
+        queryClient.invalidateQueries(['user']),
+      ]);
 
       onUpgradeSuccess();
       onOpenChange(false);

@@ -18,6 +18,7 @@ const ctx: SettingsContextValue = {
   allowAccountDeletion: true,
   aboutEnabled: false,
   engineTTS: 'browser',
+  userPlan: 'free',
 };
 
 function setup(extra: Partial<SettingsContextValue> = {}, query = '') {

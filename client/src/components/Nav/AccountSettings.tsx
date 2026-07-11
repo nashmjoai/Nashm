@@ -1,19 +1,21 @@
 import { useState, memo, useRef } from 'react';
 import * as Menu from '@ariakit/react/menu';
-import { FileText, Archive, LogOut, Shield } from 'lucide-react';
+import { FileText, Archive, LogOut, Shield, Users } from 'lucide-react';
 import { LinkIcon, GearIcon, DropdownMenuSeparator, Avatar } from '@nashm/client';
 import { ArchivedChatsModal } from '~/components/Nav/SettingsTabs/General/ArchivedChatsModal';
 import { MyFilesModal } from '~/components/Chat/Input/Files/MyFilesModal';
 import { SupportModal } from './SupportModal';
 import { UpgradeModal } from './UpgradeModal';
+import { FamilyDashboardModal } from './FamilyDashboardModal';
 import { useGetStartupConfig, useGetUserBalance } from '~/data-provider';
 import { useAuthContext } from '~/hooks/AuthContext';
 import { useLocalize } from '~/hooks';
 import Settings from './Settings';
-import { Award } from 'lucide-react';
+import SubscriptionBadge from './SubscriptionBadge';
 
 function AccountSettings({ collapsed = false }: { collapsed?: boolean }) {
   const localize = useLocalize();
+  const isArabic = localize('com_nav_subscription' as any) === undefined;
   const { user, isAuthenticated, logout } = useAuthContext();
   const { data: startupConfig } = useGetStartupConfig();
   const balanceQuery = useGetUserBalance({
@@ -24,6 +26,7 @@ function AccountSettings({ collapsed = false }: { collapsed?: boolean }) {
   const [showArchived, setShowArchived] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
   const [showUpgrade, setShowUpgrade] = useState(false);
+  const [showFamilyDashboard, setShowFamilyDashboard] = useState(false);
   const accountSettingsButtonRef = useRef<HTMLButtonElement>(null);
 
   return (
@@ -100,14 +103,15 @@ function AccountSettings({ collapsed = false }: { collapsed?: boolean }) {
           </Menu.MenuItem>
         )}
         {startupConfig?.balance?.enabled === true && balanceQuery.data != null && (
-          <Menu.MenuItem onClick={() => setShowUpgrade(true)} className="select-item text-sm">
-            <Award className="icon-md" aria-hidden="true" />
-            <span className="flex items-center gap-1.5">
-              <span>{localize('com_nav_subscription' as any) || 'Plan'}:</span>
-              <span className="font-semibold capitalize text-green-600 dark:text-green-400">
-                {balanceQuery.data.plan || 'Free'}
-              </span>
-            </span>
+          <Menu.MenuItem onClick={() => setShowUpgrade(true)} className="select-item text-sm justify-between">
+            <span className="text-text-secondary">{localize('com_nav_subscription' as any) || 'Plan'}:</span>
+            <SubscriptionBadge plan={balanceQuery.data.plan || 'free'} />
+          </Menu.MenuItem>
+        )}
+        {startupConfig?.balance?.enabled === true && balanceQuery.data?.isFamilyOwner === true && (
+          <Menu.MenuItem onClick={() => setShowFamilyDashboard(true)} className="select-item text-sm">
+            <Users className="icon-md" aria-hidden="true" />
+            {isArabic ? 'لوحة تحكم العائلة' : 'Family Dashboard'}
           </Menu.MenuItem>
         )}
         <Menu.MenuItem onClick={() => setShowSettings(true)} className="select-item text-sm">
@@ -144,6 +148,12 @@ function AccountSettings({ collapsed = false }: { collapsed?: boolean }) {
           onOpenChange={setShowUpgrade}
           currentPlan={balanceQuery.data.plan || 'free'}
           onUpgradeSuccess={() => balanceQuery.refetch()}
+        />
+      )}
+      {showFamilyDashboard && (
+        <FamilyDashboardModal
+          open={showFamilyDashboard}
+          onOpenChange={setShowFamilyDashboard}
         />
       )}
     </Menu.MenuProvider>

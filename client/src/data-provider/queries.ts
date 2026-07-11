@@ -614,3 +614,42 @@ export const useGetFamilyPlanQuery = (
     ...config,
   });
 };
+
+export const useGetFamilyPlanActivityQuery = (
+  config?: UseQueryOptions<any>,
+): QueryObserverResult<any> => {
+  return useQuery<any>(['familyPlanActivity'], () => dataService.getFamilyPlanActivity(), {
+    refetchOnWindowFocus: false,
+    retry: false,
+    ...config,
+  });
+};
+
+export const useGetFamilyPlanMemberConversationsQuery = (
+  userId: string,
+  config?: UseQueryOptions<any>,
+): QueryObserverResult<any> => {
+  return useQuery<any>(['familyPlanMemberConversations', userId], () => dataService.getFamilyPlanMemberConversations(userId), {
+    refetchOnWindowFocus: false,
+    retry: false,
+    enabled: !!userId,
+    ...config,
+  });
+};
+
+export const useGetFamilyPlanMemberConversationMessagesQuery = (
+  userId: string,
+  conversationId: string,
+  config?: UseQueryOptions<any>,
+): QueryObserverResult<any> => {
+  return useQuery<any>(
+    ['familyPlanMemberConversationMessages', userId, conversationId],
+    () => dataService.getFamilyPlanMemberConversationMessages(userId, conversationId),
+    {
+      refetchOnWindowFocus: false,
+      retry: false,
+      enabled: !!userId && !!conversationId,
+      ...config,
+    }
+  );
+};

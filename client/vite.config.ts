@@ -400,6 +400,8 @@ export default defineConfig(({ command }) => ({
       '~': path.join(__dirname, 'src/'),
       $fonts: path.resolve(__dirname, 'public/fonts'),
       'micromark-extension-math': 'micromark-extension-llm-math',
+      '@nashm/client/style.css': path.resolve(__dirname, '../packages/client/dist/style.css'),
+      '@nashm/client': path.resolve(__dirname, '../packages/client/dist/index.mjs'),
     },
   },
 }));

@@ -16,6 +16,7 @@ const {
   resetPassword,
   setAuthTokens,
   registerUser,
+  verifyOTP,
 } = require('~/server/services/AuthService');
 const {
   deleteAllUserSessions,
@@ -343,10 +344,28 @@ const graphTokenController = async (req, res) => {
   }
 };
 
+const verifyOTPController = async (req, res) => {
+  try {
+    const { userId, otp } = req.body;
+    if (!userId || !otp) {
+      return res.status(400).json({ message: 'User ID and OTP code are required' });
+    }
+    const isValid = await verifyOTP(userId, otp);
+    if (!isValid) {
+      return res.status(400).json({ message: 'Invalid or expired OTP code' });
+    }
+    return res.status(200).json({ message: 'OTP verified successfully', verified: true });
+  } catch (e) {
+    logger.error('[verifyOTPController]', e);
+    return res.status(500).json({ message: e.message });
+  }
+};
+
 module.exports = {
   refreshController,
   registrationController,
   resetPasswordController,
   resetPasswordRequestController,
   graphTokenController,
+  verifyOTPController,
 };

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Spinner, Button, SecretInput } from '@nashm/client';
 import { useOutletContext } from 'react-router-dom';
@@ -7,7 +8,13 @@ import type { TResetPassword } from 'nashm-data-provider';
 import type { TLoginLayoutContext } from '~/common';
 import { useLocalize } from '~/hooks';
 
-function ResetPassword() {
+interface ResetPasswordProps {
+  userIdProps?: string;
+  tokenProps?: string;
+  onSuccess?: () => void;
+}
+
+function ResetPassword({ userIdProps, tokenProps, onSuccess }: ResetPasswordProps = {}) {
   const localize = useLocalize();
   const {
     register,
@@ -34,26 +41,41 @@ function ResetPassword() {
       },
       onSuccess: () => {
         setHeaderText('com_auth_reset_password_success');
+        if (onSuccess) {
+          onSuccess();
+        }
       },
     });
   };
+
+  const tokenVal = tokenProps || params.get('token') || '';
+  const userIdVal = userIdProps || params.get('userId') || '';
+
+  useEffect(() => {
+    if (resetPassword.isSuccess) {
+      const timer = setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [resetPassword.isSuccess, navigate]);
 
   if (resetPassword.isSuccess) {
     return (
       <>
         <div
-          className="relative mt-6 rounded-xl border border-green-500/20 bg-green-50/50 px-6 py-4 text-green-700 shadow-sm transition-all dark:bg-green-950/30 dark:text-green-100"
+          className="relative mt-6 rounded-xl border border-green-500/20 bg-green-50/50 px-6 py-5 text-green-700 shadow-sm transition-all dark:bg-green-950/30 dark:text-green-100"
           role="alert"
         >
-          <div className="flex flex-col space-y-4">
-            <p>{localize('com_auth_login_with_new_password')}</p>
-            <Button
-              onClick={() => navigate('/login')}
-              aria-label={localize('com_auth_sign_in')}
-              variant="submit"
-            >
-              {localize('com_auth_continue')}
-            </Button>
+          <div className="flex flex-col items-center space-y-4 text-center">
+            <p className="font-semibold text-base">{localize('com_auth_reset_password_success') || 'Password reset successfully!'}</p>
+            <p className="text-sm text-green-600/80 dark:text-green-300/80">
+              {localize('com_auth_login_with_new_password') || 'Redirecting you to the login page...'}
+            </p>
+            <div className="flex items-center gap-2 text-xs font-medium text-green-600 dark:text-green-400">
+              <Spinner className="size-4 text-green-600 dark:text-green-400" />
+              <span>Redirecting...</span>
+            </div>
           </div>
         </div>
       </>
@@ -72,13 +94,13 @@ function ResetPassword() {
           <input
             type="hidden"
             id="token"
-            value={params.get('token') ?? ''}
+            value={tokenVal}
             {...register('token', { required: 'Unable to process: No valid reset token' })}
           />
           <input
             type="hidden"
             id="userId"
-            value={params.get('userId') ?? ''}
+            value={userIdVal}
             {...register('userId', { required: 'Unable to process: No valid user id' })}
           />
           <SecretInput

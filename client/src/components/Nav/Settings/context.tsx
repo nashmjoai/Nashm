@@ -5,13 +5,16 @@ import type { SettingsContextValue } from './types';
 import useProviderKeys from '../SettingsTabs/ProviderKeys/useProviderKeys';
 import usePersonalizationAccess from '~/hooks/usePersonalizationAccess';
 import { useHasAccess, useAuthContext } from '~/hooks';
-import { useGetStartupConfig } from '~/data-provider';
+import { useGetStartupConfig, useGetUserBalance } from '~/data-provider';
 import store from '~/store';
 
 export function useSettingsContext(): SettingsContextValue {
   const { user } = useAuthContext();
   const { data: startupConfig } = useGetStartupConfig();
   const { hasAnyPersonalizationFeature, hasMemoryOptOut } = usePersonalizationAccess();
+  const balanceEnabled = startupConfig?.balance?.enabled === true;
+  const { data: balanceData } = useGetUserBalance({ enabled: balanceEnabled });
+  const userPlan = balanceData?.plan || 'free';
 
   const hasRemoteAgents = useHasAccess({
     permissionType: PermissionTypes.REMOTE_AGENTS,
@@ -26,7 +29,6 @@ export function useSettingsContext(): SettingsContextValue {
     permission: Permissions.USE,
   });
 
-  const balanceEnabled = startupConfig?.balance?.enabled === true;
   const isLocalProvider = user?.provider === 'local';
   const twoFactorEnabled = user?.twoFactorEnabled === true;
   const allowAccountDeletion = startupConfig?.allowAccountDeletion !== false;
@@ -51,6 +53,7 @@ export function useSettingsContext(): SettingsContextValue {
       allowAccountDeletion,
       aboutEnabled,
       engineTTS,
+      userPlan,
     }),
     [
       balanceEnabled,
@@ -65,6 +68,7 @@ export function useSettingsContext(): SettingsContextValue {
       allowAccountDeletion,
       aboutEnabled,
       engineTTS,
+      userPlan,
     ],
   );
 }

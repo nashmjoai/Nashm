@@ -1,7 +1,16 @@
-const telemetry = require('./telemetry');
+const telemetry = require('./telemetry'); // Restart trigger
 const fs = require('fs');
 const path = require('path');
 require('module-alias')({ base: path.resolve(__dirname, '..') });
+
+// Map Nashm-branded code interpreter environment variables to their internal names
+if (process.env.NASHM_CODE_BASEURL) {
+  process.env.LIBRECHAT_CODE_BASEURL = process.env.NASHM_CODE_BASEURL;
+}
+if (process.env.NASHM_CODE_API_KEY) {
+  process.env.LIBRECHAT_CODE_API_KEY = process.env.NASHM_CODE_API_KEY;
+}
+
 const cors = require('cors');
 const axios = require('axios');
 const express = require('express');
@@ -192,7 +201,10 @@ const startServer = async () => {
   });
 
   app.use(mongoSanitize());
-  app.use(cors());
+  app.use(cors({
+    origin: process.env.DOMAIN_CLIENT || 'http://localhost:3080',
+    credentials: true,
+  }));
   app.use(cookieParser());
 
   if (!isEnabled(DISABLE_COMPRESSION)) {

@@ -362,7 +362,10 @@ if (cluster.isMaster) {
     });
 
     app.use(mongoSanitize());
-    app.use(cors());
+    app.use(cors({
+      origin: process.env.DOMAIN_CLIENT || 'http://localhost:3080',
+      credentials: true,
+    }));
     app.use(cookieParser());
 
     if (!isEnabled(DISABLE_COMPRESSION)) {

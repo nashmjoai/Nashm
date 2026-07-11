@@ -145,7 +145,7 @@ const Registration: React.FC = () => {
             localize('com_auth_email_verification_redirecting', { 0: countdown.toString() })}
         </div>
       )}
-      {!startupConfigError && !isFetching && (
+      {!startupConfigError && (
         <>
           <form
             className="mt-6"

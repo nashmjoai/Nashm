@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useGetFamilyPlanQuery, useAddFamilyMemberMutation, useRemoveFamilyMemberMutation } from '~/data-provider';
+import { useGetFamilyPlanQuery, useAddFamilyMemberMutation, useRemoveFamilyMemberMutation, useGetFamilyPlanActivityQuery } from '~/data-provider';
 import { useLocalize } from '~/hooks';
 import { Button, Spinner, Input, useToastContext } from '@nashm/client';
 import { NotificationSeverity } from '~/common';
@@ -11,6 +11,10 @@ export default function FamilyPlanSettings() {
   const [email, setEmail] = useState('');
 
   const { data: plan, isLoading, error } = useGetFamilyPlanQuery();
+  const { data: activityData, refetch: refetchActivity } = useGetFamilyPlanActivityQuery({
+    enabled: !!plan,
+  });
+
   const addMemberMutation = useAddFamilyMemberMutation({
     onSuccess: () => {
       showToast({
@@ -19,6 +23,7 @@ export default function FamilyPlanSettings() {
         showIcon: true,
       });
       setEmail('');
+      refetchActivity();
     },
     onError: (err: any) => {
       showToast({
@@ -36,6 +41,7 @@ export default function FamilyPlanSettings() {
         severity: NotificationSeverity.SUCCESS,
         showIcon: true,
       });
+      refetchActivity();
     },
     onError: (err: any) => {
       showToast({
@@ -61,6 +67,11 @@ export default function FamilyPlanSettings() {
 
   const members = plan.members || [];
   const children = members.filter((m: any) => m.role === 'child');
+
+  const getMemberActivity = (email: string) => {
+    if (!activityData?.members) return null;
+    return activityData.members.find((m: any) => m.email.toLowerCase() === email.toLowerCase());
+  };
 
   const handleAddMember = (e: React.FormEvent) => {
     e.preventDefault();
@@ -121,23 +132,57 @@ export default function FamilyPlanSettings() {
           <p className="text-xs text-text-secondary italic">No child members added yet.</p>
         ) : (
           <div className="flex flex-col divide-y divide-border-light">
-            {children.map((member: any) => (
-              <div key={member.user} className="flex items-center justify-between py-2 text-sm">
-                <div className="flex flex-col">
-                  <span className="font-medium text-text-primary">{member.email}</span>
-                  <span className="text-xs text-text-secondary">Added on {new Date(member.addedAt).toLocaleDateString()}</span>
+            {children.map((member: any) => {
+              const activity = getMemberActivity(member.email);
+              const lastActiveDate = activity?.lastActivity ? new Date(activity.lastActivity) : null;
+              
+              // Check if they were active in the last 1 hour
+              const isOnline = lastActiveDate ? (Date.now() - lastActiveDate.getTime() < 60 * 60 * 1000) : false;
+
+              return (
+                <div key={member.user} className="flex items-center justify-between py-3 text-sm">
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-text-primary">{member.email}</span>
+                      {lastActiveDate && (
+                        <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${
+                          isOnline ? 'bg-green-100 text-green-700 dark:bg-green-950/40 dark:text-green-450' : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
+                        }`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-green-500' : 'bg-gray-400 dark:bg-gray-500'}`} />
+                          {isOnline ? 'Active' : 'Offline'}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-text-secondary">
+                      <span>Added: {new Date(member.addedAt).toLocaleDateString()}</span>
+                      {activity && (
+                        <>
+                          <span>•</span>
+                          <span>Convos: <strong>{activity.conversationCount}</strong></span>
+                          {activity.lastConversationTitle && (
+                            <>
+                              <span>•</span>
+                              <span className="truncate max-w-[200px]" title={activity.lastConversationTitle}>
+                                Last chat: "{activity.lastConversationTitle}"
+                              </span>
+                            </>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveMember(member.user)}
+                    className="p-1.5 rounded-lg text-text-secondary hover:text-red-500 hover:bg-red-500/10 transition-colors"
+                    title="Remove Member"
+                    disabled={removeMemberMutation.isLoading}
+                  >
+                    <Trash2 className="size-4" />
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => handleRemoveMember(member.user)}
-                  className="p-1.5 rounded-lg text-text-secondary hover:text-red-500 hover:bg-red-500/10 transition-colors"
-                  title="Remove Member"
-                  disabled={removeMemberMutation.isLoading}
-                >
-                  <Trash2 className="size-4" />
-                </button>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

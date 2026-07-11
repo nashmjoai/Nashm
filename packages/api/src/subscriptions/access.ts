@@ -78,12 +78,25 @@ export async function getEffectiveSubscription(
   }
 
   const userObjectId = new Types.ObjectId(userId);
+  if (!deps.Subscription) {
+    return { plan: 'free', source: 'none' };
+  }
   const subscription = await deps.Subscription.findOne({
     user: userObjectId,
     status: { $in: ACTIVE_STATUSES },
   }).lean<ISubscription | null>();
 
   if (subscription?.plan && subscription.plan !== 'free' && isActiveExpiry(subscription.expiresAt)) {
+    // If the admin set plan=family directly on the subscription, honour it immediately
+    // without requiring a separate FamilyPlan document.
+    if (subscription.plan === 'family') {
+      return {
+        plan: 'family',
+        source: 'direct',
+        subscriptionId: subscription._id.toString(),
+        expiresAt: subscription.expiresAt?.toISOString(),
+      };
+    }
     return {
       plan: subscription.plan,
       source: 'direct',

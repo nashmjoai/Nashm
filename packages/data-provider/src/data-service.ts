@@ -1452,3 +1452,15 @@ export function addFamilyMember(email: string): Promise<any> {
 export function removeFamilyMember(userId: string): Promise<any> {
   return request.delete(endpoints.familyPlanMember(userId));
 }
+
+export function getFamilyPlanActivity(): Promise<any> {
+  return request.get(endpoints.familyPlanActivity());
+}
+
+export function getFamilyPlanMemberConversations(userId: string): Promise<any> {
+  return request.get(endpoints.familyPlanMemberConversations(userId));
+}
+
+export function getFamilyPlanMemberConversationMessages(userId: string, conversationId: string): Promise<any> {
+  return request.get(endpoints.familyPlanMemberConversationMessages(userId, conversationId));
+}

@@ -64,8 +64,15 @@ const logoutController = async (req, res) => {
         const endSessionEndpoint = openIdConfig.serverMetadata().end_session_endpoint;
         if (endSessionEndpoint) {
           const endSessionUrl = new URL(endSessionEndpoint);
+          const clientDomain = process.env.DOMAIN_CLIENT || 'http://localhost:3080';
           const postLogoutRedirectUri =
-            process.env.OPENID_POST_LOGOUT_REDIRECT_URI || `${process.env.DOMAIN_CLIENT}/login`;
+            process.env.OPENID_POST_LOGOUT_REDIRECT_URI ||
+            `${
+              process.env.NODE_ENV === 'development' &&
+              (clientDomain === 'http://localhost:3080' || clientDomain.includes(':3080'))
+                ? 'http://localhost:3090'
+                : clientDomain
+            }/login`;
           endSessionUrl.searchParams.set('post_logout_redirect_uri', postLogoutRedirectUri);
 
           /**

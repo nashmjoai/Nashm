@@ -6,6 +6,7 @@ const {
   registrationController,
   graphTokenController,
   refreshController,
+  verifyOTPController,
 } = require('~/server/controllers/AuthController');
 const {
   regenerateBackupCodes,
@@ -83,6 +84,12 @@ router.post(
   middleware.checkBan,
   middleware.validatePasswordReset,
   resetPasswordController,
+);
+router.post(
+  '/verifyOTP',
+  middleware.resetPasswordLimiter,
+  middleware.checkBan,
+  verifyOTPController,
 );
 
 router.post('/2fa/enable', middleware.requireJwtAuth, enable2FA);

@@ -7,6 +7,18 @@ const getLoginError = (errorText: string): TranslationKeys => {
     return defaultError;
   }
 
+  if (
+    !errorText.includes('Request failed') &&
+    !errorText.includes('code') &&
+    !errorText.includes('429') &&
+    !errorText.includes('403') &&
+    !errorText.includes('500') &&
+    !errorText.includes('422') &&
+    !errorText.includes('404')
+  ) {
+    return errorText as TranslationKeys;
+  }
+
   switch (true) {
     case errorText.includes('429'):
       return 'com_auth_error_login_rl';

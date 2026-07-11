@@ -46,6 +46,8 @@ export interface SettingsContextValue {
   allowAccountDeletion: boolean;
   aboutEnabled: boolean;
   engineTTS: string;
+  /** Current subscription plan: 'free' | 'individual' | 'family' | 'developer' */
+  userPlan: string;
 }
 
 export interface SettingEntry {

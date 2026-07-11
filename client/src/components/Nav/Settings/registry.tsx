@@ -555,6 +555,7 @@ export const registry: SettingEntry[] = [
     tab: ACCOUNT,
     section: 'billing',
     labelKey: 'com_ui_settings_label_family_plan',
+    show: (ctx) => ctx.userPlan === 'family',
     Component: FamilyPlanSettings,
   },
   // Account · Danger zone

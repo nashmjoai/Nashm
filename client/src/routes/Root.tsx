@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useRecoilValue } from 'recoil';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { useMediaQuery } from '@nashm/client';
 import {
   useSearchEnabled,
@@ -30,6 +30,18 @@ export default function Root() {
   const isSmallScreen = useMediaQuery('(max-width: 768px)');
 
   const { isAuthenticated, logout } = useAuthContext();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      const pendingPrompt = localStorage.getItem('nashm_pending_prompt');
+      if (pendingPrompt) {
+        localStorage.removeItem('nashm_pending_prompt');
+        const encodedPrompt = encodeURIComponent(pendingPrompt);
+        navigate(`/c/new?prompt=${encodedPrompt}&submit=true`, { replace: true });
+      }
+    }
+  }, [isAuthenticated, navigate]);
 
   useHealthCheck(isAuthenticated);
 

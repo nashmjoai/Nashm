@@ -8,6 +8,8 @@ import type { TRequestPasswordReset, TRequestPasswordResetResponse } from 'nashm
 import type { TLoginLayoutContext } from '~/common';
 import type { FC } from 'react';
 import { useLocalize } from '~/hooks';
+import { OTPVerification } from './OTPVerification';
+import ResetPassword from './ResetPassword';
 
 const BodyTextWrapper: FC<{ children: ReactNode }> = ({ children }) => {
   return (
@@ -40,28 +42,33 @@ function RequestPasswordReset() {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<TRequestPasswordReset>();
   const [bodyText, setBodyText] = useState<ReactNode | undefined>(undefined);
   const { startupConfig, setHeaderText } = useOutletContext<TLoginLayoutContext>();
 
+  const [step, setStep] = useState<'email' | 'otp' | 'password'>('email');
+  const [userId, setUserId] = useState<string>('');
+  const [otpCode, setOtpCode] = useState<string>('');
+  const [otpError, setOtpError] = useState<string>('');
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState<boolean>(false);
+
   const requestPasswordReset = useRequestPasswordResetMutation();
   const { isLoading } = requestPasswordReset;
 
+  const watchEmail = watch('email');
+
   const onSubmit = (data: TRequestPasswordReset) => {
     requestPasswordReset.mutate(data, {
-      onSuccess: (data: TRequestPasswordResetResponse) => {
-        if (data.link && !startupConfig?.emailEnabled) {
-          setHeaderText('com_auth_reset_password');
-          setBodyText(
-            <span>
-              {localize('com_auth_click')}{' '}
-              <a className="text-green-500 hover:underline" href={data.link}>
-                {localize('com_auth_here')}
-              </a>{' '}
-              {localize('com_auth_to_reset_your_password')}
-            </span>,
-          );
+      onSuccess: (res: any) => {
+        if (res.otpCode) {
+          console.log('OTP code (Dev mode):', res.otpCode);
+        }
+        if (res.userId) {
+          setUserId(res.userId);
+          setHeaderText('com_auth_verify_your_identity');
+          setStep('otp');
         } else {
           setHeaderText('com_auth_reset_password_link_sent');
           setBodyText(<ResetPasswordBodyText />);
@@ -76,6 +83,61 @@ function RequestPasswordReset() {
 
   if (bodyText) {
     return <BodyTextWrapper>{bodyText}</BodyTextWrapper>;
+  }
+
+  if (step === 'otp') {
+    const handleVerifyOtp = async (code: string) => {
+      setIsVerifyingOtp(true);
+      setOtpError('');
+      try {
+        const response = await fetch('/api/auth/verifyOTP', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId, otp: code }),
+        });
+        const resData = await response.json();
+        if (response.ok && resData.verified) {
+          setOtpCode(code);
+          setHeaderText('com_auth_reset_password');
+          setStep('password');
+        } else {
+          setOtpError(resData.message || 'Invalid or expired verification code');
+        }
+      } catch (err) {
+        setOtpError('Failed to verify OTP code. Please try again.');
+      } finally {
+        setIsVerifyingOtp(false);
+      }
+    };
+
+    const handleResendOtp = () => {
+      if (watchEmail) {
+        onSubmit({ email: watchEmail });
+      }
+    };
+
+    return (
+      <OTPVerification
+        onVerify={handleVerifyOtp}
+        onResend={handleResendOtp}
+        isLoading={isVerifyingOtp}
+        error={otpError}
+      />
+    );
+  }
+
+  if (step === 'password') {
+    return (
+      <ResetPassword
+        userIdProps={userId}
+        tokenProps={otpCode}
+        onSuccess={() => {
+          // Handle post success if necessary
+        }}
+      />
+    );
   }
 
   return (

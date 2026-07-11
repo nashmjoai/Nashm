@@ -1,10 +1,12 @@
 import { useEffect, useState, useContext } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
 import type { TStartupConfig } from 'nashm-data-provider';
 import { TranslationKeys, useLocalize, AuthContext } from '~/hooks';
 import { useGetStartupConfig } from '~/data-provider';
 import AuthLayout from '~/components/Auth/AuthLayout';
 import { REDIRECT_PARAM, SESSION_KEY } from '~/utils';
+import store from '~/store';
 
 const headerMap: Record<string, TranslationKeys> = {
   '/login': 'com_auth_welcome_back',
@@ -20,6 +22,14 @@ export default function StartupLayout({ isAuthenticated: propIsAuthenticated }: 
   const [error, setError] = useState<TranslationKeys | null>(null);
   const [headerText, setHeaderText] = useState<TranslationKeys | null>(null);
   const [startupConfig, setStartupConfig] = useState<TStartupConfig | null>(null);
+  const [queriesEnabled, setQueriesEnabled] = useRecoilState<boolean>(store.queriesEnabled);
+
+  useEffect(() => {
+    if (!queriesEnabled) {
+      setQueriesEnabled(true);
+    }
+  }, [queriesEnabled, setQueriesEnabled]);
+
   const {
     data,
     isFetching,

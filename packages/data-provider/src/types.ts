@@ -768,6 +768,7 @@ export type TBalanceResponse = {
   plan?: string;
   quota?: number;
   consumed?: number;
+  isFamilyOwner?: boolean;
 };
 
 /* -------------------------------------------------------------------------- */

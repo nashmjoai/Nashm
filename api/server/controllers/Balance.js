@@ -1,4 +1,5 @@
-const { findBalanceByUser, PlanConfig, Subscription, FamilyPlan } = require('~/models');
+const { findBalanceByUser, PlanConfig } = require('~/models');
+const { Subscription, FamilyPlan } = require('~/db/models');
 const { getEffectiveSubscription } = require('@nashm/api');
 
 async function balanceController(req, res) {
@@ -47,7 +48,21 @@ async function balanceController(req, res) {
       }
     }
   } catch (error) {
+    console.error('[balanceController] getEffectiveSubscription error:', error?.message, '| Subscription:', !!Subscription, '| FamilyPlan:', !!FamilyPlan);
     // Fallback to default
+  }
+
+  let isFamilyOwner = false;
+  if (plan === 'family') {
+    try {
+      const familyPlan = await FamilyPlan.findOne({
+        owner: req.user.id,
+        status: { $in: ['active', 'trialing'] },
+      }).lean();
+      isFamilyOwner = !!familyPlan;
+    } catch (_) {
+      // ignore
+    }
   }
 
   const remaining = Math.max(0, result.tokenCredits || 0);
@@ -58,6 +73,7 @@ async function balanceController(req, res) {
     plan,
     quota,
     consumed,
+    isFamilyOwner,
   });
 }
 

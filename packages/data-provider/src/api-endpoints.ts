@@ -550,3 +550,8 @@ export const familyPlan = () => `${BASE_URL}/api/family`;
 export const familyPlanMembers = () => `${BASE_URL}/api/family/members`;
 export const familyPlanMember = (userId: string) =>
   `${BASE_URL}/api/family/members/${encodeURIComponent(userId)}`;
+export const familyPlanActivity = () => `${BASE_URL}/api/family/members/activity`;
+export const familyPlanMemberConversations = (userId: string) =>
+  `${BASE_URL}/api/family/members/${encodeURIComponent(userId)}/conversations`;
+export const familyPlanMemberConversationMessages = (userId: string, conversationId: string) =>
+  `${BASE_URL}/api/family/members/${encodeURIComponent(userId)}/conversations/${encodeURIComponent(conversationId)}`;
