@@ -11,6 +11,7 @@ import WorkbookPreview from './Office/WorkbookPreview';
 import { TOOL_ARTIFACT_TYPES } from '~/utils/artifacts';
 import { cn } from '~/utils';
 import store from '~/store';
+import { useAuthContext } from '~/hooks/AuthContext';
 
 interface OfficeArtifactPanelProps {
   artifact: Artifact;
@@ -42,6 +43,7 @@ const TEMPLATE_PRESETS = {
 };
 
 export default function OfficeArtifactPanel({ artifact, readOnly }: OfficeArtifactPanelProps) {
+  const { token } = useAuthContext();
   const [activeTab, setActiveTab] = useState('preview');
   const [exportFormat, setExportFormat] = useState('office'); // 'office' | 'pdf'
   const [exportStatus, setExportStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -121,6 +123,7 @@ export default function OfficeArtifactPanel({ artifact, readOnly }: OfficeArtifa
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           artifactData: parsedData,
@@ -145,7 +148,11 @@ export default function OfficeArtifactPanel({ artifact, readOnly }: OfficeArtifa
         }
 
         try {
-          const statusRes = await fetch(`/api/artifacts/export/status/${jobId}`);
+          const statusRes = await fetch(`/api/artifacts/export/status/${jobId}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          });
           if (statusRes.ok) {
             const result = await statusRes.json();
             if (result.status === 'completed') {
@@ -171,6 +178,52 @@ export default function OfficeArtifactPanel({ artifact, readOnly }: OfficeArtifa
         setDownloadUrl(dummyUrl);
         setExportStatus('success');
       }, 2500);
+    }
+  };
+
+  const handleDownload = async () => {
+    if (!downloadUrl) return;
+    try {
+      const response = await fetch(downloadUrl, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Download request failed');
+      }
+      const blob = await response.blob();
+      
+      let filename = '';
+      const contentDisposition = response.headers.get('content-disposition');
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename="?([^";]+)"?/);
+        if (match && match[1]) {
+          filename = match[1];
+        }
+      }
+      
+      if (!filename) {
+        const parts = downloadUrl.split('/');
+        filename = parts[parts.length - 1];
+        if (filename.includes('dummy_')) {
+          filename = filename;
+        } else if (parsedData) {
+          const ext = exportFormat === 'pdf' ? 'pdf' : parsedData.kind === 'slides' ? 'pptx' : parsedData.kind === 'workbook' ? 'xlsx' : 'docx';
+          filename = `export.${ext}`;
+        }
+      }
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('File download error:', err);
     }
   };
 
@@ -335,14 +388,13 @@ export default function OfficeArtifactPanel({ artifact, readOnly }: OfficeArtifa
                     <Check size={16} className="text-emerald-500 shrink-0" />
                     Export completed successfully! File is ready.
                   </div>
-                  <a
-                    href={downloadUrl}
-                    download
+                  <button
+                    onClick={handleDownload}
                     className="w-full flex items-center justify-center gap-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 text-sm transition-colors shadow-sm"
                   >
                     <FileDown size={16} />
                     Download Generated File
-                  </a>
+                  </button>
                   <button
                     onClick={() => setExportStatus('idle')}
                     className="w-full text-center text-xs text-text-secondary hover:text-text-primary underline mt-2"
