@@ -39,12 +39,14 @@ const user = require('./user');
 const familyPlan = require('./familyPlan');
 const mcp = require('./mcp');
 const rum = require('./rum');
+const artifacts = require('./artifacts');
 const plans = require('./plans');
 
 module.exports = {
   rum,
   mcp,
   auth,
+  artifacts,
   adminAuth,
   adminConfig,
   adminGrants,

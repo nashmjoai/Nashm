@@ -39,6 +39,7 @@ import { createUserModel } from './user';
 import { createRoleModel } from './role';
 import { createFileModel } from './file';
 import { createKeyModel } from './key';
+import { createExportJobModel } from './exportJob';
 
 /**
  * Creates all database models for all collections
@@ -85,6 +86,7 @@ export function createModels(mongoose: typeof import('mongoose')): {
   SupportTicket: ReturnType<typeof createSupportTicketModel>;
   ModelAccess: ReturnType<typeof createModelAccessModel>;
   PlanConfig: ReturnType<typeof createPlanConfigModel>;
+  ExportJob: ReturnType<typeof createExportJobModel>;
 } {
   return {
     User: createUserModel(mongoose),
@@ -128,5 +130,6 @@ export function createModels(mongoose: typeof import('mongoose')): {
     SupportTicket: createSupportTicketModel(mongoose),
     ModelAccess: createModelAccessModel(mongoose),
     PlanConfig: createPlanConfigModel(mongoose),
+    ExportJob: createExportJobModel(mongoose),
   };
 }

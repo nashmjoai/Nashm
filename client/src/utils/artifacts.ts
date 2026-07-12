@@ -12,6 +12,9 @@ const artifactFilename = {
   'application/vnd.ant.react': 'App.tsx',
   'text/html': 'index.html',
   'application/vnd.code-html': 'index.html',
+  'application/vnd.nashm.slides': 'slides.json',
+  'application/vnd.nashm.document': 'document.json',
+  'application/vnd.nashm.workbook': 'workbook.json',
   /* Office preview buckets — the backend produces a complete sanitized
    * `index.html` document (head + body) and ships it via `attachment.text`.
    * The Sandpack `static` template loads it as-is. See
@@ -42,6 +45,9 @@ const artifactTemplate: Record<
   'application/vnd.ant.react': 'react-ts',
   'application/vnd.mermaid': 'react-ts',
   'application/vnd.code-html': 'static',
+  'application/vnd.nashm.slides': 'static',
+  'application/vnd.nashm.document': 'static',
+  'application/vnd.nashm.workbook': 'static',
   /* CODE bucket reuses the static markdown pipeline — `useArtifactProps`
    * pre-wraps the content in a fenced block and hands it to
    * `getMarkdownFiles`, so the rendered HTML uses the same `marked`
@@ -142,6 +148,9 @@ const dependenciesMap: Record<
   'application/vnd.ant.react': standardDependencies,
   'text/html': standardDependencies,
   'application/vnd.code-html': standardDependencies,
+  'application/vnd.nashm.slides': {},
+  'application/vnd.nashm.document': {},
+  'application/vnd.nashm.workbook': {},
   /* CODE renders in the static markdown template; no React or other
    * runtime deps. Empty map skips the sandpack `package.json` install
    * step entirely (same as MARKDOWN/PLAIN_TEXT). */
@@ -282,16 +291,12 @@ export const TOOL_ARTIFACT_TYPES = {
   MERMAID: 'application/vnd.mermaid',
   PLAIN_TEXT: 'text/plain',
   CODE: 'application/vnd.code',
-  /* Office-format rich previews. The backend renders the binary file as a
-   * complete sanitized HTML document and ships it via `attachment.text`;
-   * the client routes these types through the Sandpack `static` template's
-   * `index.html` slot. The values are synthetic Nashm-internal MIMEs
-   * — they don't appear on disk or in HTTP headers, only on the artifact
-   * object — so they can't collide with the canonical office MIMEs that
-   * the routing maps key off of. */
   DOCX: 'application/vnd.Nashm.docx-preview',
   SPREADSHEET: 'application/vnd.Nashm.spreadsheet-preview',
   PRESENTATION: 'application/vnd.Nashm.presentation-preview',
+  NASHM_SLIDES: 'application/vnd.nashm.slides',
+  NASHM_DOCUMENT: 'application/vnd.nashm.document',
+  NASHM_WORKBOOK: 'application/vnd.nashm.workbook',
 } as const;
 
 export type ToolArtifactType = (typeof TOOL_ARTIFACT_TYPES)[keyof typeof TOOL_ARTIFACT_TYPES];
@@ -322,11 +327,20 @@ const PREVIEW_ONLY_ARTIFACT_TYPES: ReadonlySet<ToolArtifactType> = new Set([
   TOOL_ARTIFACT_TYPES.PRESENTATION,
 ]);
 
+export function isOfficeArtifact(type: string | null | undefined): boolean {
+  if (!type) return false;
+  return (
+    type === TOOL_ARTIFACT_TYPES.NASHM_SLIDES ||
+    type === TOOL_ARTIFACT_TYPES.NASHM_DOCUMENT ||
+    type === TOOL_ARTIFACT_TYPES.NASHM_WORKBOOK
+  );
+}
+
 export function isPreviewOnlyArtifact(type: string | null | undefined): boolean {
   if (type == null) {
     return false;
   }
-  return PREVIEW_ONLY_ARTIFACT_TYPES.has(type as ToolArtifactType);
+  return PREVIEW_ONLY_ARTIFACT_TYPES.has(type as ToolArtifactType) || isOfficeArtifact(type);
 }
 
 /**
@@ -608,6 +622,9 @@ const MIME_TO_TOOL_ARTIFACT_TYPE: Record<string, ToolArtifactType> = {
   'application/vnd.react': TOOL_ARTIFACT_TYPES.REACT,
   'application/vnd.ant.react': TOOL_ARTIFACT_TYPES.REACT,
   'application/vnd.mermaid': TOOL_ARTIFACT_TYPES.MERMAID,
+  'application/vnd.nashm.slides': TOOL_ARTIFACT_TYPES.NASHM_SLIDES,
+  'application/vnd.nashm.document': TOOL_ARTIFACT_TYPES.NASHM_DOCUMENT,
+  'application/vnd.nashm.workbook': TOOL_ARTIFACT_TYPES.NASHM_WORKBOOK,
   // Code MIME types — codeapi serves these via Content-Type for source
   // files (`text/x-python`, `text/x-typescript`, etc.) so a file whose
   // extension was stripped or renamed upstream still routes to CODE.

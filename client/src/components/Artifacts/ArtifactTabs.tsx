@@ -8,6 +8,8 @@ import useArtifactProps from '~/hooks/Artifacts/useArtifactProps';
 import { ArtifactCodeEditor } from './ArtifactCodeEditor';
 import { useGetStartupConfig } from '~/data-provider';
 import { ArtifactPreview } from './ArtifactPreview';
+import OfficeArtifactPanel from './OfficeArtifactPanel';
+import { isOfficeArtifact } from '~/utils/artifacts';
 
 export default function ArtifactTabs({
   artifact,
@@ -29,6 +31,10 @@ export default function ArtifactTabs({
     }
     lastIdRef.current = artifact.id;
   }, [setCurrentCode, artifact.id]);
+
+  if (isOfficeArtifact(artifact.type)) {
+    return <OfficeArtifactPanel artifact={artifact} readOnly={isSharedConvo} />;
+  }
 
   const { files, fileKey, template, sharedProps } = useArtifactProps({ artifact });
 

@@ -4,10 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSetRecoilState, useRecoilValue, useRecoilCallback } from 'recoil';
 import {
+  Tools,
   Constants,
   QueryKeys,
   ContentTypes,
+  ArtifactModes,
   EModelEndpoint,
+  AgentCapabilities,
   getEndpointField,
   isAgentsEndpoint,
   parseCompactConvo,
@@ -32,6 +35,11 @@ import {
   createDualMessageContent,
   getRouteChatProjectId,
 } from '~/utils';
+import {
+  getQuickArtifactActionPrompt,
+  isOfficeQuickArtifactAction,
+  isResearchQuickArtifactAction,
+} from '~/utils/quickActions';
 import useFocusRegeneratedResponse from '~/hooks/Chat/useFocusRegeneratedResponse';
 import useSetFilesToDelete from '~/hooks/Files/useSetFilesToDelete';
 import useGetSender from '~/hooks/Conversations/useGetSender';
@@ -39,11 +47,35 @@ import store, { useGetEphemeralAgent } from '~/store';
 import { startupConfigKey } from '~/data-provider';
 import useUserKey from '~/hooks/Input/useUserKey';
 import { useAuthContext } from '~/hooks';
+import type { QuickArtifactActionState } from '~/utils/quickActions';
 
 const logChatRequest = (request: Record<string, unknown>) => {
   logger.log('=====================================\nAsk function called with:');
   logger.dir(request);
   logger.log('=====================================');
+};
+
+const appendPromptPrefix = ({
+  existing,
+  addition,
+}: {
+  existing?: string | null;
+  addition: string;
+}): string => {
+  const trimmedExisting = existing?.trim();
+  if (trimmedExisting) {
+    return `${trimmedExisting}\n\n${addition}`;
+  }
+  return addition;
+};
+
+const selectedQuickArtifactAction = (
+  state: QuickArtifactActionState,
+): QuickArtifactActionState | null => {
+  if (state.status !== 'selected' || state.type == null) {
+    return null;
+  }
+  return state;
 };
 
 const getAppendParentMessageId = ({
@@ -258,6 +290,27 @@ export default function useChatFunctions({
     [],
   );
 
+  const readQuickArtifactAction = useRecoilCallback(
+    ({ snapshot }) =>
+      (convoId: string): QuickArtifactActionState | null => {
+        const loadable = snapshot.getLoadable(store.quickArtifactActionByConvoId(convoId));
+        const state =
+          loadable.state === 'hasValue' ? (loadable.contents as QuickArtifactActionState) : null;
+        return state == null ? null : selectedQuickArtifactAction(state);
+      },
+    [],
+  );
+
+  const consumeQuickArtifactAction = useRecoilCallback(
+    ({ set }) =>
+      (convoId: string): void => {
+        set(store.quickArtifactActionByConvoId(convoId), (current) =>
+          current.status === 'selected' ? { ...current, status: 'consumed' as const } : current,
+        );
+      },
+    [],
+  );
+
   const ask: TAskFunction = (
     {
       text,
@@ -315,7 +368,39 @@ export default function useChatFunctions({
       return false;
     }
 
-    const ephemeralAgent = getEphemeralAgent(conversationId ?? Constants.NEW_CONVO);
+    const quickActionConvoId = conversationId ?? Constants.NEW_CONVO;
+    const quickArtifactAction =
+      isRegenerate || isContinued || isEdited
+        ? null
+        : readQuickArtifactAction(quickActionConvoId);
+    const quickArtifactPrompt =
+      quickArtifactAction?.type != null
+        ? getQuickArtifactActionPrompt(quickArtifactAction.type)
+        : null;
+
+    if (quickArtifactPrompt != null && quickArtifactAction?.type != null && conversation != null) {
+      conversation.promptPrefix = appendPromptPrefix({
+        existing: conversation.promptPrefix,
+        addition: quickArtifactPrompt,
+      });
+      if (isOfficeQuickArtifactAction(quickArtifactAction.type)) {
+        conversation.artifacts = ArtifactModes.DEFAULT;
+      }
+    }
+
+    const baseEphemeralAgent = getEphemeralAgent(quickActionConvoId);
+    const ephemeralAgent =
+      quickArtifactAction?.type == null
+        ? baseEphemeralAgent
+        : {
+            ...(baseEphemeralAgent ?? {}),
+            ...(isOfficeQuickArtifactAction(quickArtifactAction.type)
+              ? { [AgentCapabilities.artifacts]: ArtifactModes.DEFAULT }
+              : {}),
+            ...(isResearchQuickArtifactAction(quickArtifactAction.type)
+              ? { [Tools.web_search]: true }
+              : {}),
+          };
     /**
      * Manual skill selection resolution:
      *  - Explicit `overrideManualSkills` wins (regenerate / save-and-submit
@@ -630,6 +715,9 @@ export default function useChatFunctions({
     }
 
     setSubmission(submission);
+    if (quickArtifactAction != null) {
+      consumeQuickArtifactAction(quickActionConvoId);
+    }
     logger.dir('message_stream', submission, { depth: null });
   };
 

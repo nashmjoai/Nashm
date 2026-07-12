@@ -326,6 +326,7 @@ const startServer = async () => {
   app.use('/api/banner', routes.banner);
   app.use('/api/memories', routes.memories);
   app.use('/api/permissions', routes.accessPermissions);
+  app.use('/api/artifacts', routes.artifacts);
 
   app.use('/api/tags', routes.tags);
   app.use('/api/mcp', routes.mcp);

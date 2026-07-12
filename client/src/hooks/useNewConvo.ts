@@ -1,7 +1,13 @@
 import { useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGetModelsQuery } from 'nashm-data-provider/react-query';
-import { useRecoilState, useRecoilValue, useSetRecoilState, useRecoilCallback } from 'recoil';
+import {
+  useRecoilState,
+  useRecoilValue,
+  useSetRecoilState,
+  useRecoilCallback,
+  useResetRecoilState,
+} from 'recoil';
 import {
   Constants,
   FileSources,
@@ -67,6 +73,9 @@ const useNewConvo = (index = 0) => {
   const { pauseGlobalAudio } = usePauseGlobalAudio(index);
   const saveDrafts = useRecoilValue<boolean>(store.saveDrafts);
   const resetBadges = useResetChatBadges();
+  const resetQuickArtifactAction = useResetRecoilState(
+    store.quickArtifactActionByConvoId(Constants.NEW_CONVO),
+  );
 
   const { mutateAsync } = useDeleteFilesMutation({
     onSuccess: () => {
@@ -303,6 +312,7 @@ const useNewConvo = (index = 0) => {
       if (!saveBadgesState) {
         resetBadges();
       }
+      resetQuickArtifactAction();
 
       const templateConvoId = _template.conversationId ?? '';
       const paramEndpoint =
@@ -386,6 +396,7 @@ const useNewConvo = (index = 0) => {
       saveDrafts,
       mutateAsync,
       resetBadges,
+      resetQuickArtifactAction,
       startupConfig,
       saveBadgesState,
       endpointsConfig,

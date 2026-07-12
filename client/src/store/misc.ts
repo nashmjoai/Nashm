@@ -1,7 +1,8 @@
-import { atom, selectorFamily } from 'recoil';
-import { TAttachment } from 'nashm-data-provider';
+import { atom, atomFamily, selectorFamily } from 'recoil';
+import type { TAttachment } from 'nashm-data-provider';
+import type { QuickArtifactActionState } from '~/utils/quickActions';
 import { atomWithLocalStorage } from './utils';
-import { BadgeItem } from '~/common';
+import type { BadgeItem } from '~/common';
 
 const hideBannerHint = atomWithLocalStorage('hideBannerHint', [] as string[]);
 
@@ -64,6 +65,13 @@ const chatBadges = atomWithLocalStorage<Pick<BadgeItem, 'id'>[]>('chatBadges', [
   // { id: '2' },
 ]);
 
+const quickArtifactActionByConvoId = atomFamily<QuickArtifactActionState, string>({
+  key: 'quickArtifactActionByConvoId',
+  default: {
+    status: 'idle',
+  },
+});
+
 export default {
   hideBannerHint,
   messageAttachmentsMap,
@@ -71,4 +79,5 @@ export default {
   queriesEnabled,
   isEditingBadges,
   chatBadges,
+  quickArtifactActionByConvoId,
 };

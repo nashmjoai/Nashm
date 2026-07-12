@@ -41,6 +41,7 @@ import SendButton from './SendButton';
 import EditBadges from './EditBadges';
 import BadgeRow from './BadgeRow';
 import Mention from './Mention';
+import QuickActionsRow from './QuickActionsRow';
 import store from '~/store';
 
 interface ChatFormProps {
@@ -231,7 +232,9 @@ const ChatForm = memo(function ChatForm({
     setBackupBadges([]);
   }, [backupBadges, setBadges, setIsEditingBadges]);
 
+  const isNewConversation = conversationId === Constants.NEW_CONVO;
   const isMoreThanThreeRows = visualRowCount > 3;
+  const showQuickActions = index === 0 && isNewConversation && !isSubmitting;
 
   const baseClasses = useMemo(
     () =>
@@ -257,9 +260,16 @@ const ChatForm = memo(function ChatForm({
           : 'sm:mb-10',
       )}
     >
-      <div className="relative flex h-full flex-1 items-stretch md:flex-col">
+      <div className="relative flex h-full flex-1 flex-col items-stretch">
         {/* Primary composer owns the selection popup so split-view doesn't double it. */}
         {index === 0 && quotesEnabled && <QuoteButton conversationId={conversationId} />}
+        {showQuickActions && (
+          <QuickActionsRow
+            isRTL={isRTL}
+            disabled={disableInputs || isNotAppendable}
+            conversationId={conversationId as string}
+          />
+        )}
         <div className={cn('flex w-full items-center', isRTL && 'flex-row-reverse')}>
           <Mention
             index={index}
