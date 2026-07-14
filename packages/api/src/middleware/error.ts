@@ -40,6 +40,22 @@ function isCustomError(err: unknown): err is CustomError {
   return err !== null && typeof err === 'object' && 'statusCode' in err && 'body' in err;
 }
 
+/** Type guard for body-parser PayloadTooLargeError.
+ * `express.json` / `express.urlencoded` raise an error with
+ * `status: 413`, `type: 'entity.too.large'`, and a `length` field on
+ * oversized bodies. Without this branch the request falls through to
+ * the catch-all and is reported to the client as a generic 500. */
+function isPayloadTooLargeError(
+  err: unknown,
+): err is Error & { status: 413; type: 'entity.too.large'; length?: number } {
+  if (err === null || typeof err !== 'object') {
+    return false;
+  }
+  const status = (err as { status?: unknown }).status;
+  const type = (err as { type?: unknown }).type;
+  return status === 413 && type === 'entity.too.large';
+}
+
 export const ErrorController = (
   err: Error | CustomError,
   req: Request,
@@ -72,6 +88,21 @@ export const ErrorController = (
 
     if (isCustomError(error) && error.statusCode && error.body) {
       return res.status(error.statusCode).send(error.body);
+    }
+
+    if (isPayloadTooLargeError(error)) {
+      const headers = (req && req.headers) || {};
+      const contentLength = headers['content-length'];
+      logger.warn('[PayloadTooLarge] body-parser rejected oversized request', {
+        path: req?.path,
+        method: req?.method,
+        declaredLength: contentLength,
+        bodyParserLength: error.length,
+      });
+      return res.status(413).send({
+        error: 'PayloadTooLarge',
+        message: 'Request body exceeds the maximum allowed size.',
+      });
     }
 
     logger.error('ErrorController => error', err);
