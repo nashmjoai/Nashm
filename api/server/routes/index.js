@@ -41,6 +41,8 @@ const mcp = require('./mcp');
 const rum = require('./rum');
 const artifacts = require('./artifacts');
 const plans = require('./plans');
+const audio = require('./audio');
+
 
 module.exports = {
   rum,
@@ -86,4 +88,5 @@ module.exports = {
   accessPermissions,
   familyPlan,
   plans,
+  audio,
 };

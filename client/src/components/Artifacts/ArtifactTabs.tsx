@@ -9,7 +9,9 @@ import { ArtifactCodeEditor } from './ArtifactCodeEditor';
 import { useGetStartupConfig } from '~/data-provider';
 import { ArtifactPreview } from './ArtifactPreview';
 import OfficeArtifactPanel from './OfficeArtifactPanel';
+import AudioTranscriptionPanel from './AudioTranscriptionPanel'; // Audio transcription panel component
 import { isOfficeArtifact } from '~/utils/artifacts';
+
 
 export default function ArtifactTabs({
   artifact,
@@ -32,9 +34,14 @@ export default function ArtifactTabs({
     lastIdRef.current = artifact.id;
   }, [setCurrentCode, artifact.id]);
 
+  if (artifact.type === 'application/vnd.nashm.audio') {
+    return <AudioTranscriptionPanel artifact={artifact} readOnly={isSharedConvo} />;
+  }
+
   if (isOfficeArtifact(artifact.type)) {
     return <OfficeArtifactPanel artifact={artifact} readOnly={isSharedConvo} />;
   }
+
 
   const { files, fileKey, template, sharedProps } = useArtifactProps({ artifact });
 

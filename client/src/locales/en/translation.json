@@ -2007,5 +2007,8 @@
   "com_ui_zoom_in": "Zoom in",
   "com_ui_zoom_level": "Zoom level",
   "com_ui_zoom_out": "Zoom out",
-  "com_user_message": "You"
+  "com_user_message": "You",
+  "com_ui_quick_artifact_audio": "Audio Transcribe",
+  "com_ui_quick_artifact_audio_desc": "Upload an audio file to transcribe and summarize with diarization"
 }
+
