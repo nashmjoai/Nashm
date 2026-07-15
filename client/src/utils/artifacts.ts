@@ -326,7 +326,6 @@ const PREVIEW_ONLY_ARTIFACT_TYPES: ReadonlySet<ToolArtifactType> = new Set([
   TOOL_ARTIFACT_TYPES.DOCX,
   TOOL_ARTIFACT_TYPES.SPREADSHEET,
   TOOL_ARTIFACT_TYPES.PRESENTATION,
-  TOOL_ARTIFACT_TYPES.AUDIO_TRANSCRIBE,
 ]);
 
 export function isOfficeArtifact(type: string | null | undefined): boolean {

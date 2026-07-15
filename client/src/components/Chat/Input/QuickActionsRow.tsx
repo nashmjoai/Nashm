@@ -1,5 +1,5 @@
 import { memo, useCallback, useMemo } from 'react';
-import { FileText, Presentation, SearchCheck, Table2, X, Headphones } from 'lucide-react';
+import { FileText, Presentation, SearchCheck, Table2, X } from 'lucide-react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import type { LucideIcon } from 'lucide-react';
 import type { TranslationKeys } from '~/hooks';
@@ -22,12 +22,6 @@ const quickActions: ReadonlyArray<QuickActionConfig> = [
     icon: Presentation,
     labelKey: 'com_ui_quick_artifact_slides',
     descriptionKey: 'com_ui_quick_artifact_slides_desc',
-  },
-  {
-    type: 'audio',
-    icon: Headphones,
-    labelKey: 'com_ui_quick_artifact_audio',
-    descriptionKey: 'com_ui_quick_artifact_audio_desc',
   },
   {
     type: 'document',
