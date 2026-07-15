@@ -111,18 +111,18 @@ export default function SlidesPreview({ data, direction }: SlidesPreviewProps) {
     switch (layout) {
       case 'cover':
         return (
-          <div className="flex h-full flex-col justify-center px-12 py-8 text-center">
+          <div className="flex h-full flex-col justify-center px-6 py-4 sm:px-12 sm:py-8 text-center">
             {slide.eyebrow && (
-              <span className={cn('mb-4 text-sm font-semibold tracking-widest uppercase', theme.eyebrow)}>
+              <span className={cn('mb-2 sm:mb-4 text-xs sm:text-sm font-semibold tracking-widest uppercase', theme.eyebrow)}>
                 {slide.eyebrow}
               </span>
             )}
-            <h1 className="text-4xl font-extrabold leading-tight tracking-tight md:text-5xl">
+            <h1 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight tracking-tight">
               {slide.title}
             </h1>
-            <div className="mx-auto mt-6 h-1 w-24 bg-gradient-to-r from-amber-500 to-rose-500 rounded-full" />
+            <div className="mx-auto mt-3 sm:mt-6 h-0.5 sm:h-1 w-16 sm:w-24 bg-gradient-to-r from-amber-500 to-rose-500 rounded-full" />
             {content.length > 0 && (
-              <p className="mt-6 text-lg opacity-80 max-w-2xl mx-auto">
+              <p className="mt-3 sm:mt-6 text-xs sm:text-base md:text-lg opacity-80 max-w-2xl mx-auto">
                 {content[0]}
               </p>
             )}
@@ -131,20 +131,20 @@ export default function SlidesPreview({ data, direction }: SlidesPreviewProps) {
 
       case 'section':
         return (
-          <div className="flex h-full flex-col justify-center px-16 py-8">
+          <div className="flex h-full flex-col justify-center px-6 py-4 sm:px-12 sm:py-8">
             {slide.eyebrow && (
-              <span className={cn('mb-3 text-sm font-semibold tracking-wider uppercase', theme.eyebrow)}>
+              <span className={cn('mb-1.5 sm:mb-3 text-xs sm:text-sm font-semibold tracking-wider uppercase', theme.eyebrow)}>
                 {slide.eyebrow}
               </span>
             )}
-            <h2 className="text-3xl font-bold leading-snug md:text-4xl">
+            <h2 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-snug">
               {slide.title}
             </h2>
-            <div className="mt-4 h-1.5 w-16 bg-gradient-to-r from-amber-500 to-amber-600 rounded" />
+            <div className="mt-2 sm:mt-4 h-1 w-12 sm:w-16 bg-gradient-to-r from-amber-500 to-amber-600 rounded" />
             {content.length > 0 && (
-              <div className="mt-6 space-y-3 opacity-90">
+              <div className="mt-3 sm:mt-6 space-y-1.5 sm:space-y-3 opacity-90">
                 {content.map((text, i) => (
-                  <p key={i} className="text-base leading-relaxed">{text}</p>
+                  <p key={i} className="text-xs sm:text-sm md:text-base leading-relaxed">{text}</p>
                 ))}
               </div>
             )}
@@ -153,17 +153,17 @@ export default function SlidesPreview({ data, direction }: SlidesPreviewProps) {
 
       case 'kpi':
         return (
-          <div className="flex h-full flex-col justify-between p-10">
-            <h3 className="text-xl font-bold border-b pb-3 opacity-90">{slide.title}</h3>
-            <div className="grid grid-cols-2 gap-6 my-auto">
+          <div className="flex h-full flex-col justify-between p-4 sm:p-6 md:p-8 lg:p-10">
+            <h3 className="text-xs sm:text-base md:text-lg lg:text-xl font-bold border-b pb-1.5 sm:pb-3 opacity-90">{slide.title}</h3>
+            <div className="grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 my-auto">
               {content.map((item, i) => {
                 const parts = item.split(':');
                 const val = parts[0]?.trim();
                 const label = parts[1]?.trim() || '';
                 return (
-                  <div key={i} className={cn('rounded-xl p-6 border text-center transition-all duration-300', theme.cardBg)}>
-                    <div className="text-4xl font-black tracking-tight text-amber-500">{val}</div>
-                    <div className="mt-2 text-xs font-medium uppercase opacity-75">{label}</div>
+                  <div key={i} className={cn('rounded-lg sm:rounded-xl p-2 sm:p-4 md:p-6 border text-center transition-all duration-300', theme.cardBg)}>
+                    <div className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-black tracking-tight text-amber-500">{val}</div>
+                    <div className="mt-0.5 sm:mt-2 text-[9px] sm:text-xs font-medium uppercase opacity-75">{label}</div>
                   </div>
                 );
               })}
@@ -173,19 +173,19 @@ export default function SlidesPreview({ data, direction }: SlidesPreviewProps) {
 
       case 'comparison':
         return (
-          <div className="flex h-full flex-col justify-between p-10">
-            <h3 className="text-xl font-bold border-b pb-3 opacity-90">{slide.title}</h3>
-            <div className="grid grid-cols-2 gap-6 my-auto">
+          <div className="flex h-full flex-col justify-between p-4 sm:p-6 md:p-8 lg:p-10">
+            <h3 className="text-xs sm:text-base md:text-lg lg:text-xl font-bold border-b pb-1.5 sm:pb-3 opacity-90">{slide.title}</h3>
+            <div className="grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 my-auto">
               {content.map((col, i) => {
                 const lines = col.split('\n').filter(Boolean);
                 const colTitle = lines[0] || '';
                 const items = lines.slice(1);
                 return (
-                  <div key={i} className={cn('rounded-xl p-5 border flex flex-col h-full', theme.cardBg)}>
-                    <div className="font-bold border-b pb-2 mb-3 text-amber-500 uppercase tracking-wide text-sm">
+                  <div key={i} className={cn('rounded-lg sm:rounded-xl p-2 sm:p-4 md:p-5 border flex flex-col h-full', theme.cardBg)}>
+                    <div className="font-bold border-b pb-1 sm:pb-2 mb-1.5 sm:mb-3 text-amber-500 uppercase tracking-wide text-[10px] sm:text-xs md:text-sm">
                       {colTitle}
                     </div>
-                    <ul className="space-y-2 text-sm leading-relaxed opacity-95 list-disc pl-4">
+                    <ul className="space-y-1 sm:space-y-2 text-[9px] sm:text-xs md:text-sm leading-relaxed opacity-95 list-disc pl-3 sm:pl-4">
                       {items.map((it, idx) => (
                         <li key={idx}>{it.replace(/^-\s*/, '')}</li>
                       ))}
@@ -199,11 +199,11 @@ export default function SlidesPreview({ data, direction }: SlidesPreviewProps) {
 
       case 'grid':
         return (
-          <div className="flex h-full flex-col justify-between p-10">
-            <h3 className="text-xl font-bold border-b pb-3 opacity-90">{slide.title}</h3>
-            <div className="grid grid-cols-2 gap-4 my-auto">
+          <div className="flex h-full flex-col justify-between p-4 sm:p-6 md:p-8 lg:p-10">
+            <h3 className="text-xs sm:text-base md:text-lg lg:text-xl font-bold border-b pb-1.5 sm:pb-3 opacity-90">{slide.title}</h3>
+            <div className="grid grid-cols-2 gap-2 sm:gap-4 my-auto">
               {content.map((text, i) => (
-                <div key={i} className={cn('rounded-lg p-4 border text-sm', theme.cardBg)}>
+                <div key={i} className={cn('rounded-lg p-2 sm:p-4 border text-[9px] sm:text-xs md:text-sm', theme.cardBg)}>
                   {text}
                 </div>
               ))}
@@ -213,18 +213,18 @@ export default function SlidesPreview({ data, direction }: SlidesPreviewProps) {
 
       case 'agenda':
         return (
-          <div className="flex h-full flex-col justify-between p-10">
+          <div className="flex h-full flex-col justify-between p-4 sm:p-6 md:p-8 lg:p-10">
             <div>
-              {slide.eyebrow && <span className={cn('text-xs font-semibold', theme.eyebrow)}>{slide.eyebrow}</span>}
-              <h3 className="text-2xl font-extrabold tracking-tight mt-1">{slide.title}</h3>
+              {slide.eyebrow && <span className={cn('text-[9px] sm:text-xs font-semibold', theme.eyebrow)}>{slide.eyebrow}</span>}
+              <h3 className="text-sm sm:text-lg md:text-xl lg:text-2xl font-extrabold tracking-tight mt-0.5 sm:mt-1">{slide.title}</h3>
             </div>
-            <div className="space-y-3 my-auto max-w-xl">
+            <div className="space-y-1.5 sm:space-y-3 my-auto max-w-xl">
               {content.map((text, i) => (
-                <div key={i} className="flex items-center gap-4 group">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-500/10 border border-amber-500/20 text-sm font-bold text-amber-500">
+                <div key={i} className="flex items-center gap-1.5 sm:gap-3 md:gap-4 group">
+                  <div className="flex h-5 w-5 sm:h-7 sm:w-7 md:h-8 md:w-8 shrink-0 items-center justify-center rounded-full bg-amber-500/10 border border-amber-500/20 text-[10px] sm:text-xs md:text-sm font-bold text-amber-500">
                     {i + 1}
                   </div>
-                  <div className="text-base font-semibold group-hover:text-amber-500 transition-colors">
+                  <div className="text-xs sm:text-sm md:text-base font-semibold group-hover:text-amber-500 transition-colors">
                     {text}
                   </div>
                 </div>
@@ -236,24 +236,24 @@ export default function SlidesPreview({ data, direction }: SlidesPreviewProps) {
       case 'split':
       default:
         return (
-          <div className="flex h-full flex-col justify-between p-10">
+          <div className="flex h-full flex-col justify-between p-4 sm:p-6 md:p-8 lg:p-10">
             <div>
-              {slide.eyebrow && <span className={cn('text-xs font-semibold', theme.eyebrow)}>{slide.eyebrow}</span>}
-              <h3 className="text-2xl font-extrabold tracking-tight mt-1">{slide.title}</h3>
+              {slide.eyebrow && <span className={cn('text-[9px] sm:text-xs font-semibold', theme.eyebrow)}>{slide.eyebrow}</span>}
+              <h3 className="text-sm sm:text-lg md:text-xl lg:text-2xl font-extrabold tracking-tight mt-0.5 sm:mt-1">{slide.title}</h3>
             </div>
-            <div className="grid grid-cols-2 gap-8 my-auto items-center">
-              <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-3 sm:gap-6 md:gap-8 my-auto items-center">
+              <div className="space-y-1.5 sm:space-y-3">
                 {content.slice(0, Math.ceil(content.length / 2)).map((text, i) => (
-                  <div key={i} className="flex items-start gap-2.5 text-sm leading-relaxed">
-                    <div className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />
+                  <div key={i} className="flex items-start gap-1.5 sm:gap-2.5 text-[9px] sm:text-xs md:text-sm leading-relaxed">
+                    <div className="mt-1 sm:mt-1.5 h-1 sm:h-1.5 w-1 sm:w-1.5 shrink-0 rounded-full bg-amber-500" />
                     <span>{text}</span>
                   </div>
                 ))}
               </div>
-              <div className="space-y-3">
+              <div className="space-y-1.5 sm:space-y-3">
                 {content.slice(Math.ceil(content.length / 2)).map((text, i) => (
-                  <div key={i} className="flex items-start gap-2.5 text-sm leading-relaxed">
-                    <div className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />
+                  <div key={i} className="flex items-start gap-1.5 sm:gap-2.5 text-[9px] sm:text-xs md:text-sm leading-relaxed">
+                    <div className="mt-1 sm:mt-1.5 h-1 sm:h-1.5 w-1 sm:w-1.5 shrink-0 rounded-full bg-amber-500" />
                     <span>{text}</span>
                   </div>
                 ))}

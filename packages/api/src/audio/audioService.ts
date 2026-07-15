@@ -14,21 +14,7 @@ export interface AudioJobResponse {
   transcriptData?: Array<{ speaker: string; start: number; end: number; text: string }>;
   summaryText?: string;
   audioDuration?: number;
-  assemblySpeechModelUsed?: string;
   error?: string;
-}
-
-interface AssemblyUtterance {
-  speaker: string | number;
-  start: number;
-  end: number;
-  text: string;
-}
-
-interface AssemblyTranscriptResponse {
-  audio_duration?: number;
-  utterances?: AssemblyUtterance[];
-  speech_model_used?: string;
 }
 
 /**
@@ -47,7 +33,6 @@ export async function getAudioJobStatus(jobId: string, userId: string): Promise<
     transcriptData: job.transcriptData,
     summaryText: job.summaryText,
     audioDuration: job.audioDuration,
-    assemblySpeechModelUsed: job.assemblySpeechModelUsed,
     error: job.error,
   };
 }
@@ -179,7 +164,7 @@ async function processAudioJob(
       args.push('--languageCode', languageCode);
     }
 
-    const pyProcess = spawn(getPythonCommand(), args);
+    const pyProcess = spawn('python', args);
 
     let stdout = '';
     pyProcess.stdout.on('data', (data) => {
@@ -254,22 +239,18 @@ export async function handleTranscriptionWebhook(
       },
     });
 
-    const transcriptData = res.data as AssemblyTranscriptResponse;
+    const transcriptData = res.data;
     if (!transcriptData) {
       throw new Error('AssemblyAI returned empty transcript data');
     }
 
     const duration = transcriptData.audio_duration; // duration in seconds
-    if (typeof duration !== 'number') {
-      throw new Error('AssemblyAI response did not include audio duration.');
-    }
-
     if (duration > 7200) {
       throw new Error('Audio duration exceeds the maximum limit of 2 hours.');
     }
 
     // Map utterances converting timestamps from milliseconds to seconds
-    const utterances = (transcriptData.utterances || []).map((u) => ({
+    const utterances = (transcriptData.utterances || []).map((u: any) => ({
       speaker: String(u.speaker),
       start: u.start / 1000,
       end: u.end / 1000,
@@ -277,24 +258,12 @@ export async function handleTranscriptionWebhook(
     }));
 
     // 3. Save transcript data and duration
-    const transcriptUpdate: {
-      transcriptData: typeof utterances;
-      audioDuration: number;
-      assemblyTranscriptId: string;
-      assemblySpeechModelUsed?: string;
-    } = {
-      transcriptData: utterances,
-      audioDuration: duration,
-      assemblyTranscriptId: transcriptId,
-    };
-
-    if (transcriptData.speech_model_used) {
-      transcriptUpdate.assemblySpeechModelUsed = transcriptData.speech_model_used;
-    }
-
     await AudioJobModel.updateOne(
       { jobId },
-      transcriptUpdate
+      {
+        transcriptData: utterances,
+        audioDuration: duration,
+      }
     );
 
     // 4. Generate the AI Summary
@@ -326,7 +295,6 @@ async function generateAISummary(job: any): Promise<void> {
     const methods = createMethods(mongoose);
     let apiKey = process.env.OPENAI_API_KEY;
     let baseURL = process.env.OPENAI_REVERSE_PROXY || 'https://api.openai.com/v1';
-    let resolvedModel = model;
 
     // Retrieve user-provided credentials if any are defined
     try {
@@ -341,18 +309,7 @@ async function generateAISummary(job: any): Promise<void> {
       // Ignore errors and fall back to system env
     }
 
-    // If OPENAI_API_KEY is missing or is the literal placeholder, fall back to Gemini (OpenAI-compatible)
-    if (!apiKey || apiKey === 'user_provided') {
-      const geminiKey = process.env.GEMINI_API_KEY;
-      if (geminiKey && geminiKey !== 'user_provided') {
-        apiKey = geminiKey;
-        baseURL = 'https://generativelanguage.googleapis.com/v1beta/openai';
-        resolvedModel = 'gemini-2.5-flash';
-        console.log('[AudioService] Falling back to Gemini (OpenAI compatibility) for summary generation.');
-      }
-    }
-
-    if (!apiKey || apiKey === 'user_provided') {
+    if (!apiKey) {
       throw new Error(`API key is missing for endpoint: ${endpoint}`);
     }
 
@@ -361,14 +318,14 @@ async function generateAISummary(job: any): Promise<void> {
       .join('\n');
 
     const prompt = `You are an expert AI summarizer. Below is a speaker-diarized transcript of an audio recording.
-Please generate a premium, structured summary of the conversation in the SAME language as the original audio (Arabic in this case).
+Please generate a premium, structured summary of the conversation.
 
 Your summary must include:
 1. Key Points: A bulleted list of the main topics and takeaways.
 2. Action Items: A list of tasks, decisions, or follow-ups identified in the conversation (if applicable).
 3. Speaker Breakdown: A summary of what each distinct speaker discussed.
 
-Format your output in clean Markdown in the same language.
+Format your output in clean Markdown.
 
 Transcript:
 ${transcriptText}`;
@@ -376,7 +333,7 @@ ${transcriptText}`;
     const response = await axios.post(
       `${baseURL}/chat/completions`,
       {
-        model: resolvedModel,
+        model: model,
         messages: [
           {
             role: 'user',
@@ -426,12 +383,4 @@ function formatTimestamp(seconds: number): string {
     return `${pad(h)}:${pad(m)}:${pad(s)}`;
   }
   return `${pad(m)}:${pad(s)}`;
-}
-
-function getPythonCommand(): string {
-  if (process.env.PYTHON_BIN) {
-    return process.env.PYTHON_BIN;
-  }
-
-  return process.platform === 'win32' ? 'python' : 'python3';
 }

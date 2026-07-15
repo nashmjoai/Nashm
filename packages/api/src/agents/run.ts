@@ -252,18 +252,18 @@ export function getReasoningKey(
   return reasoningKey;
 }
 
-const DEEPSEEK_MODEL_PATTERN = /^deepseek(?:[-/]|$)/i;
+const REASONING_MODEL_PATTERN = /^(deepseek|kimi|moonshot)(?:[-/]|$)/i;
 const OPENROUTER_LATEST_ROUTING_PREFIX = /^~/;
 
-function matchesDeepSeekModel(model?: string | null): boolean {
+function matchesReasoningModel(model?: string | null): boolean {
   if (typeof model !== 'string' || model.length === 0) {
     return false;
   }
-  return DEEPSEEK_MODEL_PATTERN.test(model.replace(OPENROUTER_LATEST_ROUTING_PREFIX, ''));
+  return REASONING_MODEL_PATTERN.test(model.replace(OPENROUTER_LATEST_ROUTING_PREFIX, '')) || /kimi/i.test(model);
 }
 
 /**
- * Whether the (provider, model) pair targets DeepSeek's thinking-mode
+ * Whether the (provider, model) pair targets DeepSeek or Kimi's thinking-mode
  * tool-calling contract, which requires `reasoning_content` to be replayed
  * on every prior assistant message that emitted `tool_calls`.
  * @see https://api-docs.deepseek.com/guides/thinking_mode#tool-calls
@@ -274,14 +274,18 @@ export function isDeepSeekReasoningProvider(
 ): boolean {
   if (typeof provider === 'string' && provider.length > 0) {
     const normalized = provider.toLowerCase();
-    if (normalized === Providers.DEEPSEEK) {
+    if (
+      normalized === Providers.DEEPSEEK ||
+      normalized === Providers.MOONSHOT ||
+      normalized === 'kimi'
+    ) {
       return true;
     }
     if (normalized === Providers.OPENROUTER) {
-      return matchesDeepSeekModel(model);
+      return matchesReasoningModel(model);
     }
   }
-  return matchesDeepSeekModel(model);
+  return matchesReasoningModel(model);
 }
 
 type RunAgent = Omit<Agent, 'tools'> & {

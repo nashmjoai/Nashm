@@ -70,6 +70,8 @@ export type AdminConsoleDeps = {
   PlanConfig: Model<IPlanConfig>;
   Balance: Model<IBalance>;
   SupportTicket: Model<ISupportTicket>;
+  Config: Model<any>;
+  invalidateConfigCaches?: (tenantId?: string) => Promise<void>;
   loadModels: (req: ServerRequest) => Promise<TModelsConfig>;
   sendSupportEmail?: SupportEmailSender;
 };
@@ -283,6 +285,8 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
   addAdmin: (req: ServerRequest, res: Response) => Promise<Response>;
   updateAdmin: (req: ServerRequest, res: Response) => Promise<Response>;
   removeAdmin: (req: ServerRequest, res: Response) => Promise<Response>;
+  getFeatures: (req: ServerRequest, res: Response) => Promise<Response>;
+  updateFeatures: (req: ServerRequest, res: Response) => Promise<Response>;
 } {
   async function overview(req: ServerRequest, res: Response): Promise<Response> {
     try {
@@ -533,42 +537,70 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
       const rulesByKey = new Map(rules.map((rule) => [modelKey(rule.endpoint, rule.model), rule]));
       const usageByModel = new Map(usage.map((row) => [row._id ?? '', row]));
       const seen = new Set<string>();
-      const mapped = Object.entries(modelsConfig).flatMap(([endpoint, modelNames]) =>
-        modelNames.map((model) => {
+
+      // Compute provider-level disabled status maps from wildcard rules
+      const providerRules = rules.filter((rule) => rule.model === '*');
+      const isEndpointDisabledMap = new Map(
+        Object.keys(modelsConfig).map((ep) => {
+          const rule = providerRules.find((r) => r.endpoint === ep);
+          return [ep, rule?.enabled === false];
+        })
+      );
+
+      const mapped = Object.entries(modelsConfig).flatMap(([endpoint, modelNames]) => {
+        const isEndpointDisabled = isEndpointDisabledMap.get(endpoint) === true;
+        return modelNames.map((model) => {
           const key = modelKey(endpoint, model);
           const rule = rulesByKey.get(key);
           const modelUsage = usageByModel.get(model);
           seen.add(key);
+
+          const isEnabled = isEndpointDisabled ? false : (rule?.enabled ?? true);
+
           return {
             endpoint,
             model,
-            enabled: rule?.enabled ?? true,
+            enabled: isEnabled,
             label: rule?.label,
             allowedPlans:
               rule && rule.allowedPlans.length > 0 ? rule.allowedPlans : getDefaultAllowedPlans(model),
             notes: rule?.notes,
-            apiStatus: rule?.enabled === false ? 'hidden' : 'available',
+            apiStatus: isEnabled === false ? 'hidden' : 'available',
             totalTokens: modelUsage?.totalTokens ?? 0,
             requests: modelUsage?.requests ?? 0,
           };
-        }),
-      );
+        });
+      });
 
       const orphanRules = rules
-        .filter((rule) => !seen.has(modelKey(rule.endpoint, rule.model)))
-        .map((rule) => ({
-          endpoint: rule.endpoint,
-          model: rule.model,
-          enabled: rule.enabled,
-          label: rule.label,
-          allowedPlans: rule.allowedPlans,
-          notes: rule.notes,
-          apiStatus: 'missing',
-          totalTokens: usageByModel.get(rule.model)?.totalTokens ?? 0,
-          requests: usageByModel.get(rule.model)?.requests ?? 0,
-        }));
+        .filter((rule) => rule.model !== '*' && !seen.has(modelKey(rule.endpoint, rule.model)))
+        .map((rule) => {
+          const isEndpointDisabled = isEndpointDisabledMap.get(rule.endpoint) === true;
+          const isEnabled = isEndpointDisabled ? false : rule.enabled;
+          return {
+            endpoint: rule.endpoint,
+            model: rule.model,
+            enabled: isEnabled,
+            label: rule.label,
+            allowedPlans: rule.allowedPlans,
+            notes: rule.notes,
+            apiStatus: 'missing',
+            totalTokens: usageByModel.get(rule.model)?.totalTokens ?? 0,
+            requests: usageByModel.get(rule.model)?.requests ?? 0,
+          };
+        });
 
-      return res.status(200).json({ models: [...mapped, ...orphanRules] });
+      const providersStatus = Object.fromEntries(
+        Array.from(isEndpointDisabledMap.entries()).map(([endpoint, isDisabled]) => [
+          endpoint,
+          { enabled: !isDisabled }
+        ])
+      );
+
+      return res.status(200).json({
+        models: [...mapped, ...orphanRules],
+        providers: providersStatus,
+      });
     } catch (error) {
       logger.error('[adminConsole] models error:', error);
       return res.status(500).json({ error: 'Failed to load model access' });
@@ -1005,6 +1037,81 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
     }
   }
 
+  async function getFeatures(req: ServerRequest, res: Response): Promise<Response> {
+    try {
+      const configDoc = (await deps.Config.findOne({
+        principalType: 'role',
+        principalId: '__base__',
+      }).lean()) as any;
+
+      const interfaceConfig = configDoc?.overrides?.interface || {};
+
+      return res.status(200).json({
+        slides: interfaceConfig.slides !== false,
+        audio: interfaceConfig.audio !== false,
+        document: interfaceConfig.document !== false,
+        spreadsheet: interfaceConfig.spreadsheet !== false,
+        research: interfaceConfig.research !== false,
+      });
+    } catch (error) {
+      logger.error('[adminConsole] getFeatures error:', error);
+      return res.status(500).json({ error: 'Failed to load features toggle settings' });
+    }
+  }
+
+  async function updateFeatures(req: ServerRequest, res: Response): Promise<Response> {
+    try {
+      const { slides, audio, document, spreadsheet, research } = req.body as {
+        slides: boolean;
+        audio: boolean;
+        document: boolean;
+        spreadsheet: boolean;
+        research: boolean;
+      };
+
+      if (
+        typeof slides !== 'boolean' ||
+        typeof audio !== 'boolean' ||
+        typeof document !== 'boolean' ||
+        typeof spreadsheet !== 'boolean' ||
+        typeof research !== 'boolean'
+      ) {
+        return res.status(400).json({ error: 'All feature toggles (slides, audio, document, spreadsheet, research) must be boolean values' });
+      }
+
+      await deps.Config.findOneAndUpdate(
+        { principalType: 'role', principalId: '__base__' },
+        {
+          $set: {
+            principalType: 'role',
+            principalId: '__base__',
+            principalModel: 'Role',
+            priority: 10,
+            isActive: true,
+            'overrides.interface.slides': slides,
+            'overrides.interface.audio': audio,
+            'overrides.interface.document': document,
+            'overrides.interface.spreadsheet': spreadsheet,
+            'overrides.interface.research': research,
+          },
+        },
+        { upsert: true, new: true },
+      );
+
+      const tenantId = (req.user as { tenantId?: string })?.tenantId;
+      if (deps.invalidateConfigCaches) {
+        await deps.invalidateConfigCaches(tenantId).catch((err) =>
+          logger.error('[adminConsole] Cache invalidation failed after updateFeatures:', err),
+        );
+      }
+
+      return res.status(200).json({ message: 'Features toggle configuration saved successfully' });
+    } catch (error) {
+      logger.error('[adminConsole] updateFeatures error:', error);
+      return res.status(500).json({ error: 'Failed to update features toggle settings' });
+    }
+  }
+
   return {
     overview,
     users,
@@ -1019,6 +1126,8 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
     addAdmin,
     updateAdmin,
     removeAdmin,
+    getFeatures,
+    updateFeatures,
   };
 }
 

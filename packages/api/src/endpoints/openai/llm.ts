@@ -666,10 +666,11 @@ export function getOpenAILLMConfig({
       }) || hasModelKwargs;
   }
 
-  /** DeepSeek thinking-mode requires `reasoning_content` replay on tool turns (#13366). */
+  /** DeepSeek and Moonshot/Kimi thinking-modes require `reasoning_content` replay on tool turns (#13366). */
   if (
     typeof modelOptions.model === 'string' &&
-    /^deepseek(?:[-/]|$)/i.test(modelOptions.model.replace(/^~/, ''))
+    (/^(deepseek|kimi|moonshot)(?:[-/]|$)/i.test(modelOptions.model.replace(/^~/, '')) ||
+      /kimi/i.test(modelOptions.model))
   ) {
     llmConfig.includeReasoningContent = true;
   }

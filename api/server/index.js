@@ -1,4 +1,4 @@
-const telemetry = require('./telemetry'); // Restart trigger
+const telemetry = require('./telemetry'); // Restart trigger 1
 const fs = require('fs');
 const path = require('path');
 require('module-alias')({ base: path.resolve(__dirname, '..') });

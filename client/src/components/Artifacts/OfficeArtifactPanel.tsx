@@ -48,6 +48,7 @@ export default function OfficeArtifactPanel({ artifact, readOnly }: OfficeArtifa
   const [exportFormat, setExportFormat] = useState('office'); // 'office' | 'pdf'
   const [exportStatus, setExportStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const [exportError, setExportError] = useState<string | null>(null);
 
   const [artifacts, setArtifacts] = useRecoilState(store.artifactsState);
 
@@ -116,6 +117,7 @@ export default function OfficeArtifactPanel({ artifact, readOnly }: OfficeArtifa
     
     setExportStatus('loading');
     setDownloadUrl(null);
+    setExportError(null);
 
     try {
       // Enqueue job or send request to Node exporter backend
@@ -132,7 +134,8 @@ export default function OfficeArtifactPanel({ artifact, readOnly }: OfficeArtifa
       });
 
       if (!response.ok) {
-        throw new Error('Export enqueuing failed');
+        const errorPayload = await response.json().catch(() => null);
+        throw new Error(errorPayload?.error || 'Export enqueuing failed');
       }
 
       const { jobId } = await response.json();
@@ -161,6 +164,7 @@ export default function OfficeArtifactPanel({ artifact, readOnly }: OfficeArtifa
               setExportStatus('success');
             } else if (result.status === 'failed') {
               clearInterval(pollInterval);
+              setExportError(result.error || 'Export worker failed while generating the file.');
               setExportStatus('error');
             }
           }
@@ -171,13 +175,8 @@ export default function OfficeArtifactPanel({ artifact, readOnly }: OfficeArtifa
 
     } catch (err) {
       console.error('Export error:', err);
-      // Fallback for demo/dev/in-memory mode if backend route is not ready yet:
-      // We simulate a successful export after 2 seconds
-      setTimeout(() => {
-        const dummyUrl = `/api/files/download/dummy_${parsedData.kind}_export.${parsedData.kind === 'slides' ? 'pptx' : parsedData.kind === 'workbook' ? 'xlsx' : 'docx'}`;
-        setDownloadUrl(dummyUrl);
-        setExportStatus('success');
-      }, 2500);
+      setExportError(err instanceof Error ? err.message : 'Export request failed.');
+      setExportStatus('error');
     }
   };
 
@@ -407,7 +406,7 @@ export default function OfficeArtifactPanel({ artifact, readOnly }: OfficeArtifa
               {exportStatus === 'error' && (
                 <div className="space-y-3">
                   <div className="rounded-xl border border-rose-500/20 bg-rose-500/5 px-4 py-3 text-rose-600 text-xs font-medium">
-                    Export worker encountered an issue enqueuing this job. Please check file properties or try again.
+                    {exportError || 'Export worker encountered an issue. Please check file properties or try again.'}
                   </div>
                   <button
                     onClick={handleExport}

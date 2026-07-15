@@ -1252,6 +1252,11 @@ export const interfaceSchema = z
         }),
       ])
       .optional(),
+    slides: z.boolean().optional(),
+    audio: z.boolean().optional(),
+    document: z.boolean().optional(),
+    spreadsheet: z.boolean().optional(),
+    research: z.boolean().optional(),
   })
   .default({
     modelSelect: true,
@@ -1314,6 +1319,11 @@ export const interfaceSchema = z
       public: true,
       snapshotFiles: true,
     },
+    slides: true,
+    audio: true,
+    document: true,
+    spreadsheet: true,
+    research: true,
   });
 
 export type TInterfaceConfig = z.infer<typeof interfaceSchema>;

@@ -1434,6 +1434,14 @@ export function removeAdminConsoleAdmin(userId: string): Promise<any> {
   return request.delete(endpoints.adminConsoleAdminUser(userId));
 }
 
+export function getAdminConsoleFeatures(): Promise<any> {
+  return request.get(endpoints.adminConsoleFeatures());
+}
+
+export function updateAdminConsoleFeatures(payload: any): Promise<any> {
+  return request.post(endpoints.adminConsoleFeatures(), payload);
+}
+
 
 // Support Ticket Request
 export function createSupportTicket(payload: { subject: string; message: string }): Promise<any> {

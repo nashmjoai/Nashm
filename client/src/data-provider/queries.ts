@@ -604,6 +604,15 @@ export const useGetAdminConsoleAdminsQuery = (
   });
 };
 
+export const useGetAdminConsoleFeaturesQuery = (
+  config?: UseQueryOptions<any>,
+): QueryObserverResult<any> => {
+  return useQuery<any>(['adminConsoleFeatures'], () => dataService.getAdminConsoleFeatures(), {
+    refetchOnWindowFocus: false,
+    ...config,
+  });
+};
+
 
 export const useGetFamilyPlanQuery = (
   config?: UseQueryOptions<any>,

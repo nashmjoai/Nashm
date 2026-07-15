@@ -540,6 +540,7 @@ export const publicPlans = () => `${BASE_URL}/api/plans`;
 export const adminConsoleAdmins = () => `${BASE_URL}/api/admin/console/admins`;
 export const adminConsoleAdminUser = (userId: string) =>
   `${BASE_URL}/api/admin/console/admins/${encodeURIComponent(userId)}`;
+export const adminConsoleFeatures = () => `${BASE_URL}/api/admin/console/features`;
 
 
 // Support Ticket Endpoints

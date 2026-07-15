@@ -25,12 +25,12 @@ const storage = multer.diskStorage({
 });
 
 const audioFilter = (req, file, cb) => {
-  const allowedExtensions = ['.mp3', '.wav', '.m4a', '.ogg', '.mp4'];
+  const allowedExtensions = ['.mp3', '.wav', '.m4a', '.ogg'];
   const ext = path.extname(file.originalname).toLowerCase();
   if (allowedExtensions.includes(ext)) {
     cb(null, true);
   } else {
-    cb(new Error('Invalid audio file type. Allowed formats: mp3, wav, m4a, ogg, mp4'), false);
+    cb(new Error('Invalid audio file type. Allowed formats: mp3, wav, m4a, ogg'), false);
   }
 };
 
@@ -49,18 +49,6 @@ router.post('/webhook/:jobId', async (req, res) => {
   try {
     const { jobId } = req.params;
     const { status, transcript_id, error } = req.body;
-
-    // [SIGN-OFF LOG] Capture raw incoming webhook payload for evidence
-    console.log('[Audio Webhook] ===== INCOMING WEBHOOK =====');
-    console.log('[Audio Webhook] jobId:', jobId);
-    console.log('[Audio Webhook] Headers:', JSON.stringify({
-      'content-type': req.headers['content-type'],
-      'x-webhook-secret': req.headers['x-webhook-secret'] ? '[PRESENT]' : '[MISSING]',
-      'user-agent': req.headers['user-agent'],
-      host: req.headers['host'],
-    }, null, 2));
-    console.log('[Audio Webhook] Body:', JSON.stringify(req.body, null, 2));
-    console.log('[Audio Webhook] =============================');
 
     const AudioJobModel = mongoose.model('AudioJob');
     const job = await AudioJobModel.findOne({ jobId });
@@ -92,18 +80,12 @@ router.post('/webhook/:jobId', async (req, res) => {
       return res.status(200).send();
     }
 
-    if (typeof transcript_id !== 'string' || typeof status !== 'string') {
-      return res.status(200).send();
-    }
-
-    res.status(200).send();
-
-    setImmediate(() => {
-      handleTranscriptionWebhook(jobId, transcript_id, status, error).catch((err) => {
-        console.error(`[Audio Webhook] Failed to process transcription for ${jobId}:`, err);
-      });
+    // Process transcription completion asynchronously
+    handleTranscriptionWebhook(jobId, transcript_id, status, error).catch((err) => {
+      console.error(`[Audio Webhook] Failed to process transcription for ${jobId}:`, err);
     });
-    return;
+
+    return res.status(200).send();
   } catch (err) {
     console.error('[Audio Webhook] Error in webhook handler:', err);
     return res.status(200).send();

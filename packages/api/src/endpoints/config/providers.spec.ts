@@ -141,6 +141,19 @@ describe('getProviderConfig', () => {
 
     expect(result.overrideProvider).toBe(Providers.ANTHROPIC);
   });
+
+  it('resolves Kimi / kimi provider to moonshot overrideProvider', () => {
+    const appConfig = buildAppConfig([
+      { name: 'Kimi', baseURL: 'https://api.moonshot.cn/v1', apiKey: 'sk-kimi' },
+    ]);
+
+    const result1 = getProviderConfig({ provider: 'Kimi', appConfig });
+    expect(result1.overrideProvider).toBe(Providers.MOONSHOT);
+    expect(result1.customEndpointConfig?.name).toBe('Kimi');
+
+    const result2 = getProviderConfig({ provider: 'kimi', appConfig });
+    expect(result2.overrideProvider).toBe(Providers.MOONSHOT);
+  });
 });
 
 describe('resolveTitleTiming', () => {

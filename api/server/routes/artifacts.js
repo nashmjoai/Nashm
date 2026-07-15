@@ -20,8 +20,12 @@ router.post('/export', async (req, res) => {
       return res.status(400).json({ error: 'Invalid office artifact schema payload' });
     }
 
+    if (format && !['office', 'pdf'].includes(format)) {
+      return res.status(400).json({ error: 'Unsupported export format' });
+    }
+
     const uploadsDir = path.resolve(process.cwd(), 'uploads');
-    const jobId = await enqueueExportJob(req.user.id, artifactData, format, uploadsDir);
+    const jobId = await enqueueExportJob(req.user.id, artifactData, format || 'office', uploadsDir);
     
     return res.status(200).json({ jobId });
   } catch (error) {

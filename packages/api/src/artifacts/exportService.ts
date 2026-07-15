@@ -1,14 +1,58 @@
-import { spawn } from 'child_process';
-import * as path from 'path';
+import { spawn, spawnSync } from 'child_process';
 import * as fs from 'fs';
-import { v4 as uuidv4 } from 'uuid';
 import mongoose from 'mongoose';
+import * as path from 'path';
+import { v4 as uuidv4 } from 'uuid';
 import { validateOfficeArtifact } from 'nashm-data-provider';
+
+import type { NashmOfficeArtifact } from 'nashm-data-provider';
+
+type ExportFormat = 'office' | 'pdf';
 
 export interface ExportJob {
   id: string;
   status: 'pending' | 'processing' | 'completed' | 'failed';
   downloadUrl?: string;
+  error?: string;
+}
+
+const OFFICE_MIME_TYPES: Record<NashmOfficeArtifact['kind'], string> = {
+  slides: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  document: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  workbook: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+};
+
+function getOfficeExtension(kind: NashmOfficeArtifact['kind']): 'pptx' | 'xlsx' | 'docx' {
+  if (kind === 'slides') {
+    return 'pptx';
+  }
+  if (kind === 'workbook') {
+    return 'xlsx';
+  }
+  return 'docx';
+}
+
+function getExportExtension(kind: NashmOfficeArtifact['kind'], format: ExportFormat): string {
+  if (format === 'pdf') {
+    return 'pdf';
+  }
+  return getOfficeExtension(kind);
+}
+
+function getExportMimeType(kind: NashmOfficeArtifact['kind'], format: ExportFormat): string {
+  if (format === 'pdf') {
+    return 'application/pdf';
+  }
+  return OFFICE_MIME_TYPES[kind];
+}
+
+function sanitizeFilename(title: string): string {
+  const sanitized = title.replace(/[^a-zA-Z0-9_-]/g, '_').replace(/_+/g, '_');
+  return sanitized || 'export';
+}
+
+function getErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
 }
 
 export async function getJobStatus(jobId: string): Promise<ExportJob | undefined> {
@@ -24,34 +68,35 @@ export async function getJobStatus(jobId: string): Promise<ExportJob | undefined
   if (job.status === 'completed' && job.resultFileId) {
     result.downloadUrl = `/api/files/download/${job.userId}/${job.resultFileId}`;
   }
+  if (job.status === 'failed' && job.error) {
+    result.error = job.error;
+  }
   return result;
 }
 
 export async function enqueueExportJob(
   userId: string,
-  artifactData: any,
+  artifactData: NashmOfficeArtifact,
   format: string,
   uploadsDir: string,
 ): Promise<string> {
-  // Defense in depth: validate the payload before processing
   if (!validateOfficeArtifact(artifactData)) {
     throw new Error('Invalid office artifact schema payload');
   }
 
   const jobId = uuidv4();
   const ExportJobModel = mongoose.model('ExportJob');
-  
+
   await ExportJobModel.create({
     jobId,
     userId,
     status: 'pending',
   });
 
-  // Run job asynchronously
   processExportJob(jobId, userId, artifactData, format, uploadsDir).catch(async (err) => {
     console.error(`[ExportService] Error processing job ${jobId}:`, err);
     try {
-      await ExportJobModel.updateOne({ jobId }, { status: 'failed', error: err.message || String(err) });
+      await ExportJobModel.updateOne({ jobId }, { status: 'failed', error: getErrorMessage(err) });
     } catch (dbErr) {
       console.error(`[ExportService] Failed to mark job ${jobId} as failed in DB:`, dbErr);
     }
@@ -63,17 +108,18 @@ export async function enqueueExportJob(
 async function processExportJob(
   jobId: string,
   userId: string,
-  artifactData: any,
+  artifactData: NashmOfficeArtifact,
   format: string,
   uploadsDir: string,
 ): Promise<void> {
   const ExportJobModel = mongoose.model('ExportJob');
   await ExportJobModel.updateOne({ jobId }, { status: 'processing' });
 
+  const exportFormat: ExportFormat = format === 'pdf' ? 'pdf' : 'office';
   const kind = artifactData.kind;
   const title = artifactData.title || 'export';
-  const fileExtension = kind === 'slides' ? 'pptx' : kind === 'workbook' ? 'xlsx' : 'docx';
-  const finalFilename = `${title.replace(/[^a-zA-Z0-9_-]/g, '_')}.${fileExtension}`;
+  const fileExtension = getExportExtension(kind, exportFormat);
+  const finalFilename = `${sanitizeFilename(title)}.${fileExtension}`;
 
   const tempJsonDir = path.join(uploadsDir, 'temp');
   if (!fs.existsSync(tempJsonDir)) {
@@ -91,8 +137,22 @@ async function processExportJob(
   const fileId = uuidv4();
   const outputFileName = `${fileId}__${finalFilename}`;
   const outputPath = path.join(userUploadsDir, outputFileName);
+  const intermediateOfficePath =
+    exportFormat === 'pdf'
+      ? path.join(
+          userUploadsDir,
+          `${fileId}__${sanitizeFilename(title)}.${getOfficeExtension(kind)}`,
+        )
+      : outputPath;
 
-  const pythonScriptPath = path.resolve(process.cwd(), 'packages', 'api', 'src', 'artifacts', 'export.py');
+  const pythonScriptPath = path.resolve(
+    process.cwd(),
+    'packages',
+    'api',
+    'src',
+    'artifacts',
+    'export.py',
+  );
 
   return new Promise<void>((resolve, reject) => {
     const pyProcess = spawn('python', [
@@ -100,9 +160,9 @@ async function processExportJob(
       '--input',
       tempJsonPath,
       '--output',
-      outputPath,
+      intermediateOfficePath,
       '--format',
-      format === 'pdf' ? 'pdf' : 'office',
+      'office',
     ]);
 
     let stderr = '';
@@ -111,24 +171,26 @@ async function processExportJob(
     });
 
     pyProcess.on('close', async (code) => {
-      // Clean up JSON
       try {
         if (fs.existsSync(tempJsonPath)) {
           fs.unlinkSync(tempJsonPath);
         }
-      } catch (err) {
-        // ignore
+      } catch {
+        // best-effort cleanup
       }
 
       if (code !== 0) {
         console.error(`[ExportService] Exporter exited with code ${code}. Stderr: ${stderr}`);
         try {
-          await ExportJobModel.updateOne({
-            jobId,
-          }, {
-            status: 'failed',
-            error: `Exporter exited with code ${code}. Stderr: ${stderr}`,
-          });
+          await ExportJobModel.updateOne(
+            {
+              jobId,
+            },
+            {
+              status: 'failed',
+              error: `Exporter exited with code ${code}. Stderr: ${stderr}`,
+            },
+          );
         } catch (dbErr) {
           console.error('[ExportService] Failed to mark job as failed in DB:', dbErr);
         }
@@ -137,6 +199,15 @@ async function processExportJob(
       }
 
       try {
+        if (exportFormat === 'pdf') {
+          convertOfficeToPdf(intermediateOfficePath, outputPath);
+          try {
+            fs.unlinkSync(intermediateOfficePath);
+          } catch {
+            // best-effort cleanup
+          }
+        }
+
         const FileModel = mongoose.model('File');
         const stats = fs.statSync(outputPath);
         const dbFilepath = `${userId}/${outputFileName}`;
@@ -148,20 +219,17 @@ async function processExportJob(
           filename: finalFilename,
           filepath: dbFilepath,
           source: 'local',
-          type: kind === 'slides'
-            ? 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
-            : kind === 'workbook'
-              ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-              : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          type: getExportMimeType(kind, exportFormat),
           context: 'input',
         });
 
         await ExportJobModel.updateOne({ jobId }, { status: 'completed', resultFileId: fileId });
         resolve();
-      } catch (dbErr: any) {
+      } catch (dbErr: unknown) {
         console.error('[ExportService] Error creating file DB record:', dbErr);
+        const message = getErrorMessage(dbErr);
         try {
-          await ExportJobModel.updateOne({ jobId }, { status: 'failed', error: dbErr.message || String(dbErr) });
+          await ExportJobModel.updateOne({ jobId }, { status: 'failed', error: message });
         } catch (updateErr) {
           console.error('[ExportService] Failed to mark job as failed in DB:', updateErr);
         }
@@ -169,4 +237,40 @@ async function processExportJob(
       }
     });
   });
+}
+
+function convertOfficeToPdf(inputPath: string, outputPath: string): void {
+  const outputDir = path.dirname(outputPath);
+  const candidates = ['soffice', 'libreoffice'];
+  let lastError = '';
+
+  for (const command of candidates) {
+    const result = spawnSync(command, [
+      '--headless',
+      '--convert-to',
+      'pdf',
+      '--outdir',
+      outputDir,
+      inputPath,
+    ]);
+
+    if (result.status === 0) {
+      const generatedPath = path.join(
+        outputDir,
+        `${path.basename(inputPath, path.extname(inputPath))}.pdf`,
+      );
+      if (generatedPath !== outputPath && fs.existsSync(generatedPath)) {
+        fs.renameSync(generatedPath, outputPath);
+      }
+      if (fs.existsSync(outputPath)) {
+        return;
+      }
+      lastError = 'LibreOffice completed but did not create a PDF file.';
+      continue;
+    }
+
+    lastError = result.stderr?.toString() || result.error?.message || `${command} failed`;
+  }
+
+  throw new Error(`PDF export requires LibreOffice/soffice. ${lastError}`);
 }
