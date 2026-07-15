@@ -35,9 +35,7 @@ function Footer({ className, startupConfig }: FooterProps) {
   const mainContentParts = (
     typeof config?.customFooter === 'string'
       ? config.customFooter
-      : '[NASHM نشم ' +
-        Constants.VERSION +
-        '](https://Nashm.ai) - ' +
+      : '[© 2026 Nashm](https://Nashm.ai) - ' +
         localize('com_ui_latest_footer')
   ).split('|');
 
