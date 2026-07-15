@@ -83,6 +83,4 @@ export type * from './types';
 export * from './family';
 /* Subscriptions */
 export * from './subscriptions';
-/* Audio */
-export * from './audio/audioService';
 

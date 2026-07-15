@@ -35,5 +35,4 @@ export { default as supportTicketSchema } from './supportTicket';
 export { default as modelAccessSchema } from './modelAccess';
 export { default as planConfigSchema } from './planConfig';
 export { default as exportJobSchema } from './exportJob';
-export { default as audioJobSchema } from './audioJob';
 

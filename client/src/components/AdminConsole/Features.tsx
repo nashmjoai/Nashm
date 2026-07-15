@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
   Presentation,
-  Headphones,
   FileText,
   Table2,
   SearchCheck,
@@ -32,12 +31,6 @@ const featuresList: FeatureConfig[] = [
     name: 'Slides Preview (العروض التقديمية)',
     description: 'Allows users to quickly request and preview professional slide decks generated as JSON artifacts.',
     icon: Presentation,
-  },
-  {
-    id: 'audio',
-    name: 'Audio Transcribe (تفريغ الصوت)',
-    description: 'Allows users to perform diarized audio transcription and summarization with media files.',
-    icon: Headphones,
   },
   {
     id: 'document',

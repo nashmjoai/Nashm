@@ -107,12 +107,9 @@ RUN attempt=1; \
       npm cache clean --force || true; \
       sleep 10; \
     done
-COPY packages/api/src/audio/requirements.txt ./packages/api/src/audio/requirements.txt
-RUN uv pip install --system --no-cache -r packages/api/src/audio/requirements.txt
 COPY api ./api
 COPY config ./config
 COPY skill ./skill
-COPY packages/api/src/audio/worker.py ./packages/api/src/audio/worker.py
 COPY --from=data-provider-build /app/packages/data-provider/dist ./packages/data-provider/dist
 COPY --from=data-schemas-build /app/packages/data-schemas/dist ./packages/data-schemas/dist
 COPY --from=api-package-build /app/packages/api/dist ./packages/api/dist

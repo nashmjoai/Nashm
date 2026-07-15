@@ -297,7 +297,6 @@ export const TOOL_ARTIFACT_TYPES = {
   NASHM_SLIDES: 'application/vnd.nashm.slides',
   NASHM_DOCUMENT: 'application/vnd.nashm.document',
   NASHM_WORKBOOK: 'application/vnd.nashm.workbook',
-  AUDIO_TRANSCRIBE: 'application/vnd.nashm.audio',
 } as const;
 
 

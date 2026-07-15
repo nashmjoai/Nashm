@@ -1,4 +1,4 @@
-export type QuickArtifactActionType = 'slides' | 'document' | 'spreadsheet' | 'research' | 'audio';
+export type QuickArtifactActionType = 'slides' | 'document' | 'spreadsheet' | 'research';
 
 export type QuickArtifactActionStatus = 'idle' | 'selected' | 'consumed';
 
@@ -137,22 +137,11 @@ The final answer must include:
 When sources are available, cite them clearly. If web/search is unavailable, say so briefly and continue with the best analysis from available context.
 `;
 
-const audioInstructions = `
-Quick Artifact Action: Audio Transcribe
-
-The user selected Audio Transcribe before submitting the prompt.
-Create a diarized audio transcription and summarization artifact with type="application/vnd.nashm.audio".
-The artifact content can be empty. Produce the artifact using this exact block:
-:::artifact{identifier="audio-transcribe" type="application/vnd.nashm.audio" title="Audio Transcription"}
-:::
-`;
-
 const promptByType: Record<QuickArtifactActionType, string> = {
   slides: `${artifactFormatInstructions}\n${slidesInstructions}`,
   document: `${artifactFormatInstructions}\n${documentInstructions}`,
   spreadsheet: `${artifactFormatInstructions}\n${spreadsheetInstructions}`,
   research: researchInstructions,
-  audio: `${artifactFormatInstructions}\n${audioInstructions}`,
 };
 
 export function getQuickArtifactActionPrompt(type: QuickArtifactActionType): string {
@@ -160,7 +149,7 @@ export function getQuickArtifactActionPrompt(type: QuickArtifactActionType): str
 }
 
 export function isOfficeQuickArtifactAction(type: QuickArtifactActionType): boolean {
-  return type === 'slides' || type === 'document' || type === 'spreadsheet' || type === 'audio';
+  return type === 'slides' || type === 'document' || type === 'spreadsheet';
 }
 
 export function isResearchQuickArtifactAction(type: QuickArtifactActionType): boolean {
