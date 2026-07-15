@@ -49,3 +49,5 @@ export * from './supportTicket';
 export * from './modelAccess';
 export * from './planConfig';
 export * from './exportJob';
+export * from './audioJob';
+

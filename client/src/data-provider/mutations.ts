@@ -1170,6 +1170,7 @@ export const useUpdateAdminConsoleModelMutation = (
       ...options,
       onSuccess: (data, variables, context) => {
         queryClient.invalidateQueries(['adminConsoleModels']);
+        queryClient.invalidateQueries(['models']);
         options?.onSuccess?.(data, variables, context);
       },
     },
@@ -1255,6 +1256,24 @@ export const useRemoveAdminConsoleAdminMutation = (
     },
   );
 };
+
+export const useUpdateAdminConsoleFeaturesMutation = (
+  options?: any,
+): UseMutationResult<any, unknown, any, unknown> => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    (payload: any) => dataService.updateAdminConsoleFeatures(payload),
+    {
+      ...options,
+      onSuccess: (data, variables, context) => {
+        queryClient.invalidateQueries(['adminConsoleFeatures']);
+        queryClient.invalidateQueries(['startupConfig']);
+        options?.onSuccess?.(data, variables, context);
+      },
+    },
+  );
+};
+
 
 
 export const useAddFamilyMemberMutation = (

@@ -198,6 +198,78 @@ describe('ErrorController', () => {
     });
   });
 
+  describe('PayloadTooLarge handling', () => {
+    it('should surface body-parser entity.too.large as 413', () => {
+      const payloadTooLarge = {
+        name: 'PayloadTooLargeError',
+        message: 'request entity too large',
+        status: 413,
+        type: 'entity.too.large',
+        length: 4194304,
+        limit: 3145728,
+      } as Error & { status: number; type: string; length: number; limit: number };
+
+      ErrorController(payloadTooLarge, mockReq, mockRes, mockNext);
+
+      expect(mockRes.status).toHaveBeenCalledWith(413);
+      expect(mockRes.send).toHaveBeenCalledWith({
+        error: 'PayloadTooLarge',
+        message: 'Request body exceeds the maximum allowed size.',
+      });
+      expect(logger.warn).toHaveBeenCalledWith(
+        '[PayloadTooLarge] body-parser rejected oversized request',
+        expect.objectContaining({
+          declaredLength: undefined,
+          bodyParserLength: 4194304,
+        }),
+      );
+    });
+
+    it('should not match a 413 error from a different source', () => {
+      // Some unrelated error with status 413 but wrong type — must NOT
+      // be intercepted by the body-parser branch.
+      const unrelated = {
+        message: 'something else',
+        status: 413,
+        type: 'something.else',
+      } as Error & { status: number; type: string };
+
+      ErrorController(unrelated, mockReq, mockRes, mockNext);
+
+      expect(mockRes.status).toHaveBeenCalledWith(500);
+      expect(mockRes.send).toHaveBeenCalledWith('An unknown error occurred.');
+    });
+
+    it('should include Content-Length header in the warn log when present', () => {
+      const reqWithLength = {
+        originalUrl: '',
+        path: '/api/agents/chat',
+        method: 'POST',
+        headers: { 'content-length': '4194304' },
+      } as unknown as Request;
+      const payloadTooLarge = {
+        name: 'PayloadTooLargeError',
+        message: 'request entity too large',
+        status: 413,
+        type: 'entity.too.large',
+        length: 4194304,
+        limit: 3145728,
+      } as Error & { status: number; type: string; length: number; limit: number };
+
+      ErrorController(payloadTooLarge, reqWithLength, mockRes, mockNext);
+
+      expect(logger.warn).toHaveBeenCalledWith(
+        '[PayloadTooLarge] body-parser rejected oversized request',
+        expect.objectContaining({
+          path: '/api/agents/chat',
+          method: 'POST',
+          declaredLength: '4194304',
+          bodyParserLength: 4194304,
+        }),
+      );
+    });
+  });
+
   describe('Unknown error handling', () => {
     it('should handle unknown errors', () => {
       const unknownError = new Error('Some unknown error');

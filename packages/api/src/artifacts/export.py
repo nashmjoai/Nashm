@@ -240,15 +240,56 @@ def generate_slides(data, output_path):
                 if is_rtl:
                     set_pptx_paragraph_rtl(p_desc)
 
+        elif layout == 'section':
+            # Section divider / title layout with high fidelity
+            content_box = slide.shapes.add_textbox(Inches(0.8), Inches(2.0), Inches(11.7), Inches(4.5))
+            tf_section = content_box.text_frame
+            tf_section.word_wrap = True
+            tf_section.margin_left = tf_section.margin_right = 0
+            
+            p_sec_title = tf_section.paragraphs[0]
+            p_sec_title.text = title_text
+            p_sec_title.font.name = 'Cairo' if is_rtl else 'Arial'
+            p_sec_title.font.size = Pt(28)
+            p_sec_title.font.bold = True
+            p_sec_title.font.color.rgb = RGBColor(*theme['text'])
+            if is_rtl:
+                p_sec_title.alignment = PP_ALIGN.RIGHT
+                set_pptx_paragraph_rtl(p_sec_title)
+
+            # Colored accent line
+            line_top = Inches(2.9) if eyebrow else Inches(2.7)
+            shape_line = slide.shapes.add_shape(1, Inches(10.5) if is_rtl else Inches(0.8), line_top, Inches(2.0), Inches(0.08))
+            shape_line.fill.solid()
+            shape_line.fill.fore_color.rgb = RGBColor(*theme['accent'])
+            shape_line.line.fill.background()
+
+            # Description content
+            for text in content_items:
+                p_desc = tf_section.add_paragraph()
+                p_desc.text = text
+                p_desc.space_before = Pt(14)
+                p_desc.font.name = 'Cairo' if is_rtl else 'Arial'
+                p_desc.font.size = Pt(14)
+                p_desc.font.color.rgb = RGBColor(*theme['text'])
+                if is_rtl:
+                    p_desc.alignment = PP_ALIGN.RIGHT
+                    set_pptx_paragraph_rtl(p_desc)
+
         elif layout == 'kpi':
             # 2x2 grid of boxes below title
             box_width = Inches(5.4)
             box_height = Inches(2.0)
+            
+            # Position calculations (swapped if RTL)
+            c1_left = Inches(6.8) if is_rtl else Inches(0.8)
+            c2_left = Inches(0.8) if is_rtl else Inches(6.8)
+            
             coords = [
-                (Inches(0.8), Inches(2.5)), # Top Left
-                (Inches(6.8), Inches(2.5)), # Top Right
-                (Inches(0.8), Inches(4.8)), # Bottom Left
-                (Inches(6.8), Inches(4.8))  # Bottom Right
+                (c1_left, Inches(2.5)), # Box 1
+                (c2_left, Inches(2.5)), # Box 2
+                (c1_left, Inches(4.8)), # Box 3
+                (c2_left, Inches(4.8))  # Box 4
             ]
             for i, item in enumerate(content_items[:4]):
                 left, top = coords[i]
@@ -291,18 +332,127 @@ def generate_slides(data, output_path):
                         p_label.alignment = PP_ALIGN.RIGHT
                         set_pptx_paragraph_rtl(p_label)
 
+        elif layout == 'comparison':
+            # Side-by-side comparison cards
+            col_width = Inches(5.5)
+            col_height = Inches(4.0)
+            
+            # Position calculations (swapped if RTL)
+            c1_left = Inches(7.0) if is_rtl else Inches(0.8)
+            c2_left = Inches(0.8) if is_rtl else Inches(7.0)
+            
+            for i, col_data in enumerate(content_items[:2]):
+                left = c1_left if i == 0 else c2_left
+                shape = slide.shapes.add_shape(1, left, Inches(2.2), col_width, col_height)
+                shape.fill.solid()
+                shape.fill.fore_color.rgb = RGBColor(*theme['card_bg'])
+                shape.line.color.rgb = RGBColor(*theme['accent'])
+                shape.line.width = Pt(1)
+                
+                tf_comp = shape.text_frame
+                tf_comp.word_wrap = True
+                tf_comp.margin_left = tf_comp.margin_right = Inches(0.3)
+                tf_comp.margin_top = Inches(0.3)
+                
+                lines = [line.strip() for line in col_data.split('\n') if line.strip()]
+                col_title = lines[0] if lines else ''
+                items = lines[1:] if len(lines) > 1 else []
+                
+                # Column Title
+                p_col_title = tf_comp.paragraphs[0]
+                p_col_title.text = col_title
+                p_col_title.font.name = 'Cairo' if is_rtl else 'Arial'
+                p_col_title.font.size = Pt(16)
+                p_col_title.font.bold = True
+                p_col_title.font.color.rgb = RGBColor(*theme['accent'])
+                if is_rtl:
+                    p_col_title.alignment = PP_ALIGN.RIGHT
+                    set_pptx_paragraph_rtl(p_col_title)
+                    
+                # Column Items
+                for item in items:
+                    p_item = tf_comp.add_paragraph()
+                    clean_item = item.lstrip('-').lstrip('•').strip()
+                    p_item.text = "• " + clean_item
+                    p_item.space_before = Pt(8)
+                    p_item.font.name = 'Cairo' if is_rtl else 'Arial'
+                    p_item.font.size = Pt(12)
+                    p_item.font.color.rgb = RGBColor(*theme['text'])
+                    if is_rtl:
+                        p_item.alignment = PP_ALIGN.RIGHT
+                        set_pptx_paragraph_rtl(p_item)
+
+        elif layout == 'grid':
+            # Grid layout of up to 4 items
+            box_width = Inches(5.4)
+            box_height = Inches(1.8)
+            
+            c1_left = Inches(6.8) if is_rtl else Inches(0.8)
+            c2_left = Inches(0.8) if is_rtl else Inches(6.8)
+            
+            coords = [
+                (c1_left, Inches(2.4)),
+                (c2_left, Inches(2.4)),
+                (c1_left, Inches(4.5)),
+                (c2_left, Inches(4.5))
+            ]
+            for i, text in enumerate(content_items[:4]):
+                left, top = coords[i]
+                shape = slide.shapes.add_shape(1, left, top, box_width, box_height)
+                shape.fill.solid()
+                shape.fill.fore_color.rgb = RGBColor(*theme['card_bg'])
+                shape.line.color.rgb = RGBColor(*theme['accent'])
+                shape.line.width = Pt(1)
+                
+                tf_grid = shape.text_frame
+                tf_grid.word_wrap = True
+                tf_grid.margin_left = tf_grid.margin_right = Inches(0.25)
+                tf_grid.margin_top = Inches(0.25)
+                
+                p = tf_grid.paragraphs[0]
+                p.text = text
+                p.font.name = 'Cairo' if is_rtl else 'Arial'
+                p.font.size = Pt(12)
+                p.font.color.rgb = RGBColor(*theme['text'])
+                if is_rtl:
+                    p.alignment = PP_ALIGN.RIGHT
+                    set_pptx_paragraph_rtl(p)
+
+        elif layout == 'agenda':
+            # Agenda list layout
+            content_box = slide.shapes.add_textbox(Inches(0.8), Inches(2.2), Inches(11.7), Inches(4.5))
+            tf_agenda = content_box.text_frame
+            tf_agenda.word_wrap = True
+            tf_agenda.margin_left = tf_agenda.margin_right = 0
+            
+            for i, text in enumerate(content_items):
+                p = tf_agenda.paragraphs[0] if i == 0 else tf_agenda.add_paragraph()
+                p.text = f"{i + 1}.  {text}"
+                p.space_after = Pt(14)
+                p.font.name = 'Cairo' if is_rtl else 'Arial'
+                p.font.size = Pt(16)
+                p.font.bold = True
+                p.font.color.rgb = RGBColor(*theme['text'])
+                if is_rtl:
+                    p.alignment = PP_ALIGN.RIGHT
+                    set_pptx_paragraph_rtl(p)
+
         elif layout == 'split':
             # Two column text layout
             col_width = Inches(5.5)
             col_height = Inches(4.0)
             
+            # Position calculations (swapped if RTL)
+            c1_left = Inches(7.0) if is_rtl else Inches(0.8)
+            c2_left = Inches(0.8) if is_rtl else Inches(7.0)
+            
             # Left column
-            left_col = slide.shapes.add_textbox(Inches(0.8), Inches(2.4), col_width, col_height)
+            left_col = slide.shapes.add_textbox(c1_left, Inches(2.4), col_width, col_height)
             tf_left = left_col.text_frame
             tf_left.word_wrap = True
             
             # Right column
-            right_col = slide.shapes.add_textbox(Inches(7.0), Inches(2.4), col_width, col_height)
+            right_col = slide.shapes.add_textbox(c2_left, Inches(2.4), col_width, col_height)
             tf_right = right_col.text_frame
             tf_right.word_wrap = True
 
@@ -517,6 +667,8 @@ def generate_workbook(data, output_path):
             cell.font = Font(name='Cairo' if is_rtl else 'Arial', size=11, bold=True, color=theme['header_text'])
             cell.fill = PatternFill(start_color=theme['header_fill'], end_color=theme['header_fill'], fill_type='solid')
             cell.alignment = Alignment(horizontal='right' if is_rtl else 'left', vertical='center', readingOrder=2 if is_rtl else 1)
+            thin_border_side = Side(border_style="thin", color="CCCCCC")
+            cell.border = Border(top=thin_border_side, bottom=thin_border_side, left=thin_border_side, right=thin_border_side)
 
         # Rows
         rows = sheet_data.get('rows', [])
@@ -544,14 +696,17 @@ def generate_workbook(data, output_path):
                 horiz_align = 'right' if is_num or is_rtl else 'left'
                 cell.alignment = Alignment(horizontal=horiz_align, vertical='center', readingOrder=2 if is_rtl else 1)
 
-                # Zebra stripes for standard rows
+                # Zebra stripes and borders for standard/total rows
                 if is_total_row:
                     cell.fill = PatternFill(start_color='E2E8F0', end_color='E2E8F0', fill_type='solid')
                     double_border = Side(border_style="double", color="333333")
                     thin_top = Side(border_style="thin", color="666666")
                     cell.border = Border(top=thin_top, bottom=double_border)
-                elif row_idx % 2 == 1:
-                    cell.fill = PatternFill(start_color='F8FAFC', end_color='F8FAFC', fill_type='solid')
+                else:
+                    thin_side = Side(border_style="thin", color="E2E8F0")
+                    cell.border = Border(top=thin_side, bottom=thin_side, left=thin_side, right=thin_side)
+                    if row_idx % 2 == 1:
+                        cell.fill = PatternFill(start_color='F8FAFC', end_color='F8FAFC', fill_type='solid')
 
         # Auto fit column widths
         for col in ws.columns:
@@ -571,8 +726,8 @@ def generate_workbook(data, output_path):
 
 def main():
     parser = argparse.ArgumentParser(description="Nashm Document Exporter Pipeline")
-    parser.add_argument('--input', required=True, help="Path to raw input structural JSON file")
-    parser.add_argument('--output', required=True, help="Target generated output path")
+    parser.add_argument('--input', help="Path to raw input structural JSON file")
+    parser.add_argument('--output', help="Target generated output path")
     parser.add_argument('--format', default="office", choices=["office", "pdf"], help="Export format")
     parser.add_argument('--test', action='store_true', help="Run in self-test mock mode")
     
@@ -581,6 +736,10 @@ def main():
     if args.test:
         print("Self-test completed successfully. Libraries verified.")
         return
+
+    if not args.input or not args.output:
+        print("Error: --input and --output are required unless --test is used.")
+        sys.exit(1)
 
     if not os.path.exists(args.input):
         print(f"Error: input file {args.input} does not exist.")

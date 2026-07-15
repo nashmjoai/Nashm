@@ -112,7 +112,7 @@ export default function DocumentPreview({ data, direction }: DocumentPreviewProp
           <div
             key={pageIdx}
             className={cn(
-              'relative w-full max-w-[800px] aspect-[1/1.414] shadow-lg border border-slate-200/80 rounded-sm p-16 flex flex-col justify-between transition-all duration-300 select-text',
+              'relative w-full max-w-[800px] aspect-[1/1.414] shadow-lg border border-slate-200/80 rounded-sm p-5 sm:p-12 md:p-16 flex flex-col justify-between transition-all duration-300 select-text',
               template.pageBg,
               template.text,
               template.borderStyle,
@@ -126,22 +126,22 @@ export default function DocumentPreview({ data, direction }: DocumentPreviewProp
             )}
 
             {/* Simulated Header */}
-            <div className={cn('flex items-center justify-between text-[10px] opacity-40 border-b pb-1.5 mb-6 uppercase tracking-wider', isRTL ? 'flex-row-reverse' : '')}>
-              <span className="font-bold">{data.title}</span>
+            <div className={cn('flex items-center justify-between text-[8px] sm:text-[10px] opacity-40 border-b pb-1 sm:pb-1.5 mb-3 sm:mb-6 uppercase tracking-wider', isRTL ? 'flex-row-reverse' : '')}>
+              <span className="font-bold truncate max-w-[120px] sm:max-w-none">{data.title}</span>
               <span>Confidential</span>
             </div>
 
             {/* Document Content Flow */}
-            <div className="flex-1 min-h-0 overflow-hidden space-y-6">
+            <div className="flex-1 min-h-0 overflow-hidden space-y-3 sm:space-y-6">
               {pageSections.map((sec, secIdx) => (
-                <div key={secIdx} className="space-y-4">
-                  <h3 className={cn('text-lg font-bold tracking-tight', template.headerStyle)}>
+                <div key={secIdx} className="space-y-2 sm:space-y-4">
+                  <h3 className={cn('text-sm sm:text-lg font-bold tracking-tight', template.headerStyle)}>
                     {sec.title}
                   </h3>
                   
-                  <div className={cn('space-y-3', template.bodyStyle)}>
+                  <div className={cn('space-y-1.5 sm:space-y-3', template.bodyStyle)}>
                     {sec.paragraphs?.map((p, pIdx) => (
-                      <p key={pIdx} className="leading-relaxed">
+                      <p key={pIdx} className="leading-relaxed text-xs sm:text-sm">
                         {p}
                       </p>
                     ))}
@@ -149,7 +149,7 @@ export default function DocumentPreview({ data, direction }: DocumentPreviewProp
 
                   {sec.list && sec.list.items?.length > 0 && (
                     <ul className={cn(
-                      'mt-2 space-y-1.5 pl-6 pr-6 text-sm leading-relaxed opacity-90',
+                      'mt-1 sm:mt-2 space-y-1 sm:space-y-1.5 pl-4 sm:pl-6 pr-4 sm:pr-6 text-xs sm:text-sm leading-relaxed opacity-90',
                       sec.list.type === 'numbered' ? 'list-decimal' : 'list-disc',
                       isRTL ? 'list-inside pl-0' : ''
                     )}>
@@ -163,7 +163,7 @@ export default function DocumentPreview({ data, direction }: DocumentPreviewProp
             </div>
 
             {/* Simulated Footer */}
-            <div className={cn('mt-8 border-t pt-3 flex items-center justify-between text-[10px] opacity-40 font-semibold tracking-wider uppercase', isRTL ? 'flex-row-reverse' : '')}>
+            <div className={cn('mt-4 sm:mt-8 border-t pt-1.5 sm:pt-3 flex items-center justify-between text-[8px] sm:text-[10px] opacity-40 font-semibold tracking-wider uppercase', isRTL ? 'flex-row-reverse' : '')}>
               <span>Nashm Docs v1.0</span>
               <span>
                 {pageIdx + 1} / {pages.length}

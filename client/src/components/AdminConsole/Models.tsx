@@ -10,6 +10,8 @@ import {
   Edit,
   Cpu,
   Badge,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import {
   OGDialog,
@@ -34,6 +36,26 @@ export default function AdminConsoleModels() {
   const [enabled, setEnabled] = useState(true);
   const [allowedPlans, setAllowedPlans] = useState<string[]>([]);
   const [notes, setNotes] = useState('');
+
+  // Accordion state for endpoints/providers
+  const [expandedEndpoints, setExpandedEndpoints] = useState<Record<string, boolean>>({});
+
+  const toggleEndpoint = (endpoint: string) => {
+    setExpandedEndpoints((prev) => ({
+      ...prev,
+      [endpoint]: !prev[endpoint],
+    }));
+  };
+
+  const getProviderName = (endpoint: string) => {
+    const normalized = endpoint.toLowerCase();
+    if (normalized === 'openai') return 'OpenAI';
+    if (normalized === 'google') return 'Google Gemini';
+    if (normalized === 'anthropic') return 'Anthropic';
+    if (normalized === 'azureopenai') return 'Azure OpenAI';
+    if (normalized === 'bedrock') return 'AWS Bedrock';
+    return endpoint.charAt(0).toUpperCase() + endpoint.slice(1);
+  };
 
   const updateModelMutation = useUpdateAdminConsoleModelMutation({
     onSuccess: () => {
@@ -68,6 +90,14 @@ export default function AdminConsoleModels() {
     );
   };
 
+  const handleToggleProvider = (endpoint: string, shouldEnable: boolean) => {
+    updateModelMutation.mutate({
+      endpoint,
+      model: '*',
+      enabled: shouldEnable,
+    });
+  };
+
   const handleSaveModel = (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingModel) return;
@@ -98,103 +128,201 @@ export default function AdminConsoleModels() {
     );
   }
 
-  const { models = [] } = data;
+  const { models = [], providers = {} } = data || {};
+
+  // Group models by endpoint/provider
+  const groupedModels = models.reduce((acc: Record<string, any[]>, item: any) => {
+    const endpoint = item.endpoint || 'other';
+    if (!acc[endpoint]) {
+      acc[endpoint] = [];
+    }
+    acc[endpoint].push(item);
+    return acc;
+  }, {} as Record<string, any[]>);
 
   const planOptions = ['free', 'individual', 'family', 'developer'];
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Models Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {models.map((item: any, idx: number) => {
-          const isEnabled = item.enabled !== false;
+      {/* Grouped Models Accordion */}
+      <div className="flex flex-col gap-4">
+        {(Object.entries(groupedModels) as [string, any[]][]).map(([endpoint, items]) => {
+          const isExpanded = !!expandedEndpoints[endpoint];
+          const enabledCount = items.filter((item: any) => item.enabled !== false).length;
+          const totalCount = items.length;
+          const providerName = getProviderName(endpoint);
+          const isProviderEnabled = providers[endpoint]?.enabled !== false;
+
           return (
             <div
-              key={idx}
-              className={`p-6 rounded-2xl border bg-surface-primary flex flex-col gap-4 shadow-sm transition-all duration-200 ${
-                isEnabled ? 'border-border-light' : 'border-red-500/20 opacity-70 bg-red-500/[0.01]'
+              key={endpoint}
+              className={`border rounded-2xl overflow-hidden bg-surface-primary shadow-sm transition-all duration-200 ${
+                isProviderEnabled ? 'border-border-light' : 'border-red-500/20 opacity-70 bg-red-500/[0.01]'
               }`}
             >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-start gap-3">
-                  <div className={`p-2.5 rounded-xl border ${isEnabled ? 'bg-blue-500/10 border-blue-500/20 text-blue-500' : 'bg-red-500/10 border-red-500/20 text-red-500'}`}>
+              <button
+                onClick={() => toggleEndpoint(endpoint)}
+                className="w-full flex items-center justify-between p-5 hover:bg-surface-secondary/30 transition-colors text-left"
+              >
+                <div className="flex items-center gap-4">
+                  <div className={`p-2.5 rounded-xl border ${isProviderEnabled ? 'bg-blue-500/10 border-blue-500/20 text-blue-500' : 'bg-red-500/10 border-red-500/20 text-red-500'}`}>
                     <Cpu className="size-5" />
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-bold text-text-primary text-sm">
-                      {item.label || item.model}
+                    <span className="font-bold text-text-primary text-base">
+                      {providerName}
                     </span>
-                    <span className="text-xs font-mono text-text-secondary">{item.model}</span>
-                    <span className="text-[10px] uppercase font-semibold text-blue-500 mt-0.5 tracking-wider">
-                      {item.endpoint}
+                    <span className="text-xs text-text-secondary mt-0.5">
+                      {totalCount} {totalCount === 1 ? 'Model' : 'Models'} available • {enabledCount} {enabledCount === 1 ? 'enabled' : 'enabled'}
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  {isEnabled ? (
-                    <span className="flex items-center gap-1 text-xs text-green-500 font-semibold bg-green-500/10 px-2 py-0.5 rounded-full border border-green-500/20">
-                      <CheckCircle className="size-3.5" /> Enabled
-                    </span>
+
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleToggleProvider(endpoint, !isProviderEnabled);
+                    }}
+                    className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors flex items-center gap-1.5 ${
+                      isProviderEnabled
+                        ? 'border-red-500/20 text-red-500 hover:bg-red-500/10 hover:border-red-500/30'
+                        : 'border-green-500/20 text-green-500 hover:bg-green-500/10 hover:border-green-500/30'
+                    }`}
+                  >
+                    {isProviderEnabled ? 'Hide Provider' : 'Show Provider'}
+                  </button>
+                  <span
+                    className={`text-xs px-2.5 py-1 rounded-full font-semibold border ${
+                      !isProviderEnabled
+                        ? 'bg-red-500/10 text-red-500 border-red-500/20'
+                        : enabledCount === totalCount
+                        ? 'bg-green-500/10 text-green-500 border-green-500/20'
+                        : enabledCount === 0
+                        ? 'bg-red-500/10 text-red-500 border-red-500/20'
+                        : 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
+                    }`}
+                  >
+                    {!isProviderEnabled ? 'Hidden for Users' : `${enabledCount}/${totalCount} Enabled`}
+                  </span>
+                  {isExpanded ? (
+                    <ChevronUp className="size-5 text-text-secondary" />
                   ) : (
-                    <span className="flex items-center gap-1 text-xs text-red-500 font-semibold bg-red-500/10 px-2 py-0.5 rounded-full border border-red-500/20">
-                      <XCircle className="size-3.5" /> Disabled
-                    </span>
+                    <ChevronDown className="size-5 text-text-secondary" />
                   )}
                 </div>
-              </div>
+              </button>
 
-              {/* Stats & Metadata */}
-              <div className="grid grid-cols-2 gap-4 bg-surface-secondary/50 p-4 rounded-xl border border-border-light text-xs">
-                <div className="flex flex-col">
-                  <span className="text-text-secondary">Requests</span>
-                  <span className="font-semibold text-text-primary font-mono mt-0.5">
-                    {item.requests?.toLocaleString() || 0}
-                  </span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-text-secondary">Tokens Consumed</span>
-                  <span className="font-semibold text-text-primary font-mono mt-0.5">
-                    {item.totalTokens?.toLocaleString() || 0}
-                  </span>
-                </div>
-              </div>
+              {isExpanded && (
+                <div className="p-5 border-t border-border-light bg-surface-secondary/20">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {items.map((item: any, idx: number) => {
+                      const isEnabled = item.enabled !== false;
+                      return (
+                        <div
+                          key={idx}
+                          className={`p-6 rounded-2xl border bg-surface-primary flex flex-col gap-4 shadow-sm transition-all duration-200 ${
+                            isEnabled
+                              ? 'border-border-light'
+                              : 'border-red-500/20 opacity-70 bg-red-500/[0.01]'
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex items-start gap-3">
+                              <div
+                                className={`p-2.5 rounded-xl border ${
+                                  isEnabled
+                                    ? 'bg-blue-500/10 border-blue-500/20 text-blue-500'
+                                    : 'bg-red-500/10 border-red-500/20 text-red-500'
+                                }`}
+                              >
+                                <Cpu className="size-5" />
+                              </div>
+                              <div className="flex flex-col">
+                                <span className="font-bold text-text-primary text-sm">
+                                  {item.label || item.model}
+                                </span>
+                                <span className="text-xs font-mono text-text-secondary">
+                                  {item.model}
+                                </span>
+                                <span className="text-[10px] uppercase font-semibold text-blue-500 mt-0.5 tracking-wider">
+                                  {item.endpoint}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                              {isEnabled ? (
+                                <span className="flex items-center gap-1 text-xs text-green-500 font-semibold bg-green-500/10 px-2 py-0.5 rounded-full border border-green-500/20">
+                                  <CheckCircle className="size-3.5" /> Enabled
+                                </span>
+                              ) : (
+                                <span className="flex items-center gap-1 text-xs text-red-500 font-semibold bg-red-500/10 px-2 py-0.5 rounded-full border border-red-500/20">
+                                  <XCircle className="size-3.5" /> Disabled
+                                </span>
+                              )}
+                            </div>
+                          </div>
 
-              {/* Allowed Tiers */}
-              <div className="flex flex-col gap-1.5">
-                <span className="text-xs font-semibold text-text-secondary uppercase tracking-wider">
-                  Allowed Subscription Tiers:
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {item.allowedPlans?.map((plan: string, pIdx: number) => (
-                    <span
-                      key={pIdx}
-                      className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded bg-purple-500/10 text-purple-500 border border-purple-500/20"
-                    >
-                      {plan}
-                    </span>
-                  ))}
-                  {(!item.allowedPlans || item.allowedPlans.length === 0) && (
-                    <span className="text-[10px] text-text-secondary italic">All plans allowed</span>
-                  )}
-                </div>
-              </div>
+                          {/* Stats & Metadata */}
+                          <div className="grid grid-cols-2 gap-4 bg-surface-secondary/50 p-4 rounded-xl border border-border-light text-xs">
+                            <div className="flex flex-col">
+                              <span className="text-text-secondary">Requests</span>
+                              <span className="font-semibold text-text-primary font-mono mt-0.5">
+                                {item.requests?.toLocaleString() || 0}
+                              </span>
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="text-text-secondary">Tokens Consumed</span>
+                              <span className="font-semibold text-text-primary font-mono mt-0.5">
+                                {item.totalTokens?.toLocaleString() || 0}
+                              </span>
+                            </div>
+                          </div>
 
-              {item.notes && (
-                <p className="text-xs text-text-secondary bg-surface-secondary/30 p-2.5 rounded-lg border border-border-light/50 italic">
-                  Notes: {item.notes}
-                </p>
+                          {/* Allowed Tiers */}
+                          <div className="flex flex-col gap-1.5">
+                            <span className="text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                              Allowed Subscription Tiers:
+                            </span>
+                            <div className="flex flex-wrap gap-1.5">
+                              {item.allowedPlans?.map((plan: string, pIdx: number) => (
+                                <span
+                                  key={pIdx}
+                                  className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded bg-purple-500/10 text-purple-500 border border-purple-500/20"
+                                >
+                                  {plan}
+                                </span>
+                              ))}
+                              {(!item.allowedPlans || item.allowedPlans.length === 0) && (
+                                <span className="text-[10px] text-text-secondary italic">
+                                  All plans allowed
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          {item.notes && (
+                            <p className="text-xs text-text-secondary bg-surface-secondary/30 p-2.5 rounded-lg border border-border-light/50 italic">
+                              Notes: {item.notes}
+                            </p>
+                          )}
+
+                          {/* Action Button */}
+                          <div className="pt-2 border-t border-border-light flex justify-end">
+                            <button
+                              onClick={() => handleEditClick(item)}
+                              className="px-3 py-1.5 rounded-lg text-xs font-semibold text-text-secondary hover:text-blue-500 hover:bg-blue-500/10 border border-border-light hover:border-blue-500/30 transition-all duration-150 flex items-center gap-1.5"
+                            >
+                              <Edit className="size-3.5" />
+                              Configure Access
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               )}
-
-              {/* Action Button */}
-              <div className="pt-2 border-t border-border-light flex justify-end">
-                <button
-                  onClick={() => handleEditClick(item)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-semibold text-text-secondary hover:text-blue-500 hover:bg-blue-500/10 border border-border-light hover:border-blue-500/30 transition-all duration-150 flex items-center gap-1.5"
-                >
-                  <Edit className="size-3.5" />
-                  Configure Access
-                </button>
-              </div>
             </div>
           );
         })}

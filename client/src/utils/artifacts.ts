@@ -297,7 +297,9 @@ export const TOOL_ARTIFACT_TYPES = {
   NASHM_SLIDES: 'application/vnd.nashm.slides',
   NASHM_DOCUMENT: 'application/vnd.nashm.document',
   NASHM_WORKBOOK: 'application/vnd.nashm.workbook',
+  AUDIO_TRANSCRIBE: 'application/vnd.nashm.audio',
 } as const;
+
 
 export type ToolArtifactType = (typeof TOOL_ARTIFACT_TYPES)[keyof typeof TOOL_ARTIFACT_TYPES];
 
@@ -325,6 +327,7 @@ const PREVIEW_ONLY_ARTIFACT_TYPES: ReadonlySet<ToolArtifactType> = new Set([
   TOOL_ARTIFACT_TYPES.DOCX,
   TOOL_ARTIFACT_TYPES.SPREADSHEET,
   TOOL_ARTIFACT_TYPES.PRESENTATION,
+  TOOL_ARTIFACT_TYPES.AUDIO_TRANSCRIBE,
 ]);
 
 export function isOfficeArtifact(type: string | null | undefined): boolean {

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "office-artifact.v1",
+  "kind": "document",
+  "title": "تقرير العمل السنوي",
+  "locale": "ar",
+  "direction": "rtl",
+  "templateId": "nashm-research-rtl",
+  "content": {
+    "sections": [
+      {
+        "title": "المقدمة والملخص التنفيذي",
+        "paragraphs": [
+          "يعتبر نظام نشمي الجيل الجديد من الذكاء الاصطناعي العربي.",
+          "لقد حققنا نجاحاً باهراً في تحسين جودة المخرجات للمستخدم العربي."
+        ],
+        "list": {
+          "type": "bullet",
+          "items": [
+            "زيادة سرعة معالجة النصوص",
+            "تحسين دقة الترجمة الفورية"
+          ]
+        }
+      }
+    ]
+  }
+}

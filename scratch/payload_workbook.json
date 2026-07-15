@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "office-artifact.v1",
+  "kind": "workbook",
+  "title": "الميزانية السنوية",
+  "locale": "ar",
+  "direction": "rtl",
+  "templateId": "nashm-finance-dashboard",
+  "content": {
+    "sheets": [
+      {
+        "name": "الربع الأول",
+        "summary": [
+          { "label": "إجمالي الإيرادات", "value": 150000 },
+          { "label": "إجمالي المصاريف", "value": 90000 }
+        ],
+        "headers": ["القسم", "الميزانية المخصصة", "المصروف الفعلي", "المتبقي"],
+        "rows": [
+          ["التسويق", 50000, 45000, 5000],
+          ["التطوير", 80000, 75000, 5000],
+          ["المجموع", 130000, 120000, 10000]
+        ]
+      }
+    ]
+  }
+}

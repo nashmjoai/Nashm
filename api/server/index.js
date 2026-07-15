@@ -1,4 +1,4 @@
-const telemetry = require('./telemetry'); // Restart trigger
+const telemetry = require('./telemetry'); // Restart trigger 1
 const fs = require('fs');
 const path = require('path');
 require('module-alias')({ base: path.resolve(__dirname, '..') });
@@ -327,8 +327,10 @@ const startServer = async () => {
   app.use('/api/memories', routes.memories);
   app.use('/api/permissions', routes.accessPermissions);
   app.use('/api/artifacts', routes.artifacts);
+  app.use('/api/audio', routes.audio);
 
   app.use('/api/tags', routes.tags);
+
   app.use('/api/mcp', routes.mcp);
   app.use('/api/rum', routes.rum);
 

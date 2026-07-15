@@ -22,6 +22,9 @@ ARG NPM_CI_ATTEMPTS=2
 RUN mkdir -p /app && chown node:node /app
 WORKDIR /app
 
+COPY packages/api/src/audio/requirements.txt ./packages/api/src/audio/requirements.txt
+RUN uv pip install --system --no-cache -r packages/api/src/audio/requirements.txt
+
 USER node
 
 COPY --chown=node:node package.json package-lock.json ./

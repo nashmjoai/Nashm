@@ -143,3 +143,4 @@ const checkBan = async (req, res, next = () => {}) => {
 };
 
 module.exports = checkBan;
+// Trigger nodemon reload to pick up new env changes and clear in-memory ban cache

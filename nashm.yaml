@@ -18,6 +18,16 @@ modelSpecs:
         endpoint: "google"
         model: "gemini-3.5-flash"
       geminiImageGen: true
+    - name: "kimi-agent"
+      label: "Kimi Agent"
+      description: "نموذج Kimi مع أدوات التفكير والبحث والصور (مثل Gemini)"
+      preset:
+        endpoint: "Kimi"
+        model: "kimi-k2.5"
+      webSearch: true
+      executeCode: true
+      geminiImageGen: true
+      fileSearch: true
 
 # Custom interface configuration
 interface:
@@ -40,18 +50,21 @@ endpoints:
     #------------------------------------------------
     - name: "Kimi"
       apiKey: "${KIMI_API_KEY}"
-      baseURL: "https://api.moonshot.cn/v1"
+      baseURL: "https://api.moonshot.ai/v1"
       models:
         default:
+          - "kimi-k2.5"
+          - "kimi-k2.6"
+          - "kimi-k2.7-code"
+          - "kimi-latest"
           - "moonshot-v1-8k"
           - "moonshot-v1-32k"
           - "moonshot-v1-128k"
-          - "kimi-latest"
         fetch: false
       titleConvo: true
-      titleModel: "moonshot-v1-8k"
+      titleModel: "kimi-k2.5"
       summarize: false
-      summaryModel: "moonshot-v1-8k"
+      summaryModel: "kimi-k2.5"
       forcePrompt: false
       modelDisplayLabel: "Kimi"
       iconURL: "/assets/kimi.png"

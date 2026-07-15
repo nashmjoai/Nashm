@@ -217,7 +217,7 @@ export const documentParserMimeTypes = [
 
 export const defaultTextMimeTypes = [/^[\w.-]+\/[\w.-]+$/];
 
-export const defaultSTTMimeTypes = [audioMimeTypes];
+export const defaultSTTMimeTypes = [audioMimeTypes, videoMimeTypes];
 
 export const supportedMimeTypes = [
   textMimeTypes,

@@ -140,19 +140,14 @@ export async function filterModelsBySubscription({
   const effective = isAdmin ? null : await getEffectiveSubscription(user, deps);
 
   for (const [endpoint, models] of Object.entries(modelsConfig)) {
+    const endpointRule = rulesByModel.get(getRuleKey(endpoint, '*'));
+    if (endpointRule?.enabled === false) {
+      continue;
+    }
     const allowed = models.filter((model) => {
       const rule = rulesByModel.get(getRuleKey(endpoint, model));
       if (rule?.enabled === false) {
         return false;
-      }
-      if (isAdmin) {
-        return true;
-      }
-      if (effective) {
-        if (rule && rule.allowedPlans.length > 0) {
-          return rule.allowedPlans.includes(effective.plan);
-        }
-        return defaultAllowsPlan(effective.plan, model);
       }
       return true;
     });

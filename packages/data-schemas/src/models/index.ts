@@ -40,6 +40,7 @@ import { createRoleModel } from './role';
 import { createFileModel } from './file';
 import { createKeyModel } from './key';
 import { createExportJobModel } from './exportJob';
+import { createAudioJobModel } from './audioJob';
 
 /**
  * Creates all database models for all collections
@@ -87,6 +88,7 @@ export function createModels(mongoose: typeof import('mongoose')): {
   ModelAccess: ReturnType<typeof createModelAccessModel>;
   PlanConfig: ReturnType<typeof createPlanConfigModel>;
   ExportJob: ReturnType<typeof createExportJobModel>;
+  AudioJob: ReturnType<typeof createAudioJobModel>;
 } {
   return {
     User: createUserModel(mongoose),
@@ -131,5 +133,6 @@ export function createModels(mongoose: typeof import('mongoose')): {
     ModelAccess: createModelAccessModel(mongoose),
     PlanConfig: createPlanConfigModel(mongoose),
     ExportJob: createExportJobModel(mongoose),
+    AudioJob: createAudioJobModel(mongoose),
   };
 }

@@ -1,10 +1,11 @@
 import { memo, useCallback, useMemo } from 'react';
-import { FileText, Presentation, SearchCheck, Table2, X } from 'lucide-react';
-import { useRecoilState } from 'recoil';
+import { FileText, Presentation, SearchCheck, Table2, X, Headphones } from 'lucide-react';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import type { LucideIcon } from 'lucide-react';
 import type { TranslationKeys } from '~/hooks';
 import type { QuickArtifactActionType } from '~/utils/quickActions';
 import { useLocalize } from '~/hooks';
+import { useGetStartupConfig } from '~/data-provider';
 import { cn } from '~/utils';
 import store from '~/store';
 
@@ -21,6 +22,12 @@ const quickActions: ReadonlyArray<QuickActionConfig> = [
     icon: Presentation,
     labelKey: 'com_ui_quick_artifact_slides',
     descriptionKey: 'com_ui_quick_artifact_slides_desc',
+  },
+  {
+    type: 'audio',
+    icon: Headphones,
+    labelKey: 'com_ui_quick_artifact_audio',
+    descriptionKey: 'com_ui_quick_artifact_audio_desc',
   },
   {
     type: 'document',
@@ -50,13 +57,23 @@ interface QuickActionsRowProps {
 
 function QuickActionsRow({ conversationId, disabled, isRTL }: QuickActionsRowProps) {
   const localize = useLocalize();
+  const { data: startupConfig } = useGetStartupConfig();
+  const interfaceConfig = useMemo(() => startupConfig?.interface ?? {}, [startupConfig]);
+
   const [actionState, setActionState] = useRecoilState(
     store.quickArtifactActionByConvoId(conversationId),
   );
 
+  const activeQuickActions = useMemo(() => {
+    return quickActions.filter((action) => {
+      // If the setting is explicitly false, hide it. Otherwise default to true (visible).
+      return interfaceConfig[action.type] !== false;
+    });
+  }, [interfaceConfig]);
+
   const selectedAction = useMemo(
-    () => quickActions.find((action) => action.type === actionState.type),
-    [actionState.type],
+    () => activeQuickActions.find((action) => action.type === actionState.type),
+    [actionState.type, activeQuickActions],
   );
 
   const selectAction = useCallback(
@@ -106,6 +123,10 @@ function QuickActionsRow({ conversationId, disabled, isRTL }: QuickActionsRowPro
     );
   }
 
+  if (activeQuickActions.length === 0) {
+    return null;
+  }
+
   return (
     <div
       className={cn(
@@ -114,7 +135,7 @@ function QuickActionsRow({ conversationId, disabled, isRTL }: QuickActionsRowPro
       )}
       aria-label={localize('com_ui_quick_artifact_actions')}
     >
-      {quickActions.map((action) => {
+      {activeQuickActions.map((action) => {
         const Icon = action.icon;
         const label = localize(action.labelKey);
         return (
