@@ -73,7 +73,7 @@ function formatDocumentBlock(
     };
   }
 
-  if (isOpenAILikeProvider(provider) && provider !== Providers.AZURE) {
+  if (isOpenAILikeProvider(provider) && provider !== Providers.AZURE && provider !== Providers.MOONSHOT) {
     return {
       type: 'file',
       file: {
@@ -217,8 +217,10 @@ export async function encodeAndFormatDocuments(
       );
       if (block) {
         result.documents.push(block);
-        result.files.push(metadata);
       }
+      // Always push metadata so extractFileContext can use pre-extracted text
+      // (e.g. for providers like Moonshot that don't support inline file parts)
+      result.files.push(metadata);
     } else if (isDocSupported && !isBedrock) {
       const decodedByteCount = getBase64DecodedByteCount(content);
       if (configuredFileSizeLimit && decodedByteCount > configuredFileSizeLimit) {
@@ -236,8 +238,10 @@ export async function encodeAndFormatDocuments(
       );
       if (block) {
         result.documents.push(block);
-        result.files.push(metadata);
       }
+      // Always push metadata so extractFileContext can use pre-extracted text
+      // (e.g. for providers like Moonshot that don't support inline file parts)
+      result.files.push(metadata);
     }
   }
 

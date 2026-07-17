@@ -1775,37 +1775,39 @@ html {
 .markdown th {
   background-color: rgba(236, 236, 241, 0.2);
   border-bottom-width: 1px;
-  border-left-width: 1px;
+  border-inline-start-width: 1px;
+  border-inline-end-width: 0px;
   border-top-width: 1px;
   padding: 0.25rem 0.75rem;
 }
 
 .markdown th:first-child {
-  border-top-left-radius: 0.375rem;
+  border-start-start-radius: 0.375rem;
 }
 
 .markdown th:last-child {
-  border-right-width: 1px;
+  border-inline-end-width: 1px;
   border-color: #d1d5db;
-  border-top-right-radius: 0.375rem;
+  border-start-end-radius: 0.375rem;
 }
 
 .markdown td {
   border-bottom-width: 1px;
-  border-left-width: 1px;
+  border-inline-start-width: 1px;
+  border-inline-end-width: 0px;
   padding: 0.25rem 0.75rem;
 }
 
 .markdown td:last-child {
-  border-right-width: 1px;
+  border-inline-end-width: 1px;
 }
 
 .markdown tbody tr:last-child td:first-child {
-  border-bottom-left-radius: 0.375rem;
+  border-end-start-radius: 0.375rem;
 }
 
 .markdown tbody tr:last-child td:last-child {
-  border-bottom-right-radius: 0.375rem;
+  border-end-end-radius: 0.375rem;
 }
 
 .markdown a {
@@ -2047,7 +2049,8 @@ html {
 .markdown th {
   background-color: var(--gray-100);
   border-bottom-width: 1px;
-  border-left-width: 1px;
+  border-inline-start-width: 1px;
+  border-inline-end-width: 0px;
   border-top-width: 1px;
   border-color: var(--gray-300);
   padding: 0.25rem 0.75rem;
@@ -2060,23 +2063,24 @@ html {
 }
 
 .markdown th:first-child {
-  border-top-left-radius: 0.75rem;
+  border-start-start-radius: 0.75rem;
 }
 
 .markdown th:last-child {
-  border-right-width: 1px;
-  border-top-right-radius: 0.75rem;
+  border-inline-end-width: 1px;
+  border-start-end-radius: 0.75rem;
 }
 
 .markdown td {
   border-bottom-width: 1px;
-  border-left-width: 1px;
+  border-inline-start-width: 1px;
+  border-inline-end-width: 0px;
   border-color: var(--gray-300);
   padding: 0.25rem 0.75rem;
 }
 
 .markdown td:last-child {
-  border-right-width: 1px;
+  border-inline-end-width: 1px;
   border-color: var(--gray-300);
 }
 
@@ -2089,11 +2093,11 @@ html {
 }
 
 .markdown tbody tr:last-child td:first-child {
-  border-bottom-left-radius: 0.75rem;
+  border-end-start-radius: 0.75rem;
 }
 
 .markdown tbody tr:last-child td:last-child {
-  border-bottom-right-radius: 0.75rem;
+  border-end-end-radius: 0.75rem;
 }
 
 .markdown a {

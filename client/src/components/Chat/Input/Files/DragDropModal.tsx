@@ -79,7 +79,10 @@ const DragDropModal = ({ onOptionSelect, setShowModal, files, isVisible }: DragD
       isAzureWithResponsesApi
     ) {
       const supportsImageDocVideoAudio =
-        currentProvider === EModelEndpoint.google || currentProvider === Providers.OPENROUTER;
+        currentProvider === EModelEndpoint.google ||
+        currentProvider === Providers.OPENROUTER ||
+        currentProvider === Providers.MOONSHOT ||
+        currentProvider?.toLowerCase() === 'kimi';
       const isBedrock =
         currentProvider === Providers.BEDROCK || endpointType === EModelEndpoint.bedrock;
 

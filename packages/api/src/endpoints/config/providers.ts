@@ -48,6 +48,7 @@ export const providerConfigMap: Record<string, InitializeFn> = {
   [EModelEndpoint.bedrock]: initializeBedrock,
   [EModelEndpoint.azureOpenAI]: initializeOpenAI,
   [EModelEndpoint.anthropic]: initializeAnthropic,
+  kimi: initializeCustom,
 };
 
 export type TitleTiming = 'immediate' | 'final';
@@ -209,6 +210,10 @@ export function getProviderConfig({
    */
   if (customEndpointConfig?.provider === EModelEndpoint.anthropic) {
     overrideProvider = Providers.ANTHROPIC;
+  }
+
+  if (overrideProvider.toLowerCase() === 'kimi') {
+    overrideProvider = Providers.MOONSHOT;
   }
 
   return {

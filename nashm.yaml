@@ -7,6 +7,10 @@ version: 1.3.13
 # Cache settings
 cache: true
 
+# Web Search configuration
+webSearch:
+  searchProvider: "serper"
+
 # Default Model Specifications
 modelSpecs:
   list:
@@ -67,7 +71,7 @@ endpoints:
       summaryModel: "kimi-k2.5"
       forcePrompt: false
       modelDisplayLabel: "Kimi"
-      iconURL: "/assets/kimi.png"
+      iconURL: "/assets/kimi.svg"
       # Parameters not supported by Moonshot API
       dropParams:
         - "user"

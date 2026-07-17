@@ -1207,7 +1207,108 @@ class BaseClient {
    * @param {MongoFile[]} attachments - Array of file attachments
    * @returns {Promise<void>}
    */
+  async transcribeMediaWithGemini(file) {
+    const apiKey = process.env.GOOGLE_KEY || process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      logger.warn('[transcribeMediaWithGemini] No GOOGLE_KEY or GEMINI_API_KEY found, skipping transcription.');
+      return null;
+    }
+
+    try {
+      const source = file.source ?? FileSources.local;
+      const { getDownloadStream } = getStrategyFunctions(source);
+      const stream = await getDownloadStream(this.options.req, file.filepath);
+
+      // Read stream into buffer
+      const chunks = [];
+      for await (const chunk of stream) {
+        chunks.push(chunk);
+      }
+      const buffer = Buffer.concat(chunks);
+      const base64Data = buffer.toString('base64');
+
+      const mimeType = file.type;
+      const prompt = file.type?.startsWith('video/')
+        ? 'Please provide a highly detailed transcript of this video. Describe both the spoken words (with approximate timestamps or sequence) and any important visual events, actions, or slides shown.'
+        : 'Please provide a highly detailed transcript of this audio file. Transcribe the spoken words accurately.';
+
+      logger.info(`[transcribeMediaWithGemini] Sending file ${file.filename} (${Math.round(buffer.length / 1024)} KB) to Gemini for transcription...`);
+
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  {
+                    inlineData: {
+                      mimeType,
+                      data: base64Data,
+                    },
+                  },
+                  {
+                    text: prompt,
+                  },
+                ],
+              },
+            ],
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        logger.error(`[transcribeMediaWithGemini] Gemini API request failed: ${response.status} ${response.statusText} - ${errorText}`);
+        return null;
+      }
+
+      const resJson = await response.json();
+      const text = resJson.candidates?.[0]?.content?.parts?.[0]?.text;
+
+      if (text) {
+        logger.info(`[transcribeMediaWithGemini] Successfully transcribed ${file.filename} using Gemini.`);
+        // Save to database
+        await db.updateFile({
+          file_id: file.file_id,
+          text,
+          source: FileSources.text,
+        });
+        return text;
+      }
+
+      logger.warn(`[transcribeMediaWithGemini] Gemini returned an empty response for ${file.filename}.`);
+      return null;
+    } catch (err) {
+      logger.error(`[transcribeMediaWithGemini] Error during media transcription for ${file.filename}:`, err);
+      return null;
+    }
+  }
+
   async addFileContextToMessage(message, attachments) {
+    const provider = this.options.agent?.provider ?? this.options.endpoint;
+    const isGoogle = provider === 'google' || provider === 'vertexai';
+    if (!isGoogle && attachments?.length > 0) {
+      for (const file of attachments) {
+        const isMedia = file.type?.startsWith('audio/') || file.type?.startsWith('video/');
+        if (isMedia && (!file.text || file.source !== FileSources.text)) {
+          try {
+            const text = await this.transcribeMediaWithGemini(file);
+            if (text) {
+              file.text = text;
+              file.source = FileSources.text;
+            }
+          } catch (err) {
+            logger.error(`[BaseClient] Error transcribing file ${file.filename}:`, err);
+          }
+        }
+      }
+    }
+
     const fileContext = await extractFileContext({
       attachments,
       req: this.options?.req,
