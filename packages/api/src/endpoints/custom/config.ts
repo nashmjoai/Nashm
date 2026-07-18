@@ -42,6 +42,13 @@ export function loadCustomEndpointsConfig(
       const resolvedApiKey = extractEnvVariable(apiKey ?? '');
       const resolvedBaseURL = extractEnvVariable(baseURL ?? '');
 
+      if (!resolvedApiKey && !isUserProvided(resolvedApiKey)) {
+        continue;
+      }
+      if (!resolvedBaseURL && !isUserProvided(resolvedBaseURL)) {
+        continue;
+      }
+
       /**
        * A native `provider` (e.g. anthropic) implies its parameter set. Surface it
        * as `defaultParamsEndpoint` so the client param panel shows the right fields

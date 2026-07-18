@@ -188,14 +188,14 @@ export function resolveModelSpecPromptPrefixVariables<T extends { promptPrefix?:
 
 export function sanitizeModelSpecs<T extends Partial<TSpecsConfig> | null | undefined>(
   modelSpecs: T,
+  endpointsConfig?: Record<string, unknown>,
 ): T {
   if (!modelSpecs?.list || !Array.isArray(modelSpecs.list)) {
     return modelSpecs;
   }
 
-  return {
-    ...modelSpecs,
-    list: modelSpecs.list.map((modelSpec) => {
+  const list = modelSpecs.list
+    .map((modelSpec) => {
       if (!modelSpec || typeof modelSpec !== 'object') {
         return modelSpec;
       }
@@ -231,6 +231,22 @@ export function sanitizeModelSpecs<T extends Partial<TSpecsConfig> | null | unde
         ...sanitizedModelSpec,
         preset: sanitizedPreset,
       };
-    }),
+    })
+    .filter((modelSpec) => {
+      if (!modelSpec || typeof modelSpec !== 'object') {
+        return false;
+      }
+      const endpoint = modelSpec.preset?.endpoint;
+      if (endpointsConfig && endpoint) {
+        if (!endpointsConfig[endpoint]) {
+          return false;
+        }
+      }
+      return true;
+    });
+
+  return {
+    ...modelSpecs,
+    list,
   } as T;
 }

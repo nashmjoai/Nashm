@@ -125,12 +125,12 @@ function formatAction(action) {
  * @returns {boolean | { userProvide: boolean, userProvideURL?: boolean }}
  */
 function generateConfig(key, baseURL, endpoint) {
-  if (!key) {
+  if (!key || isUserProvided(key)) {
     return false;
   }
 
   /** @type {{ userProvide: boolean, userProvideURL?: boolean }} */
-  const config = { userProvide: isUserProvided(key) };
+  const config = { userProvide: false };
 
   if (baseURL) {
     config.userProvideURL = isUserProvided(baseURL);

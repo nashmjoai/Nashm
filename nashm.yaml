@@ -29,7 +29,7 @@ modelSpecs:
         endpoint: "Kimi"
         model: "kimi-k2.5"
       webSearch: true
-      executeCode: true
+      executeCode: false
       geminiImageGen: true
       fileSearch: true
 

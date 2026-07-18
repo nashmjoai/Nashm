@@ -116,6 +116,14 @@ export function createLoadConfigModels(deps: LoadConfigModelsDeps) {
 
       const resolvedApiKey = extractEnvVariable(apiKey);
       const resolvedBaseURL = extractEnvVariable(baseURL);
+
+      if (!resolvedApiKey && !isUserProvided(resolvedApiKey)) {
+        continue;
+      }
+      if (!resolvedBaseURL && !isUserProvided(resolvedBaseURL)) {
+        continue;
+      }
+
       const entry: ResolvedEndpoint = {
         name,
         endpoint,
