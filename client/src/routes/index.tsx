@@ -19,6 +19,7 @@ import StartupLayout from './Layouts/Startup';
 import LoginLayout from './Layouts/Login';
 import dashboardRoutes from './Dashboard';
 import ShareRoute from './ShareRoute';
+import FamilyShareRoute from './FamilyShareRoute';
 import ChatRoute from './ChatRoute';
 import Search from './Search';
 import Root from './Root';
@@ -154,6 +155,10 @@ export const router = createBrowserRouter(
       element: <AuthLayout />,
       errorElement: <RouteErrorBoundary />,
       children: [
+        {
+          path: 'share/family/:userId/:conversationId',
+          element: <FamilyShareRoute />,
+        },
         {
           path: '/',
           element: <LoginLayout />,

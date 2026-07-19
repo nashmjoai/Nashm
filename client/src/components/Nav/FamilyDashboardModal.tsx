@@ -26,7 +26,6 @@ import {
   useGetFamilyPlanQuery,
   useGetFamilyPlanActivityQuery,
   useGetFamilyPlanMemberConversationsQuery,
-  useGetFamilyPlanMemberConversationMessagesQuery,
   useAddFamilyMemberMutation,
   useRemoveFamilyMemberMutation,
 } from '~/data-provider';
@@ -42,7 +41,6 @@ export function FamilyDashboardModal({ open, onOpenChange }: FamilyDashboardModa
   const { showToast } = useToastContext();
 
   const [selectedMember, setSelectedMember] = useState<{ id: string; email: string } | null>(null);
-  const [selectedConvoId, setSelectedConvoId] = useState<string | null>(null);
   const [newEmail, setNewEmail] = useState('');
 
   // Queries
@@ -91,12 +89,6 @@ export function FamilyDashboardModal({ open, onOpenChange }: FamilyDashboardModa
     { enabled: open && !!selectedMember }
   );
 
-  const { data: messagesData, isLoading: loadingMessages } = useGetFamilyPlanMemberConversationMessagesQuery(
-    selectedMember?.id || '',
-    selectedConvoId || '',
-    { enabled: open && !!selectedMember && !!selectedConvoId }
-  );
-
   const children = (plan?.members || []).filter((m: any) => m.role === 'child');
 
   const getMemberStatus = (email: string) => {
@@ -113,11 +105,6 @@ export function FamilyDashboardModal({ open, onOpenChange }: FamilyDashboardModa
 
   const handleBackToMembers = () => {
     setSelectedMember(null);
-    setSelectedConvoId(null);
-  };
-
-  const handleBackToConvos = () => {
-    setSelectedConvoId(null);
   };
 
   return (
@@ -275,7 +262,7 @@ export function FamilyDashboardModal({ open, onOpenChange }: FamilyDashboardModa
                   </div>
                 )}
               </div>
-            ) : !selectedConvoId ? (
+            ) : (
               /* Step 2: Member Conversations List */
               <div className="flex-1 flex flex-col gap-4">
                 <div className="flex items-center justify-between border-b border-border-light/50 pb-3">
@@ -310,81 +297,32 @@ export function FamilyDashboardModal({ open, onOpenChange }: FamilyDashboardModa
                   </div>
                 ) : (
                   <div className="flex flex-col gap-2">
-                    {conversations.map((convo: any) => (
-                      <button
-                        key={convo.conversationId}
-                        onClick={() => setSelectedConvoId(convo.conversationId)}
-                        className="p-4 rounded-xl border border-border-light bg-surface-secondary/20 hover:bg-surface-secondary/60 text-left flex justify-between items-center transition-all duration-200 group"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500">
-                            <MessageSquare className="size-4" />
-                          </div>
-                          <div className="flex flex-col gap-0.5">
-                            <span className="font-medium text-text-primary text-sm truncate max-w-[280px]">
-                              {convo.title || (isArabic ? 'محادثة جديدة' : 'New Chat')}
-                            </span>
-                            <span className="text-[10px] text-text-secondary flex items-center gap-1">
-                              <Clock className="size-3" />
-                              {new Date(convo.updatedAt).toLocaleString()}
-                            </span>
-                          </div>
-                        </div>
-                        <ChevronRight className="size-4 text-text-tertiary group-hover:text-text-primary group-hover:translate-x-0.5 transition-all" />
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ) : (
-              /* Step 3: Conversation Message Logs */
-              <div className="flex-1 flex flex-col h-full">
-                <div className="flex items-center justify-between border-b border-border-light/50 pb-3 mb-4">
-                  <div className="flex items-center gap-2">
-                    <button 
-                      onClick={handleBackToConvos}
-                      className="p-1.5 rounded-lg hover:bg-surface-secondary text-text-secondary transition-colors"
-                    >
-                      <ArrowLeft className="size-4" />
-                    </button>
-                    <div>
-                      <h4 className="font-semibold text-text-primary text-sm truncate max-w-[280px]">
-                        {messagesData?.conversation?.title || (isArabic ? 'محادثة' : 'Conversation')}
-                      </h4>
-                      <p className="text-[10px] text-text-secondary">
-                        {isArabic ? `محادثة المستخدم: ${selectedMember.email}` : `Chatting as: ${selectedMember.email}`}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {loadingMessages ? (
-                  <div className="flex-grow flex items-center justify-center">
-                    <Spinner className="size-6 text-blue-500" />
-                  </div>
-                ) : (
-                  <div className="flex-grow overflow-y-auto space-y-4 pr-1">
-                    {(messagesData?.messages || []).map((msg: any) => {
-                      const isUser = msg.sender?.toLowerCase() === 'user';
+                    {conversations.map((convo: any) => {
+                      const shareUrl = `${window.location.origin}/share/family/${selectedMember.id}/${convo.conversationId}`;
                       return (
-                        <div
-                          key={msg.messageId}
-                          className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}
+                        <a
+                          key={convo.conversationId}
+                          href={shareUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full p-4 rounded-xl border border-border-light bg-surface-secondary/20 hover:bg-surface-secondary/60 text-left flex justify-between items-center transition-all duration-200 group"
                         >
-                          <div className={`max-w-[85%] p-4 rounded-2xl text-sm ${
-                            isUser 
-                              ? 'bg-blue-600 text-white rounded-br-none' 
-                              : 'bg-surface-secondary text-text-primary rounded-bl-none border border-border-light'
-                          }`}>
-                            <div className="font-semibold text-[10px] uppercase opacity-75 mb-1.5">
-                              {isUser ? (isArabic ? 'المستخدم' : 'User') : (msg.sender || 'AI')}
+                          <div className="flex items-center gap-3">
+                            <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500">
+                              <MessageSquare className="size-4" />
                             </div>
-                            <div className="whitespace-pre-wrap leading-relaxed">{msg.text}</div>
+                            <div className="flex flex-col gap-0.5">
+                              <span className="font-medium text-text-primary text-sm truncate max-w-[280px]">
+                                {convo.title || (isArabic ? 'محادثة جديدة' : 'New Chat')}
+                              </span>
+                              <span className="text-[10px] text-text-secondary flex items-center gap-1">
+                                <Clock className="size-3" />
+                                {new Date(convo.updatedAt).toLocaleString()}
+                              </span>
+                            </div>
                           </div>
-                          <span className="text-[9px] text-text-tertiary mt-1 px-1">
-                            {new Date(msg.createdAt).toLocaleTimeString()}
-                          </span>
-                        </div>
+                          <ChevronRight className="size-4 text-text-tertiary group-hover:text-text-primary group-hover:translate-x-0.5 transition-all" />
+                        </a>
                       );
                     })}
                   </div>
