@@ -22,8 +22,8 @@ router.post('/upgrade', requireJwtAuth, async (req, res) => {
   }
 
   try {
-    const { Subscription, Balance, PlanConfig, FamilyPlan } = require('~/models');
-    
+    const { Subscription, Balance, PlanConfig, FamilyPlan } = require('~/db/models');
+
     // 1. Update subscription in database
     await Subscription.findOneAndUpdate(
       { user: req.user.id },
@@ -36,7 +36,7 @@ router.post('/upgrade', requireJwtAuth, async (req, res) => {
         },
         $setOnInsert: { startsAt: new Date() },
       },
-      { new: true, upsert: true }
+      { new: true, upsert: true },
     );
 
     // 2. If upgrading to family plan, create a FamilyPlan record
@@ -66,24 +66,25 @@ router.post('/upgrade', requireJwtAuth, async (req, res) => {
     if (plan !== 'family') {
       await FamilyPlan.findOneAndUpdate(
         { owner: req.user.id, status: 'active' },
-        { $set: { status: 'inactive' } }
+        { $set: { status: 'inactive' } },
       ).catch(() => {}); // Silently ignore if no plan exists
     }
 
     // 4. Determine default token quota for the plan
     const planConfig = await PlanConfig.findOne({ plan }).lean();
-    const quota = planConfig?.tokenQuota ?? (
-      plan === 'free' ? 50000 :
-      plan === 'individual' ? 500000 :
-      plan === 'family' ? 1000000 :
-      plan === 'developer' ? 2000000 : 50000
-    );
+    const planLimits = {
+      free: 50000,
+      individual: 500000,
+      family: 1000000,
+      developer: 2000000,
+    };
+    const quota = planConfig?.tokenQuota ?? planLimits[plan] ?? 50000;
 
     // 5. Update user balance with the new plan quota
     await Balance.findOneAndUpdate(
       { user: req.user.id },
       { $set: { tokenCredits: quota } },
-      { new: true, upsert: true }
+      { new: true, upsert: true },
     );
 
     return res.status(200).json({ success: true, plan, quota });

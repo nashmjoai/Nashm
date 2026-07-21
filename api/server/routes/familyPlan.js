@@ -55,20 +55,26 @@ router.post('/members', requireJwtAuth, async (req, res) => {
       // Auto-create user for unregistered email addresses
       const { registerUser } = require('~/server/services/AuthService');
       const crypto = require('crypto');
-      
+
       // Generate standard random password (16 chars with mixed characters)
       tempPassword = crypto.randomBytes(8).toString('hex') + 'aA1!';
-      const username = email.split('@')[0].replace(/[^a-zA-Z0-9]/g, '') + '_' + crypto.randomBytes(3).toString('hex');
-      
-      const regResult = await registerUser({
-        name: email.split('@')[0],
-        email: email.toLowerCase().trim(),
-        password: tempPassword,
-        confirm_password: tempPassword,
-        username,
-      }, {
-        emailVerified: true, // Automatically verify so they can log in immediately
-      });
+      const username =
+        email.split('@')[0].replace(/[^a-zA-Z0-9]/g, '') +
+        '_' +
+        crypto.randomBytes(3).toString('hex');
+
+      const regResult = await registerUser(
+        {
+          name: email.split('@')[0],
+          email: email.toLowerCase().trim(),
+          password: tempPassword,
+          confirm_password: tempPassword,
+          username,
+        },
+        {
+          emailVerified: true, // Automatically verify so they can log in immediately
+        },
+      );
 
       if (regResult.status !== 200) {
         return res.status(regResult.status).json({ error: regResult.message });
@@ -86,14 +92,14 @@ router.post('/members', requireJwtAuth, async (req, res) => {
 
     // Apply the family plan token quota to the new member's balance
     try {
-      const { upsertBalanceFields, PlanConfig } = require('~/models');
+      const { upsertBalanceFields } = require('~/models');
+      const { PlanConfig } = require('~/db/models');
       const planConfig = await PlanConfig.findOne({ plan: 'family' }).lean();
       const memberQuota = planConfig?.familyMemberTokenQuota ?? planConfig?.tokenQuota ?? 1000000;
       await upsertBalanceFields(childUser._id.toString(), { tokenCredits: memberQuota });
     } catch (balanceErr) {
       logger.error('[familyPlan] Failed to set member balance:', balanceErr);
     }
-
 
     // Send invitation email to the added member
     const { sendEmail } = require('~/server/utils');
@@ -201,7 +207,9 @@ router.get('/members/:userId/conversations', requireJwtAuth, async (req, res) =>
       return res.status(403).json({ error: 'Only the plan owner can view member conversations' });
     }
 
-    const isMember = plan.members.some((m) => m.user.toString() === req.params.userId && m.role === 'child');
+    const isMember = plan.members.some(
+      (m) => m.user.toString() === req.params.userId && m.role === 'child',
+    );
     if (!isMember) {
       return res.status(403).json({ error: 'Requested user is not a member of your family plan' });
     }
@@ -228,15 +236,21 @@ router.get('/members/:userId/conversations/:conversationId', requireJwtAuth, asy
       return res.status(403).json({ error: 'Only the plan owner can view member messages' });
     }
 
-    const isMember = plan.members.some((m) => m.user.toString() === req.params.userId && m.role === 'child');
+    const isMember = plan.members.some(
+      (m) => m.user.toString() === req.params.userId && m.role === 'child',
+    );
     if (!isMember) {
       return res.status(403).json({ error: 'Requested user is not a member of your family plan' });
     }
 
-
     const [conversation, messages] = await Promise.all([
-      Conversation.findOne({ conversationId: req.params.conversationId, user: req.params.userId }).lean(),
-      Message.find({ conversationId: req.params.conversationId, user: req.params.userId }).sort({ createdAt: 1 }).lean(),
+      Conversation.findOne({
+        conversationId: req.params.conversationId,
+        user: req.params.userId,
+      }).lean(),
+      Message.find({ conversationId: req.params.conversationId, user: req.params.userId })
+        .sort({ createdAt: 1 })
+        .lean(),
     ]);
 
     if (!conversation) {
