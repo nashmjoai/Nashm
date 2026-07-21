@@ -12,11 +12,14 @@ import toast from './toast';
 import user from './user';
 import text from './text';
 import misc from './misc';
+import workspace from './workspace';
 export * from './agents';
 export * from './mcp';
 export * from './favorites';
 export * from './subagents';
 export * from './usage';
+export * from './workspace';
+
 
 export default {
   ...artifacts,
@@ -33,4 +36,6 @@ export default {
   ...settings,
   ...misc,
   ...isTemporary,
+  ...workspace,
 };
+

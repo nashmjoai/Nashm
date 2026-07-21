@@ -1308,3 +1308,22 @@ export const useRemoveFamilyMemberMutation = (
   );
 };
 
+export const useAcceptInvitationMutation = (
+  options?: any,
+): UseMutationResult<any, unknown, string, unknown> => {
+  return useMutation(
+    async (invitationId: string) => ({}),
+    options,
+  );
+};
+
+export const useDeclineInvitationMutation = (
+  options?: any,
+): UseMutationResult<any, unknown, string, unknown> => {
+  return useMutation(
+    async (invitationId: string) => ({}),
+    options,
+  );
+};
+
+

@@ -662,3 +662,18 @@ export const useGetFamilyPlanMemberConversationMessagesQuery = (
     }
   );
 };
+
+export const useGetPendingInvitationsQuery = (
+  config?: UseQueryOptions<any>,
+): QueryObserverResult<any> => {
+  return useQuery<any>(
+    ['pendingInvitations'],
+    async () => [],
+    {
+      refetchOnWindowFocus: false,
+      retry: false,
+      ...config,
+    },
+  );
+};
+

@@ -18,3 +18,5 @@ export * from './roles';
 export * from './tags';
 export * from './MCP';
 export * from './SSE';
+// Trigger Vite export re-index
+
