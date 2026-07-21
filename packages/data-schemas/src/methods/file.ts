@@ -302,8 +302,11 @@ export function createFileMethods(mongoose: typeof import('mongoose')): {
     const File = mongoose.models.File as Model<IMongoFile>;
     const fileData: Partial<IMongoFile> = {
       ...data,
-      expiresAt: new Date(Date.now() + 3600 * 1000),
     };
+
+    if (!disableTTL && !fileData.expiresAt) {
+      fileData.expiresAt = new Date(Date.now() + 3600 * 1000);
+    }
 
     const MAX_DB_SIZE = 15 * 1024 * 1024; // 15MB
     if (fileData.data && fileData.bytes && fileData.bytes > MAX_DB_SIZE) {
@@ -311,11 +314,16 @@ export function createFileMethods(mongoose: typeof import('mongoose')): {
       delete fileData.data;
     }
 
+    const updateOperation: Record<string, unknown> = {
+      $set: fileData,
+    };
+
     if (disableTTL) {
       delete fileData.expiresAt;
+      updateOperation.$unset = { expiresAt: '' };
     }
 
-    return File.findOneAndUpdate({ file_id: data.file_id }, fileData, {
+    return File.findOneAndUpdate({ file_id: data.file_id }, updateOperation, {
       new: true,
       upsert: true,
     }).lean<IMongoFile>();
@@ -521,6 +529,25 @@ export function createFileMethods(mongoose: typeof import('mongoose')): {
       logger.info(
         `[sweepOrphanedPreviews] Marked ${result.modifiedCount} stale 'pending' files as 'failed' (cutoff: ${cutoff.toISOString()})`,
       );
+    }
+    try {
+      const fixedTtL = await File.updateMany(
+        {
+          expiresAt: { $ne: null },
+          $or: [
+            { usage: { $gt: 0 } },
+            { context: { $in: [FileContext.message_attachment, FileContext.avatar, FileContext.agents] } },
+          ],
+        },
+        { $unset: { expiresAt: '' } },
+      );
+      if (fixedTtL.modifiedCount > 0) {
+        logger.info(
+          `[sweepOrphanedPreviews] Fixed ${fixedTtL.modifiedCount} existing attached files by unsetting stale expiresAt TTL.`,
+        );
+      }
+    } catch (err) {
+      logger.error('[sweepOrphanedPreviews] Error unsetting expiresAt for attached files:', err);
     }
     return result.modifiedCount ?? 0;
   }

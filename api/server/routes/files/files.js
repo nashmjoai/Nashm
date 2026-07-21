@@ -41,7 +41,13 @@ router.get('/', async (req, res) => {
   try {
     const appConfig = req.config;
     const files = await db.getFiles({ user: req.user.id });
-    if (appConfig.fileStrategy === FileSources.s3) {
+    const hasS3Files =
+      appConfig.fileStrategy === FileSources.s3 ||
+      appConfig.fileStrategies?.image === FileSources.s3 ||
+      appConfig.fileStrategies?.avatar === FileSources.s3 ||
+      (files && files.some((file) => file?.source === FileSources.s3));
+
+    if (hasS3Files) {
       try {
         const cache = getLogStores(CacheKeys.S3_EXPIRY_INTERVAL);
         const alreadyChecked = await cache.get(req.user.id);

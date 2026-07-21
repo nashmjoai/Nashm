@@ -86,6 +86,38 @@ describe('File Methods', () => {
       expect(file?.file_id).toBe(fileId);
       expect(file?.expiresAt).toBeUndefined();
     });
+
+    it('should remove existing expiresAt when updating a file with disableTTL = true', async () => {
+      const fileId = uuidv4();
+      const userId = new mongoose.Types.ObjectId();
+
+      // First create file with TTL (default)
+      const initialFile = await fileMethods.createFile({
+        file_id: fileId,
+        user: userId,
+        filename: 'temp_then_perm.txt',
+        filepath: '/uploads/temp_then_perm.txt',
+        type: 'text/plain',
+        bytes: 150,
+      });
+
+      expect(initialFile?.expiresAt).toBeDefined();
+
+      // Now update file with disableTTL = true
+      const updatedFile = await fileMethods.createFile(
+        {
+          file_id: fileId,
+          user: userId,
+          filename: 'temp_then_perm.txt',
+          filepath: '/uploads/temp_then_perm.txt',
+          type: 'text/plain',
+          bytes: 150,
+        },
+        true,
+      );
+
+      expect(updatedFile?.expiresAt).toBeUndefined();
+    });
   });
 
   describe('claimCodeFile', () => {

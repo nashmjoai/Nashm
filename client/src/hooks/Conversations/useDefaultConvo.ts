@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { useRecoilValue } from 'recoil';
 import { useGetModelsQuery } from 'nashm-data-provider/react-query';
 import { excludedKeys, getDefaultParamsEndpoint } from 'nashm-data-provider';
 import type {
@@ -9,6 +10,7 @@ import type {
 } from 'nashm-data-provider';
 import { getDefaultEndpoint, buildDefaultConvo } from '~/utils';
 import { useGetEndpointsQuery } from '~/data-provider';
+import store from '~/store';
 
 type TDefaultConvo = {
   conversation: Partial<TConversation>;
@@ -22,6 +24,7 @@ const exceptions = new Set(['spec', 'iconURL']);
 const useDefaultConvo = () => {
   const { data: endpointsConfig = {} as TEndpointsConfig } = useGetEndpointsQuery();
   const { data: modelsConfig = {} as TModelsConfig } = useGetModelsQuery();
+  const activeWorkspace = useRecoilValue(store.activeWorkspace);
 
   const getDefaultConversation = useCallback(
     ({ conversation: _convo, preset, cleanInput, cleanOutput }: TDefaultConvo) => {
@@ -54,6 +57,12 @@ const useDefaultConvo = () => {
         defaultParamsEndpoint,
       });
 
+      if (activeWorkspace && activeWorkspace !== 'personal') {
+        defaultConvo.tenantId = activeWorkspace;
+      } else {
+        defaultConvo.tenantId = undefined;
+      }
+
       if (!cleanOutput) {
         return defaultConvo;
       }
@@ -70,7 +79,7 @@ const useDefaultConvo = () => {
 
       return defaultConvo;
     },
-    [endpointsConfig, modelsConfig],
+    [endpointsConfig, modelsConfig, activeWorkspace],
   );
 
   return getDefaultConversation;

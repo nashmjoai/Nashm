@@ -466,8 +466,8 @@ describe('buildEndpointOption - defaultParamsEndpoint parsing', () => {
   });
 
   it('should scope non-agent chat attachment usage updates to the authenticated user', async () => {
-    const attachments = Promise.resolve([]);
-    updateFilesUsage.mockReturnValueOnce(attachments);
+    const attachments = [];
+    updateFilesUsage.mockResolvedValueOnce(attachments);
     mockGetEndpointsConfig.mockResolvedValue({});
 
     const req = createReq(

@@ -560,6 +560,17 @@ class BaseClient {
       balanceConfig?.enabled &&
       supportsBalanceCheck[this.options.endpointType ?? this.options.endpoint]
     ) {
+      let tenantId = this.options.tenantId ?? this.tenantId;
+      if (!tenantId && this.conversationId) {
+        try {
+          const { Conversation } = require('~/db/models');
+          const convo = await Conversation.findOne({ conversationId: this.conversationId }).lean();
+          tenantId = convo?.tenantId;
+        } catch (err) {
+          // ignore
+        }
+      }
+
       await checkBalance(
         {
           req: this.options.req,
@@ -571,15 +582,16 @@ class BaseClient {
             endpoint: this.options.endpoint,
             model: this.modelOptions?.model ?? this.model,
             endpointTokenConfig: this.options.endpointTokenConfig,
+            tenantId,
           },
         },
         {
           logViolation,
           getMultiplier: db.getMultiplier,
-          findBalanceByUser: db.findBalanceByUser,
+          findBalanceByUser: (user, tId) => db.findBalanceByUser(user, tId),
           createAutoRefillTransaction: db.createAutoRefillTransaction,
           balanceConfig,
-          upsertBalanceFields: db.upsertBalanceFields,
+          upsertBalanceFields: (userId, fields, tId) => db.upsertBalanceFields(userId, fields, tId),
         },
       );
     }

@@ -1797,7 +1797,6 @@ class AgentClient extends BaseClient {
    * @param {number} params.completionTokens
    * @param {string} [params.model]
    * @param {OpenAIUsageMetadata} [params.usage]
-   * @param {AppConfig['balance']} [params.balance]
    * @param {string} [params.context='message']
    * @returns {Promise<void>}
    */
@@ -1810,6 +1809,17 @@ class AgentClient extends BaseClient {
     context = 'message',
   }) {
     try {
+      let tenantId = this.options.tenantId ?? this.tenantId;
+      if (!tenantId && this.conversationId) {
+        try {
+          const { Conversation } = require('~/db/models');
+          const convo = await Conversation.findOne({ conversationId: this.conversationId }).lean();
+          tenantId = convo?.tenantId;
+        } catch (err) {
+          // ignore
+        }
+      }
+
       await db.spendTokens(
         {
           model,
@@ -1819,6 +1829,7 @@ class AgentClient extends BaseClient {
           conversationId: this.conversationId,
           user: this.user ?? this.options.req.user?.id,
           endpointTokenConfig: this.options.endpointTokenConfig,
+          tenantId,
         },
         { promptTokens, completionTokens },
       );
@@ -1838,6 +1849,7 @@ class AgentClient extends BaseClient {
             conversationId: this.conversationId,
             user: this.user ?? this.options.req.user?.id,
             endpointTokenConfig: this.options.endpointTokenConfig,
+            tenantId,
           },
           { completionTokens: usage.reasoning_tokens },
         );
