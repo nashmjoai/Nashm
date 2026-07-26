@@ -60,4 +60,6 @@ export interface IMessage extends Document {
   createdAt?: Date;
   updatedAt?: Date;
   tenantId?: string;
+  /** E2EE: هل محتوى الرسالة مشفّر بالكامل على جانب العميل؟ */
+  isEncrypted?: boolean;
 }

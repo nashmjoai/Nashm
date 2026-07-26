@@ -372,7 +372,14 @@ export async function mintCodeApiToken(req: ServerRequest): Promise<string> {
 }
 
 export async function getCodeApiAuthHeaders(req?: ServerRequest): Promise<Record<string, string>> {
-  if (!req || !isCodeApiJwtAuthEnabled()) {
+  if (!isCodeApiJwtAuthEnabled()) {
+    const apiKey =
+      process.env.CODE_API_KEY ||
+      process.env.LIBRECHAT_CODE_API_KEY ||
+      process.env.NASHM_CODE_API_KEY;
+    return apiKey ? { 'x-api-key': apiKey } : {};
+  }
+  if (!req) {
     return {};
   }
   const token = await mintCodeApiToken(req);

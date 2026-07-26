@@ -156,9 +156,8 @@ export default function AdminConsoleModels() {
           return (
             <div
               key={endpoint}
-              className={`border rounded-2xl overflow-hidden bg-surface-primary shadow-sm transition-all duration-200 ${
-                isProviderEnabled ? 'border-border-light' : 'border-red-500/20 opacity-70 bg-red-500/[0.01]'
-              }`}
+              className={`border rounded-2xl overflow-hidden bg-surface-primary shadow-sm transition-all duration-200 ${isProviderEnabled ? 'border-border-light' : 'border-red-500/20 opacity-70 bg-red-500/[0.01]'
+                }`}
             >
               <button
                 onClick={() => toggleEndpoint(endpoint)}
@@ -184,24 +183,22 @@ export default function AdminConsoleModels() {
                       e.stopPropagation();
                       handleToggleProvider(endpoint, !isProviderEnabled);
                     }}
-                    className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors flex items-center gap-1.5 ${
-                      isProviderEnabled
+                    className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors flex items-center gap-1.5 ${isProviderEnabled
                         ? 'border-red-500/20 text-red-500 hover:bg-red-500/10 hover:border-red-500/30'
                         : 'border-green-500/20 text-green-500 hover:bg-green-500/10 hover:border-green-500/30'
-                    }`}
+                      }`}
                   >
                     {isProviderEnabled ? 'Hide Provider' : 'Show Provider'}
                   </button>
                   <span
-                    className={`text-xs px-2.5 py-1 rounded-full font-semibold border ${
-                      !isProviderEnabled
+                    className={`text-xs px-2.5 py-1 rounded-full font-semibold border ${!isProviderEnabled
                         ? 'bg-red-500/10 text-red-500 border-red-500/20'
                         : enabledCount === totalCount
-                        ? 'bg-green-500/10 text-green-500 border-green-500/20'
-                        : enabledCount === 0
-                        ? 'bg-red-500/10 text-red-500 border-red-500/20'
-                        : 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
-                    }`}
+                          ? 'bg-green-500/10 text-green-500 border-green-500/20'
+                          : enabledCount === 0
+                            ? 'bg-red-500/10 text-red-500 border-red-500/20'
+                            : 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
+                      }`}
                   >
                     {!isProviderEnabled ? 'Hidden for Users' : `${enabledCount}/${totalCount} Enabled`}
                   </span>
@@ -221,20 +218,18 @@ export default function AdminConsoleModels() {
                       return (
                         <div
                           key={idx}
-                          className={`p-6 rounded-2xl border bg-surface-primary flex flex-col gap-4 shadow-sm transition-all duration-200 ${
-                            isEnabled
+                          className={`p-6 rounded-2xl border bg-surface-primary flex flex-col gap-4 shadow-sm transition-all duration-200 ${isEnabled
                               ? 'border-border-light'
                               : 'border-red-500/20 opacity-70 bg-red-500/[0.01]'
-                          }`}
+                            }`}
                         >
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex items-start gap-3">
                               <div
-                                className={`p-2.5 rounded-xl border ${
-                                  isEnabled
+                                className={`p-2.5 rounded-xl border ${isEnabled
                                     ? 'bg-blue-500/10 border-blue-500/20 text-blue-500'
                                     : 'bg-red-500/10 border-red-500/20 text-red-500'
-                                }`}
+                                  }`}
                               >
                                 <Cpu className="size-5" />
                               </div>
@@ -375,11 +370,10 @@ export default function AdminConsoleModels() {
                     return (
                       <label
                         key={plan}
-                        className={`p-3 rounded-xl border flex items-center justify-between cursor-pointer transition-all duration-150 ${
-                          isChecked
+                        className={`p-3 rounded-xl border flex items-center justify-between cursor-pointer transition-all duration-150 ${isChecked
                             ? 'border-purple-500/30 bg-purple-500/5 text-purple-500'
                             : 'border-border-light bg-transparent text-text-primary hover:bg-surface-secondary/50'
-                        }`}
+                          }`}
                       >
                         <span className="capitalize text-sm font-medium">{plan}</span>
                         <input

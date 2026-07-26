@@ -6,6 +6,7 @@ import * as DialogPrimitive from '@radix-ui/react-dialog';
 import ProgressCircle from './ProgressCircle';
 import SourceIcon from './SourceIcon';
 import { cn } from '~/utils';
+import { useCachedImage } from '~/hooks/Files/useCachedImage';
 
 type styleProps = {
   backgroundImage?: string;
@@ -15,6 +16,7 @@ type styleProps = {
 };
 
 const ImagePreview = ({
+  fileId,
   imageBase64,
   url,
   progress = 1,
@@ -22,6 +24,7 @@ const ImagePreview = ({
   source,
   alt = 'Preview image',
 }: {
+  fileId?: string;
   imageBase64?: string;
   url?: string;
   progress?: number;
@@ -29,6 +32,7 @@ const ImagePreview = ({
   source?: FileSources;
   alt?: string;
 }) => {
+  const imageUrl = useCachedImage({ fileId, url, imageBase64 });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -87,8 +91,6 @@ const ImagePreview = ({
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
   };
-
-  const imageUrl = imageBase64 ?? url ?? '';
 
   const style: styleProps = imageUrl
     ? {

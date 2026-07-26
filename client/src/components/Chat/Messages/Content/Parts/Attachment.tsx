@@ -20,8 +20,9 @@ import Image from '~/components/Chat/Messages/Content/Image';
 import ToolMermaidArtifact from './ToolMermaidArtifact';
 import ToolArtifactCard from './ToolArtifactCard';
 import { useAttachmentLink } from './LogLink';
-import { useLocalize, useAttachmentPreviewSync, useExpandCollapse } from '~/hooks';
+import { useLocalize, useAttachmentPreviewSync, useExpandCollapse, useCachedFile } from '~/hooks';
 import { cn, getFileType } from '~/utils';
+
 
 const COLLAPSED_MAX_HEIGHT = 320;
 
@@ -121,8 +122,13 @@ PreviewPlaceholderCard.displayName = 'PreviewPlaceholderCard';
 const FileAttachment = memo(({ attachment }: { attachment: Partial<TAttachment> }) => {
   const [isVisible, setIsVisible] = useState(false);
   const file = attachment as TFile & TAttachmentMetadata;
+  const { displayUrl } = useCachedFile({
+    fileId: file.file_id,
+    url: attachment.filepath,
+    filename: attachment.filename,
+  });
   const { handleDownload } = useAttachmentLink({
-    href: attachment.filepath ?? '',
+    href: displayUrl || attachment.filepath || '',
     filename: attachment.filename ?? '',
     file_id: file.file_id,
     user: file.user,

@@ -52,11 +52,16 @@ const messageSchema: Schema<IMessage> = new Schema(
       meiliIndex: true,
     },
     text: {
-      type: String,
+      type: mongoose.Schema.Types.Mixed, // String | EncryptedPayload
       meiliIndex: true,
     },
     summary: {
-      type: String,
+      type: mongoose.Schema.Types.Mixed, // String | EncryptedPayload
+    },
+    /** E2EE: هل محتوى الرسالة مشفر بالكامل على جانب العميل؟ */
+    isEncrypted: {
+      type: Boolean,
+      default: false,
     },
     isCreatedByUser: {
       type: Boolean,

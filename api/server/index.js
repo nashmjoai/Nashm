@@ -4,11 +4,24 @@ const path = require('path');
 require('module-alias')({ base: path.resolve(__dirname, '..') });
 
 // Map Nashm-branded code interpreter environment variables to their internal names
-if (process.env.NASHM_CODE_BASEURL) {
-  process.env.LIBRECHAT_CODE_BASEURL = process.env.NASHM_CODE_BASEURL;
+const codeApiKey =
+  process.env.CODE_API_KEY ||
+  process.env.LIBRECHAT_CODE_API_KEY ||
+  process.env.NASHM_CODE_API_KEY;
+if (codeApiKey) {
+  process.env.CODE_API_KEY = codeApiKey;
+  process.env.LIBRECHAT_CODE_API_KEY = codeApiKey;
+  process.env.NASHM_CODE_API_KEY = codeApiKey;
 }
-if (process.env.NASHM_CODE_API_KEY) {
-  process.env.LIBRECHAT_CODE_API_KEY = process.env.NASHM_CODE_API_KEY;
+
+const codeBaseUrl =
+  process.env.CODE_BASEURL ||
+  process.env.LIBRECHAT_CODE_BASEURL ||
+  process.env.NASHM_CODE_BASEURL;
+if (codeBaseUrl) {
+  process.env.CODE_BASEURL = codeBaseUrl;
+  process.env.LIBRECHAT_CODE_BASEURL = codeBaseUrl;
+  process.env.NASHM_CODE_BASEURL = codeBaseUrl;
 }
 
 const cors = require('cors');
@@ -332,6 +345,7 @@ const startServer = async () => {
 
   app.use('/api/mcp', routes.mcp);
   app.use('/api/rum', routes.rum);
+  app.use('/api/e2ee', routes.e2ee);
 
   app.use('/metrics', metricsRouter);
 

@@ -4,6 +4,9 @@
 # Configuration version (required)
 version: 1.3.13
 
+# Storage Strategy (Cloudflare R2 S3 Storage)
+fileStrategy: "s3"
+
 # Cache settings
 cache: true
 
@@ -21,6 +24,8 @@ modelSpecs:
       preset:
         endpoint: "google"
         model: "gemini-3.5-flash"
+      executeCode: true
+      artifacts: true
       geminiImageGen: true
     - name: "kimi-agent"
       label: "Kimi Agent"
@@ -29,7 +34,8 @@ modelSpecs:
         endpoint: "Kimi"
         model: "kimi-k2.5"
       webSearch: true
-      executeCode: false
+      executeCode: true
+      artifacts: true
       geminiImageGen: true
       fileSearch: true
 

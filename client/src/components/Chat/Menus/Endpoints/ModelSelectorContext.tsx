@@ -139,12 +139,12 @@ export function ModelSelectorProvider({ children, startupConfig }: ModelSelector
     agentsMap,
     conversation: endpoint
       ? ({
-          endpoint: endpoint ?? null,
-          model: model ?? null,
-          spec: spec ?? null,
-          agent_id: agent_id ?? null,
-          assistant_id: assistant_id ?? null,
-        } as any)
+        endpoint: endpoint ?? null,
+        model: model ?? null,
+        spec: spec ?? null,
+        agent_id: agent_id ?? null,
+        assistant_id: assistant_id ?? null,
+      } as any)
       : null,
     assistantsMap,
     setSelectedValues,

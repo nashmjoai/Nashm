@@ -11,9 +11,22 @@ const convoSchema: Schema<IConversation> = new Schema(
       meiliIndex: true,
     },
     title: {
-      type: String,
+      type: Schema.Types.Mixed, // String | EncryptedPayload
       default: 'New Chat',
       meiliIndex: true,
+    },
+    /** E2EE: هل محتوى المحادثة مشفر بالكامل على جانب العميل؟ */
+    isEncrypted: {
+      type: Boolean,
+      default: false,
+    },
+    /**
+     * E2EE: مفتاح المحادثة مغلف بالمفتاح الرئيسي للمستخدم.
+     * يسمح باستعادة المفتاح عند فتح الحساب على جهاز جديد.
+     * مخزّن كـ Base64 string داخل نسخة Nextcloud أو في مجال e2eeKeys في user.
+     */
+    encryptedKeyRef: {
+      type: String,
     },
     user: {
       type: String,

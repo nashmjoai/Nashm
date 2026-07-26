@@ -162,6 +162,58 @@ const userSchema: Schema<IUser> = new Schema<IUser>(
       type: String,
       index: true,
     },
+    /** E2EE: هل فعّل المستخدم تشفير طرف-لطرف لمحادثاته؟ */
+    e2eeEnabled: {
+      type: Boolean,
+      default: false,
+    },
+    /**
+     * E2EE: Salt عشوائي لاشتقاق المفتاح الرئيسي (PBKDF2-HMAC-SHA256)
+     * مُرمَّز بـ Base64 (16 بايت)
+     * ليس سراً - آمن حفظه في قاعدة البيانات
+     */
+    keySalt: {
+      type: String,
+      select: false, // لا يُرسل بالاستعلامات العادية
+    },
+    /** Zero-Knowledge: trueMasterKey مغلف بـ 12-Word Recovery Phrase Key - آمن حفظه في السيرفر */
+    wrappedKeyRecovery: {
+      type: Schema.Types.Mixed,
+      select: false,
+    },
+    /** Zero-Knowledge: trueMasterKey مغلف بـ Passphrase Key */
+    wrappedKeyPassphrase: {
+      type: Schema.Types.Mixed,
+      select: false,
+    },
+    /** المفتاح العام RSA للمستخدم (مستقبلاً) */
+    publicKey: {
+      type: String,
+    },
+    /** إعدادات ربط سيرفر Nextcloud الخاص لمزامنة المحادثات المشفرة بين الأجهزة */
+    nextcloudSync: {
+      type: new Schema(
+        {
+          /** هل المزامنة مفعّلة؟ */
+          enabled: { type: Boolean, default: false },
+          /** رابط سيرفر Nextcloud (مثل: https://cloud.example.com) */
+          serverUrl: { type: String },
+          /** اسم المستخدم على سيرفر Nextcloud */
+          ncUsername: { type: String },
+          /**
+           * App Token مشفّر بالمفتاح الرئيسي للمستخدم.
+           * لا يُمكن قراءته بدون كلمة سر المستخدم.
+           */
+          encryptedToken: { type: String, select: false },
+          /** مجلد المزامنة على سيرفر Nextcloud (Base path) */
+          syncFolder: { type: String, default: '/Nashm-E2EE' },
+          /** آخر وقت مزامنة ناجح */
+          lastSyncAt: { type: Date },
+        },
+        { _id: false },
+      ),
+      default: undefined,
+    },
   },
   { timestamps: true },
 );

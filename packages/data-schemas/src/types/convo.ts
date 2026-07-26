@@ -61,4 +61,8 @@ export interface IConversation extends Document {
   createdAt?: Date;
   updatedAt?: Date;
   tenantId?: string;
+  /** E2EE: هل محتوى المحادثة مشفّر بالكامل على جانب العميل؟ */
+  isEncrypted?: boolean;
+  /** E2EE: مفتاح المحادثة مغلّف بالمفتاح الرئيسي */
+  encryptedKeyRef?: string;
 }

@@ -82,7 +82,7 @@ const searchEnabled = process.env.SEARCH != null && process.env.SEARCH.toLowerCa
 /**
  * Flag to indicate if MeiliSearch is enabled based on required environment variables.
  */
-const meiliEnabled =
+const isMeiliEnabled = () =>
   process.env.MEILI_HOST != null && process.env.MEILI_MASTER_KEY != null && searchEnabled;
 
 /**
@@ -738,7 +738,7 @@ export default function mongoMeili(schema: Schema, options: MongoMeiliOptions): 
 
   // Pre-deleteMany hook: remove corresponding documents from MeiliSearch when multiple documents are deleted.
   schema.pre('deleteMany', async function (next) {
-    if (!meiliEnabled) {
+    if (!isMeiliEnabled()) {
       return next();
     }
 
@@ -781,7 +781,7 @@ export default function mongoMeili(schema: Schema, options: MongoMeiliOptions): 
       }
       return next();
     } catch (error) {
-      if (meiliEnabled) {
+      if (isMeiliEnabled()) {
         logger.error(
           '[MeiliMongooseModel.deleteMany] There was an issue deleting conversation indexes upon deletion. Next startup may trigger syncing.',
           error,
@@ -793,7 +793,7 @@ export default function mongoMeili(schema: Schema, options: MongoMeiliOptions): 
 
   // Post-findOneAndUpdate hook
   schema.post('findOneAndUpdate', async function (doc: DocumentWithMeiliIndex, next) {
-    if (!meiliEnabled) {
+    if (!isMeiliEnabled()) {
       return next();
     }
 

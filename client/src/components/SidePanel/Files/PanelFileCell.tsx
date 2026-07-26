@@ -10,6 +10,7 @@ export default function PanelFileCell({ row }: { row: Row<TFile | undefined> }) 
     <div className="flex w-full items-center gap-2">
       {file?.type?.startsWith('image') === true ? (
         <ImagePreview
+          fileId={file?.file_id}
           url={file.filepath}
           className="h-8 w-8 flex-shrink-0"
           source={file.source}

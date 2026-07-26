@@ -58,3 +58,7 @@ export * from './feedback';
 export * from './parameterSettings';
 /* code-execution sandbox */
 export * from './codeEnvRef';
+/* E2EE Crypto SDK */
+export * from './crypto';
+/* Nextcloud Sync */
+export * from './nextcloud';

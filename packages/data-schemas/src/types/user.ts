@@ -61,6 +61,24 @@ export interface IUser extends Document {
   tenantId?: string;
   federatedTokens?: OIDCTokens;
   openidTokens?: OIDCTokens;
+  /** E2EE: هل التشفير طرف-لطرف مفعّل لهذا المستخدم؟ */
+  e2eeEnabled?: boolean;
+  /**
+   * E2EE: Salt عشوائي لاشتقاق المفتاح الرئيسي (PBKDF2)
+   * ليس سراً - آمن تخزينه في قاعدة البيانات
+   */
+  keySalt?: string;
+  /** E2EE: المفتاح العام RSA (لمشاركة محادثات مشفرة بين مستخدمين - مستقبلاً) */
+  publicKey?: string;
+  /** إعدادات ربط سيرفر Nextcloud الخاص لمزامنة المحادثات المشفرة */
+  nextcloudSync?: {
+    enabled: boolean;
+    serverUrl?: string;
+    ncUsername?: string;
+    encryptedToken?: string;
+    syncFolder?: string;
+    lastSyncAt?: Date;
+  };
 }
 
 export interface OIDCTokens {
@@ -86,6 +104,10 @@ export interface CreateUserRequest extends Partial<IUser> {
 export interface UpdateUserRequest {
   name?: string;
   username?: string;
+  keySalt?: string;
+  wrappedKeyRecovery?: { v: string; ct: string; iv: string };
+  wrappedKeyPassphrase?: { v: string; ct: string; iv: string };
+  publicKey?: string;
   email?: string;
   role?: string;
   emailVerified?: boolean;
