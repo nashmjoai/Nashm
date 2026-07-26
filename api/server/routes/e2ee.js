@@ -157,7 +157,7 @@ router.post('/setup', requireJwtAuth, async (req, res) => {
 /**
  * TODO: Phase 2 - Nextcloud Sync Routes (Deferred to Phase 2)
  */
-router.all('/nextcloud/*', (req, res) => {
+router.use('/nextcloud', (req, res) => {
   return res.status(501).json({ message: 'Nextcloud Sync is deferred to Phase 2' });
 });
 
