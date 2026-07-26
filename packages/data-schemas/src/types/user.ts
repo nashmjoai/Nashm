@@ -68,7 +68,8 @@ export interface IUser extends Document {
    * ليس سراً - آمن تخزينه في قاعدة البيانات
    */
   keySalt?: string;
-  /** E2EE: المفتاح العام RSA (لمشاركة محادثات مشفرة بين مستخدمين - مستقبلاً) */
+  wrappedKeyRecovery?: Record<string, unknown> | string;
+  wrappedKeyPassphrase?: Record<string, unknown> | string;
   publicKey?: string;
   /** إعدادات ربط سيرفر Nextcloud الخاص لمزامنة المحادثات المشفرة */
   nextcloudSync?: {
@@ -105,8 +106,8 @@ export interface UpdateUserRequest {
   name?: string;
   username?: string;
   keySalt?: string;
-  wrappedKeyRecovery?: { v: string; ct: string; iv: string };
-  wrappedKeyPassphrase?: { v: string; ct: string; iv: string };
+  wrappedKeyRecovery?: Record<string, unknown> | string;
+  wrappedKeyPassphrase?: Record<string, unknown> | string;
   publicKey?: string;
   email?: string;
   role?: string;

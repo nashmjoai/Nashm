@@ -21,19 +21,19 @@ import { getOrCreateConversationKey, getConversationKey } from './key-manager';
 /** الحقول المشفرة في الرسالة */
 export interface EncryptedMessageFields {
   /** المحتوى النصي مشفر */
-  text?: EncryptedPayload | string;
+  text?: EncryptedPayload;
   /** ملخص الرسالة مشفر */
-  summary?: EncryptedPayload | string;
+  summary?: EncryptedPayload;
   /** إشارة للتشفير */
-  isEncrypted?: boolean;
+  isEncrypted: boolean;
 }
 
 /** الحقول المشفرة في المحادثة */
 export interface EncryptedConvoFields {
   /** عنوان المحادثة مشفر */
-  title?: EncryptedPayload | string;
+  title?: EncryptedPayload;
   /** إشارة للتشفير */
-  isEncrypted?: boolean;
+  isEncrypted: boolean;
 }
 
 // ─── Message Encryption ──────────────────────────────────────────────────────

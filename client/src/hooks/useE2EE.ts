@@ -23,7 +23,13 @@ export interface E2EEStatus {
   enabled: boolean;
   hasSalt: boolean;
   hasPublicKey: boolean;
-  nextcloudSync: null;
+  nextcloudSync?: {
+    enabled: boolean;
+    serverUrl?: string;
+    ncUsername?: string;
+    syncFolder?: string;
+    lastSyncAt?: Date | string;
+  } | null;
 }
 
 export interface UseE2EEReturn {

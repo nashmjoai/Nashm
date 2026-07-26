@@ -71,7 +71,6 @@ const ConversationsSection = memo(() => {
       {
         tags: tags.length === 0 ? undefined : tags,
         search: search.debouncedQuery || undefined,
-        tenantId: undefined,
       },
       {
         enabled: isAuthenticated,

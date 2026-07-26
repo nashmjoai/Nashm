@@ -49,8 +49,6 @@ const useDefaultConvo = () => {
         defaultParamsEndpoint,
       });
 
-      defaultConvo.tenantId = undefined;
-
       if (!cleanOutput) {
         return defaultConvo;
       }
