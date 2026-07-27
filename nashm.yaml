@@ -20,7 +20,7 @@ modelSpecs:
     - name: "gemini-3.5-flash"
       label: "Gemini 3.5 Flash"
       description: "نموذج Google المتقدم والسريع"
-      default: true
+      default: false
       preset:
         endpoint: "google"
         model: "gemini-3.5-flash"
