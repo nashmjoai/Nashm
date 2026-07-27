@@ -561,10 +561,10 @@ class BaseClient {
       supportsBalanceCheck[this.options.endpointType ?? this.options.endpoint]
     ) {
       let tenantId = this.options.tenantId ?? this.tenantId;
-      if (!tenantId && this.conversationId) {
+      if (!tenantId && (conversationId || this.conversationId)) {
         try {
           const { Conversation } = require('~/db/models');
-          const convo = await Conversation.findOne({ conversationId: this.conversationId }).lean();
+          const convo = await Conversation.findOne({ conversationId: conversationId || this.conversationId }).lean();
           tenantId = convo?.tenantId;
         } catch (err) {
           // ignore
@@ -577,6 +577,7 @@ class BaseClient {
           res: this.options.res,
           txData: {
             user: this.user,
+            conversationId: conversationId || this.conversationId,
             tokenType: 'prompt',
             amount: promptTokens,
             endpoint: this.options.endpoint,
@@ -588,6 +589,7 @@ class BaseClient {
         {
           logViolation,
           getMultiplier: db.getMultiplier,
+          getTransactions: db.getTransactions,
           findBalanceByUser: (user, tId) => db.findBalanceByUser(user, tId),
           createAutoRefillTransaction: db.createAutoRefillTransaction,
           balanceConfig,

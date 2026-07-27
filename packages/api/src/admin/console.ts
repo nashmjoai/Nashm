@@ -491,8 +491,10 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
 
       if (typeof body.tokenBalance === 'number') {
         let tokenCredits = body.tokenBalance;
+        let planConfig = null;
+        
         if (planChanged && tokenCredits === 0) {
-          const planConfig = await deps.PlanConfig.findOne({ plan: body.plan }).lean();
+          planConfig = await deps.PlanConfig.findOne({ plan: body.plan }).lean();
           tokenCredits = planConfig?.tokenQuota ?? (
             body.plan === 'free' ? 50000 :
             body.plan === 'individual' ? 500000 :
@@ -501,9 +503,29 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
           );
         }
 
+        if (!planConfig) {
+          planConfig = await deps.PlanConfig.findOne({ plan: body.plan }).lean();
+        }
+
+        const renewalPeriod = planConfig?.renewalPeriod ?? 'monthly';
+        let renewalUnit = 'months';
+        let renewalValue = 1;
+        if (renewalPeriod === 'weekly') renewalUnit = 'weeks';
+        if (renewalPeriod === 'daily') renewalUnit = 'days';
+        if (renewalPeriod === 'yearly') renewalUnit = 'years';
+
         await deps.Balance.findOneAndUpdate(
           { user: user._id },
-          { $set: { tokenCredits } },
+          { 
+            $set: { 
+              tokenCredits,
+              autoRefillEnabled: true,
+              refillAmount: planConfig?.tokenQuota ?? tokenCredits,
+              refillIntervalUnit: renewalUnit,
+              refillIntervalValue: renewalValue,
+            },
+            $setOnInsert: { lastRefill: new Date() }
+          },
           { new: true, upsert: true },
         );
       }

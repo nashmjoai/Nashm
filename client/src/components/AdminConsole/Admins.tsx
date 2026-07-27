@@ -203,13 +203,25 @@ export default function AdminConsoleAdmins() {
                     <tr key={admin.id} className="hover:bg-surface-secondary/30 transition-colors">
                       <td className="p-4">
                         <div className="flex items-center gap-3">
-                          {admin.avatar ? (
-                            <img src={admin.avatar} alt={admin.name} className="size-9 rounded-full object-cover border border-border-light" />
-                          ) : (
-                            <div className="size-9 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-500 font-bold flex items-center justify-center uppercase text-sm">
-                              {(admin.name || admin.email)?.charAt(0)}
-                            </div>
+                          {admin.avatar && (
+                              <img
+                                src={admin.avatar}
+                                alt={admin.name}
+                                referrerPolicy="no-referrer"
+                                className="size-9 rounded-full object-cover border border-border-light"
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                                const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                                if (fallback) fallback.style.display = 'flex';
+                              }}
+                            />
                           )}
+                          <div
+                            className="size-9 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-500 font-bold items-center justify-center uppercase text-sm"
+                            style={{ display: admin.avatar ? 'none' : 'flex' }}
+                          >
+                            {(admin.name || admin.email)?.charAt(0)}
+                          </div>
                           <div className="flex flex-col">
                             <span className="font-semibold text-text-primary leading-snug">
                               {admin.name || admin.username}

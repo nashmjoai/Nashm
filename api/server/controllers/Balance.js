@@ -1,6 +1,7 @@
-const { findBalanceByUser } = require('~/models');
+const { findBalanceByUser, createAutoRefillTransaction } = require('~/models');
 const { Subscription, FamilyPlan, PlanConfig } = require('~/db/models');
 const { getEffectiveSubscription } = require('@nashm/api');
+const { getRefillEligibilityDate } = require('nashm-data-provider');
 
 async function balanceController(req, res) {
   const balanceLocals = res.locals || {};
@@ -9,25 +10,16 @@ async function balanceController(req, res) {
     return res.sendStatus(204);
   }
 
-  const balanceData = balanceLocals.balanceData ?? (await findBalanceByUser(req.user.id));
+  let balanceData = balanceLocals.balanceData ?? (await findBalanceByUser(req.user.id));
 
   if (!balanceData) {
     return res.status(404).json({ error: 'Balance not found' });
   }
 
-  const result = balanceData.toObject != null ? balanceData.toObject() : balanceData;
-  delete result._id;
-  delete result.__v;
-
-  if (!result.autoRefillEnabled) {
-    delete result.refillIntervalValue;
-    delete result.refillIntervalUnit;
-    delete result.lastRefill;
-    delete result.refillAmount;
-  }
-
   let plan = 'free';
   let quota = 50000;
+  let renewalUnit = 'months';
+  let renewalValue = 1;
 
   try {
     const effective = await getEffectiveSubscription(req.user.id, {
@@ -47,6 +39,11 @@ async function balanceController(req, res) {
       if (plan === 'family' && planConfig?.familyMemberTokenQuota) {
         quota = planConfig.familyMemberTokenQuota;
       }
+      
+      const renewalPeriod = planConfig?.renewalPeriod ?? 'monthly';
+      if (renewalPeriod === 'weekly') renewalUnit = 'weeks';
+      if (renewalPeriod === 'daily') renewalUnit = 'days';
+      if (renewalPeriod === 'yearly') renewalUnit = 'years';
     }
   } catch (error) {
     console.error(
@@ -58,6 +55,67 @@ async function balanceController(req, res) {
       !!FamilyPlan,
     );
     // Fallback to default
+  }
+
+  // Auto-sync balance to the subscription quota if it's out of sync (e.g. new plan or uninitialized)
+  if (balanceData.refillAmount !== quota) {
+    try {
+      const mongoose = require('mongoose');
+      const Balance = mongoose.models.Balance;
+      const updatedBalance = await Balance.findOneAndUpdate(
+        { user: req.user.id },
+        { 
+          $set: { 
+            tokenCredits: quota,
+            autoRefillEnabled: true,
+            refillAmount: quota,
+            refillIntervalUnit: renewalUnit,
+            refillIntervalValue: renewalValue,
+          },
+          $setOnInsert: { lastRefill: new Date() }
+        },
+        { new: true, upsert: true }
+      ).lean();
+      
+      if (updatedBalance) {
+        balanceData = updatedBalance;
+      }
+    } catch (err) {
+      console.error('[balanceController] Failed to auto-sync balance to subscription quota:', err);
+    }
+  }
+
+  if (balanceData.autoRefillEnabled && balanceData.refillAmount > 0) {
+    const refillEligibilityDate = getRefillEligibilityDate(
+      balanceData.lastRefill,
+      balanceData.refillIntervalValue,
+      balanceData.refillIntervalUnit,
+    );
+    const now = new Date();
+    if (now >= refillEligibilityDate) {
+      try {
+        const result = await createAutoRefillTransaction({
+          user: req.user.id,
+          tokenAmount: balanceData.refillAmount,
+        });
+        if (result && result.balance) {
+          balanceData = result.balance;
+        }
+      } catch (error) {
+        console.error('[balanceController] Auto-refill failed:', error);
+      }
+    }
+  }
+
+  const result = balanceData.toObject != null ? balanceData.toObject() : balanceData;
+  delete result._id;
+  delete result.__v;
+
+  if (!result.autoRefillEnabled) {
+    delete result.refillIntervalValue;
+    delete result.refillIntervalUnit;
+    delete result.lastRefill;
+    delete result.refillAmount;
   }
 
   let isFamilyOwner = false;

@@ -70,7 +70,7 @@ router.post('/upgrade', requireJwtAuth, async (req, res) => {
       ).catch(() => {}); // Silently ignore if no plan exists
     }
 
-    // 4. Determine default token quota for the plan
+    // 4. Determine default token quota and renewal period for the plan
     const planConfig = await PlanConfig.findOne({ plan }).lean();
     const planLimits = {
       free: 50000,
@@ -80,10 +80,26 @@ router.post('/upgrade', requireJwtAuth, async (req, res) => {
     };
     const quota = planConfig?.tokenQuota ?? planLimits[plan] ?? 50000;
 
-    // 5. Update user balance with the new plan quota
+    const renewalPeriod = planConfig?.renewalPeriod ?? 'monthly';
+    let renewalUnit = 'months';
+    let renewalValue = 1;
+    if (renewalPeriod === 'weekly') renewalUnit = 'weeks';
+    if (renewalPeriod === 'daily') renewalUnit = 'days';
+    if (renewalPeriod === 'yearly') renewalUnit = 'years';
+
+    // 5. Update user balance with the new plan quota and auto-refill settings
     await Balance.findOneAndUpdate(
       { user: req.user.id },
-      { $set: { tokenCredits: quota } },
+      { 
+        $set: { 
+          tokenCredits: quota,
+          autoRefillEnabled: true,
+          refillAmount: quota,
+          refillIntervalUnit: renewalUnit,
+          refillIntervalValue: renewalValue,
+        },
+        $setOnInsert: { lastRefill: new Date() }
+      },
       { new: true, upsert: true },
     );
 

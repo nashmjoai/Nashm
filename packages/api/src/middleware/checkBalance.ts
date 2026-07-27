@@ -16,6 +16,7 @@ interface BalanceRecord {
 
 interface TxData {
   user: string;
+  conversationId?: string;
   model?: string;
   endpoint?: string;
   valueKey?: string;
@@ -42,6 +43,8 @@ export interface CheckBalanceDeps {
   balanceConfig?: BalanceConfig;
   /** Upsert function for lazy initialization when no record exists */
   upsertBalanceFields?: (userId: string, fields: IBalanceUpdate) => Promise<BalanceRecord | null>;
+  /** Optional function to get transactions for a given filter */
+  getTransactions?: (filter: Record<string, unknown>) => Promise<any[]>;
 }
 
 /** Checks a user's balance record and handles auto-refill if needed. */
@@ -49,7 +52,7 @@ async function checkBalanceRecord(
   txData: TxData,
   deps: CheckBalanceDeps,
 ): Promise<{ canSpend: boolean; balance: number; tokenCost: number }> {
-  const { user, model, endpoint, valueKey, tokenType, amount, endpointTokenConfig } = txData;
+  const { user, conversationId, model, endpoint, valueKey, tokenType, amount, endpointTokenConfig } = txData;
   const multiplier = deps.getMultiplier({
     valueKey,
     tokenType,
@@ -59,7 +62,10 @@ async function checkBalanceRecord(
   });
   const tokenCost = amount * multiplier;
 
+  // 1. GLOBAL BALANCE & AUTO-REFILL CHECK
+  let globalBalance = 0;
   const record = await deps.findBalanceByUser(user);
+  
   if (!record) {
     if (deps.balanceConfig?.startBalance != null && deps.upsertBalanceFields) {
       logger.debug('[Balance.check] Lazy-initializing balance record for user', {
@@ -85,65 +91,86 @@ async function checkBalanceRecord(
           fields.lastRefill = new Date();
         }
         const created = await deps.upsertBalanceFields(user, fields);
-        const balance = created?.tokenCredits ?? deps.balanceConfig.startBalance;
-        return { canSpend: balance >= tokenCost, balance, tokenCost };
+        globalBalance = created?.tokenCredits ?? deps.balanceConfig.startBalance;
       } catch (error) {
         logger.error('[Balance.check] Failed to lazy-initialize balance record', { user, error });
         return { canSpend: false, balance: 0, tokenCost };
       }
+    } else {
+      logger.debug('[Balance.check] No balance record found for user', { user });
+      return { canSpend: false, balance: 0, tokenCost };
     }
-    logger.debug('[Balance.check] No balance record found for user', { user });
-    return { canSpend: false, balance: 0, tokenCost };
-  }
-  let balance = record.tokenCredits;
+  } else {
+    globalBalance = record.tokenCredits;
+    
+    logger.debug('[Balance.check] Initial global state', {
+      user,
+      model,
+      endpoint,
+      valueKey,
+      tokenType,
+      amount,
+      globalBalance,
+      multiplier,
+    });
 
-  logger.debug('[Balance.check] Initial state', {
-    user,
-    model,
-    endpoint,
-    valueKey,
-    tokenType,
-    amount,
-    balance,
-    multiplier,
-    endpointTokenConfig: !!endpointTokenConfig,
-  });
-
-  if (
-    balance - tokenCost <= 0 &&
-    record.autoRefillEnabled &&
-    record.refillAmount &&
-    record.refillAmount > 0
-  ) {
-    const lastRefillDate = new Date(record.lastRefill ?? 0);
-    const now = new Date();
     if (
-      isNaN(lastRefillDate.getTime()) ||
-      now >=
-        getRefillEligibilityDate(
-          lastRefillDate,
-          record.refillIntervalValue ?? 0,
-          record.refillIntervalUnit ?? 'days',
-        )
+      globalBalance - tokenCost <= 0 &&
+      record.autoRefillEnabled &&
+      record.refillAmount &&
+      record.refillAmount > 0
     ) {
-      try {
-        const result = await deps.createAutoRefillTransaction({
-          user,
-          tokenType: 'credits',
-          context: 'autoRefill',
-          rawAmount: record.refillAmount,
-        });
-        if (result) {
-          balance = result.balance;
+      const lastRefillDate = new Date(record.lastRefill ?? 0);
+      const now = new Date();
+      if (
+        isNaN(lastRefillDate.getTime()) ||
+        now >=
+          getRefillEligibilityDate(
+            lastRefillDate,
+            record.refillIntervalValue ?? 0,
+            record.refillIntervalUnit ?? 'days',
+          )
+      ) {
+        try {
+          const result = await deps.createAutoRefillTransaction({
+            user,
+            tokenType: 'credits',
+            context: 'autoRefill',
+            rawAmount: record.refillAmount,
+          });
+          if (result) {
+            globalBalance = result.balance;
+          }
+        } catch (error) {
+          logger.error('[Balance.check] Failed to record transaction for auto-refill', error);
         }
-      } catch (error) {
-        logger.error('[Balance.check] Failed to record transaction for auto-refill', error);
       }
     }
   }
 
-  logger.debug('[Balance.check] Token cost', { tokenCost });
-  return { canSpend: balance >= tokenCost, balance, tokenCost };
+  // 2. PER-CONVERSATION LIMIT CHECK
+  let conversationBalance = globalBalance; // Default to global limit if no conversation limit applies
+  if (conversationId && deps.getTransactions) {
+    try {
+      const transactions = await deps.getTransactions({ conversationId, user });
+      const totalConsumed = transactions.reduce((acc: number, curr: any) => {
+        if (curr.tokenType === 'credits') return acc;
+        const val = curr.tokenValue != null ? Math.abs(curr.tokenValue) : Math.abs((curr.rawAmount || 0) * multiplier);
+        return acc + val;
+      }, 0);
+      const limit = deps.balanceConfig?.startBalance ?? 50000;
+      conversationBalance = limit - totalConsumed;
+      logger.debug('[Balance.check] Per-conversation check', { conversationId, limit, totalConsumed, conversationBalance, tokenCost });
+    } catch (error) {
+      logger.error('[Balance.check] Failed per-conversation check', { user, conversationId, error });
+    }
+  }
+
+  // 3. EFFECTIVE BALANCE (Minimum of Global vs Conversation)
+  const effectiveBalance = Math.min(globalBalance, conversationBalance);
+
+  logger.debug('[Balance.check] Token cost and effective balance', { tokenCost, globalBalance, conversationBalance, effectiveBalance });
+  return { canSpend: effectiveBalance >= tokenCost, balance: effectiveBalance, tokenCost };
 }
 
 /**

@@ -293,6 +293,7 @@ const chatV1 = async (req, res) => {
           txData: {
             model,
             user: req.user.id,
+            conversationId,
             tokenType: 'prompt',
             amount: promptTokens,
           },
@@ -300,6 +301,7 @@ const chatV1 = async (req, res) => {
         {
           findBalanceByUser,
           getMultiplier,
+          getTransactions,
           createAutoRefillTransaction,
           logViolation,
           balanceConfig,

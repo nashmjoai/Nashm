@@ -200,17 +200,25 @@ export default function AdminConsoleUsers() {
                   <tr key={user.id} className="hover:bg-surface-secondary/30 transition-colors">
                     <td className="p-4">
                       <div className="flex items-center gap-3">
-                        {user.avatar ? (
+                        {user.avatar && (
                           <img
                             src={user.avatar}
                             alt={user.name}
+                            referrerPolicy="no-referrer"
                             className="size-9 rounded-full object-cover border border-border-light"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                              const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                              if (fallback) fallback.style.display = 'flex';
+                            }}
                           />
-                        ) : (
-                          <div className="size-9 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-500 font-bold flex items-center justify-center uppercase">
-                            {user.name?.charAt(0) || user.email?.charAt(0)}
-                          </div>
                         )}
+                        <div
+                          className="size-9 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-500 font-bold items-center justify-center uppercase"
+                          style={{ display: user.avatar ? 'none' : 'flex' }}
+                        >
+                          {user.name?.charAt(0) || user.email?.charAt(0)}
+                        </div>
                         <div className="flex flex-col">
                           <span className="font-semibold text-text-primary leading-snug">
                             {user.name || user.username}
