@@ -3,7 +3,7 @@ const { ErrorTypes } = require('nashm-data-provider');
 const { isEnabled, isEmailDomainAllowed, resolveAppConfigForUser } = require('@nashm/api');
 const { createSocialUser, handleExistingUser } = require('./process');
 const { getAppConfig } = require('~/server/services/Config');
-const { findUser } = require('~/models');
+const { findUser, updateUser } = require('~/models');
 
 const socialLogin =
   (provider, getProfileDetails, options = {}) =>
@@ -55,17 +55,18 @@ const socialLogin =
         return cb(error);
       }
 
-      if (existingUser?.provider === provider) {
+      if (existingUser) {
+        if (existingUser.provider !== provider) {
+          logger.info(
+            `[${provider}Login] User ${email} exists with provider ${existingUser.provider}. Linking to ${provider}.`,
+          );
+          if (!existingUser[providerKey]) {
+            await updateUser(existingUser._id, { [providerKey]: id });
+            existingUser[providerKey] = id;
+          }
+        }
         await handleExistingUser(existingUser, avatarUrl, appConfig, email);
         return cb(null, existingUser);
-      } else if (existingUser) {
-        logger.info(
-          `[${provider}Login] User ${email} already exists with provider ${existingUser.provider}`,
-        );
-        const error = new Error(ErrorTypes.AUTH_FAILED);
-        error.code = ErrorTypes.AUTH_FAILED;
-        error.provider = existingUser.provider;
-        return cb(error);
       }
 
       if (options.existingUsersOnly) {

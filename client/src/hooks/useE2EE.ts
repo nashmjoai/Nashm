@@ -16,8 +16,11 @@ import {
   decryptMessage,
   encryptConversation,
   decryptConversation,
+  encryptFileChunked,
+  decryptFileChunked,
   type EncryptedPayload,
-} from 'nashm-data-provider/src/crypto';
+  type EncryptedFileChunk,
+} from 'nashm-data-provider';
 
 export interface E2EEStatus {
   enabled: boolean;
@@ -68,6 +71,9 @@ export interface UseE2EEReturn {
     conversationId: string,
     fields: { title?: EncryptedPayload | string; isEncrypted?: boolean },
   ) => Promise<{ title?: string } | null>;
+
+  encryptFile: (fileData: ArrayBuffer, fileId: string) => Promise<EncryptedFileChunk[] | null>;
+  decryptFile: (chunks: EncryptedFileChunk[]) => Promise<ArrayBuffer | null>;
 }
 
 export function useE2EE(): UseE2EEReturn {
@@ -238,6 +244,24 @@ export function useE2EE(): UseE2EEReturn {
     [],
   );
 
+  const encryptFile = useCallback(
+    async (fileData: ArrayBuffer, fileId: string) => {
+      const key = masterKeyRef.current;
+      if (!key || !status?.enabled) return null;
+      return encryptFileChunked(fileData, fileId, key);
+    },
+    [status?.enabled],
+  );
+
+  const decryptFile = useCallback(
+    async (chunks: EncryptedFileChunk[]) => {
+      const key = masterKeyRef.current;
+      if (!key) return null;
+      return decryptFileChunked(chunks, key);
+    },
+    [],
+  );
+
   return {
     isEnabled: status?.enabled ?? false,
     isUnlocked,
@@ -252,6 +276,8 @@ export function useE2EE(): UseE2EEReturn {
     decryptMsg,
     encryptConvo,
     decryptConvo,
+    encryptFile,
+    decryptFile,
   };
 }
 

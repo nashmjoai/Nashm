@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { cacheFileUrl, getCachedFile, CachedFileRecord } from '~/utils/fileDB';
+import { cacheFileUrl, getCachedFile, CachedFileRecord, cacheFileBlob } from '~/utils/fileDB';
+import useE2EE from '~/hooks/useE2EE';
 
 interface UseCachedFileOptions {
   fileId?: string;
@@ -27,6 +28,7 @@ export function useCachedFile({
   const [displayUrl, setDisplayUrl] = useState<string>(url ?? '');
   const [cachedRecord, setCachedRecord] = useState<CachedFileRecord | null>(null);
   const objectUrlRef = useRef<string | null>(null);
+  const { isEnabled, isUnlocked, decryptFile } = useE2EE();
 
   useEffect(() => {
     let isMounted = true;
@@ -39,9 +41,48 @@ export function useCachedFile({
           setDisplayUrl(url);
         }
         if (cacheKey && !url.startsWith('blob:') && !url.startsWith('data:')) {
-          cacheFileUrl(cacheKey, url, { filename, mimeType }).catch(() => {
-            // Background caching
-          });
+          const isEncrypted = filename?.endsWith('.enc') || url.includes('.enc');
+
+          if (isEncrypted && isEnabled && isUnlocked) {
+            // Background caching with decryption
+            fetch(url, { credentials: 'same-origin' })
+              .then((res) => {
+                if (!res.ok) throw new Error('Fetch failed');
+                return res.text();
+              })
+              .then((text) => JSON.parse(text))
+              .then((chunks) => decryptFile(chunks))
+              .then((decryptedBuffer) => {
+                if (decryptedBuffer) {
+                  let inferredMime = mimeType;
+                  if (!inferredMime) {
+                    const nameToCheck = filename || url.split('?')[0];
+                    if (nameToCheck.includes('.png')) inferredMime = 'image/png';
+                    else if (nameToCheck.includes('.jpg') || nameToCheck.includes('.jpeg')) inferredMime = 'image/jpeg';
+                    else if (nameToCheck.includes('.gif')) inferredMime = 'image/gif';
+                    else if (nameToCheck.includes('.webp')) inferredMime = 'image/webp';
+                    else if (nameToCheck.includes('.svg')) inferredMime = 'image/svg+xml';
+                    else if (nameToCheck.includes('.pdf')) inferredMime = 'application/pdf';
+                    else inferredMime = 'application/octet-stream';
+                  }
+
+                  const newBlob = new Blob([decryptedBuffer], { type: inferredMime });
+                  cacheFileBlob(cacheKey, newBlob, { filename: filename?.replace('.enc', ''), mimeType: inferredMime });
+                  if (isMounted) {
+                    const blobUrl = URL.createObjectURL(newBlob);
+                    objectUrlRef.current = blobUrl;
+                    setDisplayUrl(blobUrl);
+                    setCachedRecord({ fileId: cacheKey, blob: newBlob, cachedAt: Date.now() });
+                  }
+                }
+              })
+              .catch((err) => {
+                console.warn('[E2EE] Failed to decrypt and cache file in background:', err);
+              });
+          } else if (!isEncrypted) {
+            // Normal background caching
+            cacheFileUrl(cacheKey, url, { filename, mimeType }).catch(() => {});
+          }
         }
         return;
       }

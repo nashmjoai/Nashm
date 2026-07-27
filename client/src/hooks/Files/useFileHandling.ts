@@ -24,6 +24,7 @@ import { useChatContext } from '~/Providers/ChatContext';
 import store, { ephemeralAgentByConvoId } from '~/store';
 import useClientResize from './useClientResize';
 import useUpdateFiles from './useUpdateFiles';
+import useE2EE from '~/hooks/useE2EE';
 
 type UseFileHandling = {
   fileSetter?: FileSetter;
@@ -62,6 +63,7 @@ const useFileHandlingCore = (params: UseFileHandling | undefined, fileState: Fil
     params?.fileSetter ?? setFiles,
   );
   const { resizeImageIfNeeded } = useClientResize();
+  const { isUnlocked, isEnabled, encryptFile } = useE2EE();
 
   const agent_id = params?.additionalMetadata?.agent_id ?? '';
   const assistant_id = params?.additionalMetadata?.assistant_id ?? '';
@@ -185,13 +187,36 @@ const useFileHandlingCore = (params: UseFileHandling | undefined, fileState: Fil
   );
 
   const startUpload = async (extendedFile: ExtendedFile) => {
-    const filename = extendedFile.file?.name ?? 'File';
+    let filename = extendedFile.file?.name ?? 'File';
     startUploadTimer(extendedFile.file_id, filename, extendedFile.size);
 
     const formData = new FormData();
     formData.append('endpoint', endpoint);
     formData.append('endpointType', endpointType ?? '');
-    formData.append('file', extendedFile.file as File, encodeURIComponent(filename));
+
+    let fileToUpload = extendedFile.file as File | Blob;
+    let isEncryptedUpload = false;
+
+    if (isEnabled && isUnlocked && extendedFile.file) {
+      try {
+        const arrayBuffer = await extendedFile.file.arrayBuffer();
+        const encryptedChunks = await encryptFile(arrayBuffer, extendedFile.file_id);
+        if (encryptedChunks) {
+          filename = `${filename}.enc`;
+          fileToUpload = new Blob([JSON.stringify(encryptedChunks)], { type: 'application/json' });
+          isEncryptedUpload = true;
+          formData.append('is_encrypted', 'true');
+        }
+      } catch (err) {
+        console.error('Error encrypting file:', err);
+        setError('Error encrypting file before upload');
+        deleteFileById(extendedFile.file_id);
+        clearUploadTimer(extendedFile.file_id);
+        return;
+      }
+    }
+
+    formData.append('file', fileToUpload, encodeURIComponent(filename));
     formData.append('file_id', extendedFile.file_id);
     if (
       isConversationUpload &&
@@ -206,10 +231,10 @@ const useFileHandlingCore = (params: UseFileHandling | undefined, fileState: Fil
 
     const width = extendedFile.width ?? 0;
     const height = extendedFile.height ?? 0;
-    if (width) {
+    if (width && !isEncryptedUpload) {
       formData.append('width', width.toString());
     }
-    if (height) {
+    if (height && !isEncryptedUpload) {
       formData.append('height', height.toString());
     }
 
