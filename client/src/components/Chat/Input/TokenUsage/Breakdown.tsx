@@ -245,6 +245,52 @@ export default function Breakdown({ view, showCost, currency }: BreakdownProps) 
                 }}
               />
             </div>
+            
+            {/* Display usage start date and next renewal time */}
+            {(() => {
+              const lastRefill = balanceData.lastRefill;
+              const nextRefill = balanceData.nextRefillDate;
+              
+              if (!lastRefill && !nextRefill) return null;
+              
+              let nextTimeString = '';
+              if (nextRefill) {
+                const next = new Date(nextRefill);
+                const now = new Date();
+                const diffMs = next.getTime() - now.getTime();
+                if (diffMs > 0) {
+                  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                  const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                  const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                  
+                  if (days > 0) nextTimeString += `${days} ${localize('com_ui_days')} `;
+                  if (hours > 0) nextTimeString += `${hours} ${localize('com_ui_hours')} `;
+                  if (minutes > 0) nextTimeString += `${minutes} ${localize('com_ui_minutes')}`;
+                  if (!nextTimeString) nextTimeString = localize('com_ui_less_than_minute');
+                }
+              }
+
+              return (
+                <div className="mt-2 space-y-1 pt-2 border-t border-border-light/50">
+                  {lastRefill && (
+                    <div className="flex justify-between items-center text-xs">
+                      <span>{localize('com_ui_consumption_started')}:</span>
+                      <span className="text-text-primary">
+                        {new Date(lastRefill).toLocaleDateString()}
+                      </span>
+                    </div>
+                  )}
+                  {nextTimeString && (
+                    <div className="flex justify-between items-center text-xs">
+                      <span>{localize('com_ui_next_renewal')}:</span>
+                      <span className="text-text-primary">
+                        {nextTimeString.trim()}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
           </div>
         </>
       )}

@@ -769,6 +769,7 @@ export type TBalanceResponse = {
   quota?: number;
   consumed?: number;
   isFamilyOwner?: boolean;
+  nextRefillDate?: Date | string;
 };
 
 /* -------------------------------------------------------------------------- */

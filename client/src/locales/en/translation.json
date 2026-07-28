@@ -2010,6 +2010,16 @@
   "com_ui_zoom_out": "Zoom out",
   "com_user_message": "You",
   "com_ui_quick_artifact_audio": "Audio Transcribe",
-  "com_ui_quick_artifact_audio_desc": "Upload an audio file to transcribe and summarize with diarization"
+  "com_ui_quick_artifact_audio_desc": "Upload an audio file to transcribe and summarize with diarization",
+  "com_error_token_balance": "This conversation has reached its maximum token limit. Please start a new conversation to continue.",
+  "com_error_token_balance_global": "You have consumed all available tokens in your account. Please wait until your balance is renewed.",
+  "com_error_token_balance_global_with_date": "You have consumed all available tokens in your account. Please wait until your balance is renewed in {{0}}.",
+  "com_error_token_balance_global_with_date_and_start": "You have consumed all available tokens in your account. Consumption started on {{0}}. Please wait until your balance is renewed in {{1}}.",
+  "com_ui_days": "days",
+  "com_ui_hours": "hours",
+  "com_ui_minutes": "minutes",
+  "com_ui_less_than_minute": "less than a minute",
+  "com_ui_consumption_started": "Started On",
+  "com_ui_next_renewal": "Next Renewal In"
 }
 

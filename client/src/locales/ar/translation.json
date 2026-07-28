@@ -703,5 +703,15 @@
   "com_ui_versions": "الإصدارات",
   "com_ui_yes": "نعم",
   "com_ui_zoom": "تكبير",
-  "com_user_message": "أنت"
+  "com_user_message": "أنت",
+  "com_error_token_balance": "لقد استهلكت هذه المحادثة الحد الأقصى المسموح به. يرجى فتح محادثة جديدة للاستمرار.",
+  "com_error_token_balance_global": "لقد تم استهلاك جميع التوكنز المتاحة في حسابك. يرجى الانتظار حتى يتم تجديد الرصيد.",
+  "com_error_token_balance_global_with_date": "لقد تم استهلاك جميع التوكنز المتاحة في حسابك. يرجى الانتظار حتى يتم تجديد الرصيد بعد {{0}}.",
+  "com_error_token_balance_global_with_date_and_start": "لقد تم استهلاك جميع التوكنز المتاحة في حسابك. بدأ الاستهلاك في تاريخ {{0}}، ويرجى الانتظار حتى يتم تجديد الرصيد بعد {{1}}.",
+  "com_ui_days": "أيام",
+  "com_ui_hours": "ساعات",
+  "com_ui_minutes": "دقائق",
+  "com_ui_less_than_minute": "أقل من دقيقة",
+  "com_ui_consumption_started": "تاريخ بدء الاستهلاك",
+  "com_ui_next_renewal": "التجديد القادم خلال"
 }

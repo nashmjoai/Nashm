@@ -25,6 +25,9 @@ type TTokenBalance = {
   violation_count: number;
   date: Date;
   generations?: unknown[];
+  limitType?: string;
+  nextRefillDate?: string;
+  lastRefillDate?: string;
 };
 
 type TExpiredKey = {
@@ -100,9 +103,42 @@ const errorMessages = {
       windowInMinutes > 1 ? `${windowInMinutes} minutes` : 'minute'
     }.`;
   },
-  token_balance: (json: TTokenBalance) => {
-    const { balance, tokenCost, promptTokens, generations } = json;
-    const message = `Insufficient Funds! Balance: ${balance}. Prompt tokens: ${promptTokens}. Cost: ${tokenCost}.`;
+  token_balance: (json: TTokenBalance, localize: LocalizeFunction) => {
+    const { generations, limitType, nextRefillDate, lastRefillDate } = json;
+    
+    if (limitType === 'global') {
+      if (nextRefillDate) {
+        const next = new Date(nextRefillDate);
+        const now = new Date();
+        const diffMs = next.getTime() - now.getTime();
+        if (diffMs > 0) {
+          const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+          
+          let timeString = '';
+          if (days > 0) timeString += `${days} ${localize('com_ui_days')} `;
+          if (hours > 0) timeString += `${hours} ${localize('com_ui_hours')} `;
+          if (minutes > 0) timeString += `${minutes} ${localize('com_ui_minutes')}`;
+          if (!timeString) timeString = localize('com_ui_less_than_minute');
+          
+          let startString = '';
+          if (lastRefillDate) {
+            const start = new Date(lastRefillDate);
+            startString = start.toLocaleDateString();
+          }
+
+          if (startString) {
+            return localize('com_error_token_balance_global_with_date_and_start', { 0: startString, 1: timeString.trim() });
+          }
+          
+          return localize('com_error_token_balance_global_with_date', { 0: timeString.trim() });
+        }
+      }
+      return localize('com_error_token_balance_global');
+    }
+
+    const message = localize('com_error_token_balance');
     return (
       <>
         {message}

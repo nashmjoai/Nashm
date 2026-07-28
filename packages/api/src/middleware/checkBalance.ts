@@ -24,6 +24,8 @@ interface TxData {
   amount: number;
   endpointTokenConfig?: unknown;
   generations?: unknown[];
+  nextRefillDate?: string;
+  lastRefillDate?: string;
 }
 
 export interface CheckBalanceDeps {
@@ -51,7 +53,7 @@ export interface CheckBalanceDeps {
 async function checkBalanceRecord(
   txData: TxData,
   deps: CheckBalanceDeps,
-): Promise<{ canSpend: boolean; balance: number; tokenCost: number }> {
+): Promise<{ canSpend: boolean; balance: number; tokenCost: number; limitType?: string; nextRefillDate?: string; lastRefillDate?: string }> {
   const { user, conversationId, model, endpoint, valueKey, tokenType, amount, endpointTokenConfig } = txData;
   const multiplier = deps.getMultiplier({
     valueKey,
@@ -114,23 +116,20 @@ async function checkBalanceRecord(
       multiplier,
     });
 
-    if (
-      globalBalance - tokenCost <= 0 &&
-      record.autoRefillEnabled &&
-      record.refillAmount &&
-      record.refillAmount > 0
-    ) {
-      const lastRefillDate = new Date(record.lastRefill ?? 0);
-      const now = new Date();
-      if (
-        isNaN(lastRefillDate.getTime()) ||
-        now >=
-          getRefillEligibilityDate(
+    let nextRefillDateObj: Date | undefined;
+    if (record.autoRefillEnabled && record.refillAmount && record.refillAmount > 0) {
+      const lastRefillDate = new Date(record.lastRefill ?? record.createdAt ?? 0);
+      txData.lastRefillDate = isNaN(lastRefillDate.getTime()) ? undefined : lastRefillDate.toISOString();
+      
+      nextRefillDateObj = isNaN(lastRefillDate.getTime()) 
+        ? new Date() 
+        : getRefillEligibilityDate(
             lastRefillDate,
             record.refillIntervalValue ?? 0,
             record.refillIntervalUnit ?? 'days',
-          )
-      ) {
+          );
+      const now = new Date();
+      if (globalBalance - tokenCost <= 0 && now >= nextRefillDateObj) {
         try {
           const result = await deps.createAutoRefillTransaction({
             user,
@@ -140,37 +139,33 @@ async function checkBalanceRecord(
           });
           if (result) {
             globalBalance = result.balance;
+            // Assuming lastRefill was updated to 'now', we recalculate nextRefillDate for the response
+            nextRefillDateObj = getRefillEligibilityDate(
+              new Date(),
+              record.refillIntervalValue ?? 0,
+              record.refillIntervalUnit ?? 'days',
+            );
           }
         } catch (error) {
           logger.error('[Balance.check] Failed to record transaction for auto-refill', error);
         }
       }
     }
+    
+    if (nextRefillDateObj) {
+      txData.nextRefillDate = nextRefillDateObj.toISOString();
+    }
   }
 
   // 2. PER-CONVERSATION LIMIT CHECK
   let conversationBalance = globalBalance; // Default to global limit if no conversation limit applies
-  if (conversationId && deps.getTransactions) {
-    try {
-      const transactions = await deps.getTransactions({ conversationId, user });
-      const totalConsumed = transactions.reduce((acc: number, curr: any) => {
-        if (curr.tokenType === 'credits') return acc;
-        const val = curr.tokenValue != null ? Math.abs(curr.tokenValue) : Math.abs((curr.rawAmount || 0) * multiplier);
-        return acc + val;
-      }, 0);
-      const limit = deps.balanceConfig?.startBalance ?? 50000;
-      conversationBalance = limit - totalConsumed;
-      logger.debug('[Balance.check] Per-conversation check', { conversationId, limit, totalConsumed, conversationBalance, tokenCost });
-    } catch (error) {
-      logger.error('[Balance.check] Failed per-conversation check', { user, conversationId, error });
-    }
-  }
 
   // 3. EFFECTIVE BALANCE (Minimum of Global vs Conversation)
   const effectiveBalance = Math.min(globalBalance, conversationBalance);
+  const limitType = globalBalance <= conversationBalance ? 'global' : 'conversation';
 
-  logger.debug('[Balance.check] Token cost and effective balance', { tokenCost, globalBalance, conversationBalance, effectiveBalance });
-  return { canSpend: effectiveBalance >= tokenCost, balance: effectiveBalance, tokenCost };
+  logger.debug('[Balance.check] Token cost and effective balance', { tokenCost, globalBalance, conversationBalance, effectiveBalance, limitType });
+  return { canSpend: effectiveBalance >= tokenCost, balance: effectiveBalance, tokenCost, limitType, nextRefillDate: txData.nextRefillDate, lastRefillDate: txData.lastRefillDate };
 }
 
 /**
@@ -181,7 +176,7 @@ export async function checkBalance(
   { req, res, txData }: { req: ServerRequest; res: Response; txData: TxData },
   deps: CheckBalanceDeps,
 ): Promise<boolean> {
-  const { canSpend, balance, tokenCost } = await checkBalanceRecord(txData, deps);
+  const { canSpend, balance, tokenCost, limitType, nextRefillDate, lastRefillDate } = await checkBalanceRecord(txData, deps);
   if (canSpend) {
     return true;
   }
@@ -192,6 +187,9 @@ export async function checkBalance(
     balance,
     tokenCost,
     promptTokens: txData.amount,
+    limitType,
+    nextRefillDate,
+    lastRefillDate,
   };
 
   if (txData.generations && txData.generations.length > 0) {
