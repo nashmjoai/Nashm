@@ -1,37 +1,37 @@
 # Nashm نشم
 
-Nashm (نشم) is an advanced, self-hosted AI conversation platform built on top of a highly optimized and customized chat core. It is designed to deliver a premium, secure, and multi-user chat interface with tailored integrations, customer support mechanisms, and advanced membership sharing. It serves as an ultimate AI workspace for professionals, developers, and university students.
+Nashm (نشم) is an advanced, self-hosted AI conversation platform built on top of a highly optimized and customized chat core. It is designed to deliver a premium, secure, and multi-user chat interface with tailored integrations, customer support mechanisms, and advanced membership sharing.
 
 ---
 
 ## 🌟 Unique & Custom Features in Nashm
 
-Beyond the standard chat functionalities, Nashm has been developed over months to include powerful features that redefine the AI interaction experience:
+Beyond the standard chat functionalities, Nashm includes several specialized enhancements:
 
-- 🧠 **Deep Reasoning & Analysis**: An intelligent processing system that understands user intent, breaks down complex problems, and analyzes them step-by-step before delivering the optimal output.
-- 🤖 **Multiple AI Models**: Seamless access to state-of-the-art AI models including **Claude**, **Google Antigravity**, OpenAI, AWS Bedrock, Vertex AI, and local providers to suit any specific task.
-- ✨ **Interactive Artifacts**: Go beyond text. Generate fully functional websites, web applications, detailed reports, and interactive presentations that can be viewed and interacted with directly inside the platform.
-- 💻 **Run Code (Code Interpreter)**: A secure, sandboxed execution environment to write, test, and run code instantly in Python, Node.js, C/C++, Go, and more.
-- 🎨 **Image Generation**: Advanced text-to-image capabilities using tools like DALL-E, Stable Diffusion, or Flux to create visual assets effortlessly.
-- 🔍 **Advanced Search Capabilities**: 
-  - **Web Search**: Real-time information gathering from the internet.
-  - **File Search**: Intelligent search through your uploaded files and documents.
-- 🛠️ **Unmatched Customization**:
-  - **Custom Agents**: Build specialized AI agents tailored for specific repetitive tasks.
-  - **Skills**: Extend the AI's capabilities by adding custom tools and scripts.
-  - **Memories & Prompts**: Save your best prompts and let the AI retain context over time for a deeply personalized experience.
-- ⚙️ **MCP (Model Context Protocol) Settings**: Advanced configurations for integrating your own tools and data sources.
-- 👥 **Family Subscription Management**: A custom subscription sharing system allowing plan owners to add, manage, and remove up to 4 child members directly from their account settings.
-- 🎫 **Admin Support Ticket System**: An integrated customer support system for efficient issue tracking and resolution.
-- 🎨 **Nashm Brand Identity & Aesthetics**: A customized UI featuring a striking Keffiyeh Red (`#C41E3A`) and PCB Black (`#1A1A1A`) color palette, responsive welcome interfaces, and dynamic ambient glow effects.
+- 👥 **Family Subscription Management**:
+  A custom subscription sharing system allowing plan owners to add, manage, and remove up to 4 child members by their registered email address directly from their account settings.
+
+- 🎫 **Admin Support Ticket System**:
+  An integrated customer support system. Users can submit support tickets through a dedicated interface, and administrators can view, search, filter (by Open, Reviewed, Resolved), and update ticket status directly within the Admin Console.
+
+- 🔌 **Pre-Integrated Custom AI Endpoints**:
+  Out-of-the-box configuration for premium endpoints, including **Moonshot AI (Kimi)**, with customized display labels, icon assets, and prompt routing.
+
+- 🎨 **Nashm Brand Identity & Aesthetics**:
+  A customized UI featuring a striking Keffiyeh Red (`#C41E3A`) and PCB Black (`#1A1A1A`) color palette, responsive welcome interfaces (featuring *"مرحباً بك في نشم!"*), and dynamic ambient glow effects.
 
 ---
 
-## 🔒 Security & Privacy First
+## ✨ Standard Features
 
-We understand that data privacy is critical for professionals and organizations. Nashm is built with the highest security standards:
-- **End-to-End Encryption**: Full encryption for all chats, files, and generated images to ensure absolute privacy.
-- **Secure Access**: Robust authentication via OAuth2, LDAP, and Email/Password login.
+- 🖥️ **UI & Experience**: Sleek, responsive chat interface inspired by ChatGPT with enhanced configurations and performance.
+- 🤖 **AI Model Selection**: Compatible with Anthropic (Claude), OpenAI, AWS Bedrock, Google (Gemini), Vertex AI, and local/remote providers (Ollama, Groq, Mistral, OpenRouter, and more).
+- 🔧 **Code Interpreter**: Secure, sandboxed code execution in Python, Node.js, C/C++, Go, and more.
+- 🔍 **Web Search**: Integrated internet search combining search providers, scrapers, and rerankers.
+- 🎨 **Image Generation & Editing**: Text-to-image and image-to-image capabilities using DALL-E, Stable Diffusion, Flux, or custom MCP servers.
+- 💾 **Presets & Context Management**: Create, save, and fork conversations and custom presets mid-chat.
+- 🗣️ **Speech & Audio**: Voice conversations via Speech-to-Text and Text-to-Speech integrations.
+- 👥 **Multi-User & Secure Access**: Secure authentication via OAuth2, LDAP, and Email/Password login.
 
 ---
 
