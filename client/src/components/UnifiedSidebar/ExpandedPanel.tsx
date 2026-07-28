@@ -190,7 +190,7 @@ function ExpandedPanel({
             <div className="relative h-7 w-7 flex items-center justify-center">
               <img
                 src="/assets/logo.png"
-                className="absolute inset-0 h-full w-full object-contain transition-opacity duration-300 ease-in-out group-hover:opacity-0 scale-[1.75]"
+                className="absolute inset-0 h-full w-full object-contain transition-opacity duration-300 ease-in-out group-hover:opacity-0 scale-110"
                 alt=""
               />
               <Sidebar
