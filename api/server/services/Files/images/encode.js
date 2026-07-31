@@ -134,16 +134,43 @@ async function encodeAndFormat(req, files, params, mode) {
     const preparePayload = encodingMethods[source].prepareImagePayload;
     /* We need to fetch the image and convert it to base64 if we are using S3/Azure Blob/Firebase storage. */
     if (blobStorageSources.has(source)) {
-      try {
-        const downloadStream = encodingMethods[source].getDownloadStream;
+      const downloadStream = encodingMethods[source].getDownloadStream;
+
+      /* Race S3-SDK stream against an HTTP fetch of the signed URL.
+         The SDK path is faster when the key exists; the HTTP path
+         covers the "key not found" / encoding-mismatch case without
+         an extra sequential round-trip.
+         Both promises get a .catch() so the loser never causes an
+         unhandled-rejection crash. */
+      const streamPromise = (async () => {
         let stream = await downloadStream(req, file.filepath);
-        let base64Data = await streamToBase64(stream);
+        const base64Data = await streamToBase64(stream);
         stream = null;
-        promises.push([file, base64Data]);
-        base64Data = null;
+        return [file, base64Data];
+      })().catch((err) => {
+        logger.error('S3 stream path failed:', err);
+        throw err;
+      });
+
+      const httpPromise = (async () => {
+        const [_file, imageURL] = await preparePayload(req, file);
+        if (!imageURL || typeof imageURL !== 'string' || !imageURL.startsWith('http')) {
+          throw new Error('No valid signed URL available');
+        }
+        const base64Data = await fetchImageToBase64(imageURL);
+        return [_file, base64Data];
+      })().catch((err) => {
+        logger.error('HTTP signed-URL path failed:', err);
+        throw err;
+      });
+
+      try {
+        const result = await Promise.any([streamPromise, httpPromise]);
+        promises.push(result);
         continue;
-      } catch (error) {
-        logger.error('Error processing image from blob storage:', error);
+      } catch (aggError) {
+        logger.error('All image fetch methods failed for blob storage:', aggError);
+        throw new Error(`Failed to process image from blob storage: ${file.filename}`);
       }
     } else if (source !== FileSources.local && base64Only.has(effectiveEndpoint)) {
       const [_file, imageURL] = await preparePayload(req, file);
