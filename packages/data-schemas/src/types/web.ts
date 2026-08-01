@@ -2,8 +2,8 @@ import type { SearchCategories } from 'nashm-data-provider';
 
 export type TWebSearchKeys =
   | 'serperApiKey'
-  | 'searxngInstanceUrl'
-  | 'searxngApiKey'
+  | 'nashmsearchInstanceUrl'
+  | 'nashmsearchApiKey'
   | 'firecrawlApiKey'
   | 'firecrawlApiUrl'
   | 'firecrawlVersion'

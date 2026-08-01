@@ -65,15 +65,15 @@ export default function ApiKeyDialog({
       },
     },
     {
-      key: SearchProviders.SEARXNG,
-      label: localize('com_ui_web_search_provider_searxng'),
+      key: SearchProviders.NASHMSEARCH,
+      label: localize('com_ui_web_search_provider_nashmsearch'),
       inputs: {
-        searxngInstanceUrl: {
-          placeholder: localize('com_ui_web_search_searxng_instance_url'),
+        nashmsearchInstanceUrl: {
+          placeholder: localize('com_ui_web_search_nashmsearch_instance_url'),
           type: 'text' as const,
         },
-        searxngApiKey: {
-          placeholder: localize('com_ui_web_search_searxng_api_key'),
+        nashmsearchApiKey: {
+          placeholder: localize('com_ui_web_search_nashmsearch_api_key'),
           type: 'password' as const,
         },
       },

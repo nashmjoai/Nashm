@@ -1,7 +1,7 @@
 import type { Document, Types } from 'mongoose';
 import type { SubscriptionPlan } from './subscription';
 
-export interface IModelAccess extends Document {
+export interface IModelAccess {
   _id: Types.ObjectId;
   endpoint: string;
   model: string;

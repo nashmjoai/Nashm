@@ -123,10 +123,10 @@ describe('AppService', () => {
           jinaApiUrl: '${JINA_API_URL}',
           cohereApiKey: '${COHERE_API_KEY}',
           serperApiKey: '${SERPER_API_KEY}',
-          searxngApiKey: '${SEARXNG_API_KEY}',
+          nashmsearchApiKey: '${NASHMSEARCH_API_KEY}',
           firecrawlApiKey: '${FIRECRAWL_API_KEY}',
           firecrawlApiUrl: '${FIRECRAWL_API_URL}',
-          searxngInstanceUrl: '${SEARXNG_INSTANCE_URL}',
+          nashmsearchInstanceUrl: '${NASHMSEARCH_INSTANCE_URL}',
         }),
         memory: undefined,
         endpoints: expect.objectContaining({

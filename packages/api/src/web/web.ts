@@ -15,7 +15,7 @@ import { isSSRFTarget, resolveHostnameSSRF } from '../auth';
  * User-provided URL keys that may pass through after SSRF preflight.
  */
 const USER_PROVIDED_URL_KEYS = new Set<TWebSearchKeys>([
-  'searxngInstanceUrl',
+  'nashmsearchInstanceUrl',
   'firecrawlApiUrl',
   'jinaApiUrl',
 ]);

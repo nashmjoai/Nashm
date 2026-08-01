@@ -22,8 +22,12 @@ function WebSearch() {
   const { toggleState: webSearch, debouncedChange, isPinned, authData } = webSearchData;
   const { badgeTriggerRef } = searchApiKeyForm;
 
+  if (!authData?.authenticated) {
+    return null;
+  }
+
   return (
-    (isPinned || (webSearch && authData?.authenticated)) && (
+    (isPinned || webSearch) && (
       <CheckboxButton
         ref={badgeTriggerRef}
         className="max-w-fit"

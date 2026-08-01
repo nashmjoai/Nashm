@@ -10,8 +10,8 @@ export type SearchApiKeyFormData = {
   selectedScraper: string;
   // API keys and URLs
   serperApiKey: string;
-  searxngInstanceUrl: string;
-  searxngApiKey: string;
+  nashmsearchInstanceUrl: string;
+  nashmsearchApiKey: string;
   firecrawlApiKey: string;
   firecrawlApiUrl: string;
   tavilyApiKey: string;
@@ -51,8 +51,8 @@ const useAuthSearchTool = (options?: { isEntityTool: boolean }) => {
     (data: SearchApiKeyFormData) => {
       const auth = Object.entries({
         serperApiKey: data.serperApiKey,
-        searxngInstanceUrl: data.searxngInstanceUrl,
-        searxngApiKey: data.searxngApiKey,
+        nashmsearchInstanceUrl: data.nashmsearchInstanceUrl,
+        nashmsearchApiKey: data.nashmsearchApiKey,
         firecrawlApiKey: data.firecrawlApiKey,
         firecrawlApiUrl: data.firecrawlApiUrl,
         tavilyApiKey: data.tavilyApiKey,

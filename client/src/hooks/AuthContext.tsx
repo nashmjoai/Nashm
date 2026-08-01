@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   apiBaseUrl,
   SystemRoles,
+  roleDefaults,
   setTokenHeader,
   isSystemRoleName,
   buildLoginRedirectUrl,
@@ -55,10 +56,10 @@ const AuthContextProvider = ({
   const userRoleName = user?.role ?? '';
   const isCustomRole = isAuthenticated && !!user?.role && !isSystemRoleName(user.role);
 
-  const { data: userRole = null } = useGetRole(SystemRoles.USER, {
+  const { data: userRole = roleDefaults[SystemRoles.USER] } = useGetRole(SystemRoles.USER, {
     enabled: !!(isAuthenticated && (user?.role ?? '')),
   });
-  const { data: adminRole = null } = useGetRole(SystemRoles.ADMIN, {
+  const { data: adminRole = roleDefaults[SystemRoles.ADMIN] } = useGetRole(SystemRoles.ADMIN, {
     enabled: !!(isAuthenticated && user?.role === SystemRoles.ADMIN),
   });
   const { data: customRole = null } = useGetRole(isCustomRole ? userRoleName : '_', {

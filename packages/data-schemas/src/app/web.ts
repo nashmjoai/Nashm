@@ -7,10 +7,10 @@ export const webSearchAuth = {
     serper: {
       serperApiKey: 1 as const,
     },
-    searxng: {
-      searxngInstanceUrl: 1 as const,
+    nashmsearch: {
+      nashmsearchInstanceUrl: 1 as const,
       /** Optional (0) */
-      searxngApiKey: 0 as const,
+      nashmsearchApiKey: 0 as const,
     },
     tavily: {
       tavilyApiKey: 1 as const,
@@ -72,8 +72,8 @@ export function loadWebSearchConfig(
   config: TCustomConfig['webSearch'],
 ): TCustomConfig['webSearch'] {
   const serperApiKey = config?.serperApiKey ?? '${SERPER_API_KEY}';
-  const searxngInstanceUrl = config?.searxngInstanceUrl ?? '${SEARXNG_INSTANCE_URL}';
-  const searxngApiKey = config?.searxngApiKey ?? '${SEARXNG_API_KEY}';
+  const nashmsearchInstanceUrl = config?.nashmsearchInstanceUrl ?? '${NASHMSEARCH_INSTANCE_URL}';
+  const nashmsearchApiKey = config?.nashmsearchApiKey ?? '${NASHMSEARCH_API_KEY}';
   const firecrawlApiKey = config?.firecrawlApiKey ?? '${FIRECRAWL_API_KEY}';
   const firecrawlApiUrl = config?.firecrawlApiUrl ?? '${FIRECRAWL_API_URL}';
   const firecrawlVersion = config?.firecrawlVersion ?? '${FIRECRAWL_VERSION}';
@@ -93,14 +93,14 @@ export function loadWebSearchConfig(
     jinaApiUrl,
     cohereApiKey,
     serperApiKey,
-    searxngApiKey,
+    nashmsearchApiKey,
     tavilyApiKey,
     tavilySearchUrl,
     tavilyExtractUrl,
     firecrawlApiKey,
     firecrawlApiUrl,
     firecrawlVersion,
-    searxngInstanceUrl,
+    nashmsearchInstanceUrl,
     rerankerType,
   };
 }

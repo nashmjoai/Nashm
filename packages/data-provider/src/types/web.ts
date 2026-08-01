@@ -12,7 +12,7 @@ export enum DATE_RANGE {
   PAST_YEAR = 'y',
 }
 
-export type SearchProvider = 'serper' | 'searxng' | 'tavily';
+export type SearchProvider = 'serper' | 'nashmsearch' | 'tavily';
 export type ScraperProvider = 'firecrawl' | 'serper' | 'tavily';
 export type RerankerType = 'infinity' | 'jina' | 'cohere' | 'none';
 
@@ -74,8 +74,8 @@ export interface Source {
 export interface SearchConfig {
   searchProvider?: SearchProvider;
   serperApiKey?: string;
-  searxngInstanceUrl?: string;
-  searxngApiKey?: string;
+  nashmsearchInstanceUrl?: string;
+  nashmsearchApiKey?: string;
   tavilyApiKey?: string;
   tavilySearchUrl?: string;
   tavilySearchOptions?: TavilyConfig['tavilySearchOptions'];
@@ -494,13 +494,13 @@ export type SerperResultData = {
   credits?: number;
 };
 
-/** SearXNG */
+/** Nashm Search */
 
-export interface SearxNGSearchPayload {
+export interface NashmSearchPayload {
   /**
    * The search query string
    * Supports syntax specific to different search engines
-   * Example: "site:github.com SearXNG"
+   * Example: "site:github.com Nashm Search"
    */
   q: string;
 
@@ -547,7 +547,7 @@ export interface SearxNGSearchPayload {
   results_on_new_tab?: 0 | 1;
 
   /**
-   * Proxy image results through SearxNG
+   * Proxy image results through Nashm Search
    * Options: true, false
    */
   image_proxy?: boolean;
@@ -593,7 +593,7 @@ export interface SearxNGSearchPayload {
   disabled_engines?: string;
 }
 
-export interface SearXNGResult {
+export interface NashmSearchResult {
   title?: string;
   url?: string;
   content?: string;

@@ -12,7 +12,8 @@ cache: true
 
 # Web Search configuration
 webSearch:
-  searchProvider: "serper"
+  searchProvider: "nashmsearch"
+  nashmsearchInstanceUrl: "${NASHMSEARCH_INSTANCE_URL}"
 
 # Default Model Specifications
 modelSpecs:

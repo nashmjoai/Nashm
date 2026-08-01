@@ -47,8 +47,8 @@ describe('loadWebSearchConfig', () => {
 
       expect(result).toEqual({
         serperApiKey: '${SERPER_API_KEY}',
-        searxngInstanceUrl: '${SEARXNG_INSTANCE_URL}',
-        searxngApiKey: '${SEARXNG_API_KEY}',
+        nashmsearchInstanceUrl: '${NASHMSEARCH_INSTANCE_URL}',
+        nashmsearchApiKey: '${NASHMSEARCH_API_KEY}',
         firecrawlApiKey: '${FIRECRAWL_API_KEY}',
         firecrawlApiUrl: '${FIRECRAWL_API_URL}',
         firecrawlVersion: '${FIRECRAWL_VERSION}',
@@ -130,7 +130,7 @@ describe('loadWebSearchConfig', () => {
       const result = loadWebSearchConfig({});
 
       expect(result?.serperApiKey).toBe('${SERPER_API_KEY}');
-      expect(result?.searxngApiKey).toBe('${SEARXNG_API_KEY}');
+      expect(result?.nashmsearchApiKey).toBe('${NASHMSEARCH_API_KEY}');
       expect(result?.firecrawlApiKey).toBe('${FIRECRAWL_API_KEY}');
       expect(result?.jinaApiKey).toBe('${JINA_API_KEY}');
       expect(result?.cohereApiKey).toBe('${COHERE_API_KEY}');
@@ -155,21 +155,21 @@ describe('loadWebSearchConfig', () => {
     it('should apply default placeholders for URLs', () => {
       const result = loadWebSearchConfig({});
 
-      expect(result?.searxngInstanceUrl).toBe('${SEARXNG_INSTANCE_URL}');
+      expect(result?.nashmsearchInstanceUrl).toBe('${NASHMSEARCH_INSTANCE_URL}');
       expect(result?.firecrawlApiUrl).toBe('${FIRECRAWL_API_URL}');
       expect(result?.jinaApiUrl).toBe('${JINA_API_URL}');
     });
 
     it('should preserve custom URLs', () => {
       const config: TCustomConfig['webSearch'] = {
-        searxngInstanceUrl: 'https://custom-searxng.com',
+        nashmsearchInstanceUrl: 'https://custom-nashmsearch.com',
         firecrawlApiUrl: 'https://custom-firecrawl.com',
         jinaApiUrl: 'https://custom-jina.com',
       };
 
       const result = loadWebSearchConfig(config);
 
-      expect(result?.searxngInstanceUrl).toBe('https://custom-searxng.com');
+      expect(result?.nashmsearchInstanceUrl).toBe('https://custom-nashmsearch.com');
       expect(result?.firecrawlApiUrl).toBe('https://custom-firecrawl.com');
       expect(result?.jinaApiUrl).toBe('https://custom-jina.com');
     });

@@ -1473,7 +1473,7 @@ export enum SearchCategories {
 
 export enum SearchProviders {
   SERPER = 'serper',
-  SEARXNG = 'searxng',
+  NASHMSEARCH = 'nashmsearch',
   TAVILY = 'tavily',
 }
 
@@ -1497,8 +1497,8 @@ export enum SafeSearchTypes {
 
 export const webSearchSchema = z.object({
   serperApiKey: z.string().optional().default('${SERPER_API_KEY}'),
-  searxngInstanceUrl: z.string().optional().default('${SEARXNG_INSTANCE_URL}'),
-  searxngApiKey: z.string().optional().default('${SEARXNG_API_KEY}'),
+  nashmsearchInstanceUrl: z.string().optional().default('${NASHMSEARCH_INSTANCE_URL}'),
+  nashmsearchApiKey: z.string().optional().default('${NASHMSEARCH_API_KEY}'),
   firecrawlApiKey: z.string().optional().default('${FIRECRAWL_API_KEY}'),
   firecrawlApiUrl: z.string().optional().default('${FIRECRAWL_API_URL}'),
   firecrawlVersion: z.string().optional().default('${FIRECRAWL_VERSION}'),

@@ -425,6 +425,62 @@ const registerUser = async (user, additionalData = {}) => {
 
     const newUser = await createUser(newUserData, appConfig.balance, disableTTL, true);
     newUserId = newUser._id;
+
+    try {
+      const { Subscription, Balance, PlanConfig } = require('~/db/models');
+      const plan = 'free';
+      const planConfig = await PlanConfig.findOne({ plan }).lean();
+      const planLimits = {
+        free: 50000,
+        individual: 500000,
+        family: 1000000,
+        developer: 2000000,
+      };
+      
+      // If the app config has balance enabled but startBalance is 0 or undefined, 
+      // automatically assign the free plan quota instead of 0 tokens.
+      if (appConfig?.balance?.enabled && !appConfig.balance.startBalance) {
+        const quota = planConfig?.tokenQuota ?? planLimits[plan] ?? 50000;
+        const renewalPeriod = planConfig?.renewalPeriod ?? 'monthly';
+        let renewalUnit = 'months';
+        let renewalValue = 1;
+        if (renewalPeriod === 'weekly') renewalUnit = 'weeks';
+        if (renewalPeriod === 'daily') renewalUnit = 'days';
+        if (renewalPeriod === 'yearly') renewalUnit = 'years';
+
+        await Subscription.findOneAndUpdate(
+          { user: newUserId },
+          {
+            $set: {
+              user: newUserId,
+              plan: plan,
+              status: 'active',
+              source: 'registration',
+            },
+            $setOnInsert: { startsAt: new Date() },
+          },
+          { new: true, upsert: true },
+        );
+
+        await Balance.findOneAndUpdate(
+          { user: newUserId },
+          { 
+            $set: { 
+              tokenCredits: quota,
+              autoRefillEnabled: true,
+              refillAmount: quota,
+              refillIntervalUnit: renewalUnit,
+              refillIntervalValue: renewalValue,
+            },
+            $setOnInsert: { lastRefill: new Date() }
+          },
+          { new: true, upsert: true },
+        );
+      }
+    } catch (e) {
+      logger.error('[registerUser] Error assigning free plan:', e);
+    }
+
     if (emailEnabled && !newUser.emailVerified) {
       await sendVerificationEmail({
         _id: newUserId,

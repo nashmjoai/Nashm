@@ -349,8 +349,15 @@ const loadTools = async ({
         dynamicToolContextMap[tool] = buildWebSearchDynamicContext(
           options.req?.conversationCreatedAt,
         );
+        const authResult = { ...result.authResult };
+        if (authResult.searchProvider === 'nashmsearch') {
+          authResult.searchProvider = 'searxng';
+          authResult.searxngInstanceUrl = authResult.nashmsearchInstanceUrl;
+          authResult.searxngApiKey = authResult.nashmsearchApiKey;
+        }
+
         return createSearchTool({
-          ...result.authResult,
+          ...authResult,
           onSearchResults,
           onGetHighlights,
           logger,

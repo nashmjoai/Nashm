@@ -118,7 +118,7 @@ async function checkBalanceRecord(
 
     let nextRefillDateObj: Date | undefined;
     if (record.autoRefillEnabled && record.refillAmount && record.refillAmount > 0) {
-      const lastRefillDate = new Date(record.lastRefill ?? record.createdAt ?? 0);
+      const lastRefillDate = new Date(record.lastRefill ?? 0);
       txData.lastRefillDate = isNaN(lastRefillDate.getTime()) ? undefined : lastRefillDate.toISOString();
       
       nextRefillDateObj = isNaN(lastRefillDate.getTime()) 

@@ -85,8 +85,8 @@ describe('web.ts', () => {
       // Initialize a basic webSearchConfig
       webSearchConfig = {
         serperApiKey: '${SERPER_API_KEY}',
-        searxngInstanceUrl: '${SEARXNG_INSTANCE_URL}',
-        searxngApiKey: '${SEARXNG_API_KEY}',
+        nashmsearchInstanceUrl: '${NASHMSEARCH_INSTANCE_URL}',
+        nashmsearchApiKey: '${NASHMSEARCH_API_KEY}',
         firecrawlApiKey: '${FIRECRAWL_API_KEY}',
         firecrawlApiUrl: '${FIRECRAWL_API_URL}',
         jinaApiKey: '${JINA_API_KEY}',
@@ -138,7 +138,7 @@ describe('web.ts', () => {
         const result: Record<string, string> = {};
         authFields.forEach((field: string) => {
           // Only provide values for scrapers and rerankers, not for providers
-          if (field !== 'SERPER_API_KEY' && field !== 'SEARXNG_INSTANCE_URL') {
+          if (field !== 'SERPER_API_KEY' && field !== 'NASHMSEARCH_INSTANCE_URL') {
             result[field] =
               field === 'FIRECRAWL_API_URL' ? 'https://api.firecrawl.dev' : 'test-api-key';
           }
@@ -418,8 +418,8 @@ describe('web.ts', () => {
       // Initialize a webSearchConfig without specific services
       const webSearchConfig: TCustomConfig['webSearch'] = {
         serperApiKey: '${SERPER_API_KEY}',
-        searxngInstanceUrl: '${SEARXNG_INSTANCE_URL}',
-        searxngApiKey: '${SEARXNG_API_KEY}',
+        nashmsearchInstanceUrl: '${NASHMSEARCH_INSTANCE_URL}',
+        nashmsearchApiKey: '${NASHMSEARCH_API_KEY}',
         firecrawlApiKey: '${FIRECRAWL_API_KEY}',
         firecrawlApiUrl: '${FIRECRAWL_API_URL}',
         jinaApiKey: '${JINA_API_KEY}',
@@ -470,8 +470,8 @@ describe('web.ts', () => {
       // Initialize webSearchConfig with environment variable references
       const webSearchConfig: TCustomConfig['webSearch'] = {
         serperApiKey: '${SERPER_API_KEY}',
-        searxngInstanceUrl: '${SEARXNG_INSTANCE_URL}',
-        searxngApiKey: '${SEARXNG_API_KEY}',
+        nashmsearchInstanceUrl: '${NASHMSEARCH_INSTANCE_URL}',
+        nashmsearchApiKey: '${NASHMSEARCH_API_KEY}',
         firecrawlApiKey: '${FIRECRAWL_API_KEY}',
         firecrawlApiUrl: '${FIRECRAWL_API_URL}',
         jinaApiKey: '${JINA_API_KEY}',
@@ -563,8 +563,8 @@ describe('web.ts', () => {
       // Initialize webSearchConfig with custom variable names
       const webSearchConfig: TCustomConfig['webSearch'] = {
         serperApiKey: '${CUSTOM_SERPER_KEY}',
-        searxngInstanceUrl: '${SEARXNG_INSTANCE_URL}',
-        searxngApiKey: '${SEARXNG_API_KEY}',
+        nashmsearchInstanceUrl: '${NASHMSEARCH_INSTANCE_URL}',
+        nashmsearchApiKey: '${NASHMSEARCH_API_KEY}',
         firecrawlApiKey: '${CUSTOM_FIRECRAWL_KEY}',
         firecrawlApiUrl: '${CUSTOM_FIRECRAWL_URL}',
         jinaApiKey: '${CUSTOM_JINA_KEY}',
@@ -634,8 +634,8 @@ describe('web.ts', () => {
       // Initialize webSearchConfig with environment variable references
       const webSearchConfig: TCustomConfig['webSearch'] = {
         serperApiKey: '${SERPER_API_KEY}',
-        searxngInstanceUrl: '${SEARXNG_INSTANCE_URL}',
-        searxngApiKey: '${SEARXNG_API_KEY}',
+        nashmsearchInstanceUrl: '${NASHMSEARCH_INSTANCE_URL}',
+        nashmsearchApiKey: '${NASHMSEARCH_API_KEY}',
         firecrawlApiKey: '${FIRECRAWL_API_KEY}',
         firecrawlApiUrl: '${FIRECRAWL_API_URL}',
         jinaApiKey: '${JINA_API_KEY}',
@@ -695,8 +695,8 @@ describe('web.ts', () => {
       // Initialize webSearchConfig with environment variable references
       const webSearchConfig: TCustomConfig['webSearch'] = {
         serperApiKey: '${SERPER_API_KEY}',
-        searxngInstanceUrl: '${SEARXNG_INSTANCE_URL}',
-        searxngApiKey: '${SEARXNG_API_KEY}',
+        nashmsearchInstanceUrl: '${NASHMSEARCH_INSTANCE_URL}',
+        nashmsearchApiKey: '${NASHMSEARCH_API_KEY}',
         firecrawlApiKey: '${FIRECRAWL_API_KEY}',
         firecrawlApiUrl: '${FIRECRAWL_API_URL}',
         jinaApiKey: '${JINA_API_KEY}',
@@ -804,8 +804,8 @@ describe('web.ts', () => {
       // Initialize a webSearchConfig with a specific searchProvider
       const webSearchConfig: TCustomConfig['webSearch'] = {
         serperApiKey: '${SERPER_API_KEY}',
-        searxngInstanceUrl: '${SEARXNG_INSTANCE_URL}',
-        searxngApiKey: '${SEARXNG_API_KEY}',
+        nashmsearchInstanceUrl: '${NASHMSEARCH_INSTANCE_URL}',
+        nashmsearchApiKey: '${NASHMSEARCH_API_KEY}',
         firecrawlApiKey: '${FIRECRAWL_API_KEY}',
         firecrawlApiUrl: '${FIRECRAWL_API_URL}',
         jinaApiKey: '${JINA_API_KEY}',
@@ -980,8 +980,8 @@ describe('web.ts', () => {
       // Initialize a webSearchConfig with a specific scraperProvider
       const webSearchConfig: TCustomConfig['webSearch'] = {
         serperApiKey: '${SERPER_API_KEY}',
-        searxngInstanceUrl: '${SEARXNG_INSTANCE_URL}',
-        searxngApiKey: '${SEARXNG_API_KEY}',
+        nashmsearchInstanceUrl: '${NASHMSEARCH_INSTANCE_URL}',
+        nashmsearchApiKey: '${NASHMSEARCH_API_KEY}',
         firecrawlApiKey: '${FIRECRAWL_API_KEY}',
         firecrawlApiUrl: '${FIRECRAWL_API_URL}',
         jinaApiKey: '${JINA_API_KEY}',
@@ -1021,8 +1021,8 @@ describe('web.ts', () => {
       // Initialize a webSearchConfig with a specific rerankerType
       const webSearchConfig: TCustomConfig['webSearch'] = {
         serperApiKey: '${SERPER_API_KEY}',
-        searxngInstanceUrl: '${SEARXNG_INSTANCE_URL}',
-        searxngApiKey: '${SEARXNG_API_KEY}',
+        nashmsearchInstanceUrl: '${NASHMSEARCH_INSTANCE_URL}',
+        nashmsearchApiKey: '${NASHMSEARCH_API_KEY}',
         firecrawlApiKey: '${FIRECRAWL_API_KEY}',
         firecrawlApiUrl: '${FIRECRAWL_API_URL}',
         jinaApiKey: '${JINA_API_KEY}',
@@ -1068,8 +1068,8 @@ describe('web.ts', () => {
       // Initialize a webSearchConfig with a specific rerankerType
       const webSearchConfig: TCustomConfig['webSearch'] = {
         serperApiKey: '${SERPER_API_KEY}',
-        searxngInstanceUrl: '${SEARXNG_INSTANCE_URL}',
-        searxngApiKey: '${SEARXNG_API_KEY}',
+        nashmsearchInstanceUrl: '${NASHMSEARCH_INSTANCE_URL}',
+        nashmsearchApiKey: '${NASHMSEARCH_API_KEY}',
         firecrawlApiKey: '${FIRECRAWL_API_KEY}',
         firecrawlApiUrl: '${FIRECRAWL_API_URL}',
         safeSearch: SafeSearchTypes.MODERATE,
@@ -1106,25 +1106,25 @@ describe('web.ts', () => {
 
     it('should fallback to no reranker when rerankerType is omitted and no reranker is authenticated', async () => {
       const webSearchConfig: TCustomConfig['webSearch'] = {
-        searxngInstanceUrl: '${SEARXNG_INSTANCE_URL}',
-        searxngApiKey: '${SEARXNG_API_KEY}',
+        nashmsearchInstanceUrl: '${NASHMSEARCH_INSTANCE_URL}',
+        nashmsearchApiKey: '${NASHMSEARCH_API_KEY}',
         firecrawlApiKey: '${FIRECRAWL_API_KEY}',
         firecrawlApiUrl: '${FIRECRAWL_API_URL}',
         jinaApiKey: '${JINA_API_KEY}',
         jinaApiUrl: '${JINA_API_URL}',
         cohereApiKey: '${COHERE_API_KEY}',
         safeSearch: SafeSearchTypes.MODERATE,
-        searchProvider: 'searxng' as SearchProviders,
+        searchProvider: 'nashmsearch' as SearchProviders,
         scraperProvider: 'firecrawl' as ScraperProviders,
       };
 
       mockLoadAuthValues.mockImplementation(({ authFields }) => {
         const result: Record<string, string> = {};
         authFields.forEach((field: string) => {
-          if (field === 'SEARXNG_INSTANCE_URL') {
+          if (field === 'NASHMSEARCH_INSTANCE_URL') {
             result[field] = 'https://search.example';
-          } else if (field === 'SEARXNG_API_KEY') {
-            result[field] = 'searxng-api-key';
+          } else if (field === 'NASHMSEARCH_API_KEY') {
+            result[field] = 'nashmsearch-api-key';
           } else if (field === 'FIRECRAWL_API_KEY') {
             result[field] = 'firecrawl-api-key';
           } else if (field === 'FIRECRAWL_API_URL') {
@@ -1149,8 +1149,8 @@ describe('web.ts', () => {
       // Initialize a webSearchConfig with an invalid searchProvider
       const webSearchConfig: TCustomConfig['webSearch'] = {
         serperApiKey: '${SERPER_API_KEY}',
-        searxngInstanceUrl: '${SEARXNG_INSTANCE_URL}',
-        searxngApiKey: '${SEARXNG_API_KEY}',
+        nashmsearchInstanceUrl: '${NASHMSEARCH_INSTANCE_URL}',
+        nashmsearchApiKey: '${NASHMSEARCH_API_KEY}',
         firecrawlApiKey: '${FIRECRAWL_API_KEY}',
         firecrawlApiUrl: '${FIRECRAWL_API_URL}',
         jinaApiKey: '${JINA_API_KEY}',
@@ -1184,8 +1184,8 @@ describe('web.ts', () => {
       // Initialize a webSearchConfig with a specific rerankerType (jina)
       const webSearchConfig: TCustomConfig['webSearch'] = {
         serperApiKey: '${SERPER_API_KEY}',
-        searxngInstanceUrl: '${SEARXNG_INSTANCE_URL}',
-        searxngApiKey: '${SEARXNG_API_KEY}',
+        nashmsearchInstanceUrl: '${NASHMSEARCH_INSTANCE_URL}',
+        nashmsearchApiKey: '${NASHMSEARCH_API_KEY}',
         firecrawlApiKey: '${FIRECRAWL_API_KEY}',
         firecrawlApiUrl: '${FIRECRAWL_API_URL}',
         jinaApiKey: '${JINA_API_KEY}',
@@ -1235,8 +1235,8 @@ describe('web.ts', () => {
       // Initialize a webSearchConfig without specific services
       const webSearchConfig: TCustomConfig['webSearch'] = {
         serperApiKey: '${SERPER_API_KEY}',
-        searxngInstanceUrl: '${SEARXNG_INSTANCE_URL}',
-        searxngApiKey: '${SEARXNG_API_KEY}',
+        nashmsearchInstanceUrl: '${NASHMSEARCH_INSTANCE_URL}',
+        nashmsearchApiKey: '${NASHMSEARCH_API_KEY}',
         firecrawlApiKey: '${FIRECRAWL_API_KEY}',
         firecrawlApiUrl: '${FIRECRAWL_API_URL}',
         jinaApiKey: '${JINA_API_KEY}',
@@ -1276,8 +1276,8 @@ describe('web.ts', () => {
       // Initialize a webSearchConfig with comprehensive firecrawlOptions
       const webSearchConfig: TCustomConfig['webSearch'] = {
         serperApiKey: '${SERPER_API_KEY}',
-        searxngInstanceUrl: '${SEARXNG_INSTANCE_URL}',
-        searxngApiKey: '${SEARXNG_API_KEY}',
+        nashmsearchInstanceUrl: '${NASHMSEARCH_INSTANCE_URL}',
+        nashmsearchApiKey: '${NASHMSEARCH_API_KEY}',
         firecrawlApiKey: '${FIRECRAWL_API_KEY}',
         firecrawlApiUrl: '${FIRECRAWL_API_URL}',
         jinaApiKey: '${JINA_API_KEY}',
@@ -1886,21 +1886,21 @@ describe('web.ts', () => {
       }
     });
 
-    it('should block user-provided searxngInstanceUrl targeting metadata endpoint', async () => {
+    it('should block user-provided nashmsearchInstanceUrl targeting metadata endpoint', async () => {
       mockIsSSRFTarget.mockImplementation((hostname: string) => hostname === '169.254.169.254');
 
       const webSearchConfig: TCustomConfig['webSearch'] = {
-        searxngInstanceUrl: '${SEARXNG_INSTANCE_URL}',
+        nashmsearchInstanceUrl: '${NASHMSEARCH_INSTANCE_URL}',
         firecrawlApiKey: '${FIRECRAWL_API_KEY}',
         jinaApiKey: '${JINA_API_KEY}',
         safeSearch: SafeSearchTypes.MODERATE,
-        searchProvider: 'searxng' as SearchProviders,
+        searchProvider: 'nashmsearch' as SearchProviders,
       };
 
       mockLoadAuthValues.mockImplementation(({ authFields }) => {
         const result: Record<string, string> = {};
         authFields.forEach((field: string) => {
-          if (field === 'SEARXNG_INSTANCE_URL') {
+          if (field === 'NASHMSEARCH_INSTANCE_URL') {
             result[field] = 'http://169.254.169.254/latest/meta-data';
           } else {
             result[field] = 'test-api-key';
@@ -1915,7 +1915,7 @@ describe('web.ts', () => {
         loadAuthValues: mockLoadAuthValues,
       });
 
-      expect(result.authResult.searxngInstanceUrl).toBeUndefined();
+      expect(result.authResult.nashmsearchInstanceUrl).toBeUndefined();
       expect(result.authenticated).toBe(false);
     });
 
@@ -2073,18 +2073,18 @@ describe('web.ts', () => {
       mockIsSSRFTarget.mockImplementation((hostname: string) => hostname === '127.0.0.1');
 
       const webSearchConfig: TCustomConfig['webSearch'] = {
-        searxngInstanceUrl: '${SEARXNG_INSTANCE_URL}',
-        searxngApiKey: '${SEARXNG_API_KEY}',
+        nashmsearchInstanceUrl: '${NASHMSEARCH_INSTANCE_URL}',
+        nashmsearchApiKey: '${NASHMSEARCH_API_KEY}',
         firecrawlApiKey: '${FIRECRAWL_API_KEY}',
         jinaApiKey: '${JINA_API_KEY}',
         safeSearch: SafeSearchTypes.MODERATE,
-        searchProvider: 'searxng' as SearchProviders,
+        searchProvider: 'nashmsearch' as SearchProviders,
       };
 
       mockLoadAuthValues.mockImplementation(({ authFields }) => {
         const result: Record<string, string> = {};
         authFields.forEach((field: string) => {
-          if (field === 'SEARXNG_INSTANCE_URL') {
+          if (field === 'NASHMSEARCH_INSTANCE_URL') {
             result[field] = 'http://127.0.0.1:8888/search';
           } else {
             result[field] = 'test-api-key';

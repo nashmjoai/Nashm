@@ -477,25 +477,7 @@ export function createSystemGrantMethods(mongoose: typeof import('mongoose')): {
             upsert: true,
           },
         }));
-        ops.push({
-          updateOne: {
-            filter: {
-              principalType: PrincipalType.ROLE,
-              principalId: 'EDITOR',
-              capability: SystemCapabilities.ACCESS_ADMIN,
-              tenantId: { $exists: false },
-            },
-            update: {
-              $setOnInsert: {
-                principalType: PrincipalType.ROLE,
-                principalId: 'EDITOR',
-                capability: SystemCapabilities.ACCESS_ADMIN,
-                grantedAt: now,
-              },
-            },
-            upsert: true,
-          },
-        });
+
         await tenantSafeBulkWrite(SystemGrant, ops, { ordered: false });
         return;
       } catch (err) {
