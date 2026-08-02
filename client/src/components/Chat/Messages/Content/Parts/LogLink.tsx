@@ -4,6 +4,7 @@ import { FileSources, sharedFileDownload } from 'nashm-data-provider';
 import { useCodeOutputDownload, useFileDownload } from '~/data-provider';
 import { isHttpDownloadTarget, triggerDownload } from '~/utils';
 import { useShareContext } from '~/Providers';
+import { useAuthContext } from '~/hooks/AuthContext';
 
 interface LogLinkProps {
   href: string;
@@ -49,9 +50,17 @@ export const useAttachmentLink = ({
 }: AttachmentLinkOptions) => {
   const { showToast } = useToastContext();
   const { shareId } = useShareContext();
+  const { user: currentUser } = useAuthContext();
 
-  const useLocalDownload = isLocallyStoredSource(source) && !!file_id && !!user;
-  const { refetch: downloadFromApi } = useFileDownload(user, file_id, { source });
+  const downloadUser = user || currentUser?.id;
+  const isCodeOutputHandle =
+    source === FileSources.execute_code || href.startsWith('/api/files/code/download/');
+  const useStoredFileDownload =
+    !!file_id && !!downloadUser && !isCodeOutputHandle && (isLocallyStoredSource(source) || !source);
+  const { refetch: downloadFromApi } = useFileDownload(downloadUser, file_id, {
+    source,
+    direct: false,
+  });
   const { refetch: downloadFromUrl } = useCodeOutputDownload(href);
 
   const handleDownload = async (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
@@ -66,12 +75,12 @@ export const useAttachmentLink = ({
         return;
       }
 
-      if (!useLocalDownload && isHttpDownloadTarget(href)) {
+      if (!useStoredFileDownload && isHttpDownloadTarget(href)) {
         triggerDownload(href, filename);
         return;
       }
 
-      const stream = useLocalDownload ? await downloadFromApi() : await downloadFromUrl();
+      const stream = useStoredFileDownload ? await downloadFromApi() : await downloadFromUrl();
       if (stream.data == null || stream.data === '') {
         console.error('Error downloading file: No data found');
         showToast({

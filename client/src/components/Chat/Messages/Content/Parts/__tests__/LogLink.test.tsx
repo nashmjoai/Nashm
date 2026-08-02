@@ -7,19 +7,28 @@ const mockShowToast = jest.fn();
 const mockDownloadFromApi = jest.fn();
 const mockDownloadFromUrl = jest.fn();
 const mockTriggerDownload = jest.fn();
+const mockUseFileDownload = jest.fn();
 let mockShareContext: { shareId?: string } = {};
+let mockAuthContext: { user?: { id: string } } = { user: { id: 'current-user' } };
 
 jest.mock('@nashm/client', () => ({
   useToastContext: () => ({ showToast: mockShowToast }),
 }));
 
 jest.mock('~/data-provider', () => ({
-  useFileDownload: () => ({ refetch: mockDownloadFromApi }),
+  useFileDownload: (...args: Parameters<typeof mockUseFileDownload>) => {
+    mockUseFileDownload(...args);
+    return { refetch: mockDownloadFromApi };
+  },
   useCodeOutputDownload: () => ({ refetch: mockDownloadFromUrl }),
 }));
 
 jest.mock('~/Providers', () => ({
   useShareContext: () => mockShareContext,
+}));
+
+jest.mock('~/hooks/AuthContext', () => ({
+  useAuthContext: () => mockAuthContext,
 }));
 
 jest.mock('~/utils', () => ({
@@ -32,6 +41,7 @@ describe('LogLink download routing', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockShareContext = {};
+    mockAuthContext = { user: { id: 'current-user' } };
   });
 
   it('navigates directly to http URLs when no stored file metadata is available', async () => {
@@ -77,6 +87,37 @@ describe('LogLink download routing', () => {
         'https://cdn.example.com/signed/file.pdf',
         'file.pdf',
       );
+    });
+    expect(mockDownloadFromApi).toHaveBeenCalledTimes(1);
+    expect(mockDownloadFromUrl).not.toHaveBeenCalled();
+  });
+
+  it('uses the proxied API download for stored files even when attachment owner is missing', async () => {
+    const filename = 'team_report.docx';
+    mockDownloadFromApi.mockResolvedValue({ data: 'blob:https://app.example.com/team-report' });
+
+    render(
+      <LogLink
+        file_id="file-1"
+        filename={filename}
+        source={FileSources.s3}
+        href="https://bucket.s3.amazonaws.com/uploads/current-user/team_report.docx"
+      >
+        {filename}
+      </LogLink>,
+    );
+
+    fireEvent.click(screen.getByRole('link', { name: filename }));
+
+    await waitFor(() => {
+      expect(mockTriggerDownload).toHaveBeenCalledWith(
+        'blob:https://app.example.com/team-report',
+        'team_report.docx',
+      );
+    });
+    expect(mockUseFileDownload).toHaveBeenCalledWith('current-user', 'file-1', {
+      source: FileSources.s3,
+      direct: false,
     });
     expect(mockDownloadFromApi).toHaveBeenCalledTimes(1);
     expect(mockDownloadFromUrl).not.toHaveBeenCalled();

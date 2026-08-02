@@ -1,8 +1,12 @@
-import os
+﻿import os
 import sys
 import json
 import argparse
-from PIL import Image
+import hashlib
+import tempfile
+import urllib.request
+from urllib.parse import urlparse
+from PIL import Image, ImageDraw, ImageOps
 
 # Third party imports
 from pptx import Presentation
@@ -19,6 +23,10 @@ from docx.oxml.ns import qn
 from openpyxl import Workbook
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+
+RTL_FONT = 'Arial'
+LTR_FONT = 'Aptos'
+MAX_IMAGE_BYTES = 8 * 1024 * 1024
 
 # Define color schemes for themes
 SLIDES_THEMES = {
@@ -139,7 +147,7 @@ def set_docx_run_rtl(run):
     rPr = run._r.get_or_add_rPr()
     rFonts = rPr.get_or_add_rFonts()
     
-    font_name = run.font.name or 'Cairo'
+    font_name = run.font.name or RTL_FONT
     font_size_pt = run.font.size.pt if run.font.size else 11
     
     rFonts.set(qn('w:cs'), font_name)
@@ -160,6 +168,105 @@ def set_docx_run_rtl(run):
         rPr.append(lang)
     lang.set(qn('w:bidi'), 'ar-SA')
 
+
+def is_rtl_artifact(data):
+    return data.get('direction') == 'rtl' or (
+        data.get('direction') == 'auto' and data.get('locale', '').startswith('ar')
+    )
+
+
+def office_font(is_rtl):
+    return RTL_FONT if is_rtl else LTR_FONT
+
+
+def get_visual_source(visual):
+    if isinstance(visual, str):
+        return visual
+    if not isinstance(visual, dict):
+        return ''
+    return visual.get('url') or visual.get('imageUrl') or visual.get('src') or visual.get('path') or ''
+
+
+def get_visual_caption(visual):
+    if not isinstance(visual, dict):
+        return ''
+    return visual.get('caption') or visual.get('alt') or ''
+
+
+def make_fallback_image(path, title, accent_rgb):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    bg = Image.new('RGB', (1600, 900), '#0f172a')
+    draw = ImageDraw.Draw(bg)
+    accent = '#%02x%02x%02x' % accent_rgb
+    draw.rectangle([0, 0, 1600, 900], fill='#111827')
+    draw.rectangle([0, 610, 1600, 900], fill=accent)
+    draw.rectangle([90, 110, 1510, 540], outline=accent, width=8)
+    draw.text((130, 650), 'Nashm Office', fill='white')
+    draw.text((130, 700), title[:90] or 'Professional visual', fill='white')
+    bg.save(path, 'JPEG', quality=92)
+    return path
+
+
+def fit_image_to_box(input_path, output_path, size):
+    with Image.open(input_path) as image:
+        image = ImageOps.exif_transpose(image).convert('RGB')
+        fitted = ImageOps.fit(image, size, method=Image.Resampling.LANCZOS, centering=(0.5, 0.5))
+        fitted.save(output_path, 'JPEG', quality=90)
+    return output_path
+
+
+def resolve_visual_image(visual, fallback_title, accent_rgb, size=(1600, 900)):
+    source = get_visual_source(visual)
+    digest = hashlib.sha1((source or fallback_title or 'visual').encode('utf-8')).hexdigest()[:12]
+    temp_dir = tempfile.mkdtemp(prefix='nashm_office_')
+    raw_path = os.path.join(temp_dir, f'{digest}_raw')
+    fitted_path = os.path.join(temp_dir, f'{digest}.jpg')
+
+    try:
+        parsed = urlparse(source)
+        if parsed.scheme in ('http', 'https'):
+            request = urllib.request.Request(source, headers={'User-Agent': 'Nashm Office Exporter/1.0'})
+            with urllib.request.urlopen(request, timeout=12) as response:
+                payload = response.read(MAX_IMAGE_BYTES + 1)
+            if len(payload) > MAX_IMAGE_BYTES:
+                raise ValueError('image exceeds maximum size')
+            with open(raw_path, 'wb') as handle:
+                handle.write(payload)
+            return fit_image_to_box(raw_path, fitted_path, size)
+        if source and os.path.exists(source):
+            return fit_image_to_box(source, fitted_path, size)
+    except Exception:
+        pass
+
+    return make_fallback_image(fitted_path, fallback_title, accent_rgb)
+
+
+def add_docx_visual(doc, visual, title, accent_rgb, is_rtl, width=6.2):
+    if not get_visual_source(visual):
+        return
+
+    image_path = resolve_visual_image(visual, title, accent_rgb, size=(1400, 700))
+    image_p = doc.add_paragraph()
+    image_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    image_run = image_p.add_run()
+    image_run.add_picture(image_path, width=DocxInches(width))
+    image_p.paragraph_format.space_before = DocxPt(6)
+    image_p.paragraph_format.space_after = DocxPt(8)
+
+    caption = get_visual_caption(visual)
+    if caption:
+        caption_p = doc.add_paragraph()
+        caption_run = caption_p.add_run(caption)
+        caption_run.font.name = office_font(is_rtl)
+        caption_run.font.size = DocxPt(9)
+        caption_run.font.italic = True
+        caption_run.font.color.rgb = DocxRGBColor(100, 116, 139)
+        caption_p.alignment = WD_ALIGN_PARAGRAPH.RIGHT if is_rtl else WD_ALIGN_PARAGRAPH.CENTER
+        if is_rtl:
+            set_docx_paragraph_rtl(caption_p)
+            set_docx_run_rtl(caption_run)
+        caption_p.paragraph_format.space_after = DocxPt(10)
+
 def generate_slides(data, output_path):
     theme_id = data.get('templateId', 'nashm-executive-dark')
     theme = SLIDES_THEMES.get(theme_id, SLIDES_THEMES['nashm-executive-dark'])
@@ -169,7 +276,7 @@ def generate_slides(data, output_path):
     prs.slide_width = Inches(13.333)
     prs.slide_height = Inches(7.5)
 
-    is_rtl = data.get('direction') == 'rtl' or (data.get('direction') == 'auto' and data.get('locale', '').startswith('ar'))
+    is_rtl = is_rtl_artifact(data)
 
     # Background color helper
     def style_slide_background(slide):
@@ -180,7 +287,8 @@ def generate_slides(data, output_path):
 
     blank_slide_layout = prs.slide_layouts[6] # Blank slide layout
 
-    for slide_data in data.get('content', {}).get('slides', []):
+    slides_data = data.get('content', {}).get('slides', [])
+    for slide_index, slide_data in enumerate(slides_data):
         slide = prs.slides.add_slide(blank_slide_layout)
         style_slide_background(slide)
 
@@ -188,6 +296,21 @@ def generate_slides(data, output_path):
         title_text = slide_data.get('title', '')
         eyebrow = slide_data.get('eyebrow', '')
         content_items = slide_data.get('content', [])
+        visual = slide_data.get('visual') or (data.get('visual') if slide_index == 0 else None)
+        visual_path = ''
+        if get_visual_source(visual):
+            visual_path = resolve_visual_image(visual, title_text or data.get('title', ''), theme['accent'])
+
+        if visual_path and layout == 'cover':
+            slide.shapes.add_picture(visual_path, 0, 0, width=prs.slide_width, height=prs.slide_height)
+            overlay = slide.shapes.add_shape(1, 0, 0, prs.slide_width, prs.slide_height)
+            overlay.fill.solid()
+            overlay.fill.fore_color.rgb = RGBColor(0, 0, 0)
+            try:
+                overlay.fill.transparency = 35
+            except Exception:
+                pass
+            overlay.line.fill.background()
 
         # Add Title Box
         title_box = slide.shapes.add_textbox(Inches(0.8), Inches(0.6), Inches(11.7), Inches(1.5))
@@ -199,7 +322,7 @@ def generate_slides(data, output_path):
         if eyebrow:
             p_eyebrow = tf.paragraphs[0]
             p_eyebrow.text = eyebrow.upper()
-            p_eyebrow.font.name = 'Cairo' if is_rtl else 'Arial'
+            p_eyebrow.font.name = office_font(is_rtl)
             p_eyebrow.font.size = Pt(10)
             p_eyebrow.font.bold = True
             p_eyebrow.font.color.rgb = RGBColor(*theme['accent'])
@@ -212,7 +335,7 @@ def generate_slides(data, output_path):
 
         # Title
         p_title.text = title_text
-        p_title.font.name = 'Cairo' if is_rtl else 'Arial'
+        p_title.font.name = office_font(is_rtl)
         p_title.font.size = Pt(36)
         p_title.font.bold = True
         p_title.font.color.rgb = RGBColor(*theme['text'])
@@ -233,7 +356,7 @@ def generate_slides(data, output_path):
                 p_desc = tf.add_paragraph()
                 p_desc.text = content_items[0]
                 p_desc.space_before = Pt(24)
-                p_desc.font.name = 'Cairo' if is_rtl else 'Arial'
+                p_desc.font.name = office_font(is_rtl)
                 p_desc.font.size = Pt(16)
                 p_desc.font.color.rgb = RGBColor(*theme['text'])
                 p_desc.alignment = PP_ALIGN.CENTER
@@ -242,14 +365,20 @@ def generate_slides(data, output_path):
 
         elif layout == 'section':
             # Section divider / title layout with high fidelity
-            content_box = slide.shapes.add_textbox(Inches(0.8), Inches(2.0), Inches(11.7), Inches(4.5))
+            section_text_left = Inches(6.8) if is_rtl and visual_path else Inches(0.8)
+            section_text_width = Inches(5.8) if visual_path else Inches(11.7)
+            content_box = slide.shapes.add_textbox(section_text_left, Inches(2.0), section_text_width, Inches(4.5))
             tf_section = content_box.text_frame
             tf_section.word_wrap = True
             tf_section.margin_left = tf_section.margin_right = 0
+
+            if visual_path:
+                image_left = Inches(0.8) if is_rtl else Inches(8.0)
+                slide.shapes.add_picture(visual_path, image_left, Inches(2.35), width=Inches(4.4), height=Inches(3.4))
             
             p_sec_title = tf_section.paragraphs[0]
             p_sec_title.text = title_text
-            p_sec_title.font.name = 'Cairo' if is_rtl else 'Arial'
+            p_sec_title.font.name = office_font(is_rtl)
             p_sec_title.font.size = Pt(28)
             p_sec_title.font.bold = True
             p_sec_title.font.color.rgb = RGBColor(*theme['text'])
@@ -269,7 +398,7 @@ def generate_slides(data, output_path):
                 p_desc = tf_section.add_paragraph()
                 p_desc.text = text
                 p_desc.space_before = Pt(14)
-                p_desc.font.name = 'Cairo' if is_rtl else 'Arial'
+                p_desc.font.name = office_font(is_rtl)
                 p_desc.font.size = Pt(14)
                 p_desc.font.color.rgb = RGBColor(*theme['text'])
                 if is_rtl:
@@ -311,7 +440,7 @@ def generate_slides(data, output_path):
 
                 p_val = tf_card.paragraphs[0]
                 p_val.text = val
-                p_val.font.name = 'Cairo' if is_rtl else 'Arial'
+                p_val.font.name = office_font(is_rtl)
                 p_val.font.size = Pt(32)
                 p_val.font.bold = True
                 p_val.font.color.rgb = RGBColor(*theme['accent'])
@@ -320,7 +449,7 @@ def generate_slides(data, output_path):
                     p_label = tf_card.add_paragraph()
                     p_label.text = label
                     p_label.space_before = Pt(8)
-                    p_label.font.name = 'Cairo' if is_rtl else 'Arial'
+                    p_label.font.name = office_font(is_rtl)
                     p_label.font.size = Pt(12)
                     p_label.font.color.rgb = RGBColor(*theme['text'])
                     p_label.font.bold = True
@@ -361,7 +490,7 @@ def generate_slides(data, output_path):
                 # Column Title
                 p_col_title = tf_comp.paragraphs[0]
                 p_col_title.text = col_title
-                p_col_title.font.name = 'Cairo' if is_rtl else 'Arial'
+                p_col_title.font.name = office_font(is_rtl)
                 p_col_title.font.size = Pt(16)
                 p_col_title.font.bold = True
                 p_col_title.font.color.rgb = RGBColor(*theme['accent'])
@@ -372,10 +501,10 @@ def generate_slides(data, output_path):
                 # Column Items
                 for item in items:
                     p_item = tf_comp.add_paragraph()
-                    clean_item = item.lstrip('-').lstrip('•').strip()
-                    p_item.text = "• " + clean_item
+                    clean_item = item.lstrip('-').lstrip('\u2022').strip()
+                    p_item.text = "\u2022 " + clean_item
                     p_item.space_before = Pt(8)
-                    p_item.font.name = 'Cairo' if is_rtl else 'Arial'
+                    p_item.font.name = office_font(is_rtl)
                     p_item.font.size = Pt(12)
                     p_item.font.color.rgb = RGBColor(*theme['text'])
                     if is_rtl:
@@ -411,7 +540,7 @@ def generate_slides(data, output_path):
                 
                 p = tf_grid.paragraphs[0]
                 p.text = text
-                p.font.name = 'Cairo' if is_rtl else 'Arial'
+                p.font.name = office_font(is_rtl)
                 p.font.size = Pt(12)
                 p.font.color.rgb = RGBColor(*theme['text'])
                 if is_rtl:
@@ -429,7 +558,7 @@ def generate_slides(data, output_path):
                 p = tf_agenda.paragraphs[0] if i == 0 else tf_agenda.add_paragraph()
                 p.text = f"{i + 1}.  {text}"
                 p.space_after = Pt(14)
-                p.font.name = 'Cairo' if is_rtl else 'Arial'
+                p.font.name = office_font(is_rtl)
                 p.font.size = Pt(16)
                 p.font.bold = True
                 p.font.color.rgb = RGBColor(*theme['text'])
@@ -445,42 +574,61 @@ def generate_slides(data, output_path):
             # Position calculations (swapped if RTL)
             c1_left = Inches(7.0) if is_rtl else Inches(0.8)
             c2_left = Inches(0.8) if is_rtl else Inches(7.0)
-            
-            # Left column
-            left_col = slide.shapes.add_textbox(c1_left, Inches(2.4), col_width, col_height)
-            tf_left = left_col.text_frame
-            tf_left.word_wrap = True
-            
-            # Right column
-            right_col = slide.shapes.add_textbox(c2_left, Inches(2.4), col_width, col_height)
-            tf_right = right_col.text_frame
-            tf_right.word_wrap = True
 
-            mid = (len(content_items) + 1) // 2
-            left_items = content_items[:mid]
-            right_items = content_items[mid:]
+            if visual_path:
+                image_left = c2_left
+                text_left = c1_left
+                slide.shapes.add_picture(visual_path, image_left, Inches(2.25), width=col_width, height=Inches(4.2))
+                text_col = slide.shapes.add_textbox(text_left, Inches(2.35), col_width, col_height)
+                tf_text = text_col.text_frame
+                tf_text.word_wrap = True
+                tf_text.margin_left = tf_text.margin_right = Inches(0.15)
+                for i, text in enumerate(content_items):
+                    p = tf_text.paragraphs[0] if i == 0 else tf_text.add_paragraph()
+                    p.text = "\u2022 " + text
+                    p.space_after = Pt(12)
+                    p.font.name = office_font(is_rtl)
+                    p.font.size = Pt(14)
+                    p.font.color.rgb = RGBColor(*theme['text'])
+                    if is_rtl:
+                        p.alignment = PP_ALIGN.RIGHT
+                        set_pptx_paragraph_rtl(p)
+            else:
+                # Left column
+                left_col = slide.shapes.add_textbox(c1_left, Inches(2.4), col_width, col_height)
+                tf_left = left_col.text_frame
+                tf_left.word_wrap = True
 
-            for i, text in enumerate(left_items):
-                p = tf_left.paragraphs[0] if i == 0 else tf_left.add_paragraph()
-                p.text = "• " + text
-                p.space_after = Pt(12)
-                p.font.name = 'Cairo' if is_rtl else 'Arial'
-                p.font.size = Pt(14)
-                p.font.color.rgb = RGBColor(*theme['text'])
-                if is_rtl:
-                    p.alignment = PP_ALIGN.RIGHT
-                    set_pptx_paragraph_rtl(p)
+                # Right column
+                right_col = slide.shapes.add_textbox(c2_left, Inches(2.4), col_width, col_height)
+                tf_right = right_col.text_frame
+                tf_right.word_wrap = True
 
-            for i, text in enumerate(right_items):
-                p = tf_right.paragraphs[0] if i == 0 else tf_right.add_paragraph()
-                p.text = "• " + text
-                p.space_after = Pt(12)
-                p.font.name = 'Cairo' if is_rtl else 'Arial'
-                p.font.size = Pt(14)
-                p.font.color.rgb = RGBColor(*theme['text'])
-                if is_rtl:
-                    p.alignment = PP_ALIGN.RIGHT
-                    set_pptx_paragraph_rtl(p)
+                mid = (len(content_items) + 1) // 2
+                left_items = content_items[:mid]
+                right_items = content_items[mid:]
+
+                for i, text in enumerate(left_items):
+                    p = tf_left.paragraphs[0] if i == 0 else tf_left.add_paragraph()
+                    p.text = "\u2022 " + text
+                    p.space_after = Pt(12)
+                    p.font.name = office_font(is_rtl)
+                    p.font.size = Pt(14)
+                    p.font.color.rgb = RGBColor(*theme['text'])
+                    if is_rtl:
+                        p.alignment = PP_ALIGN.RIGHT
+                        set_pptx_paragraph_rtl(p)
+
+                for i, text in enumerate(right_items):
+                    p = tf_right.paragraphs[0] if i == 0 else tf_right.add_paragraph()
+                    p.text = "\u2022 " + text
+                    p.space_after = Pt(12)
+                    p.font.name = office_font(is_rtl)
+                    p.font.size = Pt(14)
+                    p.font.color.rgb = RGBColor(*theme['text'])
+                    if is_rtl:
+                        p.alignment = PP_ALIGN.RIGHT
+                        set_pptx_paragraph_rtl(p)
 
         else:
             # Standard single textbox list
@@ -491,9 +639,9 @@ def generate_slides(data, output_path):
             
             for i, text in enumerate(content_items):
                 p = tf_content.paragraphs[0] if i == 0 else tf_content.add_paragraph()
-                p.text = "• " + text
+                p.text = "\u2022 " + text
                 p.space_after = Pt(14)
-                p.font.name = 'Cairo' if is_rtl else 'Arial'
+                p.font.name = office_font(is_rtl)
                 p.font.size = Pt(16)
                 p.font.color.rgb = RGBColor(*theme['text'])
                 if is_rtl:
@@ -513,7 +661,12 @@ def generate_document(data, output_path):
     theme = DOCS_THEMES.get(theme_id, DOCS_THEMES['nashm-report-pro'])
 
     doc = Document()
-    is_rtl = data.get('direction') == 'rtl' or (data.get('direction') == 'auto' and data.get('locale', '').startswith('ar'))
+    is_rtl = is_rtl_artifact(data)
+    base_font = office_font(is_rtl)
+
+    normal_style = doc.styles['Normal']
+    normal_style.font.name = base_font
+    normal_style.font.size = DocxPt(11)
 
     # Set page margins
     sections_list = doc.sections
@@ -526,7 +679,7 @@ def generate_document(data, output_path):
     # Document main title
     title_p = doc.add_paragraph()
     title_run = title_p.add_run(data.get('title', 'Generated Document'))
-    title_run.font.name = 'Cairo' if is_rtl else 'Arial'
+    title_run.font.name = base_font
     title_run.font.size = DocxPt(26)
     title_run.font.bold = True
     title_run.font.color.rgb = DocxRGBColor(*theme['header_color'])
@@ -541,11 +694,13 @@ def generate_document(data, output_path):
     # Add spacing after title
     title_p.paragraph_format.space_after = DocxPt(24)
 
+    add_docx_visual(doc, data.get('visual'), data.get('title', 'Generated Document'), theme['header_color'], is_rtl)
+
     for sec in data.get('content', {}).get('sections', []):
         # Heading
         head_p = doc.add_paragraph()
         head_run = head_p.add_run(sec.get('title', ''))
-        head_run.font.name = 'Cairo' if is_rtl else 'Arial'
+        head_run.font.name = base_font
         head_run.font.size = DocxPt(16)
         head_run.font.bold = True
         head_run.font.color.rgb = DocxRGBColor(*theme['header_color'])
@@ -560,11 +715,13 @@ def generate_document(data, output_path):
         head_p.paragraph_format.space_before = DocxPt(18)
         head_p.paragraph_format.space_after = DocxPt(12)
 
+        add_docx_visual(doc, sec.get('visual'), sec.get('title', data.get('title', 'Generated Document')), theme['header_color'], is_rtl)
+
         # Paragraphs
         for p_text in sec.get('paragraphs', []):
             p = doc.add_paragraph()
             p_run = p.add_run(p_text)
-            p_run.font.name = 'Cairo' if is_rtl else 'Arial'
+            p_run.font.name = base_font
             p_run.font.size = DocxPt(11)
             p_run.font.color.rgb = DocxRGBColor(*theme['text_color'])
             
@@ -584,9 +741,9 @@ def generate_document(data, output_path):
             list_type = lst.get('type', 'bullet')
             for i, item_text in enumerate(lst.get('items', [])):
                 p = doc.add_paragraph()
-                prefix = f"{i+1}. " if list_type == 'numbered' else "• "
+                prefix = f"{i+1}. " if list_type == 'numbered' else "\u2022 "
                 p_run = p.add_run(prefix + item_text)
-                p_run.font.name = 'Cairo' if is_rtl else 'Arial'
+                p_run.font.name = base_font
                 p_run.font.size = DocxPt(11)
                 p_run.font.color.rgb = DocxRGBColor(*theme['text_color'])
                 
@@ -594,6 +751,7 @@ def generate_document(data, output_path):
                     p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
                     set_docx_paragraph_rtl(p)
                     set_docx_run_rtl(p_run)
+                    p.paragraph_format.right_indent = DocxInches(0.25)
                 else:
                     p.alignment = WD_ALIGN_PARAGRAPH.LEFT
                     p.paragraph_format.left_indent = DocxInches(0.25)
@@ -608,7 +766,7 @@ def generate_workbook(data, output_path):
     theme = SHEETS_THEMES.get(theme_id, SHEETS_THEMES['nashm-finance-dashboard'])
 
     wb = Workbook()
-    is_rtl = data.get('direction') == 'rtl' or (data.get('direction') == 'auto' and data.get('locale', '').startswith('ar'))
+    is_rtl = is_rtl_artifact(data)
 
     # Strip default sheet
     default_sheet = wb.active
@@ -641,13 +799,13 @@ def generate_workbook(data, output_path):
                 
                 lbl_cell = ws.cell(row=1, column=c1)
                 lbl_cell.value = item.get('label', '').upper()
-                lbl_cell.font = Font(name='Cairo' if is_rtl else 'Arial', size=9, bold=True, color='555555')
+                lbl_cell.font = Font(name=office_font(is_rtl), size=9, bold=True, color='555555')
                 lbl_cell.fill = PatternFill(start_color=theme['kpi_fill'], end_color=theme['kpi_fill'], fill_type='solid')
                 lbl_cell.alignment = Alignment(horizontal='center', vertical='center')
 
                 val_cell = ws.cell(row=2, column=c1)
                 val_cell.value = item.get('value', '')
-                val_cell.font = Font(name='Cairo' if is_rtl else 'Arial', size=16, bold=True, color=theme['kpi_text'])
+                val_cell.font = Font(name=office_font(is_rtl), size=16, bold=True, color=theme['kpi_text'])
                 val_cell.fill = PatternFill(start_color=theme['kpi_fill'], end_color=theme['kpi_fill'], fill_type='solid')
                 val_cell.alignment = Alignment(horizontal='center', vertical='center')
 
@@ -664,7 +822,7 @@ def generate_workbook(data, output_path):
         for col_idx, header in enumerate(headers):
             cell = ws.cell(row=start_row, column=col_idx + 1)
             cell.value = header
-            cell.font = Font(name='Cairo' if is_rtl else 'Arial', size=11, bold=True, color=theme['header_text'])
+            cell.font = Font(name=office_font(is_rtl), size=11, bold=True, color=theme['header_text'])
             cell.fill = PatternFill(start_color=theme['header_fill'], end_color=theme['header_fill'], fill_type='solid')
             cell.alignment = Alignment(horizontal='right' if is_rtl else 'left', vertical='center', readingOrder=2 if is_rtl else 1)
             thin_border_side = Side(border_style="thin", color="CCCCCC")
@@ -678,7 +836,12 @@ def generate_workbook(data, output_path):
             # Check if this is a totals row
             is_total_row = any(
                 isinstance(v, str) and 
-                (v.lower().find('total') != -1 or v.lower().find('sum') != -1 or v.find('مجموع') != -1 or v.find('إجمالي') != -1) 
+                (
+                    v.lower().find('total') != -1
+                    or v.lower().find('sum') != -1
+                    or v.find('\u0645\u062c\u0645\u0648\u0639') != -1
+                    or v.find('\u0625\u062c\u0645\u0627\u0644\u064a') != -1
+                )
                 for v in row_values
             )
 
@@ -690,7 +853,7 @@ def generate_workbook(data, output_path):
 
                 # Font & Style
                 font_weight = True if is_total_row else False
-                cell.font = Font(name='Cairo' if is_rtl else 'Arial', size=10, bold=font_weight)
+                cell.font = Font(name=office_font(is_rtl), size=10, bold=font_weight)
                 
                 # Alignment
                 horiz_align = 'right' if is_num or is_rtl else 'left'
@@ -746,7 +909,7 @@ def main():
         sys.exit(1)
 
     try:
-        with open(args.input, 'r', encoding='utf-8') as f:
+        with open(args.input, 'r', encoding='utf-8-sig') as f:
             data = json.load(f)
     except Exception as e:
         print(f"Error reading JSON: {e}")
@@ -781,3 +944,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

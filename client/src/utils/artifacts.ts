@@ -850,6 +850,8 @@ export function fileToArtifact(
         | 'file_id'
         | 'filename'
         | 'filepath'
+        | 'user'
+        | 'source'
         | 'type'
         | 'text'
         | 'textFormat'
@@ -906,6 +908,10 @@ export function fileToArtifact(
     content: attachment.text ?? options?.placeholder ?? '',
     language,
     messageId: attachment.messageId ?? undefined,
+    filepath: attachment.filepath ?? undefined,
+    file_id: attachment.file_id ?? undefined,
+    user: attachment.user ?? undefined,
+    source: attachment.source ?? undefined,
     lastUpdateTime: toLastUpdate(attachment),
   };
 }

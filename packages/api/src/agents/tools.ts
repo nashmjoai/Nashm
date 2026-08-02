@@ -378,9 +378,14 @@ export function isFileAuthoringToolDefinition(def: LCTool | undefined): boolean 
  * behavior introduced for tool-output references.
  */
 function createBashToolDef(enableToolOutputReferences: boolean): LCTool {
+  const description = `${buildBashExecutionToolDescription({
+    enableToolOutputReferences,
+  })}
+
+Office artifacts: python3 has docx, pptx, PIL, requests, and nashm_office_templates. For polished DOCX/PPTX, write outputs under /mnt/data and use nashm_office_templates helpers instead of hand-rolled plain documents. For Arabic content, set rtl=True/direction="rtl", use locale ar-JO, right-align paragraphs/lists/tables, use Arabic-safe fonts, and apply RTL helpers to runs and paragraphs. For reports or slides that should look professional, include relevant web images when available; download/fit them with helper image functions and add captions.`;
   return Object.freeze({
     name: BashExecutionToolDefinition.name,
-    description: buildBashExecutionToolDescription({ enableToolOutputReferences }),
+    description,
     parameters: BashExecutionToolDefinition.schema as unknown as LCTool['parameters'],
   }) as LCTool;
 }

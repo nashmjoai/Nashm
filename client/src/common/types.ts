@@ -665,6 +665,8 @@ export type TThread = { id: string; createdAt: string };
 declare global {
   interface Window {
     google_tag_manager?: unknown;
+    __nashmRecoverStaleAssets?: () => boolean;
+    __nashmIsStaleAssetError?: (reason: unknown) => boolean;
     __Nashm_CONFIG__?: {
       enableQueryDevtools?: boolean;
     };

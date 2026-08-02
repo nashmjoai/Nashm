@@ -354,6 +354,7 @@ export const langSubset = [
 ];
 
 enum Languages {
+  bash = 'bash',
   c = 'c',
   cpp = 'cpp',
   d = 'd',
@@ -362,13 +363,21 @@ enum Languages {
   java = 'java',
   js = 'js',
   php = 'php',
+  powershell = 'powershell',
   py = 'py',
+  r = 'r',
   rs = 'rs',
   ts = 'ts',
 }
 
 // Create a mapping of common variations to the enum values
 const languageAliases: Record<string, Languages | undefined> = {
+  // Bash / shell
+  bash: Languages.bash,
+  sh: Languages.bash,
+  shell: Languages.bash,
+  zsh: Languages.bash,
+
   // C
   c: Languages.c,
 
@@ -401,10 +410,20 @@ const languageAliases: Record<string, Languages | undefined> = {
   // PHP
   php: Languages.php,
 
+  // PowerShell
+  powershell: Languages.powershell,
+  ps: Languages.powershell,
+  ps1: Languages.powershell,
+  pwsh: Languages.powershell,
+
   // Python
   py: Languages.py,
   python: Languages.py,
   python3: Languages.py,
+
+  // R
+  r: Languages.r,
+  rscript: Languages.r,
 
   // Rust
   rs: Languages.rs,

@@ -8,6 +8,7 @@ import {
   TOOL_ARTIFACT_TYPES,
 } from '../artifacts';
 import type { ToolArtifactType } from '../artifacts';
+import { FileSources } from 'nashm-data-provider';
 
 const TAILWIND_CDN = 'https://cdn.tailwindcss.com/3.4.17#tailwind.js';
 
@@ -566,6 +567,9 @@ describe('fileToArtifact', () => {
   const baseFile = {
     file_id: 'fid-1',
     filename: 'index.html',
+    filepath: '/api/files/code/download/session-1/fid-1',
+    user: 'user-1',
+    source: FileSources.execute_code,
     type: 'text/html',
     text: '<h1>hi</h1>',
     messageId: 'msg-1',
@@ -580,6 +584,10 @@ describe('fileToArtifact', () => {
     expect(artifact!.title).toBe('index.html');
     expect(artifact!.content).toBe('<h1>hi</h1>');
     expect(artifact!.messageId).toBe('msg-1');
+    expect(artifact!.filepath).toBe(baseFile.filepath);
+    expect(artifact!.file_id).toBe(baseFile.file_id);
+    expect(artifact!.user).toBe(baseFile.user);
+    expect(artifact!.source).toBe(FileSources.execute_code);
     expect(artifact!.lastUpdateTime).toBe(new Date(baseFile.updatedAt).getTime());
   });
 

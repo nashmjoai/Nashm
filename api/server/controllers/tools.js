@@ -1,6 +1,6 @@
 const { nanoid } = require('nanoid');
 const { logger } = require('@nashm/data-schemas');
-const { checkAccess, loadWebSearchAuth } = require('@nashm/api');
+const { checkAccess, executeDirectCode, loadWebSearchAuth } = require('@nashm/api');
 const {
   Tools,
   AuthType,
@@ -14,6 +14,41 @@ const { getRetentionExpiry } = require('~/server/services/Files/retention');
 const { processCodeOutput, runPreviewFinalize } = require('~/server/services/Files/Code/process');
 const { loadAuthValues } = require('~/server/services/Tools/credentials');
 const { loadTools } = require('~/app/clients/tools/util');
+
+const toStringArray = (value) => {
+  if (!Array.isArray(value)) {
+    return undefined;
+  }
+  return value.map((item) => String(item));
+};
+
+const toOptionalNumber = (value) => {
+  return typeof value === 'number' ? value : undefined;
+};
+
+const createDirectCodeInput = (args) => {
+  if (
+    typeof args.lang !== 'string' ||
+    args.lang.length === 0 ||
+    typeof args.code !== 'string' ||
+    args.code.length === 0
+  ) {
+    return null;
+  }
+
+  return {
+    lang: args.lang,
+    code: args.code,
+    args: toStringArray(args.args),
+    stdin: typeof args.stdin === 'string' ? args.stdin : undefined,
+    files: Array.isArray(args.files) ? args.files : undefined,
+    session_id: typeof args.session_id === 'string' ? args.session_id : undefined,
+    run_timeout: toOptionalNumber(args.run_timeout),
+    compile_timeout: toOptionalNumber(args.compile_timeout),
+    run_memory_limit: toOptionalNumber(args.run_memory_limit),
+    compile_memory_limit: toOptionalNumber(args.compile_memory_limit),
+  };
+};
 
 /**
  * Tools that are callable directly via `POST /tools/:toolId/call`.
@@ -135,29 +170,39 @@ const callTool = async (req, res) => {
       );
       return res.status(403).json({ message: 'Forbidden: Insufficient permissions' });
     }
-    const { loadedTools } = await loadTools({
-      user: req.user.id,
-      tools: [toolId],
-      functions: true,
-      options: {
-        req,
-        returnMetadata: true,
-        processFileURL,
-        uploadImageBuffer,
-      },
-      webSearch: appConfig.webSearch,
-      fileStrategy: appConfig.fileStrategy,
-      imageOutputType: appConfig.imageOutputType,
-    });
-
-    const tool = loadedTools[0];
     const toolCallId = `${req.user.id}_${nanoid()}`;
-    const result = await tool.invoke({
-      args,
-      name: toolId,
-      id: toolCallId,
-      type: ToolCallTypes.TOOL_CALL,
-    });
+    let result;
+    if (toolId === Tools.execute_code) {
+      const input = createDirectCodeInput(args);
+      if (!input) {
+        res.status(400).json({ message: 'lang and code are required' });
+        return;
+      }
+      result = await executeDirectCode(input, req);
+    } else {
+      const { loadedTools } = await loadTools({
+        user: req.user.id,
+        tools: [toolId],
+        functions: true,
+        options: {
+          req,
+          returnMetadata: true,
+          processFileURL,
+          uploadImageBuffer,
+        },
+        webSearch: appConfig.webSearch,
+        fileStrategy: appConfig.fileStrategy,
+        imageOutputType: appConfig.imageOutputType,
+      });
+
+      const tool = loadedTools[0];
+      result = await tool.invoke({
+        args,
+        name: toolId,
+        id: toolCallId,
+        type: ToolCallTypes.TOOL_CALL,
+      });
+    }
 
     const { content, artifact } = result;
     const toolCallData = {

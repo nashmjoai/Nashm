@@ -15,14 +15,32 @@ export interface BaseOfficeArtifact {
   locale: string;
   direction: 'rtl' | 'ltr' | 'auto';
   templateId: string;
+  visual?: OfficeVisual;
+}
+
+export interface OfficeVisual {
+  url: string;
+  alt?: string;
+  caption?: string;
+  query?: string;
 }
 
 export interface SlideItem {
   title: string;
-  layout: 'cover' | 'agenda' | 'section' | 'split' | 'grid' | 'kpi' | 'chart' | 'comparison' | 'closing';
+  layout:
+    | 'cover'
+    | 'agenda'
+    | 'section'
+    | 'split'
+    | 'grid'
+    | 'kpi'
+    | 'chart'
+    | 'comparison'
+    | 'closing';
   eyebrow?: string;
   content: string[];
   notes?: string;
+  visual?: OfficeVisual;
 }
 
 export interface NashmSlides extends BaseOfficeArtifact {
@@ -39,6 +57,7 @@ export interface DocumentSection {
     type: 'bullet' | 'numbered';
     items: string[];
   };
+  visual?: OfficeVisual;
 }
 
 export interface NashmDocument extends BaseOfficeArtifact {
@@ -68,13 +87,33 @@ function isStr(val: unknown, maxLen = MAX_STRING_LENGTH): boolean {
   return typeof val === 'string' && val.length <= maxLen;
 }
 
+function isOfficeVisual(val: unknown): val is OfficeVisual {
+  if (typeof val !== 'object' || val === null) {
+    return false;
+  }
+  const visual = val as Partial<OfficeVisual>;
+  if (!isStr(visual.url, 2000)) {
+    return false;
+  }
+  if (visual.alt !== undefined && !isStr(visual.alt, 500)) {
+    return false;
+  }
+  if (visual.caption !== undefined && !isStr(visual.caption, 500)) {
+    return false;
+  }
+  if (visual.query !== undefined && !isStr(visual.query, 300)) {
+    return false;
+  }
+  return true;
+}
+
 export function validateOfficeArtifact(data: unknown): data is NashmOfficeArtifact {
   if (typeof data !== 'object' || data === null) {
     return false;
   }
 
   const obj = data as Partial<BaseOfficeArtifact>;
-  
+
   if (obj.schemaVersion !== 'office-artifact.v1') {
     return false;
   }
@@ -85,6 +124,9 @@ export function validateOfficeArtifact(data: unknown): data is NashmOfficeArtifa
     return false;
   }
   if (!['rtl', 'ltr', 'auto'].includes(obj.direction ?? '')) {
+    return false;
+  }
+  if (obj.visual !== undefined && !isOfficeVisual(obj.visual)) {
     return false;
   }
 
@@ -110,6 +152,9 @@ export function validateOfficeArtifact(data: unknown): data is NashmOfficeArtifa
         return false;
       }
       if (slide.notes !== undefined && typeof slide.notes !== 'string') {
+        return false;
+      }
+      if (slide.visual !== undefined && !isOfficeVisual(slide.visual)) {
         return false;
       }
       if (!Array.isArray(slide.content)) {
@@ -173,6 +218,10 @@ export function validateOfficeArtifact(data: unknown): data is NashmOfficeArtifa
             return false;
           }
         }
+      }
+
+      if (section.visual !== undefined && !isOfficeVisual(section.visual)) {
+        return false;
       }
     }
   } else if (obj.kind === 'workbook') {

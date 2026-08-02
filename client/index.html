@@ -147,6 +147,22 @@
           }
           return true;
         };
+        window.__nashmIsStaleAssetError = function (reason) {
+          var message =
+            typeof reason === 'string'
+              ? reason
+              : reason && typeof reason.message === 'string'
+                ? reason.message
+                : '';
+          return (
+            message.indexOf('dynamically imported module') !== -1 ||
+            message.indexOf('Importing a module script failed') !== -1 ||
+            message.indexOf('error loading dynamically imported module') !== -1 ||
+            message.indexOf('Failed to fetch module script') !== -1 ||
+            message.indexOf('ChunkLoadError') !== -1 ||
+            message.indexOf('Loading chunk') !== -1
+          );
+        };
         if (navigator.serviceWorker) {
           navigator.serviceWorker.addEventListener('message', function (event) {
             if (!event.data || event.data.type !== 'NASHM_SW_PING') {
@@ -168,20 +184,23 @@
             var failedScript = el.tagName === 'SCRIPT' && el.src;
             var failedPreload =
               el.tagName === 'LINK' && /preload/.test(el.rel || '') && /\.js$/.test(el.href || '');
-            if (failedScript || failedPreload) {
-              window.__nashmRecoverStaleAssets();
+            if (
+              failedScript ||
+              failedPreload ||
+              window.__nashmIsStaleAssetError(event.error || event.message)
+            ) {
+              if (window.__nashmRecoverStaleAssets()) {
+                event.preventDefault();
+              }
             }
           },
           true,
         );
         window.addEventListener('unhandledrejection', function (event) {
-          var message = event.reason && event.reason.message;
-          if (
-            typeof message === 'string' &&
-            (message.indexOf('dynamically imported module') !== -1 ||
-              message.indexOf('Importing a module script failed') !== -1)
-          ) {
-              window.__nashmRecoverStaleAssets();
+          if (window.__nashmIsStaleAssetError(event.reason)) {
+            if (window.__nashmRecoverStaleAssets()) {
+              event.preventDefault();
+            }
           }
         });
       })();

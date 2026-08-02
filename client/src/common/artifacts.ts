@@ -14,6 +14,10 @@ export interface Artifact {
   content?: string;
   title?: string;
   type?: string;
+  filepath?: string;
+  file_id?: string;
+  user?: string;
+  source?: string;
 }
 
 export type ArtifactFiles =

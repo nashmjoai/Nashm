@@ -24,6 +24,7 @@ Use this exact remark-directive wrapper for artifacts:
   "locale": "ar-JO" | "en-US",
   "direction": "rtl" | "ltr" | "auto",
   "templateId": "...",
+  "visual"?: { "url": string, "alt"?: string, "caption"?: string, "query"?: string },
   "content": { ... }
 }
 \`\`\`
@@ -36,6 +37,8 @@ Set the type attribute to:
 
 The content inside the markdown code block MUST be a single, valid, complete JSON object matching the schema. DO NOT write any Javascript code, React components, HTML, imports, or text wrappers inside the code block itself.
 Use "auto" direction when the user's language is unclear, "rtl" for Arabic, and "ltr" for English.
+For Arabic content, use locale "ar-JO", direction "rtl", Arabic-friendly templates, natural Arabic headings, and right-to-left ordering.
+When the topic benefits from visuals, include relevant web image URLs in "visual" fields. Prefer real topical images over abstract decoration, and include concise Arabic captions for Arabic artifacts.
 Do not explain that you are creating an artifact; produce the artifact directly.
 `;
 
@@ -58,12 +61,15 @@ The JSON content shape must be:
       "layout": "cover" | "agenda" | "section" | "split" | "grid" | "kpi" | "chart" | "comparison" | "closing",
       "eyebrow"?: string,
       "content": string[],
-      "notes"?: string
+      "notes"?: string,
+      "visual"?: { "url": string, "alt"?: string, "caption"?: string, "query"?: string }
     }>
   }
 }
 
-Use a templateId that fits the user's topic and language. Make sure the content is highly detailed and complete.
+Use a templateId that fits the user's topic and language. For Arabic decks, prefer "nashm-arabic-lux" or a clean light template with direction "rtl".
+Add visual.url to the cover and to 2-4 content slides when relevant, using direct https image URLs from credible/open web sources when available.
+Make sure the content is highly detailed and complete.
 `;
 
 const documentInstructions = `
@@ -86,12 +92,14 @@ The JSON content shape must be:
       "list"?: {
         "type": "bullet" | "numbered",
         "items": string[]
-      }
+      },
+      "visual"?: { "url": string, "alt"?: string, "caption"?: string, "query"?: string }
     }>
   }
 }
 
-Use a templateId that fits the user's topic and language.
+Use a templateId that fits the user's topic and language. For Arabic documents, use "nashm-research-rtl", locale "ar-JO", and direction "rtl".
+Add a relevant visual.url near the introduction or key sections when the user's request calls for a polished report.
 `;
 
 const spreadsheetInstructions = `

@@ -37,6 +37,57 @@ const db = require('~/models');
 
 const router = express.Router();
 
+const isMissingStorageError = (err) => {
+  const code = err?.code ?? err?.name ?? err?.status ?? err?.statusCode ?? err?.response?.status;
+  if ([404, '404', 'ENOENT', 'NoSuchKey', 'NotFound', 'ResourceNotFound'].includes(code)) {
+    return true;
+  }
+
+  return /(?:file|object|blob|key|resource) (?:not found|does not exist)|no such (?:file|key)/i.test(
+    String(err?.message ?? ''),
+  );
+};
+
+const tryCodeEnvDownloadFallback = async ({ req, res, file, setHeaders, reason }) => {
+  const ref = file?.metadata?.codeEnvRef;
+  if (!ref?.storage_session_id || !ref?.file_id) {
+    return false;
+  }
+
+  const { getDownloadStream } = getStrategyFunctions(FileSources.execute_code);
+  if (!getDownloadStream) {
+    return false;
+  }
+
+  try {
+    logger.warn(
+      `[DOWNLOAD ROUTE] Primary storage missing for ${file.file_id}; falling back to code environment: ${
+        reason?.message ?? reason
+      }`,
+    );
+    const identity = {
+      kind: ref.kind || 'user',
+      id: ref.id || req.user.id,
+      ...(ref.kind === 'skill' && ref.version != null ? { version: ref.version } : {}),
+    };
+    const response = await getDownloadStream(
+      `${ref.storage_session_id}/${ref.file_id}`,
+      identity,
+      req,
+    );
+    res.set(response.headers);
+    setHeaders();
+    response.data.pipe(res);
+    return true;
+  } catch (fallbackError) {
+    logAxiosError({
+      message: `Code environment fallback download failed for ${file.file_id}`,
+      error: fallbackError,
+    });
+    return false;
+  }
+};
+
 router.get('/', async (req, res) => {
   try {
     const appConfig = req.config;
@@ -594,7 +645,18 @@ router.get('/download/:userId/:file_id', fileAccess, async (req, res) => {
         return res.status(501).send('Not Implemented');
       }
 
-      const fileStream = await getDownloadStream(req, file.storageKey || file.filepath);
+      let fileStream;
+      try {
+        fileStream = await getDownloadStream(req, file.storageKey || file.filepath);
+      } catch (downloadError) {
+        if (
+          isMissingStorageError(downloadError) &&
+          (await tryCodeEnvDownloadFallback({ req, res, file, setHeaders, reason: downloadError }))
+        ) {
+          return;
+        }
+        throw downloadError;
+      }
 
       fileStream.on('error', (streamError) => {
         logger.error('[DOWNLOAD ROUTE] Stream error:', streamError);

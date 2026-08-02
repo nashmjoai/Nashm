@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Button } from '@nashm/client';
 import { useRouteError } from 'react-router-dom';
 import { useLocalize } from '~/hooks';
@@ -86,6 +87,19 @@ export default function RouteErrorBoundary() {
     status: typedError.status,
     statusText: typedError.statusText,
     data: typedError.data,
+  };
+
+  useEffect(() => {
+    if (window.__nashmIsStaleAssetError?.(typedError) === true) {
+      window.__nashmRecoverStaleAssets?.();
+    }
+  }, [typedError]);
+
+  const handleRefresh = () => {
+    if (window.__nashmRecoverStaleAssets?.() === true) {
+      return;
+    }
+    window.location.reload();
   };
 
   const handleDownloadLogs = async () => {
@@ -212,7 +226,7 @@ export default function RouteErrorBoundary() {
           <div className="mt-4 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <Button
               variant="submit"
-              onClick={() => window.location.reload()}
+              onClick={handleRefresh}
               className="w-full sm:w-auto"
               aria-label={localize('com_ui_refresh_page')}
             >
