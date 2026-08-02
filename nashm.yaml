@@ -25,7 +25,7 @@ modelSpecs:
       preset:
         endpoint: "google"
         model: "gemini-3.5-flash"
-      executeCode: false
+      executeCode: true
       artifacts: false
       geminiImageGen: true
     - name: "kimi-agent"
@@ -35,7 +35,7 @@ modelSpecs:
         endpoint: "Kimi"
         model: "kimi-k2.5"
       webSearch: true
-      executeCode: false
+      executeCode: true
       artifacts: false
       geminiImageGen: true
       fileSearch: true
@@ -48,7 +48,7 @@ interface:
   presets: true
   bookmarks: true
   multiConvo: true
-  runCode: false
+  runCode: true
 
 #==================================================#
 #                  API Endpoints                    #
@@ -65,6 +65,7 @@ endpoints:
       - "context"
       - "skills"
       - "tools"
+      - "execute_code"
   custom:
     #------------------------------------------------
     # Kimi by Moonshot AI
