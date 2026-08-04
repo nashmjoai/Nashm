@@ -86,7 +86,6 @@ endpoints:
           - "moonshot-v1-128k"
         fetch: false
       titleConvo: true
-      titleTiming: "final"
       titleModel: "kimi-k2.5"
       summarize: false
       summaryModel: "kimi-k2.5"

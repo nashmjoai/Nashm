@@ -4,11 +4,9 @@ const {
   GenerationJobManager,
   hasPersistableAbortContent,
   buildAbortedResponseMetadata,
-  recordGenerationLatency,
 } = require('@nashm/api');
 const { createSseStreamTelemetry } = require('@nashm/api/telemetry');
 const { logger } = require('@nashm/data-schemas');
-const { StepEvents } = require('nashm-data-provider');
 const {
   uaParser,
   checkBan,
@@ -83,30 +81,6 @@ router.get('/chat/stream/:streamId', async (req, res) => {
   }
 
   const streamTelemetry = createSseStreamTelemetry({ req, res, streamId, isResume });
-  const generationStartedAt = job.createdAt;
-  let hasRecordedFirstModelDelta = false;
-  let hasRecordedFirstTextDelta = false;
-
-  const recordFirstOutputLatency = (event) => {
-    if (isResume || !Number.isFinite(generationStartedAt)) {
-      return;
-    }
-
-    const eventName = event?.event;
-    const durationSeconds = Math.max(0, (Date.now() - generationStartedAt) / 1000);
-    if (
-      !hasRecordedFirstModelDelta &&
-      (eventName === StepEvents.ON_MESSAGE_DELTA || eventName === StepEvents.ON_REASONING_DELTA)
-    ) {
-      hasRecordedFirstModelDelta = true;
-      recordGenerationLatency('time_to_first_model_delta', durationSeconds);
-    }
-
-    if (!hasRecordedFirstTextDelta && eventName === StepEvents.ON_MESSAGE_DELTA) {
-      hasRecordedFirstTextDelta = true;
-      recordGenerationLatency('time_to_first_text_delta', durationSeconds);
-    }
-  };
 
   res.setHeader('Content-Encoding', 'identity');
   res.setHeader('Content-Type', 'text/event-stream');
@@ -122,7 +96,6 @@ router.get('/chat/stream/:streamId', async (req, res) => {
     if (!res.writableEnded) {
       const eventName = options.eventName ?? 'message';
       const payload = `event: ${eventName}\ndata: ${JSON.stringify(event)}\n\n`;
-      recordFirstOutputLatency(event);
       res.write(payload);
       streamTelemetry.recordWrite(payload, { final: options.final });
       if (typeof res.flush === 'function') {

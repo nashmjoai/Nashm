@@ -148,39 +148,34 @@ const initializeClient = async ({ req, res, signal, endpointOption }) => {
   const ephemeralSkillsToggle = req.body?.ephemeralAgent?.skills === true;
   const skillDbMethods = getSkillDbMethods();
 
-  const accessibleSkillIdsPromise = skillsCapabilityEnabled
-    ? findAccessibleResources({
-        userId: req.user.id,
-        role: req.user.role,
-        resourceType: ResourceType.SKILL,
-        requiredPermissions: PermissionBits.VIEW,
-      }).then(withDeploymentSkillIds)
-    : Promise.resolve([]);
-  const editableSkillIdsPromise = skillsCapabilityEnabled
-    ? findAccessibleResources({
+  const accessibleSkillIds = skillsCapabilityEnabled
+    ? withDeploymentSkillIds(
+        await findAccessibleResources({
+          userId: req.user.id,
+          role: req.user.role,
+          resourceType: ResourceType.SKILL,
+          requiredPermissions: PermissionBits.VIEW,
+        }),
+      )
+    : [];
+  const editableSkillIds = skillsCapabilityEnabled
+    ? await findAccessibleResources({
         userId: req.user.id,
         role: req.user.role,
         resourceType: ResourceType.SKILL,
         requiredPermissions: PermissionBits.EDIT,
       })
-    : Promise.resolve([]);
-  const skillCreateAllowedPromise = skillsCapabilityEnabled
-    ? getSkillToolDeps().canCreateSkill({ req })
-    : Promise.resolve(false);
+    : [];
+  const skillCreateAllowed = skillsCapabilityEnabled
+    ? await getSkillToolDeps().canCreateSkill({ req })
+    : false;
 
-  const accessibleSkillIds = await accessibleSkillIdsPromise;
-
-  const [{ skillStates, defaultActiveOnShare }, editableSkillIds, skillCreateAllowed] =
-    await Promise.all([
-      loadSkillStates({
-        userId: req.user.id,
-        appConfig,
-        getUserById: db.getUserById,
-        accessibleSkillIds,
-      }),
-      editableSkillIdsPromise,
-      skillCreateAllowedPromise,
-    ]);
+  const { skillStates, defaultActiveOnShare } = await loadSkillStates({
+    userId: req.user.id,
+    appConfig,
+    getUserById: db.getUserById,
+    accessibleSkillIds,
+  });
 
   /**
    * Agent context store - populated after initialization, accessed by callback via closure.
@@ -285,15 +280,13 @@ const initializeClient = async ({ req, res, signal, endpointOption }) => {
     throw new Error('No agent promise provided');
   }
 
-  const [primaryAgent, modelsConfig] = await Promise.all([
-    endpointOption.agent,
-    getModelsConfig(req),
-  ]);
+  const primaryAgent = await endpointOption.agent;
   delete endpointOption.agent;
   if (!primaryAgent) {
     throw new Error('Agent not found');
   }
 
+  const modelsConfig = await getModelsConfig(req);
   const validationResult = await validateAgentModel({
     req,
     res,

@@ -8,7 +8,6 @@ const mockGenerationJobManager = {
   abortJob: jest.fn(),
   getActiveJobIdsForUser: jest.fn().mockResolvedValue([]),
 };
-const mockRecordGenerationLatency = jest.fn();
 
 jest.mock('@nashm/data-schemas', () => ({
   ...jest.requireActual('@nashm/data-schemas'),
@@ -24,7 +23,6 @@ jest.mock('@nashm/api', () => ({
   ...jest.requireActual('@nashm/api'),
   isEnabled: jest.fn().mockReturnValue(false),
   GenerationJobManager: mockGenerationJobManager,
-  recordGenerationLatency: (...args) => mockRecordGenerationLatency(...args),
 }));
 
 jest.mock('~/models', () => ({
@@ -124,35 +122,6 @@ describe('SSE stream tenant isolation', () => {
       const res = await request(app).get('/agents/chat/stream/stream-123');
       expect(res.status).toBe(200);
       expect(mockGenerationJobManager.subscribe).toHaveBeenCalledTimes(1);
-    });
-
-    it('records first model and text output latency once per initial stream', async () => {
-      mockGenerationJobManager.subscribe.mockImplementation((_streamId, onChunk, onDone) => {
-        process.nextTick(() => {
-          onChunk({ event: 'on_reasoning_delta', data: {} });
-          onChunk({ event: 'on_message_delta', data: {} });
-          onChunk({ event: 'on_message_delta', data: {} });
-          onDone({ done: true });
-        });
-        return { unsubscribe: jest.fn() };
-      });
-      mockGenerationJobManager.getJob.mockResolvedValue({
-        createdAt: Date.now() - 250,
-        metadata: { userId: 'user-123' },
-        status: 'running',
-      });
-
-      await request(app).get('/agents/chat/stream/stream-123').expect(200);
-
-      expect(mockRecordGenerationLatency).toHaveBeenCalledTimes(2);
-      expect(mockRecordGenerationLatency).toHaveBeenCalledWith(
-        'time_to_first_model_delta',
-        expect.any(Number),
-      );
-      expect(mockRecordGenerationLatency).toHaveBeenCalledWith(
-        'time_to_first_text_delta',
-        expect.any(Number),
-      );
     });
 
     it('returns 403 when job has tenantId but user has no tenantId', async () => {
