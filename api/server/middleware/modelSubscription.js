@@ -78,8 +78,10 @@ async function hasRemainingModelAllowance(req, decision, endpoint, model) {
     try {
       const result = await createAutoRefillTransaction({
         user: userId,
+        tokenType: 'credits',
         rawAmount: balance.refillAmount,
         resetBalance: true,
+        renewalDueAt: renewalDate,
       });
       if (result) {
         periodStart = new Date();

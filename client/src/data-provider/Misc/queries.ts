@@ -26,6 +26,8 @@ export const useGetUserBalance = (
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
     refetchOnMount: true,
+    refetchInterval: 60_000,
+    refetchIntervalInBackground: true,
     ...config,
     enabled: (config?.enabled ?? true) === true && queriesEnabled,
   });

@@ -2,6 +2,8 @@ import type { FilterQuery, Model, Types } from 'mongoose';
 import type { IBalance, IBalanceUpdate, TransactionData } from '~/types';
 import type { ITransaction } from '~/schema/transaction';
 import logger from '~/config/winston';
+import { getRefillEligibilityDate } from 'nashm-data-provider';
+import type { RefillIntervalUnit } from 'nashm-data-provider';
 
 const cancelRate = 1.15;
 
@@ -53,6 +55,8 @@ export interface TxData {
   balance?: { enabled?: boolean };
   transactions?: { enabled?: boolean };
   resetBalance?: boolean;
+  /** Ensures a reset happens only when the stored renewal period is still due. */
+  renewalDueAt?: Date;
 }
 
 /** Return value from a successful transaction that also updates the balance */
@@ -99,6 +103,7 @@ export function createTransactionMethods(
       }
     | undefined
   >;
+  renewDueBalances: (now?: Date) => Promise<number>;
   createStructuredTransaction: (_txData: TxData) => Promise<TransactionResult | undefined>;
 } {
   /** Calculate and set the tokenValue for a transaction */
@@ -307,11 +312,49 @@ export function createTransactionMethods(
     if (txData.rawAmount != null && isNaN(txData.rawAmount)) {
       return;
     }
+
+    const { renewalDueAt, ...transactionData } = txData;
     const Transaction = mongoose.models.Transaction;
-    const transaction = new Transaction(txData);
+    const transaction = new Transaction(transactionData);
     transaction.endpointTokenConfig = txData.endpointTokenConfig;
     transaction.inputTokenCount = txData.inputTokenCount;
     calculateTokenValue(transaction);
+
+    if (txData.resetBalance && renewalDueAt) {
+      await transaction.validate();
+      const Balance = mongoose.models.Balance as Model<IBalance>;
+      const balanceResponse = await Balance.findOneAndUpdate(
+        {
+          user: txData.user,
+          autoRefillEnabled: true,
+          renewalMode: 'reset',
+          refillAmount: txData.rawAmount,
+          lastRefill: { $lte: renewalDueAt },
+        },
+        {
+          $set: {
+            lastRefill: new Date(),
+            tokenCredits: txData.rawAmount,
+          },
+        },
+        { new: true },
+      ).lean<IBalance>();
+
+      if (!balanceResponse) {
+        return;
+      }
+
+      await transaction.save();
+      const result = {
+        rate: transaction.rate as number,
+        user: transaction.user.toString() as string,
+        balance: balanceResponse.tokenCredits,
+        transaction,
+      };
+      logger.debug('[Balance.check] Auto-refill performed', result);
+      return result;
+    }
+
     await transaction.save();
 
     const balanceResponse = await updateBalance({
@@ -330,6 +373,50 @@ export function createTransactionMethods(
     };
     logger.debug('[Balance.check] Auto-refill performed', result);
     return result;
+  }
+
+  async function renewDueBalances(now = new Date()): Promise<number> {
+    const Balance = mongoose.models.Balance as Model<IBalance>;
+    const balances = await Balance.find({
+      autoRefillEnabled: true,
+      renewalMode: 'reset',
+      refillAmount: { $gt: 0 },
+      lastRefill: { $exists: true },
+    })
+      .select('user refillAmount refillIntervalValue refillIntervalUnit lastRefill')
+      .lean<IBalance[]>();
+
+    const dueBalances = balances.filter((balance) => {
+      const renewalDate = getRefillEligibilityDate(
+        balance.lastRefill,
+        balance.refillIntervalValue,
+        balance.refillIntervalUnit as RefillIntervalUnit,
+      );
+      return now >= renewalDate;
+    });
+
+    const results = await Promise.allSettled(
+      dueBalances.map((balance) => {
+        const renewalDueAt = getRefillEligibilityDate(
+          balance.lastRefill,
+          balance.refillIntervalValue,
+          balance.refillIntervalUnit as RefillIntervalUnit,
+        );
+        return createAutoRefillTransaction({
+          user: balance.user,
+          tokenType: 'credits',
+          rawAmount: balance.refillAmount,
+          resetBalance: true,
+          renewalDueAt,
+        });
+      }),
+    );
+
+    return results.reduce(
+      (renewedCount, result) =>
+        renewedCount + (result.status === 'fulfilled' && result.value != null ? 1 : 0),
+      0,
+    );
   }
 
   /**
@@ -480,6 +567,7 @@ export function createTransactionMethods(
     deleteBalances,
     createTransaction,
     createAutoRefillTransaction,
+    renewDueBalances,
     createStructuredTransaction,
   };
 }

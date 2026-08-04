@@ -22,6 +22,7 @@ let createTransaction: ReturnType<typeof createTransactionMethods>['createTransa
 let createAutoRefillTransaction: ReturnType<
   typeof createTransactionMethods
 >['createAutoRefillTransaction'];
+let renewDueBalances: ReturnType<typeof createTransactionMethods>['renewDueBalances'];
 let getCacheMultiplier: ReturnType<typeof createTxMethods>['getCacheMultiplier'];
 
 describe('spendTokens', () => {
@@ -48,6 +49,7 @@ describe('spendTokens', () => {
     });
     createTransaction = transactionMethods.createTransaction;
     createAutoRefillTransaction = transactionMethods.createAutoRefillTransaction;
+    renewDueBalances = transactionMethods.renewDueBalances;
 
     const spendMethods = createSpendTokensMethods(mongoose, {
       createTransaction: transactionMethods.createTransaction,
@@ -635,6 +637,29 @@ describe('spendTokens', () => {
   });
 
   // Add this new test case
+  it('renews each due subscription balance once per renewal period', async () => {
+    const lastRefill = new Date('2026-07-28T23:41:22.000Z');
+    await Balance.create({
+      user: userId,
+      tokenCredits: 47,
+      autoRefillEnabled: true,
+      refillAmount: 2000000,
+      refillIntervalValue: 1,
+      refillIntervalUnit: 'weeks',
+      renewalMode: 'reset',
+      lastRefill,
+    });
+
+    const renewedCount = await renewDueBalances(new Date('2026-08-05T00:13:00.000Z'));
+    const renewedBalance = await Balance.findOne({ user: userId });
+
+    expect(renewedCount).toBe(1);
+    expect(renewedBalance?.tokenCredits).toBe(2000000);
+    expect(renewedBalance?.lastRefill.getTime()).toBeGreaterThan(lastRefill.getTime());
+    expect(await Transaction.countDocuments({ user: userId })).toBe(1);
+    expect(await renewDueBalances(new Date('2026-08-05T00:14:00.000Z'))).toBe(0);
+  });
+
   it('should handle multiple concurrent balance increases correctly', async () => {
     // Start with zero balance
     const initialBalance = 0;

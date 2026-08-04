@@ -117,8 +117,10 @@ describe('balanceController', () => {
 
     expect(createAutoRefillTransaction).toHaveBeenCalledWith({
       user: 'user-1',
+      tokenType: 'credits',
       rawAmount: 50000,
       resetBalance: true,
+      renewalDueAt: new Date('2000-01-02T00:00:00.000Z'),
     });
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({

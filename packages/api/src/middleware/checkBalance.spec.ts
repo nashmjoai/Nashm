@@ -80,6 +80,7 @@ describe('checkBalance', () => {
         user: 'user-1',
         rawAmount: 1000,
         resetBalance: true,
+        renewalDueAt: new Date('2000-01-02T00:00:00.000Z'),
       }),
     );
   });

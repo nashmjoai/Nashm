@@ -114,8 +114,10 @@ async function balanceController(req, res) {
       try {
         const result = await createAutoRefillTransaction({
           user: req.user.id,
+          tokenType: 'credits',
           rawAmount: balanceData.refillAmount,
           resetBalance: true,
+          renewalDueAt: refillEligibilityDate,
         });
         if (result) {
           const renewedBalance = await findBalanceByUser(req.user.id);

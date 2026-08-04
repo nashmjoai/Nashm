@@ -59,6 +59,7 @@ const { capabilityContextMiddleware } = require('./middleware/roles/capabilities
 const createValidateImageRequest = require('./middleware/validateImageRequest');
 const { startExpiredFileSweep } = require('./services/Files/process');
 const { initializeGitHubSkillSync } = require('./services/Skills/sync');
+const { initializeSubscriptionRenewals } = require('./services/Subscriptions/renewals');
 const { jwtLogin, ldapLogin, passportLogin } = require('~/strategies');
 const { checkMigrations } = require('./services/start/migration');
 const optionalJwtAuth = require('./middleware/optionalJwtAuth');
@@ -142,6 +143,7 @@ const startServer = async () => {
   initializeFileStorage(appConfig);
   await initializeDeploymentSkills({ projectRoot: path.resolve(__dirname, '../..') });
   initializeGitHubSkillSync(appConfig);
+  initializeSubscriptionRenewals();
   startExpiredFileSweep({ appConfig, loadAppConfig: getAppConfig });
   await runAsSystem(async () => {
     await performStartupChecks(appConfig);

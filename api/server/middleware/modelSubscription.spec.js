@@ -155,8 +155,10 @@ describe('enforceModelSubscription', () => {
 
     expect(createAutoRefillTransaction).toHaveBeenCalledWith({
       user: userId,
+      tokenType: 'credits',
       rawAmount: 1000,
       resetBalance: true,
+      renewalDueAt: new Date('2000-01-08T00:00:00.000Z'),
     });
     expect(next).toHaveBeenCalledTimes(1);
   });

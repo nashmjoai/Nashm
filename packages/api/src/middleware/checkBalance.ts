@@ -150,6 +150,7 @@ async function checkBalanceRecord(
             context: 'autoRefill',
             rawAmount: record.refillAmount,
             resetBalance: isSubscriptionRenewal,
+            ...(isSubscriptionRenewal ? { renewalDueAt: nextRefillDateObj } : {}),
           });
           if (result) {
             globalBalance = result.balance;
