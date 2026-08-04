@@ -104,10 +104,11 @@ function roundTemperatures(obj) {
 class OpenWeather extends Tool {
   name = 'open_weather';
   description =
-    'Provides weather data from OpenWeather One Call API 3.0. ' +
+    'Provides weather data from OpenWeather. ' +
     'Actions: help, current_forecast, timestamp, daily_aggregation, overview. ' +
     'If lat/lon not provided, specify "city" for geocoding. ' +
     'Units: "Celsius", "Kelvin", or "Fahrenheit" (default: Celsius). ' +
+    'Current weather works with the standard Current Weather API; extended forecasts and history require One Call API 3.0. ' +
     'For timestamp action, use "date" in YYYY-MM-DD format.';
 
   schema = openWeatherJsonSchema;
@@ -161,6 +162,50 @@ class OpenWeather extends Tool {
     }
 
     return Math.floor(dateObj.getTime() / 1000);
+  }
+
+  async getCurrentWeather({ lat, lon, units, lang }) {
+    const params = new URLSearchParams({
+      appid: this.apiKey,
+      lat: String(lat),
+      lon: String(lon),
+      units,
+    });
+    if (lang) {
+      params.append('lang', lang);
+    }
+
+    const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?${params}`);
+    const json = await response.json();
+    if (!response.ok) {
+      return `Error: OpenWeather current weather request failed with status ${response.status}: ${
+        json.message || JSON.stringify(json)
+      }`;
+    }
+
+    return JSON.stringify(
+      roundTemperatures({
+        source: 'OpenWeather Current Weather API',
+        note: 'Hourly and daily forecasts require an OpenWeather One Call API 3.0 subscription.',
+        lat: json.coord?.lat ?? lat,
+        lon: json.coord?.lon ?? lon,
+        timezone_offset: json.timezone,
+        current: {
+          dt: json.dt,
+          sunrise: json.sys?.sunrise,
+          sunset: json.sys?.sunset,
+          temp: json.main?.temp,
+          feels_like: json.main?.feels_like,
+          pressure: json.main?.pressure,
+          humidity: json.main?.humidity,
+          visibility: json.visibility,
+          wind_speed: json.wind?.speed,
+          wind_deg: json.wind?.deg,
+          clouds: json.clouds?.all,
+          weather: json.weather,
+        },
+      }),
+    );
   }
 
   async _call(args) {
@@ -339,6 +384,16 @@ class OpenWeather extends Tool {
       const response = await fetch(url);
       const json = await response.json();
       if (!response.ok) {
+        const requiresOneCallSubscription =
+          response.status === 401 && /one call.*subscription/i.test(json.message || '');
+        if (action === 'current_forecast' && requiresOneCallSubscription) {
+          return this.getCurrentWeather({
+            lat: finalLat,
+            lon: finalLon,
+            units: owmUnits,
+            lang,
+          });
+        }
         return `Error: OpenWeather API request failed with status ${response.status}: ${
           json.message || JSON.stringify(json)
         }`;

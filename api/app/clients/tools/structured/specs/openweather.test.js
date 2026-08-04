@@ -65,6 +65,52 @@ describe('OpenWeather Tool', () => {
     expect(parsed.daily[0].temp.night).toBe(283);
   });
 
+  test('current_forecast falls back to the standard current weather API without One Call access', async () => {
+    fetch
+      .mockImplementationOnce(() =>
+        Promise.resolve({
+          ok: true,
+          json: async () => [{ lat: 31.9539, lon: 35.9106 }],
+        }),
+      )
+      .mockImplementationOnce(() =>
+        Promise.resolve({
+          ok: false,
+          status: 401,
+          json: async () => ({
+            message: 'Using One Call 3.0 requires a separate subscription to the One Call plan.',
+          }),
+        }),
+      )
+      .mockImplementationOnce((url) => {
+        expect(url).toContain('/data/2.5/weather?');
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({
+            coord: { lat: 31.9539, lon: 35.9106 },
+            timezone: 10800,
+            dt: 1770000000,
+            main: { temp: 27.6, feels_like: 27.2, pressure: 1012, humidity: 24 },
+            wind: { speed: 3.7, deg: 240 },
+            clouds: { all: 12 },
+            weather: [{ description: 'clear sky' }],
+          }),
+        });
+      });
+
+    const result = await tool.call({
+      action: 'current_forecast',
+      city: 'Amman',
+      units: 'Celsius',
+    });
+
+    const parsed = JSON.parse(result);
+    expect(parsed.source).toBe('OpenWeather Current Weather API');
+    expect(parsed.current.temp).toBe(28);
+    expect(parsed.current.feels_like).toBe(27);
+    expect(parsed.current.weather[0].description).toBe('clear sky');
+  });
+
   test('timestamp action with valid date returns mocked historical data', async () => {
     // Mock geocoding response
     fetch.mockImplementationOnce((url) => {

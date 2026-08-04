@@ -34,6 +34,12 @@ modelSpecs:
       preset:
         endpoint: "Kimi"
         model: "kimi-k2.5"
+        tools:
+          - "open_weather"
+        promptPrefix: >-
+          When a provided tool can answer a request using current or external data,
+          call that tool through native tool calling. Never invent tool names or
+          output XML, JSON, or pseudo function calls as visible text.
       webSearch: true
       executeCode: true
       artifacts: false

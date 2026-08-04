@@ -28,6 +28,7 @@ export default function ToolCall({
   attachments,
   auth,
   hideAttachments = false,
+  hideDetails = false,
   onExpand,
 }: {
   initialProgress: number;
@@ -39,19 +40,21 @@ export default function ToolCall({
   attachments?: TAttachment[];
   auth?: string;
   hideAttachments?: boolean;
+  /** Keep the tool status visible while withholding raw request and response data. */
+  hideDetails?: boolean;
   onExpand?: () => void;
 }) {
   const localize = useLocalize();
   const autoExpand = useRecoilValue(store.autoExpandTools);
   const hasOutput = (output?.length ?? 0) > 0;
-  const [showInfo, setShowInfo] = useState(() => autoExpand && hasOutput);
+  const [showInfo, setShowInfo] = useState(() => !hideDetails && autoExpand && hasOutput);
   const { style: expandStyle, ref: expandRef } = useExpandCollapse(showInfo);
 
   useEffect(() => {
-    if (autoExpand && hasOutput) {
+    if (!hideDetails && autoExpand && hasOutput) {
       setShowInfo(true);
     }
-  }, [autoExpand, hasOutput]);
+  }, [autoExpand, hasOutput, hideDetails]);
 
   const parsedAuthUrl = useMemo(() => {
     if (!auth) {
@@ -154,8 +157,8 @@ export default function ToolCall({
   }, [_args]) as string | undefined;
 
   const hasInfo = useMemo(
-    () => (args?.length ?? 0) > 0 || (output?.length ?? 0) > 0,
-    [args, output],
+    () => !hideDetails && ((args?.length ?? 0) > 0 || (output?.length ?? 0) > 0),
+    [args, hideDetails, output],
   );
 
   const authDomain = useMemo(() => {
@@ -166,6 +169,9 @@ export default function ToolCall({
   const showCancelled = cancelled || (errorState && !output);
 
   const handleToggleInfo = useCallback(() => {
+    if (hideDetails) {
+      return;
+    }
     setShowInfo((prev) => {
       const next = !prev;
       if (next) {
@@ -173,7 +179,7 @@ export default function ToolCall({
       }
       return next;
     });
-  }, [onExpand]);
+  }, [hideDetails, onExpand]);
 
   const subtitle = useMemo(() => {
     if (isMCPToolCall && mcpServerName) {

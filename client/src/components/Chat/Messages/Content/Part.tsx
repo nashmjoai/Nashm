@@ -33,6 +33,9 @@ import ToolCall from './ToolCall';
 import Image from './Image';
 import { isBashProgrammaticToolCall } from './routing';
 
+/** Tools whose raw transport payload should not be displayed in the chat UI. */
+const HIDE_RAW_TOOL_DETAILS = new Set(['open_weather']);
+
 type PartProps = {
   part?: TMessageContentParts;
   isLast?: boolean;
@@ -291,6 +294,7 @@ const Part = memo(function Part({
           auth={toolCall.auth}
           isLast={isLast}
           hideAttachments={hideAttachments}
+          hideDetails={HIDE_RAW_TOOL_DETAILS.has(toolCall.name || '')}
           onExpand={onToolExpand}
         />
       );
@@ -352,6 +356,7 @@ const Part = memo(function Part({
           output={toolCall.function.output}
           isLast={isLast}
           hideAttachments={hideAttachments}
+          hideDetails={HIDE_RAW_TOOL_DETAILS.has(toolCall.function.name)}
           onExpand={onToolExpand}
         />
       );

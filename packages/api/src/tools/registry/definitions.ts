@@ -378,7 +378,7 @@ export const toolDefinitions: Record<string, ToolRegistryDefinition> = {
   open_weather: {
     name: 'open_weather',
     description:
-      'Provides weather data from OpenWeather One Call API 3.0. Actions: help, current_forecast, timestamp, daily_aggregation, overview. If lat/lon not provided, specify "city" for geocoding. Units: "Celsius", "Kelvin", or "Fahrenheit" (default: Celsius). For timestamp action, use "date" in YYYY-MM-DD format.',
+      'Provides weather data from OpenWeather. Actions: help, current_forecast, timestamp, daily_aggregation, overview. If lat/lon not provided, specify "city" for geocoding. Units: "Celsius", "Kelvin", or "Fahrenheit" (default: Celsius). Current weather works with the standard Current Weather API; extended forecasts and history require One Call API 3.0. For timestamp action, use "date" in YYYY-MM-DD format.',
     schema: openWeatherSchema,
     toolType: 'builtin',
   },

@@ -54,7 +54,9 @@ jest.mock('../WebSearch', () => ({
 
 jest.mock('../ToolCall', () => ({
   __esModule: true,
-  default: () => <div data-testid="tool-call" />,
+  default: ({ hideDetails }: { hideDetails?: boolean }) => (
+    <div data-testid="tool-call" data-hide-details={String(hideDetails)} />
+  ),
 }));
 
 jest.mock('../Image', () => ({
@@ -130,5 +132,11 @@ describe('Part tool renderer selection', () => {
       'edit_file',
     );
     expect(screen.queryByTestId('tool-call')).not.toBeInTheDocument();
+  });
+
+  it('hides raw weather tool data from the chat UI', () => {
+    renderPart(toolCallPart('open_weather', '{"city":"Amman"}'));
+
+    expect(screen.getByTestId('tool-call')).toHaveAttribute('data-hide-details', 'true');
   });
 });

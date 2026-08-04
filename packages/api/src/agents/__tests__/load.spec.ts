@@ -129,6 +129,67 @@ describe('loadAgent', () => {
     }
   });
 
+  test('includes built-in tools configured by a selected model spec', async () => {
+    const { EPHEMERAL_AGENT_ID } = Constants;
+    const mockReq = {
+      user: { id: 'user123' },
+      config: {
+        modelSpecs: {
+          list: [
+            {
+              name: 'weather-enabled-kimi',
+              label: 'Weather-enabled Kimi',
+              preset: {
+                endpoint: 'Kimi',
+                model: 'kimi-k2.5',
+                tools: ['open_weather'],
+              },
+            },
+          ],
+        },
+      } as unknown as AppConfig,
+    };
+
+    const result = await loadAgent(
+      {
+        req: mockReq,
+        spec: 'weather-enabled-kimi',
+        agent_id: EPHEMERAL_AGENT_ID as string,
+        endpoint: 'Kimi',
+        model_parameters: { model: 'kimi-k2.5' } as unknown as AgentModelParameters,
+      },
+      deps,
+    );
+
+    expect(result?.tools).toContain('open_weather');
+  });
+
+  test('includes OpenWeather for every model-selector conversation when configured', async () => {
+    const { EPHEMERAL_AGENT_ID } = Constants;
+    const previousApiKey = process.env.OPENWEATHER_API_KEY;
+    process.env.OPENWEATHER_API_KEY = 'test-api-key';
+
+    try {
+      const result = await loadAgent(
+        {
+          req: { user: { id: 'user123' }, body: {} },
+          agent_id: EPHEMERAL_AGENT_ID as string,
+          endpoint: 'openai',
+          model_parameters: { model: 'gpt-4' } as unknown as AgentModelParameters,
+        },
+        deps,
+      );
+
+      expect(result?.tools).toContain('open_weather');
+    } finally {
+      if (previousApiKey === undefined) {
+        delete process.env.OPENWEATHER_API_KEY;
+      } else {
+        process.env.OPENWEATHER_API_KEY = previousApiKey;
+      }
+    }
+  });
+
   test('should skip cached tools for servers made request-scoped by a config overlay', async () => {
     const { EPHEMERAL_AGENT_ID } = Constants;
 

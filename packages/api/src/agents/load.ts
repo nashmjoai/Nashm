@@ -6,17 +6,13 @@ import {
   isEphemeralAgentId,
   encodeEphemeralAgentId,
 } from 'nashm-data-provider';
-import type {
-  AgentModelParameters,
-  TEphemeralAgent,
-  TModelSpec,
-  Agent,
-} from 'nashm-data-provider';
+import type { AgentModelParameters, TEphemeralAgent, TModelSpec, Agent } from 'nashm-data-provider';
 import type { AppConfig } from '@nashm/data-schemas';
 import { requiresEphemeralUserConnection } from '~/mcp/utils';
 import { getCustomEndpointConfig } from '~/app/config';
 
 const { mcp_all, mcp_delimiter } = Constants;
+const GLOBAL_BUILTIN_TOOLS = ['open_weather'];
 type ModelParametersWithPromptPrefix = AgentModelParameters & { promptPrefix?: string | null };
 
 export interface LoadAgentDeps {
@@ -43,6 +39,26 @@ export interface LoadAgentParams {
 }
 
 /**
+ * Returns the built-in tool names configured directly on a model spec preset.
+ * Presets can also contain plugin objects for the client UI; those are not
+ * executable agent tool names and must not be added to the agent registry.
+ */
+export function getModelSpecToolNames(modelSpec: TModelSpec | null): string[] {
+  return (modelSpec?.preset.tools ?? []).filter(
+    (tool): tool is string => typeof tool === 'string' && tool.length > 0,
+  );
+}
+
+/**
+ * Built-in tools that every model-selector conversation can use. A tool is
+ * exposed only when its server-side credential exists, so a missing optional
+ * integration never breaks ordinary chats.
+ */
+export function getGlobalBuiltInToolNames(): string[] {
+  return process.env.OPENWEATHER_API_KEY?.trim() ? GLOBAL_BUILTIN_TOOLS : [];
+}
+
+/**
  * Load an ephemeral agent based on the request parameters.
  */
 export async function loadEphemeralAgent(
@@ -63,18 +79,23 @@ export async function loadEphemeralAgent(
       mcpServers.add(mcpServer);
     }
   }
-  const tools: string[] = [];
+  // A model spec can declare built-in tools in its preset. These must be
+  // carried into the ephemeral agent or the model receives no tool definition.
+  const tools = new Set<string>([
+    ...getGlobalBuiltInToolNames(),
+    ...getModelSpecToolNames(modelSpec),
+  ]);
   if (ephemeralAgent?.execute_code === true || modelSpec?.executeCode === true) {
-    tools.push(Tools.execute_code);
+    tools.add(Tools.execute_code);
   }
   if (ephemeralAgent?.file_search === true || modelSpec?.fileSearch === true) {
-    tools.push(Tools.file_search);
+    tools.add(Tools.file_search);
   }
   if (ephemeralAgent?.web_search === true || modelSpec?.webSearch === true) {
-    tools.push(Tools.web_search);
+    tools.add(Tools.web_search);
   }
   if (ephemeralAgent?.gemini_image_gen === true || modelSpec?.geminiImageGen === true) {
-    tools.push(Tools.gemini_image_gen);
+    tools.add(Tools.gemini_image_gen);
   }
 
   const addedServers = new Set<string>();
@@ -91,11 +112,13 @@ export async function loadEphemeralAgent(
           ? null
           : await deps.getMCPServerTools(userId, mcpServer);
       if (!serverTools) {
-        tools.push(`${mcp_all}${mcp_delimiter}${mcpServer}`);
+        tools.add(`${mcp_all}${mcp_delimiter}${mcpServer}`);
         addedServers.add(mcpServer);
         continue;
       }
-      tools.push(...Object.keys(serverTools));
+      for (const toolName of Object.keys(serverTools)) {
+        tools.add(toolName);
+      }
       addedServers.add(mcpServer);
     }
   }
@@ -139,7 +162,7 @@ export async function loadEphemeralAgent(
     provider: endpoint,
     model_parameters: safeModelParameters as AgentModelParameters,
     model,
-    tools,
+    tools: Array.from(tools),
   };
 
   if (ephemeralAgent?.artifacts) {

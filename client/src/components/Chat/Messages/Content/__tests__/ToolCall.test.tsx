@@ -253,6 +253,14 @@ describe('ToolCall', () => {
   });
 
   describe('tool call info visibility', () => {
+    it('does not render raw request or response details when explicitly hidden', () => {
+      renderWithRecoil(<ToolCall {...mockProps} hideDetails />);
+
+      expect(screen.queryByTestId('tool-call-info')).not.toBeInTheDocument();
+      fireEvent.click(screen.getByTestId('progress-text'));
+      expect(screen.queryByTestId('tool-call-info')).not.toBeInTheDocument();
+    });
+
     it('should toggle tool call info expand/collapse when clicking header', () => {
       renderWithRecoil(<ToolCall {...mockProps} />);
 

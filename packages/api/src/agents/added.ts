@@ -11,6 +11,7 @@ import type { Agent, TConversation, TModelSpec } from 'nashm-data-provider';
 import type { AppConfig } from '@nashm/data-schemas';
 import { requiresEphemeralUserConnection } from '~/mcp/utils';
 import { getCustomEndpointConfig } from '~/app/config';
+import { getGlobalBuiltInToolNames, getModelSpecToolNames } from './load';
 
 const { mcp_all, mcp_delimiter } = Constants;
 
@@ -92,14 +93,14 @@ export async function loadAddedAgent(
     promptPrefix?: string;
     spec?: string;
     modelLabel?: string;
-      ephemeralAgent?: {
-        mcp?: string[];
-        execute_code?: boolean;
-        file_search?: boolean;
-        web_search?: boolean;
-        gemini_image_gen?: boolean;
-        artifacts?: unknown;
-      };
+    ephemeralAgent?: {
+      mcp?: string[];
+      execute_code?: boolean;
+      file_search?: boolean;
+      web_search?: boolean;
+      gemini_image_gen?: boolean;
+      artifacts?: unknown;
+    };
     [key: string]: unknown;
   };
 
@@ -144,13 +145,18 @@ export async function loadAddedAgent(
       '';
     const ephemeralId = encodeEphemeralAgentId({ endpoint, model, sender, index: 1 });
 
+    const tools = new Set<string>([
+      ...primaryAgent.tools.filter((tool): tool is string => typeof tool === 'string'),
+      ...getGlobalBuiltInToolNames(),
+      ...getModelSpecToolNames(modelSpec),
+    ]);
     const result: Record<string, unknown> = {
       id: ephemeralId,
       instructions: promptPrefix || '',
       provider: endpoint,
       model_parameters: {},
       model,
-      tools: [...primaryAgent.tools],
+      tools: Array.from(tools),
     };
     applyModelSpecSkills(result, modelSpec);
     applyModelSpecSubagents(result, modelSpec);
@@ -171,18 +177,21 @@ export async function loadAddedAgent(
     }
   }
 
-  const tools: string[] = [];
+  const tools = new Set<string>([
+    ...getGlobalBuiltInToolNames(),
+    ...getModelSpecToolNames(modelSpec),
+  ]);
   if (ephemeralAgent?.execute_code === true || modelSpec?.executeCode === true) {
-    tools.push(Tools.execute_code);
+    tools.add(Tools.execute_code);
   }
   if (ephemeralAgent?.file_search === true || modelSpec?.fileSearch === true) {
-    tools.push(Tools.file_search);
+    tools.add(Tools.file_search);
   }
   if (ephemeralAgent?.web_search === true || modelSpec?.webSearch === true) {
-    tools.push(Tools.web_search);
+    tools.add(Tools.web_search);
   }
   if (ephemeralAgent?.gemini_image_gen === true || modelSpec?.geminiImageGen === true) {
-    tools.push(Tools.gemini_image_gen);
+    tools.add(Tools.gemini_image_gen);
   }
 
   const addedServers = new Set<string>();
@@ -198,11 +207,13 @@ export async function loadAddedAgent(
         ? null
         : await deps.getMCPServerTools(userId, mcpServer);
     if (!serverTools) {
-      tools.push(`${mcp_all}${mcp_delimiter}${mcpServer}`);
+      tools.add(`${mcp_all}${mcp_delimiter}${mcpServer}`);
       addedServers.add(mcpServer);
       continue;
     }
-    tools.push(...Object.keys(serverTools));
+    for (const toolName of Object.keys(serverTools)) {
+      tools.add(toolName);
+    }
     addedServers.add(mcpServer);
   }
 
@@ -250,7 +261,7 @@ export async function loadAddedAgent(
     provider: endpoint,
     model_parameters,
     model,
-    tools,
+    tools: Array.from(tools),
   };
 
   if (ephemeralAgent?.artifacts != null && ephemeralAgent.artifacts) {
