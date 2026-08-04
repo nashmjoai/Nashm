@@ -78,9 +78,16 @@ router.post('/upgrade', requireJwtAuth, async (req, res) => {
       family: 1000000,
       developer: 2000000,
     };
-    const quota = planConfig?.tokenQuota ?? planLimits[plan] ?? 50000;
+    const defaultQuota = planConfig?.tokenQuota ?? planLimits[plan] ?? 50000;
+    const quota =
+      plan === 'family' && typeof planConfig?.familyMemberTokenQuota === 'number'
+        ? planConfig.familyMemberTokenQuota
+        : defaultQuota;
 
-    const renewalPeriod = planConfig?.renewalPeriod ?? 'monthly';
+    const renewalPeriod =
+      plan === 'family' && planConfig?.familyMemberRenewalPeriod
+        ? planConfig.familyMemberRenewalPeriod
+        : (planConfig?.renewalPeriod ?? 'monthly');
     let renewalUnit = 'months';
     let renewalValue = 1;
     if (renewalPeriod === 'weekly') renewalUnit = 'weeks';
@@ -90,15 +97,16 @@ router.post('/upgrade', requireJwtAuth, async (req, res) => {
     // 5. Update user balance with the new plan quota and auto-refill settings
     await Balance.findOneAndUpdate(
       { user: req.user.id },
-      { 
-        $set: { 
+      {
+        $set: {
           tokenCredits: quota,
           autoRefillEnabled: true,
           refillAmount: quota,
           refillIntervalUnit: renewalUnit,
           refillIntervalValue: renewalValue,
+          renewalMode: 'reset',
+          lastRefill: new Date(),
         },
-        $setOnInsert: { lastRefill: new Date() }
       },
       { new: true, upsert: true },
     );

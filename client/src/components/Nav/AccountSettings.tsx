@@ -69,15 +69,6 @@ function AccountSettings({ collapsed = false }: { collapsed?: boolean }) {
           {user?.email ?? localize('com_nav_user')}
         </div>
         <DropdownMenuSeparator />
-        {startupConfig?.balance?.enabled === true && balanceQuery.data != null && (
-          <>
-            <div className="text-token-text-secondary ml-3 mr-2 py-2 text-sm" role="note">
-              {localize('com_nav_balance')}:{' '}
-              {new Intl.NumberFormat().format(Math.round(balanceQuery.data.tokenCredits))}
-            </div>
-            <DropdownMenuSeparator />
-          </>
-        )}
         <Menu.MenuItem onClick={() => setShowFiles(true)} className="select-item text-sm">
           <FileText className="icon-md" aria-hidden="true" />
           {localize('com_nav_my_files')}
@@ -86,10 +77,7 @@ function AccountSettings({ collapsed = false }: { collapsed?: boolean }) {
           <Archive className="icon-md" aria-hidden="true" />
           {localize('com_nav_archived_chats')}
         </Menu.MenuItem>
-        <Menu.MenuItem
-          onClick={() => setShowSupport(true)}
-          className="select-item text-sm"
-        >
+        <Menu.MenuItem onClick={() => setShowSupport(true)} className="select-item text-sm">
           <LinkIcon aria-hidden="true" />
           {localize('com_nav_help_faq')}
         </Menu.MenuItem>
@@ -103,13 +91,21 @@ function AccountSettings({ collapsed = false }: { collapsed?: boolean }) {
           </Menu.MenuItem>
         )}
         {startupConfig?.balance?.enabled === true && balanceQuery.data != null && (
-          <Menu.MenuItem onClick={() => setShowUpgrade(true)} className="select-item text-sm justify-between">
-            <span className="text-text-secondary">{localize('com_nav_subscription' as any) || 'Plan'}:</span>
+          <Menu.MenuItem
+            onClick={() => setShowUpgrade(true)}
+            className="select-item justify-between text-sm"
+          >
+            <span className="text-text-secondary">
+              {localize('com_nav_subscription' as any) || 'Plan'}:
+            </span>
             <SubscriptionBadge plan={balanceQuery.data.plan || 'free'} />
           </Menu.MenuItem>
         )}
         {startupConfig?.balance?.enabled === true && balanceQuery.data?.isFamilyOwner === true && (
-          <Menu.MenuItem onClick={() => setShowFamilyDashboard(true)} className="select-item text-sm">
+          <Menu.MenuItem
+            onClick={() => setShowFamilyDashboard(true)}
+            className="select-item text-sm"
+          >
             <Users className="icon-md" aria-hidden="true" />
             {isArabic ? 'لوحة تحكم العائلة' : 'Family Dashboard'}
           </Menu.MenuItem>
@@ -139,9 +135,7 @@ function AccountSettings({ collapsed = false }: { collapsed?: boolean }) {
         />
       )}
       {showSettings && <Settings open={showSettings} onOpenChange={setShowSettings} />}
-      {showSupport && (
-        <SupportModal open={showSupport} onOpenChange={setShowSupport} />
-      )}
+      {showSupport && <SupportModal open={showSupport} onOpenChange={setShowSupport} />}
       {showUpgrade && balanceQuery.data != null && (
         <UpgradeModal
           open={showUpgrade}
@@ -151,10 +145,7 @@ function AccountSettings({ collapsed = false }: { collapsed?: boolean }) {
         />
       )}
       {showFamilyDashboard && (
-        <FamilyDashboardModal
-          open={showFamilyDashboard}
-          onOpenChange={setShowFamilyDashboard}
-        />
+        <FamilyDashboardModal open={showFamilyDashboard} onOpenChange={setShowFamilyDashboard} />
       )}
     </Menu.MenuProvider>
   );

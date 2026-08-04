@@ -12,6 +12,7 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 import { NotificationSeverity } from '~/common';
 import { useLocalize } from '~/hooks';
+import type { TranslationKeys } from '~/hooks';
 import { useGetPublicPlansQuery } from '~/data-provider';
 
 type UpgradeModalProps = {
@@ -21,12 +22,23 @@ type UpgradeModalProps = {
   onUpgradeSuccess: () => void;
 };
 
-export function UpgradeModal({ open, onOpenChange, currentPlan, onUpgradeSuccess }: UpgradeModalProps) {
+export function UpgradeModal({
+  open,
+  onOpenChange,
+  currentPlan,
+  onUpgradeSuccess,
+}: UpgradeModalProps) {
   const localize = useLocalize();
   const { showToast } = useToastContext();
   const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const { data: publicPlansData } = useGetPublicPlansQuery();
+  const renewalLabels: Record<string, TranslationKeys> = {
+    daily: 'com_subscription_plan_renewal_daily',
+    weekly: 'com_subscription_plan_renewal_weekly',
+    monthly: 'com_subscription_plan_renewal_monthly',
+    yearly: 'com_subscription_plan_renewal_yearly',
+  };
 
   const plans = [
     {
@@ -38,16 +50,9 @@ export function UpgradeModal({ open, onOpenChange, currentPlan, onUpgradeSuccess
       priceDetailAr: 'مجانية للأبد',
       context: '100k',
       quota: '50,000',
-      features: [
-        '100k Context Window limit',
-        '50k monthly tokens quota',
-        'Standard response speed',
-      ],
-      featuresAr: [
-        'حد نافذة سياق 100k توكن',
-        'رصيد شهري 50k توكن',
-        'سرعة استجابة عادية',
-      ],
+      renewalPeriod: 'monthly',
+      features: ['100k Context Window limit', 'Usage renews monthly', 'Standard response speed'],
+      featuresAr: ['حد نافذة سياق 100k توكن', 'يتجدد الاستخدام شهرياً', 'سرعة استجابة عادية'],
     },
     {
       id: 'individual',
@@ -58,15 +63,16 @@ export function UpgradeModal({ open, onOpenChange, currentPlan, onUpgradeSuccess
       priceDetailAr: 'لكل مستخدم / شهرياً',
       context: '500k',
       quota: '500,000',
+      renewalPeriod: 'monthly',
       features: [
         '500k Context Window limit',
-        '500k monthly tokens quota',
+        'Usage renews monthly',
         'Faster response times',
         'Priority support',
       ],
       featuresAr: [
         'حد نافذة سياق 500k توكن',
-        'رصيد شهري 500k توكن',
+        'يتجدد الاستخدام شهرياً',
         'سرعة استجابة فائقة',
         'دعم فني ذو أولوية',
       ],
@@ -80,15 +86,16 @@ export function UpgradeModal({ open, onOpenChange, currentPlan, onUpgradeSuccess
       priceDetailAr: 'للعائلة / شهرياً',
       context: '1M',
       quota: '1,000,000',
+      renewalPeriod: 'monthly',
       features: [
         '1M Context Window limit',
-        '1,000,000 monthly tokens quota',
+        'Usage renews monthly',
         'Up to 5 family members',
         'Shared family dashboard',
       ],
       featuresAr: [
         'حد نافذة سياق 1M توكن',
-        'رصيد شهري 1,000,000 توكن',
+        'يتجدد الاستخدام شهرياً',
         'حتى 5 أفراد من العائلة',
         'لوحة تحكم عائلية مشتركة',
       ],
@@ -102,15 +109,16 @@ export function UpgradeModal({ open, onOpenChange, currentPlan, onUpgradeSuccess
       priceDetailAr: 'للمطور / شهرياً',
       context: '2M',
       quota: '2,000,000',
+      renewalPeriod: 'monthly',
       features: [
         '2M Context Window limit',
-        '2,000,000 monthly tokens quota',
+        'Usage renews monthly',
         'API & SDK Access',
         'Dedicated server processing',
       ],
       featuresAr: [
         'حد نافذة سياق 2M توكن',
-        'رصيد شهري 2,000,000 توكن',
+        'يتجدد الاستخدام شهرياً',
         'وصول لواجهة برمجية التطبيقات API',
         'معالجة سيرفر خاصة وفائقة السرعة',
       ],
@@ -118,23 +126,29 @@ export function UpgradeModal({ open, onOpenChange, currentPlan, onUpgradeSuccess
   ];
 
   const backendPlans = publicPlansData?.plans || [];
-  const dynamicPlans = backendPlans.length > 0
-    ? backendPlans.map((bp: any) => {
-        const basePlan = plans.find((p) => p.id.toLowerCase() === bp.plan.toLowerCase()) || plans[0];
-        return {
-          id: bp.plan,
-          name: bp.displayName || basePlan.name,
-          nameAr: bp.displayName || basePlan.nameAr,
-          price: bp.priceText || basePlan.price,
-          priceDetail: bp.priceText ? '' : basePlan.priceDetail,
-          priceDetailAr: bp.priceText ? '' : basePlan.priceDetailAr,
-          context: basePlan.context,
-          quota: bp.tokenQuota !== undefined && bp.tokenQuota !== null ? bp.tokenQuota.toLocaleString() : basePlan.quota,
-          features: bp.features && bp.features.length > 0 ? bp.features : basePlan.features,
-          featuresAr: bp.features && bp.features.length > 0 ? bp.features : basePlan.featuresAr,
-        };
-      })
-    : plans;
+  const dynamicPlans =
+    backendPlans.length > 0
+      ? backendPlans.map((bp: any) => {
+          const basePlan =
+            plans.find((p) => p.id.toLowerCase() === bp.plan.toLowerCase()) || plans[0];
+          return {
+            id: bp.plan,
+            name: bp.displayName || basePlan.name,
+            nameAr: bp.displayName || basePlan.nameAr,
+            price: bp.priceText || basePlan.price,
+            priceDetail: bp.priceText ? '' : basePlan.priceDetail,
+            priceDetailAr: bp.priceText ? '' : basePlan.priceDetailAr,
+            context: basePlan.context,
+            quota:
+              bp.tokenQuota !== undefined && bp.tokenQuota !== null
+                ? bp.tokenQuota.toLocaleString()
+                : basePlan.quota,
+            renewalPeriod: bp.renewalPeriod ?? basePlan.renewalPeriod,
+            features: bp.features && bp.features.length > 0 ? bp.features : basePlan.features,
+            featuresAr: bp.features && bp.features.length > 0 ? bp.features : basePlan.featuresAr,
+          };
+        })
+      : plans;
 
   const handleUpgrade = async (planId: string) => {
     if (planId === currentPlan) return;
@@ -181,35 +195,44 @@ export function UpgradeModal({ open, onOpenChange, currentPlan, onUpgradeSuccess
   };
 
   const isArabic = localize('com_nav_subscription' as any) === undefined; // Check if Arabic or default
+  const getPlanAction = (planId: string, isCurrent: boolean) => {
+    if (isLoading === planId) {
+      return <Spinner />;
+    }
+    if (isCurrent) {
+      return isArabic ? 'نشط حالياً' : 'Currently Active';
+    }
+    return isArabic ? 'ترقية الآن' : 'Upgrade Now';
+  };
 
   return (
     <OGDialog open={open} onOpenChange={onOpenChange}>
-      <OGDialogContent className="w-11/12 max-w-5xl border-border-light bg-surface-primary text-text-primary p-6 max-h-[90vh] overflow-y-auto">
-        <OGDialogHeader className="text-center mb-6">
-          <OGDialogTitle className="text-2xl font-bold text-center w-full">
+      <OGDialogContent className="max-h-[90vh] w-11/12 max-w-5xl overflow-y-auto border-border-light bg-surface-primary p-6 text-text-primary">
+        <OGDialogHeader className="mb-6 text-center">
+          <OGDialogTitle className="w-full text-center text-2xl font-bold">
             {isArabic ? 'ترقية الاشتراك الحالي' : 'Upgrade Subscription'}
           </OGDialogTitle>
-          <p className="text-sm text-text-secondary mt-2">
+          <p className="mt-2 text-sm text-text-secondary">
             {isArabic
-              ? 'اختر الخطة المناسبة لاحتياجاتك لتوسيع سعة ذاكرة المحادثة ورصيد الرموز.'
-              : 'Choose the best plan for your needs to expand memory capacity and token quota.'}
+              ? 'اختر الخطة الأنسب لاحتياجاتك.'
+              : 'Choose the plan that best fits your needs.'}
           </p>
         </OGDialogHeader>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 my-4">
+        <div className="my-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           {dynamicPlans.map((plan) => {
             const isCurrent = currentPlan.toLowerCase() === plan.id.toLowerCase();
             return (
               <div
                 key={plan.id}
-                className={`relative flex flex-col justify-between p-5 rounded-2xl border transition-all duration-300 ${
+                className={`relative flex flex-col justify-between rounded-2xl border p-5 transition-all duration-300 ${
                   isCurrent
-                    ? 'border-green-500 bg-green-500/5 dark:bg-green-500/10 shadow-lg scale-[1.02]'
+                    ? 'scale-[1.02] border-green-500 bg-green-500/5 shadow-lg dark:bg-green-500/10'
                     : 'border-border-light bg-surface-secondary hover:border-border-medium hover:shadow-md'
                 }`}
               >
                 {isCurrent && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-green-500 text-white text-[10px] uppercase font-bold px-3 py-1 rounded-full">
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-green-500 px-3 py-1 text-[10px] font-bold uppercase text-white">
                     {isArabic ? 'الخطة الحالية' : 'Current Plan'}
                   </span>
                 )}
@@ -226,22 +249,24 @@ export function UpgradeModal({ open, onOpenChange, currentPlan, onUpgradeSuccess
                       {isArabic ? plan.priceDetailAr : plan.priceDetail}
                     </span>
                   </div>
-                  
-                  <div className="mt-4 text-xs text-text-secondary border-t border-border-light/50 pt-3">
+
+                  <div className="border-border-light/50 mt-4 border-t pt-3 text-xs text-text-secondary">
                     <div className="flex justify-between py-1">
                       <span>{isArabic ? 'نافذة السياق:' : 'Context Window:'}</span>
                       <span className="font-bold text-text-primary">{plan.context}</span>
                     </div>
                     <div className="flex justify-between py-1">
-                      <span>{isArabic ? 'الرصيد الشهري:' : 'Monthly Quota:'}</span>
-                      <span className="font-bold text-text-primary">{plan.quota}</span>
+                      <span>{localize('com_subscription_plan_renewal')}:</span>
+                      <span className="font-bold text-text-primary">
+                        {localize(renewalLabels[plan.renewalPeriod] ?? renewalLabels.monthly)}
+                      </span>
                     </div>
                   </div>
 
                   <ul className="mt-6 space-y-2.5 text-xs text-text-secondary">
                     {(isArabic ? plan.featuresAr : plan.features).map((feat, idx) => (
                       <li key={idx} className="flex items-center gap-2">
-                        <span className="h-1.5 w-1.5 rounded-full bg-green-500 flex-shrink-0" />
+                        <span className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-green-500" />
                         <span>{feat}</span>
                       </li>
                     ))}
@@ -255,13 +280,7 @@ export function UpgradeModal({ open, onOpenChange, currentPlan, onUpgradeSuccess
                     variant={isCurrent ? 'outline' : 'submit'}
                     disabled={isCurrent || isLoading !== null}
                   >
-                    {isLoading === plan.id ? (
-                      <Spinner />
-                    ) : isCurrent ? (
-                      isArabic ? 'نشط حالياً' : 'Currently Active'
-                    ) : (
-                      isArabic ? 'ترقية الآن' : 'Upgrade Now'
-                    )}
+                    {getPlanAction(plan.id, isCurrent)}
                   </Button>
                 </div>
               </div>
@@ -269,7 +288,7 @@ export function UpgradeModal({ open, onOpenChange, currentPlan, onUpgradeSuccess
           })}
         </div>
 
-        <div className="flex justify-end gap-3 pt-6 border-t border-border-light mt-6">
+        <div className="mt-6 flex justify-end gap-3 border-t border-border-light pt-6">
           <OGDialogClose asChild>
             <Button type="button" variant="outline" disabled={isLoading !== null}>
               {isArabic ? 'إغلاق' : 'Close'}

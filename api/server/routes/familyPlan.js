@@ -96,7 +96,21 @@ router.post('/members', requireJwtAuth, async (req, res) => {
       const { PlanConfig } = require('~/db/models');
       const planConfig = await PlanConfig.findOne({ plan: 'family' }).lean();
       const memberQuota = planConfig?.familyMemberTokenQuota ?? planConfig?.tokenQuota ?? 1000000;
-      await upsertBalanceFields(childUser._id.toString(), { tokenCredits: memberQuota });
+      const renewalPeriod =
+        planConfig?.familyMemberRenewalPeriod ?? planConfig?.renewalPeriod ?? 'monthly';
+      let refillIntervalUnit = 'months';
+      if (renewalPeriod === 'daily') refillIntervalUnit = 'days';
+      if (renewalPeriod === 'weekly') refillIntervalUnit = 'weeks';
+      if (renewalPeriod === 'yearly') refillIntervalUnit = 'years';
+      await upsertBalanceFields(childUser._id.toString(), {
+        tokenCredits: memberQuota,
+        autoRefillEnabled: true,
+        refillAmount: memberQuota,
+        refillIntervalUnit,
+        refillIntervalValue: 1,
+        renewalMode: 'reset',
+        lastRefill: new Date(),
+      });
     } catch (balanceErr) {
       logger.error('[familyPlan] Failed to set member balance:', balanceErr);
     }

@@ -40,9 +40,10 @@ async function balanceController(req, res) {
         quota = planConfig.familyMemberTokenQuota;
       }
 
-      const renewalPeriod = (plan === 'family' && planConfig?.familyMemberRenewalPeriod)
-        ? planConfig.familyMemberRenewalPeriod
-        : (planConfig?.renewalPeriod ?? 'monthly');
+      const renewalPeriod =
+        plan === 'family' && planConfig?.familyMemberRenewalPeriod
+          ? planConfig.familyMemberRenewalPeriod
+          : (planConfig?.renewalPeriod ?? 'monthly');
       if (renewalPeriod === 'weekly') renewalUnit = 'weeks';
       if (renewalPeriod === 'daily') renewalUnit = 'days';
       if (renewalPeriod === 'yearly') renewalUnit = 'years';
@@ -64,6 +65,7 @@ async function balanceController(req, res) {
     balanceData.refillAmount !== quota ||
     balanceData.refillIntervalUnit !== renewalUnit ||
     balanceData.refillIntervalValue !== renewalValue ||
+    balanceData.renewalMode !== 'reset' ||
     !balanceData.autoRefillEnabled ||
     !balanceData.lastRefill
   ) {
@@ -76,6 +78,7 @@ async function balanceController(req, res) {
         refillAmount: quota,
         refillIntervalUnit: renewalUnit,
         refillIntervalValue: renewalValue,
+        renewalMode: 'reset',
       };
 
       // Only reset tokenCredits if the quota actually changed or if it was never initialized
@@ -87,9 +90,9 @@ async function balanceController(req, res) {
         { user: req.user.id },
         {
           $set: setPayload,
-          $setOnInsert: { lastRefill: new Date(), tokenCredits: quota }
+          $setOnInsert: { lastRefill: new Date(), tokenCredits: quota },
         },
-        { new: true, upsert: true }
+        { new: true, upsert: true },
       ).lean();
 
       if (updatedBalance) {
@@ -112,9 +115,13 @@ async function balanceController(req, res) {
         const result = await createAutoRefillTransaction({
           user: req.user.id,
           rawAmount: balanceData.refillAmount,
+          resetBalance: true,
         });
-        if (result && result.balance) {
-          balanceData = result.balance;
+        if (result) {
+          const renewedBalance = await findBalanceByUser(req.user.id);
+          if (renewedBalance) {
+            balanceData = renewedBalance;
+          }
         }
       } catch (error) {
         console.error('[balanceController] Auto-refill failed:', error);
@@ -154,6 +161,12 @@ async function balanceController(req, res) {
     result.refillIntervalValue,
     result.refillIntervalUnit,
   );
+  const subscriptionUsage = {
+    consumed,
+    remaining,
+    periodStartedAt: result.lastRefill,
+    renewsAt: nextRefillDate,
+  };
 
   res.status(200).json({
     ...result,
@@ -162,6 +175,7 @@ async function balanceController(req, res) {
     consumed,
     isFamilyOwner,
     nextRefillDate,
+    subscriptionUsage,
   });
 }
 

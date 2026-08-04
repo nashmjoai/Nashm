@@ -4,7 +4,6 @@ import { groupToolTokens, formatTokens, formatCost } from '~/utils';
 import { useLocalize, useAuthContext } from '~/hooks';
 import { useGetStartupConfig, useGetUserBalance } from '~/data-provider';
 
-
 interface RowProps {
   label: string;
   value: number;
@@ -44,7 +43,6 @@ export default function Breakdown({ view, showCost, currency }: BreakdownProps) 
   const balanceData = balanceQuery.data;
 
   const { usedTokens, maxTokens, percent, snapshot, snapshotActive, branchUsage, hasUsage } = view;
-
 
   /** Show the all-branches total only when it (a) exceeds the active branch —
    *  epsilon guards against float summation order surfacing a spurious row in an
@@ -209,85 +207,64 @@ export default function Breakdown({ view, showCost, currency }: BreakdownProps) 
         </>
       )}
 
-      {/* Subscription Quota Section */}
-      {balanceData && (
+      {balanceData?.subscriptionUsage && (
         <>
           <div className="border-t border-border-light" role="separator" />
           <div className="space-y-1.5 text-xs text-text-secondary">
-            <div className="flex justify-between items-center text-sm font-semibold text-text-primary">
-              <span className="capitalize">{balanceData.plan} Plan</span>
-              <span className="text-[10px] text-blue-500 uppercase font-semibold">Active</span>
+            <div className="flex items-center justify-between text-sm font-semibold text-text-primary">
+              <span className="capitalize">{balanceData.plan}</span>
+              <span className="text-[10px] font-semibold uppercase text-blue-500">
+                {localize('com_subscription_usage_active')}
+              </span>
             </div>
-            
-            <div className="flex justify-between items-center text-xs">
-              <span>Consumed Quota:</span>
+
+            <div className="flex items-center justify-between text-xs">
+              <span>{localize('com_subscription_usage_consumed')}:</span>
               <span className="font-mono font-medium text-text-primary">
-                {formatTokens(balanceData.consumed || 0)} / {formatTokens(balanceData.quota || 0)}
+                {formatTokens(balanceData.subscriptionUsage.consumed)}
               </span>
             </div>
-            
-            <div className="flex justify-between items-center text-xs">
-              <span>Remaining Quota:</span>
+
+            <div className="flex items-center justify-between text-xs">
+              <span>{localize('com_subscription_usage_remaining')}:</span>
               <span className="font-mono font-bold text-green-500">
-                {formatTokens(balanceData.tokenCredits || 0)}
+                {formatTokens(balanceData.subscriptionUsage.remaining)}
               </span>
             </div>
-            
-            {/* Progress bar for plan quota */}
-            <div className="h-1.5 w-full bg-surface-tertiary rounded-full overflow-hidden mt-1">
-              <div 
-                className="h-full bg-green-500 rounded-full transition-all duration-300"
+
+            <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-surface-tertiary">
+              <div
+                className="h-full rounded-full bg-green-500 transition-all duration-300"
                 style={{
                   width: `${Math.min(
-                    ((balanceData.tokenCredits || 0) / (balanceData.quota || 1)) * 100,
-                    100
-                  )}%`
+                    (balanceData.subscriptionUsage.remaining /
+                      Math.max(
+                        balanceData.subscriptionUsage.consumed +
+                          balanceData.subscriptionUsage.remaining,
+                        1,
+                      )) *
+                      100,
+                    100,
+                  )}%`,
                 }}
               />
             </div>
-            
-            {/* Display usage start date and next renewal time */}
+
             {(() => {
-              const lastRefill = balanceData.lastRefill;
-              const nextRefill = balanceData.nextRefillDate;
-              
-              if (!lastRefill && !nextRefill) return null;
-              
-              let nextTimeString = '';
-              if (nextRefill) {
-                const next = new Date(nextRefill);
-                const now = new Date();
-                const diffMs = next.getTime() - now.getTime();
-                if (diffMs > 0) {
-                  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-                  const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                  const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-                  
-                  if (days > 0) nextTimeString += `${days} ${localize('com_ui_days')} `;
-                  if (hours > 0) nextTimeString += `${hours} ${localize('com_ui_hours')} `;
-                  if (minutes > 0) nextTimeString += `${minutes} ${localize('com_ui_minutes')}`;
-                  if (!nextTimeString) nextTimeString = localize('com_ui_less_than_minute');
-                }
-              }
+              const { periodStartedAt, renewsAt } = balanceData.subscriptionUsage;
 
               return (
-                <div className="mt-2 space-y-1 pt-2 border-t border-border-light/50">
-                  {lastRefill && (
-                    <div className="flex justify-between items-center text-xs">
-                      <span>{localize('com_ui_consumption_started')}:</span>
-                      <span className="text-text-primary">
-                        {new Date(lastRefill).toLocaleDateString()}
-                      </span>
-                    </div>
-                  )}
-                  {nextTimeString && (
-                    <div className="flex justify-between items-center text-xs">
-                      <span>{localize('com_ui_next_renewal')}:</span>
-                      <span className="text-text-primary">
-                        {nextTimeString.trim()}
-                      </span>
-                    </div>
-                  )}
+                <div className="border-border-light/50 mt-2 space-y-1 border-t pt-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span>{localize('com_ui_consumption_started')}:</span>
+                    <span className="text-text-primary">
+                      {new Date(periodStartedAt).toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <span>{localize('com_subscription_usage_renews_at')}:</span>
+                    <span className="text-text-primary">{new Date(renewsAt).toLocaleString()}</span>
+                  </div>
                 </div>
               );
             })()}
@@ -297,4 +274,3 @@ export default function Breakdown({ view, showCost, currency }: BreakdownProps) 
     </div>
   );
 }
-

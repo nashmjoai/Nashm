@@ -40,6 +40,17 @@ const MODEL_CAPABILITIES = [
 const USER_FIELDS = '_id name username email avatar role provider createdAt updatedAt';
 
 type SessionDoc = { user: Types.ObjectId; expiration: Date };
+type FeatureConfig = {
+  overrides?: {
+    interface?: {
+      slides?: boolean;
+      audio?: boolean;
+      document?: boolean;
+      spreadsheet?: boolean;
+      research?: boolean;
+    };
+  };
+};
 type TransactionDoc = {
   user: Types.ObjectId;
   model?: string;
@@ -85,7 +96,7 @@ export type AdminConsoleDeps = {
   SystemErrorLog: Model<ISystemErrorLog>;
   Balance: Model<IBalance>;
   SupportTicket: Model<ISupportTicket>;
-  Config: Model<any>;
+  Config: Model<FeatureConfig>;
   invalidateConfigCaches?: (tenantId?: string) => Promise<void>;
   loadModels: (req: ServerRequest) => Promise<TModelsConfig>;
   sendSupportEmail?: SupportEmailSender;
@@ -563,15 +574,17 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
         plan: effective.plan,
       }).lean<IPlanConfig | null>();
       const effectivePlanChanged = previousEffective.plan !== effective.plan;
-      const fallbackQuota =
-        effective.plan === 'free'
-          ? 50000
-          : effective.plan === 'individual'
-            ? 500000
-            : effective.plan === 'family'
-              ? 1000000
-              : 2000000;
-      const defaultTokenCredits = planConfig?.tokenQuota ?? fallbackQuota;
+      const fallbackQuotaByPlan: Record<SubscriptionPlan, number> = {
+        free: 50000,
+        individual: 500000,
+        family: 1000000,
+        developer: 2000000,
+      };
+      const fallbackQuota = fallbackQuotaByPlan[effective.plan];
+      const defaultTokenCredits =
+        effective.plan === 'family' && typeof planConfig?.familyMemberTokenQuota === 'number'
+          ? planConfig.familyMemberTokenQuota
+          : (planConfig?.tokenQuota ?? fallbackQuota);
       const tokenCredits =
         !effectivePlanChanged &&
         isActiveSubscription(status, expiresAt) &&
@@ -579,9 +592,12 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
           ? body.tokenBalance
           : defaultTokenCredits;
 
-      const renewalPeriod = planConfig?.renewalPeriod ?? 'monthly';
-      let renewalUnit = 'months';
-      let renewalValue = 1;
+      const renewalPeriod =
+        effective.plan === 'family' && planConfig?.familyMemberRenewalPeriod
+          ? planConfig.familyMemberRenewalPeriod
+          : (planConfig?.renewalPeriod ?? 'monthly');
+      let renewalUnit: IBalance['refillIntervalUnit'] = 'months';
+      const renewalValue = 1;
       if (renewalPeriod === 'weekly') renewalUnit = 'weeks';
       if (renewalPeriod === 'daily') renewalUnit = 'days';
       if (renewalPeriod === 'yearly') renewalUnit = 'years';
@@ -595,6 +611,7 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
             refillAmount: defaultTokenCredits,
             refillIntervalUnit: renewalUnit,
             refillIntervalValue: renewalValue,
+            renewalMode: 'reset',
             ...(effectivePlanChanged ? { lastRefill: new Date() } : {}),
           },
           $setOnInsert: { lastRefill: new Date() },
@@ -720,7 +737,9 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
         return res.status(400).json({ error: 'A provider cannot be the default model' });
       }
       if (body.isDefault === true && (body.enabled === false || body.showInChat === false)) {
-        return res.status(400).json({ error: 'The default model must be enabled and visible in chat' });
+        return res
+          .status(400)
+          .json({ error: 'The default model must be enabled and visible in chat' });
       }
       if (
         body.sortOrder !== undefined &&
@@ -834,7 +853,7 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
   async function updateSupportTicket(req: ServerRequest, res: Response): Promise<Response> {
     try {
       const { id } = req.params as { id: string };
-      const status = asString((req.body as any)?.status);
+      const status = asString((req.body as { status?: string }).status);
 
       if (!Types.ObjectId.isValid(id)) {
         return res.status(400).json({ error: 'Invalid ticket id' });
@@ -1009,7 +1028,7 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
           ? updated.familyMemberRenewalPeriod
           : (updated?.renewalPeriod ?? 'monthly');
 
-      let renewalUnit = 'months';
+      let renewalUnit: IBalance['refillIntervalUnit'] = 'months';
       if (targetRenewalPeriod === 'weekly') renewalUnit = 'weeks';
       if (targetRenewalPeriod === 'daily') renewalUnit = 'days';
       if (targetRenewalPeriod === 'yearly') renewalUnit = 'years';
@@ -1019,9 +1038,21 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
           ? updated.familyMemberTokenQuota
           : updated?.tokenQuota;
 
-      const balanceUpdate: Record<string, any> = {
+      const balanceUpdate: Partial<
+        Pick<
+          IBalance,
+          | 'autoRefillEnabled'
+          | 'tokenCredits'
+          | 'refillAmount'
+          | 'refillIntervalUnit'
+          | 'refillIntervalValue'
+          | 'renewalMode'
+        >
+      > = {
+        autoRefillEnabled: true,
         refillIntervalUnit: renewalUnit,
         refillIntervalValue: 1,
+        renewalMode: 'reset',
       };
       if (
         typeof body.tokenQuota === 'number' ||
@@ -1246,19 +1277,19 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
 
   async function getFeatures(req: ServerRequest, res: Response): Promise<Response> {
     try {
-      const configDoc = (await deps.Config.findOne({
+      const configDoc = await deps.Config.findOne({
         principalType: 'role',
         principalId: '__base__',
-      }).lean()) as any;
+      }).lean<FeatureConfig | null>();
 
-      const interfaceConfig = configDoc?.overrides?.interface || {};
+      const interfaceConfig = configDoc?.overrides?.interface;
 
       return res.status(200).json({
-        slides: interfaceConfig.slides !== false,
-        audio: interfaceConfig.audio !== false,
-        document: interfaceConfig.document !== false,
-        spreadsheet: interfaceConfig.spreadsheet !== false,
-        research: interfaceConfig.research !== false,
+        slides: interfaceConfig?.slides !== false,
+        audio: interfaceConfig?.audio !== false,
+        document: interfaceConfig?.document !== false,
+        spreadsheet: interfaceConfig?.spreadsheet !== false,
+        research: interfaceConfig?.research !== false,
       });
     } catch (error) {
       logger.error('[adminConsole] getFeatures error:', error);

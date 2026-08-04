@@ -1,6 +1,8 @@
 const { getModelAccessDecision } = require('@nashm/api');
 const { logger } = require('@nashm/data-schemas');
+const { getRefillEligibilityDate } = require('nashm-data-provider');
 const { Types } = require('mongoose');
+const { createAutoRefillTransaction } = require('~/models');
 const {
   Subscription,
   FamilyPlan,
@@ -54,8 +56,38 @@ async function hasRemainingModelAllowance(req, decision, endpoint, model) {
     return { allowed: true };
   }
 
-  const balance = await Balance.findOne({ user: userId }).select('lastRefill').lean();
-  const periodStart = balance?.lastRefill instanceof Date ? balance.lastRefill : new Date(0);
+  const balance = await Balance.findOne({ user: userId })
+    .select(
+      'lastRefill autoRefillEnabled refillAmount refillIntervalValue refillIntervalUnit renewalMode',
+    )
+    .lean();
+  let periodStart = balance?.lastRefill instanceof Date ? balance.lastRefill : new Date(0);
+  const renewalDate =
+    balance?.autoRefillEnabled &&
+    balance.refillAmount > 0 &&
+    balance.renewalMode === 'reset' &&
+    balance.lastRefill instanceof Date
+      ? getRefillEligibilityDate(
+          balance.lastRefill,
+          balance.refillIntervalValue ?? 1,
+          balance.refillIntervalUnit ?? 'months',
+        )
+      : null;
+
+  if (renewalDate && new Date() >= renewalDate) {
+    try {
+      const result = await createAutoRefillTransaction({
+        user: userId,
+        rawAmount: balance.refillAmount,
+        resetBalance: true,
+      });
+      if (result) {
+        periodStart = new Date();
+      }
+    } catch (error) {
+      logger.error('[modelSubscription] Failed to renew subscription allowance:', error);
+    }
+  }
   const [usage] = await Transaction.aggregate([
     {
       $match: {

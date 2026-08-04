@@ -15,8 +15,13 @@ jest.mock('~/db/models', () => ({
   Transaction: { aggregate: jest.fn() },
 }));
 
+jest.mock('~/models', () => ({
+  createAutoRefillTransaction: jest.fn(),
+}));
+
 const { getModelAccessDecision } = require('@nashm/api');
 const { PlanConfig, Balance, Transaction } = require('~/db/models');
+const { createAutoRefillTransaction } = require('~/models');
 const enforceModelSubscription = require('./modelSubscription');
 
 const userId = '64b64c0d7bb1f0e6d0d2c123';
@@ -118,5 +123,41 @@ describe('enforceModelSubscription', () => {
       }),
     );
     expect(next).not.toHaveBeenCalled();
+  });
+
+  it('renews an expired subscription period before checking the model allowance', async () => {
+    getModelAccessDecision.mockResolvedValue({
+      allowed: true,
+      reason: 'allowed',
+      effective: { plan: 'developer' },
+      allowedPlans: ['developer'],
+    });
+    mockPlanConfig({
+      modelTokenLimits: [{ endpoint: 'google', model: 'gemini-3.5-flash', tokensPerPeriod: 100 }],
+    });
+    Balance.findOne.mockReturnValue({
+      select: jest.fn().mockReturnValue({
+        lean: jest.fn().mockResolvedValue({
+          lastRefill: new Date('2000-01-01T00:00:00.000Z'),
+          autoRefillEnabled: true,
+          refillAmount: 1000,
+          refillIntervalValue: 1,
+          refillIntervalUnit: 'weeks',
+          renewalMode: 'reset',
+        }),
+      }),
+    });
+    createAutoRefillTransaction.mockResolvedValue({ balance: 1000 });
+    Transaction.aggregate.mockResolvedValue([{ tokensUsed: 0 }]);
+    const next = jest.fn();
+
+    await enforceModelSubscription(createRequest(), createResponse(), next);
+
+    expect(createAutoRefillTransaction).toHaveBeenCalledWith({
+      user: userId,
+      rawAmount: 1000,
+      resetBalance: true,
+    });
+    expect(next).toHaveBeenCalledTimes(1);
   });
 });

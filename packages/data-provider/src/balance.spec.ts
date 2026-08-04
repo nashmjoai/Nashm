@@ -9,6 +9,7 @@ describe('getRefillEligibilityDate', () => {
     ['days', 1, '2026-05-06T16:00:00.000Z'],
     ['weeks', 1, '2026-05-12T16:00:00.000Z'],
     ['months', 1, '2026-06-05T16:00:00.000Z'],
+    ['years', 1, '2027-05-05T16:00:00.000Z'],
   ] as const)(
     'returns lastRefill plus %s for the refill eligibility date',
     (unit: RefillIntervalUnit, value: number, expected: string) => {
@@ -42,7 +43,7 @@ describe('getRefillEligibilityDate', () => {
 
   it('returns a Date fallback for unknown runtime interval units', () => {
     const lastRefill = new Date('2026-05-05T16:00:00.000Z');
-    const unknownUnit = 'years' as unknown as RefillIntervalUnit;
+    const unknownUnit = 'centuries' as unknown as RefillIntervalUnit;
 
     expect(getRefillEligibilityDate(lastRefill, 1, unknownUnit)).toEqual(lastRefill);
   });

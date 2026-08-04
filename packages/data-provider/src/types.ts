@@ -770,6 +770,12 @@ export type TBalanceResponse = {
   consumed?: number;
   isFamilyOwner?: boolean;
   nextRefillDate?: Date | string;
+  subscriptionUsage?: {
+    consumed: number;
+    remaining: number;
+    periodStartedAt: Date | string;
+    renewsAt: Date | string;
+  };
 };
 
 /* -------------------------------------------------------------------------- */

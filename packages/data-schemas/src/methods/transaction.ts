@@ -52,6 +52,7 @@ export interface TxData {
   readTokens?: number;
   balance?: { enabled?: boolean };
   transactions?: { enabled?: boolean };
+  resetBalance?: boolean;
 }
 
 /** Return value from a successful transaction that also updates the balance */
@@ -315,8 +316,11 @@ export function createTransactionMethods(
 
     const balanceResponse = await updateBalance({
       user: transaction.user as string,
-      incrementValue: txData.rawAmount ?? 0,
-      setValues: { lastRefill: new Date() },
+      incrementValue: txData.resetBalance ? 0 : (txData.rawAmount ?? 0),
+      setValues: {
+        lastRefill: new Date(),
+        ...(txData.resetBalance ? { tokenCredits: txData.rawAmount ?? 0 } : {}),
+      },
     });
     const result = {
       rate: transaction.rate as number,

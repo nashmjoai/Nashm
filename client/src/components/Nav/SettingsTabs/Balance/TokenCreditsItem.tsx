@@ -1,26 +1,43 @@
 import React from 'react';
-import { Label, InfoHoverCard, ESide } from '@nashm/client';
+import { Label } from '@nashm/client';
 import { useLocalize } from '~/hooks';
 
 interface TokenCreditsItemProps {
-  tokenCredits?: number;
+  plan?: string;
+  usage?: {
+    consumed: number;
+    remaining: number;
+  };
 }
 
-const TokenCreditsItem: React.FC<TokenCreditsItemProps> = ({ tokenCredits }) => {
+const TokenCreditsItem: React.FC<TokenCreditsItemProps> = ({ plan, usage }) => {
   const localize = useLocalize();
+  const formatAmount = (amount: number): string =>
+    new Intl.NumberFormat().format(Math.round(amount));
 
   return (
-    <div className="flex items-center justify-between">
-      {/* Left Section: Label */}
-      <div className="flex items-center space-x-2">
-        <Label className="font-light">{localize('com_nav_balance')}</Label>
-        <InfoHoverCard side={ESide.Bottom} text={localize('com_nav_info_balance')} />
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <Label className="font-light">{localize('com_nav_subscription')}</Label>
+        <span
+          className="text-sm font-medium capitalize text-gray-800 dark:text-gray-200"
+          role="note"
+        >
+          {plan ?? '-'}
+        </span>
       </div>
-
-      {/* Right Section: tokenCredits Value */}
-      <span className="text-sm font-medium text-gray-800 dark:text-gray-200" role="note">
-        {tokenCredits !== undefined ? tokenCredits.toFixed(2) : '0.00'}
-      </span>
+      <div className="flex items-center justify-between text-sm">
+        <span className="text-text-secondary">{localize('com_subscription_usage_consumed')}</span>
+        <span className="font-medium text-text-primary" role="note">
+          {usage ? formatAmount(usage.consumed) : '-'}
+        </span>
+      </div>
+      <div className="flex items-center justify-between text-sm">
+        <span className="text-text-secondary">{localize('com_subscription_usage_remaining')}</span>
+        <span className="font-medium text-text-primary" role="note">
+          {usage ? formatAmount(usage.remaining) : '-'}
+        </span>
+      </div>
     </div>
   );
 };

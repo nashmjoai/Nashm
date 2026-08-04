@@ -10,6 +10,7 @@ export interface IBalance extends Document {
   refillIntervalUnit: RefillIntervalUnit;
   lastRefill: Date;
   refillAmount: number;
+  renewalMode?: 'top_up' | 'reset';
   tenantId?: string;
 }
 
@@ -22,4 +23,5 @@ export interface IBalanceUpdate {
   refillIntervalUnit?: RefillIntervalUnit;
   refillAmount?: number;
   lastRefill?: Date;
+  renewalMode?: 'top_up' | 'reset';
 }

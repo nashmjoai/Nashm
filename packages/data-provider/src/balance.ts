@@ -5,6 +5,7 @@ export const REFILL_INTERVAL_UNITS = [
   'days',
   'weeks',
   'months',
+  'years',
 ] as const;
 
 export type RefillIntervalUnit = (typeof REFILL_INTERVAL_UNITS)[number];
@@ -37,6 +38,9 @@ export function getRefillEligibilityDate(
       return result;
     case 'months':
       result.setMonth(result.getMonth() + value);
+      return result;
+    case 'years':
+      result.setFullYear(result.getFullYear() + value);
       return result;
     default: {
       ensureExhaustive(unit);

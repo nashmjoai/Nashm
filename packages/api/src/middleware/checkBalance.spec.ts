@@ -58,6 +58,32 @@ describe('checkBalance', () => {
     );
   });
 
+  it('resets a subscription allowance as soon as its renewal period has ended', async () => {
+    const createAutoRefillTransaction = jest.fn().mockResolvedValue({ balance: 1000 });
+    const deps = createMockDeps({
+      findBalanceByUser: jest.fn().mockResolvedValue({
+        tokenCredits: 400,
+        autoRefillEnabled: true,
+        refillAmount: 1000,
+        refillIntervalValue: 1,
+        refillIntervalUnit: 'days',
+        renewalMode: 'reset',
+        lastRefill: new Date('2000-01-01T00:00:00.000Z'),
+      }),
+      createAutoRefillTransaction,
+    });
+
+    await expect(checkBalance({ req, res, txData: baseTxData }, deps)).resolves.toBe(true);
+
+    expect(createAutoRefillTransaction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        user: 'user-1',
+        rawAmount: 1000,
+        resetBalance: true,
+      }),
+    );
+  });
+
   describe('lazy balance initialization', () => {
     it('should create balance record when no record exists and startBalance is configured', async () => {
       const upsertBalanceFields = jest.fn().mockResolvedValue({ tokenCredits: 5000 });

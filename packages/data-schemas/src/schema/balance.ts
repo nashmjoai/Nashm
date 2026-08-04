@@ -37,6 +37,11 @@ const balanceSchema: Schema<t.IBalance> = new Schema<t.IBalance>({
     type: Number,
     default: 0,
   },
+  renewalMode: {
+    type: String,
+    enum: ['top_up', 'reset'],
+    default: 'top_up',
+  },
   tenantId: {
     type: String,
     index: true,

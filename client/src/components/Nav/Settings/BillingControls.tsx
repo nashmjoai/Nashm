@@ -16,25 +16,13 @@ function useBalance(): Partial<TBalanceResponse> {
 }
 
 export function TokenCredits() {
-  const { tokenCredits = 0 } = useBalance();
-  return <TokenCreditsItem tokenCredits={tokenCredits} />;
+  const { plan, subscriptionUsage } = useBalance();
+  return <TokenCreditsItem plan={plan} usage={subscriptionUsage} />;
 }
 
 export function AutoRefill() {
   const localize = useLocalize();
-  const {
-    autoRefillEnabled = false,
-    lastRefill,
-    refillAmount,
-    refillIntervalUnit,
-    refillIntervalValue,
-  } = useBalance();
-
-  const hasValidRefillSettings =
-    lastRefill !== undefined &&
-    refillAmount !== undefined &&
-    refillIntervalUnit !== undefined &&
-    refillIntervalValue !== undefined;
+  const { autoRefillEnabled = false, lastRefill, subscriptionUsage } = useBalance();
 
   if (!autoRefillEnabled) {
     return (
@@ -44,18 +32,11 @@ export function AutoRefill() {
     );
   }
 
-  if (!hasValidRefillSettings) {
+  if (lastRefill === undefined || subscriptionUsage === undefined) {
     return (
       <div className="text-sm text-red-500">{localize('com_nav_balance_auto_refill_error')}</div>
     );
   }
 
-  return (
-    <AutoRefillSettings
-      lastRefill={lastRefill}
-      refillAmount={refillAmount}
-      refillIntervalUnit={refillIntervalUnit}
-      refillIntervalValue={refillIntervalValue}
-    />
-  );
+  return <AutoRefillSettings lastRefill={lastRefill} renewsAt={subscriptionUsage.renewsAt} />;
 }

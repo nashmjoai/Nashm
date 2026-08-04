@@ -468,6 +468,7 @@ const registerUser = async (user, additionalData = {}) => {
               refillAmount: quota,
               refillIntervalUnit: renewalUnit,
               refillIntervalValue: renewalValue,
+              renewalMode: 'reset',
             },
             $setOnInsert: { lastRefill: new Date() },
           },

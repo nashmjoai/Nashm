@@ -25,8 +25,10 @@ router.get('/', async (req, res) => {
             description: config.description,
             priceText: config.priceText,
             features: config.features,
+            tokenQuota: config.tokenQuota,
+            renewalPeriod: config.renewalPeriod,
           }
-        : { plan, features: [] };
+        : { plan, tokenQuota, renewalPeriod, features: [] };
     });
 
     return res.status(200).json({ plans });
