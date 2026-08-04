@@ -1,6 +1,13 @@
 import React, { createContext, useContext, useState, useMemo, useCallback } from 'react';
 import debounce from 'lodash/debounce';
-import { EModelEndpoint, isAgentsEndpoint, isAssistantsEndpoint } from 'nashm-data-provider';
+import {
+  AgentCapabilities,
+  Constants,
+  EModelEndpoint,
+  Tools,
+  isAgentsEndpoint,
+  isAssistantsEndpoint,
+} from 'nashm-data-provider';
 import type * as t from 'nashm-data-provider';
 import type { Endpoint, SelectedValues } from '~/common';
 import {
@@ -12,6 +19,7 @@ import {
 } from '~/hooks';
 import { useAgentsMapContext, useAssistantsMapContext, useLiveAnnouncer } from '~/Providers';
 import { useGetEndpointsQuery, useListAgentsQuery } from '~/data-provider';
+import { useUpdateEphemeralAgent } from '~/store/agents';
 import { useModelSelectorChatContext } from './ModelSelectorChatContext';
 import useSelectMention from '~/hooks/Input/useSelectMention';
 import { filterItems } from './utils';
@@ -31,6 +39,12 @@ type ModelSelectorContextType = {
 
   // Functions
   endpointRequiresUserKey: (endpoint: string) => boolean;
+  subscriptionRequirement: {
+    model: string;
+    requiredPlans: t.SubscriptionPlan[];
+    unavailable: boolean;
+  } | null;
+  dismissSubscriptionRequirement: () => void;
   setSelectedValues: React.Dispatch<React.SetStateAction<SelectedValues>>;
   setSearchValue: (value: string) => void;
   setEndpointSearchValue: (endpoint: string, value: string) => void;
@@ -62,7 +76,8 @@ export function ModelSelectorProvider({ children, startupConfig }: ModelSelector
     useModelSelectorChatContext();
   const localize = useLocalize();
   const { announcePolite } = useLiveAnnouncer();
-  const modelSpecs = useMemo(() => {
+  const updateEphemeralAgent = useUpdateEphemeralAgent();
+  const configuredModelSpecs = useMemo(() => {
     const specs = startupConfig?.modelSpecs?.list ?? [];
     if (!agentsMap) {
       return specs;
@@ -96,6 +111,28 @@ export function ModelSelectorProvider({ children, startupConfig }: ModelSelector
     endpointsConfig,
   });
 
+  const modelSpecs = useMemo(() => {
+    const managedEndpoints = new Set(
+      mappedEndpoints
+        .filter(
+          (endpoint) => !isAgentsEndpoint(endpoint.value) && !isAssistantsEndpoint(endpoint.value),
+        )
+        .map((endpoint) => endpoint.value),
+    );
+
+    return configuredModelSpecs.filter((spec) => {
+      const endpoint = spec.preset?.endpoint;
+      if (!endpoint) {
+        return true;
+      }
+      return (
+        isAgentsEndpoint(endpoint) ||
+        isAssistantsEndpoint(endpoint) ||
+        !managedEndpoints.has(endpoint)
+      );
+    });
+  }, [configuredModelSpecs, mappedEndpoints]);
+
   const getModelDisplayName = useCallback(
     (endpoint: Endpoint, model: string): string => {
       if (isAgentsEndpoint(endpoint.value)) {
@@ -106,7 +143,7 @@ export function ModelSelectorProvider({ children, startupConfig }: ModelSelector
         return endpoint.assistantNames?.[model] ?? model;
       }
 
-      return model;
+      return endpoint.models?.find((item) => item.name === model)?.label ?? model;
     },
     [agentsMap],
   );
@@ -139,12 +176,12 @@ export function ModelSelectorProvider({ children, startupConfig }: ModelSelector
     agentsMap,
     conversation: endpoint
       ? ({
-        endpoint: endpoint ?? null,
-        model: model ?? null,
-        spec: spec ?? null,
-        agent_id: agent_id ?? null,
-        assistant_id: assistant_id ?? null,
-      } as any)
+          endpoint: endpoint ?? null,
+          model: model ?? null,
+          spec: spec ?? null,
+          agent_id: agent_id ?? null,
+          assistant_id: assistant_id ?? null,
+        } as any)
       : null,
     assistantsMap,
     setSelectedValues,
@@ -152,6 +189,12 @@ export function ModelSelectorProvider({ children, startupConfig }: ModelSelector
 
   const [searchValue, setSearchValueState] = useState('');
   const [endpointSearchValues, setEndpointSearchValues] = useState<Record<string, string>>({});
+  const [subscriptionRequirement, setSubscriptionRequirement] = useState<{
+    model: string;
+    requiredPlans: t.SubscriptionPlan[];
+    unavailable: boolean;
+  } | null>(null);
+  const dismissSubscriptionRequirement = useCallback(() => setSubscriptionRequirement(null), []);
 
   const keyProps = useKeyDialog();
 
@@ -214,6 +257,15 @@ export function ModelSelectorProvider({ children, startupConfig }: ModelSelector
 
   const handleSelectModel = useCallback(
     (endpoint: Endpoint, model: string) => {
+      const selectedModel = endpoint.models?.find((item) => item.name === model);
+      if (selectedModel?.available === false) {
+        setSubscriptionRequirement({
+          model,
+          requiredPlans: selectedModel.requiredPlans ?? [],
+          unavailable: (selectedModel.requiredPlans?.length ?? 0) === 0,
+        });
+        return;
+      }
       if (isAgentsEndpoint(endpoint.value)) {
         onSelectEndpoint?.(endpoint.value, {
           agent_id: model,
@@ -226,6 +278,16 @@ export function ModelSelectorProvider({ children, startupConfig }: ModelSelector
         });
       } else if (endpoint.value) {
         onSelectEndpoint?.(endpoint.value, { model });
+        const capabilities = new Set(selectedModel?.capabilities ?? []);
+        const conversationId = getConversation()?.conversationId ?? Constants.NEW_CONVO;
+        updateEphemeralAgent(conversationId, {
+          mcp: [],
+          [Tools.web_search]: capabilities.has('web_search'),
+          [Tools.file_search]: capabilities.has('file_upload'),
+          [Tools.execute_code]: capabilities.has('code_execution'),
+          [Tools.gemini_image_gen]: capabilities.has('image_generation'),
+          [AgentCapabilities.artifacts]: capabilities.has('artifacts') ? 'default' : '',
+        });
       }
       setSelectedValues({
         endpoint: endpoint.value,
@@ -237,7 +299,16 @@ export function ModelSelectorProvider({ children, startupConfig }: ModelSelector
       const announcement = localize('com_ui_model_selected', { 0: modelDisplayName });
       announcePolite({ message: announcement, isStatus: true });
     },
-    [agentsMap, announcePolite, assistantsMap, getModelDisplayName, localize, onSelectEndpoint],
+    [
+      agentsMap,
+      announcePolite,
+      assistantsMap,
+      getConversation,
+      getModelDisplayName,
+      localize,
+      onSelectEndpoint,
+      updateEphemeralAgent,
+    ],
   );
 
   const value = useMemo(
@@ -257,6 +328,8 @@ export function ModelSelectorProvider({ children, startupConfig }: ModelSelector
       handleSelectEndpoint,
       setEndpointSearchValue,
       endpointRequiresUserKey,
+      subscriptionRequirement,
+      dismissSubscriptionRequirement,
       setSearchValue: setDebouncedSearchValue,
       ...keyProps,
     }),
@@ -276,6 +349,8 @@ export function ModelSelectorProvider({ children, startupConfig }: ModelSelector
       handleSelectEndpoint,
       setEndpointSearchValue,
       endpointRequiresUserKey,
+      subscriptionRequirement,
+      dismissSubscriptionRequirement,
       setDebouncedSearchValue,
       keyProps,
     ],

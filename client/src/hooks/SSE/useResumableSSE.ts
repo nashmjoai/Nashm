@@ -7,12 +7,10 @@ import {
   request,
   Constants,
   QueryKeys,
-  ErrorTypes,
   StepEvents,
   apiBaseUrl,
   UsageEvents,
   createPayload,
-  ViolationTypes,
   removeNullishValues,
 } from 'nashm-data-provider';
 import type {
@@ -49,11 +47,33 @@ type ChatHelpers = Pick<
   'setMessages' | 'getMessages' | 'setConversation' | 'setIsSubmitting' | 'newConversation'
 >;
 
-const getStreamStartFailureData = (errorData?: Record<string, unknown>): TResData =>
+const GENERIC_CHAT_START_ERROR = 'We could not start your response. Please try again.';
+const SAFE_CHAT_ERROR_CODES = new Set([
+  'SUBSCRIPTION_REQUIRED',
+  'MODEL_TOKEN_LIMIT_REACHED',
+  'MODEL_UNAVAILABLE',
+  'MODEL_ACCESS_CHECK_UNAVAILABLE',
+]);
+
+function getSafeChatErrorText(errorData?: unknown): string {
+  if (errorData == null || typeof errorData !== 'object') {
+    return GENERIC_CHAT_START_ERROR;
+  }
+  const data = errorData as { code?: unknown; error?: unknown; message?: unknown };
+  if (
+    typeof data.code === 'string' &&
+    SAFE_CHAT_ERROR_CODES.has(data.code) &&
+    typeof data.error === 'string' &&
+    data.error.trim().length > 0
+  ) {
+    return data.error;
+  }
+  return GENERIC_CHAT_START_ERROR;
+}
+
+const getStreamStartFailureData = (errorData?: unknown): TResData =>
   ({
-    text: errorData
-      ? JSON.stringify(errorData)
-      : 'Error connecting to server, try refreshing the page.',
+    text: getSafeChatErrorText(errorData),
     metadata: markStreamStartFailedMetadata(),
   }) as unknown as TResData;
 
@@ -899,7 +919,8 @@ export default function useResumableSSE(
 
         /**
          * Server-sent error event (event: error with data) - no responseCode.
-         * These are known errors (ErrorTypes, ViolationTypes) that should be displayed to user.
+         * Only approved, user-facing errors are displayed verbatim. Other SSE payloads may
+         * include provider diagnostics and are deliberately replaced with a safe message.
          * Only check e.data if there's no HTTP responseCode, since HTTP errors may also have body data.
          * Note: responseCode === 0 means transport failure (connection dropped) - treat as network error,
          * not a server-sent error payload. Use `== null` to only match undefined/null (no HTTP status).
@@ -918,25 +939,7 @@ export default function useResumableSSE(
 
           try {
             const errorData = JSON.parse(e.data);
-            const errorString = errorData.error ?? errorData.message ?? JSON.stringify(errorData);
-
-            // Check if it's a known error type (ViolationTypes or ErrorTypes)
-            let isKnownError = false;
-            try {
-              const parsed =
-                typeof errorString === 'string' ? JSON.parse(errorString) : errorString;
-              const errorType = parsed?.type ?? parsed?.code;
-              if (errorType) {
-                const violationValues = Object.values(ViolationTypes) as string[];
-                const errorTypeValues = Object.values(ErrorTypes) as string[];
-                isKnownError =
-                  violationValues.includes(errorType) || errorTypeValues.includes(errorType);
-              }
-            } catch {
-              // Not JSON or parsing failed - treat as generic error
-            }
-
-            console.log('[ResumableSSE] Error type check:', { isKnownError, errorString });
+            const errorString = getSafeChatErrorText(errorData);
 
             // Display the error to user via errorHandler
             errorHandler({
@@ -946,7 +949,9 @@ export default function useResumableSSE(
           } catch (parseError) {
             console.error('[ResumableSSE] Failed to parse server error:', parseError);
             errorHandler({
-              data: { text: e.data } as unknown as Parameters<typeof errorHandler>[0]['data'],
+              data: { text: GENERIC_CHAT_START_ERROR } as unknown as Parameters<
+                typeof errorHandler
+              >[0]['data'],
               submission: currentSubmission as EventSubmission,
             });
           }

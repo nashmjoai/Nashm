@@ -2574,6 +2574,8 @@ export enum LocalStorageKeys {
   LAST_CONVO_SETUP = 'lastConversationSetup',
   /** Key for the last selected model. */
   LAST_MODEL = 'lastSelectedModel',
+  /** Key for the model explicitly selected by the user. */
+  LAST_USER_MODEL_SELECTION = 'lastUserModelSelection',
   /** Key for the last selected tools. */
   LAST_TOOLS = 'lastSelectedTools',
   /** Key for the last selected spec by name*/

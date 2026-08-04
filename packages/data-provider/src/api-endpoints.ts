@@ -529,6 +529,8 @@ export const adminConsoleUsers = (params?: Record<string, unknown>) =>
 export const adminConsoleSubscription = () => `${BASE_URL}/api/admin/console/subscription`;
 export const adminConsoleModels = () => `${BASE_URL}/api/admin/console/models`;
 export const adminConsoleModel = () => `${BASE_URL}/api/admin/console/model`;
+export const adminConsoleErrors = (params?: Record<string, unknown>) =>
+  `${BASE_URL}/api/admin/console/errors${params ? buildQuery(params) : ''}`;
 export const adminConsoleTickets = (params?: Record<string, unknown>) =>
   `${BASE_URL}/api/admin/console/tickets${params ? buildQuery(params) : ''}`;
 export const adminConsoleTicketUpdate = (id: string) =>
@@ -542,6 +544,7 @@ export const adminConsoleAdminUser = (userId: string) =>
   `${BASE_URL}/api/admin/console/admins/${encodeURIComponent(userId)}`;
 export const adminConsoleFeatures = () => `${BASE_URL}/api/admin/console/features`;
 
+export const modelCatalog = () => `${BASE_URL}/api/models/catalog`;
 
 // Support Ticket Endpoints
 export const supportTicket = () => `${BASE_URL}/api/support`;

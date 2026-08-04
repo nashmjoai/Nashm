@@ -14,6 +14,7 @@ import {
   X,
   RefreshCw,
   ToggleRight,
+  TriangleAlert,
 } from 'lucide-react';
 import { useAuthContext } from '~/hooks';
 
@@ -25,12 +26,13 @@ export default function AdminConsoleLayout() {
   const [autoRefresh, setAutoRefresh] = useState(true);
   const queryClient = useQueryClient();
 
-  const isFetchingAdmin = useIsFetching({
-    predicate: (query) => {
-      const key = query.queryKey[0];
-      return typeof key === 'string' && key.startsWith('adminConsole');
-    },
-  }) > 0;
+  const isFetchingAdmin =
+    useIsFetching({
+      predicate: (query) => {
+        const key = query.queryKey[0];
+        return typeof key === 'string' && key.startsWith('adminConsole');
+      },
+    }) > 0;
 
   const handleReload = () => {
     queryClient.refetchQueries({
@@ -80,6 +82,7 @@ export default function AdminConsoleLayout() {
     { path: 'features', label: 'Features Toggle', icon: ToggleRight },
     { path: 'admins', label: 'Admin Management', icon: ShieldPlus },
     { path: 'tickets', label: 'Support Tickets', icon: Ticket },
+    { path: 'errors', label: 'Error Activity', icon: TriangleAlert },
   ];
 
   return (
@@ -87,30 +90,30 @@ export default function AdminConsoleLayout() {
       {/* Sidebar Overlay for Mobile */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm md:hidden transition-opacity duration-300"
+          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity duration-300 md:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 border-r border-border-light bg-surface-primary flex flex-col justify-between flex-shrink-0 transition-transform duration-300 ease-in-out md:static md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-shrink-0 flex-col justify-between border-r border-border-light bg-surface-primary transition-transform duration-300 ease-in-out md:static md:translate-x-0 ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div>
           {/* Header */}
-          <div className="p-6 border-b border-border-light flex items-center justify-between gap-3">
+          <div className="flex items-center justify-between gap-3 border-b border-border-light p-6">
             <div className="flex items-center gap-3">
               <ShieldCheck className="size-6 text-blue-500" />
               <div>
-                <h1 className="font-bold text-base leading-tight">Admin Console</h1>
+                <h1 className="text-base font-bold leading-tight">Admin Console</h1>
                 <p className="text-xs text-text-secondary">Manage System Settings</p>
               </div>
             </div>
             <button
               onClick={() => setIsSidebarOpen(false)}
-              className="p-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-tertiary md:hidden transition-colors"
+              className="rounded-lg p-1.5 text-text-secondary transition-colors hover:bg-surface-tertiary hover:text-text-primary md:hidden"
               aria-label="Close sidebar"
             >
               <X className="size-5" />
@@ -118,7 +121,7 @@ export default function AdminConsoleLayout() {
           </div>
 
           {/* Navigation Links */}
-          <nav className="p-4 flex flex-col gap-1">
+          <nav className="flex flex-col gap-1 p-4">
             {navItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -127,9 +130,9 @@ export default function AdminConsoleLayout() {
                   to={`/admin-console/${item.path}`}
                   onClick={() => setIsSidebarOpen(false)}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                    `flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 ${
                       isActive
-                        ? 'bg-blue-600/10 text-blue-500 font-semibold'
+                        ? 'bg-blue-600/10 font-semibold text-blue-500'
                         : 'text-text-secondary hover:bg-surface-tertiary hover:text-text-primary'
                     }`
                   }
@@ -143,13 +146,13 @@ export default function AdminConsoleLayout() {
         </div>
 
         {/* Footer actions */}
-        <div className="p-4 border-t border-border-light">
+        <div className="border-t border-border-light p-4">
           <button
             onClick={() => {
               setIsSidebarOpen(false);
               navigate('/c/new');
             }}
-            className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium text-text-secondary hover:bg-surface-tertiary hover:text-text-primary transition-all duration-200"
+            className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-text-secondary transition-all duration-200 hover:bg-surface-tertiary hover:text-text-primary"
           >
             <ArrowLeft className="size-5" />
             Back to Chat
@@ -158,18 +161,18 @@ export default function AdminConsoleLayout() {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col overflow-hidden bg-surface-secondary">
+      <main className="flex flex-1 flex-col overflow-hidden bg-surface-secondary">
         {/* Header bar */}
-        <header className="h-16 border-b border-border-light bg-surface-primary px-4 md:px-8 flex items-center justify-between flex-shrink-0">
+        <header className="flex h-16 flex-shrink-0 items-center justify-between border-b border-border-light bg-surface-primary px-4 md:px-8">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsSidebarOpen(true)}
-              className="p-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-tertiary md:hidden transition-colors"
+              className="rounded-lg p-1.5 text-text-secondary transition-colors hover:bg-surface-tertiary hover:text-text-primary md:hidden"
               aria-label="Open sidebar"
             >
               <Menu className="size-6" />
             </button>
-            <h2 className="text-base md:text-lg font-bold">
+            <h2 className="text-base font-bold md:text-lg">
               {navItems.find((item) => location.pathname.endsWith(item.path))?.label || 'Overview'}
             </h2>
           </div>
@@ -177,22 +180,26 @@ export default function AdminConsoleLayout() {
             {/* Auto-Refresh Toggle Pill */}
             <button
               onClick={() => setAutoRefresh(!autoRefresh)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-300 ${
+              className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-all duration-300 ${
                 autoRefresh
-                  ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/25 dark:text-emerald-400 dark:border-emerald-500/30 shadow-[0_0_12px_-3px_rgba(16,185,129,0.25)]'
-                  : 'bg-surface-tertiary text-text-secondary border-border-light'
+                  ? 'border-emerald-500/25 bg-emerald-500/10 text-emerald-600 shadow-[0_0_12px_-3px_rgba(16,185,129,0.25)] dark:border-emerald-500/30 dark:text-emerald-400'
+                  : 'border-border-light bg-surface-tertiary text-text-secondary'
               }`}
-              title={autoRefresh ? 'Disable automatic updates' : 'Enable automatic updates (every 10s)'}
+              title={
+                autoRefresh ? 'Disable automatic updates' : 'Enable automatic updates (every 10s)'
+              }
             >
-              <span className={`size-2 rounded-full ${autoRefresh ? 'bg-emerald-500 animate-pulse' : 'bg-text-secondary'}`} />
-              <span className="hidden xs:inline">Auto-Refresh</span>
+              <span
+                className={`size-2 rounded-full ${autoRefresh ? 'animate-pulse bg-emerald-500' : 'bg-text-secondary'}`}
+              />
+              <span className="xs:inline hidden">Auto-Refresh</span>
             </button>
-            
+
             {/* Manual Reload Button */}
             <button
               onClick={handleReload}
               disabled={isFetchingAdmin}
-              className={`p-2 rounded-xl text-text-secondary hover:text-text-primary hover:bg-surface-tertiary border border-border-light bg-surface-primary flex items-center justify-center transition-all active:scale-95 disabled:opacity-50 ${
+              className={`flex items-center justify-center rounded-xl border border-border-light bg-surface-primary p-2 text-text-secondary transition-all hover:bg-surface-tertiary hover:text-text-primary active:scale-95 disabled:opacity-50 ${
                 isFetchingAdmin ? 'text-blue-500' : ''
               }`}
               aria-label="Reload dashboard data"
@@ -201,17 +208,17 @@ export default function AdminConsoleLayout() {
               <RefreshCw className={`size-4 ${isFetchingAdmin ? 'animate-spin' : ''}`} />
             </button>
 
-            <span className="text-xs px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-500 font-semibold border border-blue-500/20 flex-shrink-0">
+            <span className="flex-shrink-0 rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-1 text-xs font-semibold text-blue-500">
               System Admin
             </span>
-            <span className="hidden sm:inline text-sm font-medium text-text-secondary truncate max-w-[150px] md:max-w-none">
+            <span className="hidden max-w-[150px] truncate text-sm font-medium text-text-secondary sm:inline md:max-w-none">
               {user?.email}
             </span>
           </div>
         </header>
 
         {/* Scrollable sub-views */}
-        <section className="flex-grow overflow-y-auto p-4 md:p-8 max-w-7xl w-full mx-auto">
+        <section className="mx-auto w-full max-w-7xl flex-grow overflow-y-auto p-4 md:p-8">
           <Outlet />
         </section>
       </main>

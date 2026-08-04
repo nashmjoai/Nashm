@@ -1,12 +1,7 @@
 import React from 'react';
 import { Bot } from 'lucide-react';
 import { isAgentsEndpoint, isAssistantsEndpoint } from 'nashm-data-provider';
-import type {
-  TModelSpec,
-  TAgentsMap,
-  TAssistantsMap,
-  TEndpointsConfig,
-} from 'nashm-data-provider';
+import type { TModelSpec, TAgentsMap, TAssistantsMap, TEndpointsConfig } from 'nashm-data-provider';
 import type { useLocalize } from '~/hooks';
 import SpecIcon from '~/components/Chat/Menus/Endpoints/components/SpecIcon';
 import { Endpoint, SelectedValues } from '~/common';
@@ -17,7 +12,7 @@ export function filterItems<
     name?: string;
     value?: string;
     hasModels?: boolean;
-    models?: Array<{ name: string; isGlobal?: boolean }>;
+    models?: Array<{ name: string; label?: string; isGlobal?: boolean }>;
     searchAliases?: string[];
     showMarketplace?: boolean;
   },
@@ -55,7 +50,10 @@ export function filterItems<
 
     if (item.models && item.models.length > 0) {
       return item.models.some((modelId) => {
-        if (modelId.name.toLowerCase().includes(searchTermLower)) {
+        if (
+          modelId.name.toLowerCase().includes(searchTermLower) ||
+          modelId.label?.toLowerCase().includes(searchTermLower)
+        ) {
           return true;
         }
 
@@ -101,7 +99,7 @@ export function filterModels(
   }
 
   return models.filter((modelId) => {
-    let modelName = modelId;
+    let modelName = endpoint.models?.find((model) => model.name === modelId)?.label || modelId;
 
     if (isAgentsEndpoint(endpoint.value) && agentsMap && agentsMap[modelId]) {
       modelName = agentsMap[modelId]?.name || modelId;
@@ -134,17 +132,16 @@ export function getSelectedIcon({
 
   if (modelSpec) {
     const spec = modelSpecs.find((s) => s.name === modelSpec);
-    if (!spec) {
-      return null;
+    if (spec) {
+      const { showIconInHeader = true } = spec;
+      if (!showIconInHeader) {
+        return null;
+      }
+      return React.createElement(SpecIcon, {
+        currentSpec: spec,
+        endpointsConfig,
+      });
     }
-    const { showIconInHeader = true } = spec;
-    if (!showIconInHeader) {
-      return null;
-    }
-    return React.createElement(SpecIcon, {
-      currentSpec: spec,
-      endpointsConfig,
-    });
   }
 
   if (endpoint && model) {
@@ -198,7 +195,9 @@ export const getDisplayValue = ({
 }) => {
   if (selectedValues.modelSpec) {
     const spec = modelSpecs.find((s) => s.name === selectedValues.modelSpec);
-    return spec?.label || spec?.name || localize('com_ui_select_model');
+    if (spec) {
+      return spec.label || spec.name;
+    }
   }
 
   if (selectedValues.model && selectedValues.endpoint) {
@@ -226,7 +225,10 @@ export const getDisplayValue = ({
       return endpoint.assistantNames[selectedValues.model];
     }
 
-    return selectedValues.model;
+    return (
+      endpoint.models?.find((model) => model.name === selectedValues.model)?.label ||
+      selectedValues.model
+    );
   }
 
   if (selectedValues.endpoint) {

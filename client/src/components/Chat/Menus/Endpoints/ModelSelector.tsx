@@ -1,6 +1,16 @@
-import React, { useMemo } from 'react';
-import { TooltipAnchor } from '@nashm/client';
-import { getConfigDefaults } from 'nashm-data-provider';
+import React, { useMemo, useState } from 'react';
+import {
+  Button,
+  OGDialog,
+  OGDialogClose,
+  OGDialogContent,
+  OGDialogHeader,
+  OGDialogTitle,
+  TooltipAnchor,
+} from '@nashm/client';
+import { getConfigDefaults, QueryKeys } from 'nashm-data-provider';
+import { ShieldCheck } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 import type { ModelSelectorProps } from '~/common';
 import {
   renderModelSpecs,
@@ -14,11 +24,16 @@ import { getSelectedIcon, getDisplayValue } from './utils';
 import { CustomMenu as Menu } from './CustomMenu';
 import DialogManager from './DialogManager';
 import { useLocalize } from '~/hooks';
+import { useGetUserBalance } from '~/data-provider';
+import { UpgradeModal } from '~/components/Nav/UpgradeModal';
 
 const defaultInterface = getConfigDefaults().interface;
 
 function ModelSelectorContent() {
   const localize = useLocalize();
+  const queryClient = useQueryClient();
+  const [showPlans, setShowPlans] = useState(false);
+  const balanceQuery = useGetUserBalance();
 
   const {
     // Nashm
@@ -37,7 +52,20 @@ function ModelSelectorContent() {
     keyDialogOpen,
     onOpenChange,
     keyDialogEndpoint,
+    subscriptionRequirement,
+    dismissSubscriptionRequirement,
   } = useModelSelectorContext();
+  const requiredPlanNames = subscriptionRequirement?.requiredPlans
+    .map((plan) => localize(`com_subscription_plan_${plan}` as any))
+    .join(', ');
+  const currentPlan = balanceQuery.data?.plan ?? 'free';
+
+  const handleUpgradeSuccess = () => {
+    queryClient.invalidateQueries([QueryKeys.balance]);
+    queryClient.invalidateQueries([QueryKeys.models]);
+    queryClient.invalidateQueries([QueryKeys.modelCatalog]);
+    dismissSubscriptionRequirement();
+  };
 
   const selectedIcon = useMemo(
     () =>
@@ -118,6 +146,56 @@ function ModelSelectorContent() {
         onOpenChange={onOpenChange}
         endpointsConfig={endpointsConfig || {}}
         keyDialogEndpoint={keyDialogEndpoint || undefined}
+      />
+      <OGDialog
+        open={subscriptionRequirement != null}
+        onOpenChange={(open) => !open && dismissSubscriptionRequirement()}
+      >
+        <OGDialogContent className="w-11/12 max-w-md border-border-light bg-surface-primary p-6 text-text-primary">
+          <OGDialogHeader>
+            <OGDialogTitle className="flex items-center gap-2">
+              <ShieldCheck className="size-5 text-primary" />
+              {subscriptionRequirement?.unavailable
+                ? localize('com_model_unavailable_title' as any)
+                : localize('com_subscription_required_title' as any)}
+            </OGDialogTitle>
+          </OGDialogHeader>
+          <p className="mt-4 text-sm leading-6 text-text-secondary">
+            {subscriptionRequirement?.unavailable
+              ? localize('com_model_unavailable_body' as any, {
+                  0: subscriptionRequirement.model,
+                })
+              : localize('com_subscription_required_body' as any, {
+                  0: subscriptionRequirement?.model ?? '',
+                  1: requiredPlanNames ?? '',
+                })}
+          </p>
+          <div className="mt-6 flex justify-end gap-3 border-t border-border-light pt-4">
+            <OGDialogClose asChild>
+              <Button type="button" variant="outline">
+                {localize('com_ui_cancel')}
+              </Button>
+            </OGDialogClose>
+            {!subscriptionRequirement?.unavailable && (
+              <Button
+                type="button"
+                variant="submit"
+                onClick={() => {
+                  dismissSubscriptionRequirement();
+                  setShowPlans(true);
+                }}
+              >
+                {localize('com_subscription_view_plans' as any)}
+              </Button>
+            )}
+          </div>
+        </OGDialogContent>
+      </OGDialog>
+      <UpgradeModal
+        currentPlan={currentPlan}
+        onOpenChange={setShowPlans}
+        onUpgradeSuccess={handleUpgradeSuccess}
+        open={showPlans}
       />
     </div>
   );

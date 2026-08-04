@@ -3,7 +3,7 @@ const { createMessageFilterPii, generateCheckAccess, skipAgentCheck } = require(
 const { PermissionTypes, Permissions, PermissionBits } = require('nashm-data-provider');
 const {
   moderateText,
-  // validateModel,
+  enforceModelSubscription,
   validateConvoAccess,
   buildEndpointOption,
   canAccessAgentFromBody,
@@ -30,6 +30,7 @@ router.use(moderateText);
 router.use(checkAgentAccess);
 router.use(checkAgentResourceAccess);
 router.use(validateConvoAccess);
+router.use(enforceModelSubscription);
 router.use(buildEndpointOption);
 
 const controller = async (req, res, next) => {

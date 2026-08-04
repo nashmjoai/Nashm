@@ -16,8 +16,9 @@ import {
   getModelSpecIconURL,
   getConvoSwitchLogic,
   logger,
+  saveUserModelSelection,
 } from '~/utils';
-import { useDefaultConvo } from '~/hooks';
+import { useAuthContext, useDefaultConvo } from '~/hooks';
 import store from '~/store';
 
 export default function useSelectMention({
@@ -37,6 +38,7 @@ export default function useSelectMention({
   endpointsConfig: TEndpointsConfig;
   getConversation: () => TConversation | null;
 }) {
+  const { user } = useAuthContext();
   const getDefaultConversation = useDefaultConvo();
   const modularChat = useRecoilValue(store.modularChat);
   const availableTools = useRecoilValue(store.availableTools);
@@ -170,6 +172,9 @@ export default function useSelectMention({
       const model = kwargs.model ?? '';
       if (model) {
         template.model = model;
+        if (!isAgentsEndpoint(newEndpoint) && !isAssistantsEndpoint(newEndpoint)) {
+          saveUserModelSelection({ endpoint: newEndpoint, model }, user?.id);
+        }
       }
 
       const assistant_id = kwargs.assistant_id ?? '';
@@ -231,6 +236,7 @@ export default function useSelectMention({
       newConversation,
       endpointsConfig,
       routeChatProjectId,
+      user?.id,
     ],
   );
 

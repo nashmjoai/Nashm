@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useGetModelsQuery } from 'nashm-data-provider/react-query';
+import { useGetModelCatalogQuery, useGetModelsQuery } from 'nashm-data-provider/react-query';
 import {
   useRecoilState,
   useRecoilValue,
@@ -36,6 +36,8 @@ import {
   getDefaultModelSpec,
   getDefaultEndpoint,
   getModelSpecPreset,
+  getPreferredModelSelection,
+  mapEndpoints,
   hasModelSelection,
   buildDefaultConvo,
   logger,
@@ -46,12 +48,13 @@ import useAssistantListMap from './Assistants/useAssistantListMap';
 import { useResetChatBadges } from './useChatBadges';
 import { useApplyModelSpecEffects } from './Agents';
 import { usePauseGlobalAudio } from './Audio';
-import { useHasAccess } from '~/hooks';
+import { useAuthContext, useHasAccess } from '~/hooks';
 import store from '~/store';
 
 const useNewConvo = (index = 0) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { user } = useAuthContext();
   const { data: startupConfig } = useGetStartupConfig();
   const getConversation = useGetConversation(index);
   const applyModelSpecEffects = useApplyModelSpecEffects();
@@ -69,6 +72,7 @@ const useNewConvo = (index = 0) => {
   });
 
   const modelsQuery = useGetModelsQuery();
+  const modelCatalogQuery = useGetModelCatalogQuery();
   const assistantsListMap = useAssistantListMap();
   const { pauseGlobalAudio } = usePauseGlobalAudio(index);
   const saveDrafts = useRecoilValue<boolean>(store.saveDrafts);
@@ -332,8 +336,26 @@ const useNewConvo = (index = 0) => {
         updatedAt: '',
       };
 
+      const hasExplicitModelSelection = Boolean(
+        _template.endpoint || _template.model || _preset?.endpoint || _preset?.model,
+      );
+      const visibleEndpointNames = new Set(startupConfig?.modelSpecs?.addedEndpoints ?? []);
+      const endpointOrder = mapEndpoints(endpointsConfig).filter(
+        (endpoint) =>
+          !isAgentsEndpoint(endpoint) &&
+          !isAssistantsEndpoint(endpoint) &&
+          (visibleEndpointNames.size === 0 || visibleEndpointNames.has(endpoint)),
+      );
+      const preferredModelSelection = getPreferredModelSelection(
+        modelCatalogQuery.data,
+        endpointOrder,
+        user?.id,
+      );
       let preset = _preset;
-      const result = getDefaultModelSpec(startupConfig, endpointsConfig);
+      if (!preset && !hasExplicitModelSelection && preferredModelSelection) {
+        preset = preferredModelSelection;
+      }
+      const result = getDefaultModelSpec(startupConfig, endpointsConfig, user?.id);
       const defaultModelSpec = result?.default ?? result?.last ?? result?.softDefault;
       const shouldApplyModelSpec =
         result?.softDefault != null
@@ -404,6 +426,8 @@ const useNewConvo = (index = 0) => {
       pauseGlobalAudio,
       switchToConversation,
       applyModelSpecEffects,
+      modelCatalogQuery.data,
+      user?.id,
     ],
   );
 

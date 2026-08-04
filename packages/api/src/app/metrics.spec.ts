@@ -8,6 +8,7 @@ import {
   instrumentMongooseQueryMetrics,
   normalizePath,
   recordGenerationJob,
+  recordGenerationLatency,
   recordGenerationStreamResumePendingEvents,
   recordGenerationStreamSubscription,
   recordOpenIDUserLookup,
@@ -389,6 +390,8 @@ describe('createMetrics', () => {
 
     recordGenerationJob('memory', 'created');
     setGenerationJobsInFlight('memory', 2);
+    recordGenerationLatency('initialization', 0.35);
+    recordGenerationLatency('time_to_first_model_delta', 1.2);
     recordGenerationStreamSubscription('redis', 'resume', 'not_found');
     recordGenerationStreamSubscription('redis', 'resume_state', 'missing');
     recordGenerationStreamResumePendingEvents('memory', 3);
@@ -400,6 +403,10 @@ describe('createMetrics', () => {
 
     expect(response.text).toMatch(/generation_jobs_total\{store="memory",result="created"\} 1/);
     expect(response.text).toMatch(/generation_jobs_in_flight\{store="memory"\} 2/);
+    expect(response.text).toMatch(/generation_latency_seconds_count\{phase="initialization"\} 1/);
+    expect(response.text).toMatch(
+      /generation_latency_seconds_count\{phase="time_to_first_model_delta"\} 1/,
+    );
     expect(response.text).toMatch(
       /generation_stream_subscriptions_total\{store="redis",type="resume",result="not_found"\} 1/,
     );

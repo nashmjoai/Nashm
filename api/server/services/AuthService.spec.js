@@ -71,6 +71,11 @@ jest.mock('~/strategies/validators', () => ({
 }));
 jest.mock('~/server/services/Config', () => ({ getAppConfig: jest.fn() }));
 jest.mock('~/server/utils', () => ({ sendEmail: jest.fn() }));
+jest.mock('~/db/models', () => ({
+  Subscription: { findOneAndUpdate: jest.fn() },
+  Balance: { findOneAndUpdate: jest.fn() },
+  PlanConfig: { findOne: jest.fn() },
+}));
 
 const {
   checkEmailConfig,
@@ -98,6 +103,7 @@ const {
 } = require('~/models');
 const { getAppConfig } = require('~/server/services/Config');
 const { sendEmail } = require('~/server/utils');
+const { Subscription, Balance, PlanConfig } = require('~/db/models');
 const bcrypt = require('bcryptjs');
 const {
   setOpenIDAuthTokens,
@@ -442,6 +448,7 @@ describe('registerUser', () => {
     countUsers.mockResolvedValue(1);
     createUser.mockResolvedValue({ _id: 'new-user-id' });
     updateUser.mockResolvedValue({ _id: 'new-user-id' });
+    PlanConfig.findOne.mockReturnValue({ lean: jest.fn().mockResolvedValue(null) });
   });
 
   it('ignores provider values from the public registration payload', async () => {
@@ -469,6 +476,38 @@ describe('registerUser', () => {
         emailVerified: true,
         provider: 'google',
       }),
+    );
+  });
+
+  it('assigns the configured Free plan quota to a newly registered user', async () => {
+    getAppConfig.mockResolvedValue({
+      balance: { enabled: true, startBalance: 50000 },
+      registration: { allowedDomains: [] },
+    });
+    PlanConfig.findOne.mockReturnValue({
+      lean: jest.fn().mockResolvedValue({ tokenQuota: 125000, renewalPeriod: 'weekly' }),
+    });
+
+    const result = await registerUser(registrationPayload);
+
+    expect(result.status).toBe(200);
+    expect(Subscription.findOneAndUpdate).toHaveBeenCalledWith(
+      { user: 'new-user-id' },
+      expect.objectContaining({
+        $set: expect.objectContaining({ plan: 'free', source: 'registration', status: 'active' }),
+      }),
+      { new: true, upsert: true },
+    );
+    expect(Balance.findOneAndUpdate).toHaveBeenCalledWith(
+      { user: 'new-user-id' },
+      expect.objectContaining({
+        $set: expect.objectContaining({
+          tokenCredits: 125000,
+          refillAmount: 125000,
+          refillIntervalUnit: 'weeks',
+        }),
+      }),
+      { new: true, upsert: true },
     );
   });
 });

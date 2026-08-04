@@ -1,11 +1,18 @@
 import React from 'react';
-import { TStartupConfig } from 'nashm-data-provider';
+import type { ModelCatalogItem, TStartupConfig } from 'nashm-data-provider';
 
 export interface Endpoint {
   value: string;
   label: string;
   hasModels: boolean;
-  models?: Array<{ name: string; isGlobal?: boolean }>;
+  models?: Array<{
+    name: string;
+    label?: string;
+    isGlobal?: boolean;
+    available?: boolean;
+    requiredPlans?: ModelCatalogItem['requiredPlans'];
+    capabilities?: ModelCatalogItem['capabilities'];
+  }>;
   icon: React.ReactNode;
   agentNames?: Record<string, string>;
   assistantNames?: Record<string, string>;

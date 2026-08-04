@@ -45,6 +45,11 @@ export { default as logger } from './logger';
 export { default as getLoginError } from './getLoginError';
 export { default as cleanupPreset } from './cleanupPreset';
 export { default as buildDefaultConvo } from './buildDefaultConvo';
+export {
+  getPreferredModelSelection,
+  getUserModelSelection,
+  saveUserModelSelection,
+} from './modelSelection';
 export { default as getDefaultEndpoint } from './getDefaultEndpoint';
 export { default as createChatSearchParams, processValidSettings } from './createChatSearchParams';
 export { getThemeFromEnv } from './getThemeFromEnv';

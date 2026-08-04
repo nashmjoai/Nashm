@@ -11,6 +11,8 @@ import type {
   ISupportTicket,
   IPlanConfig,
   IBalance,
+  ISystemErrorLog,
+  ModelCapability,
   SubscriptionPlan,
   SubscriptionStatus,
   SupportTicketStatus,
@@ -26,8 +28,16 @@ const SUBSCRIPTION_STATUSES = ['active', 'trialing', 'past_due', 'cancelled'] as
 const SUPPORT_STATUSES = ['open', 'reviewed', 'resolved'] as const;
 const RENEWAL_PERIODS = ['daily', 'weekly', 'monthly', 'yearly'] as const;
 const ADMIN_ROLES = ['ADMIN', 'EDITOR'] as const;
+const MODEL_CAPABILITIES = [
+  'vision',
+  'file_upload',
+  'web_search',
+  'code_execution',
+  'artifacts',
+  'image_generation',
+  'tools',
+] as const;
 const USER_FIELDS = '_id name username email avatar role provider createdAt updatedAt';
-
 
 type SessionDoc = { user: Types.ObjectId; expiration: Date };
 type TransactionDoc = {
@@ -38,7 +48,11 @@ type TransactionDoc = {
 };
 type MessageDoc = { text?: string; isCreatedByUser?: boolean; createdAt?: Date };
 type SupportEmailStatus = 'skipped' | 'sent' | 'failed';
-type TokenAggregate = { _id: Types.ObjectId | string | null; totalTokens: number; tokenValue: number };
+type TokenAggregate = {
+  _id: Types.ObjectId | string | null;
+  totalTokens: number;
+  tokenValue: number;
+};
 type ModelAggregate = { _id: string | null; totalTokens: number; requests: number };
 type MessageAggregate = { text: string; count: number };
 type SessionAggregate = { _id: Types.ObjectId | string; activeSessions: number };
@@ -68,6 +82,7 @@ export type AdminConsoleDeps = {
   FamilyPlan: Model<IFamilyPlan>;
   ModelAccess: Model<IModelAccess>;
   PlanConfig: Model<IPlanConfig>;
+  SystemErrorLog: Model<ISystemErrorLog>;
   Balance: Model<IBalance>;
   SupportTicket: Model<ISupportTicket>;
   Config: Model<any>;
@@ -80,7 +95,11 @@ type ModelRulePayload = {
   endpoint?: string;
   model?: string;
   enabled?: boolean;
+  showInChat?: boolean;
+  isDefault?: boolean;
   label?: string;
+  sortOrder?: number;
+  capabilities?: ModelCapability[];
   allowedPlans?: SubscriptionPlan[];
   notes?: string;
 };
@@ -94,7 +113,6 @@ type SubscriptionPayload = {
   allowedModels?: Array<{ endpoint: string; model: string }>;
   tokenBalance?: number;
 };
-
 
 type SupportPayload = { subject?: string; message?: string };
 
@@ -118,6 +136,13 @@ function isSupportStatus(value: string | undefined): value is SupportTicketStatu
   return SUPPORT_STATUSES.includes(value as SupportTicketStatus);
 }
 
+function normalizeModelCapabilities(value: ModelCapability[] | undefined): ModelCapability[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return Array.from(new Set(value.filter((capability) => MODEL_CAPABILITIES.includes(capability))));
+}
+
 function isRenewalPeriod(value: string | undefined): value is RenewalPeriod {
   return RENEWAL_PERIODS.includes(value as RenewalPeriod);
 }
@@ -125,7 +150,6 @@ function isRenewalPeriod(value: string | undefined): value is RenewalPeriod {
 function isAdminRole(value: string | undefined): value is 'ADMIN' | 'EDITOR' {
   return ADMIN_ROLES.includes(value as 'ADMIN' | 'EDITOR');
 }
-
 
 function getActorId(req: ServerRequest): Types.ObjectId | undefined {
   const id = req.user?.id ?? req.user?._id?.toString();
@@ -200,6 +224,35 @@ function mapTicket(ticket: ISupportTicket) {
   };
 }
 
+function hasValidOptionalDate(value: string | null | undefined): boolean {
+  return !value || parseOptionalDate(value) !== undefined;
+}
+
+function isActiveSubscription(status: SubscriptionStatus, expiresAt?: Date): boolean {
+  return (
+    ACTIVE_STATUSES.includes(status as (typeof ACTIVE_STATUSES)[number]) &&
+    (expiresAt === undefined || expiresAt.getTime() > Date.now())
+  );
+}
+
+function mapSystemErrorLog(errorLog: ISystemErrorLog) {
+  return {
+    id: errorLog._id.toString(),
+    reference: errorLog.reference,
+    code: errorLog.code,
+    title: errorLog.title,
+    message: errorLog.message,
+    severity: errorLog.severity,
+    statusCode: errorLog.statusCode,
+    route: errorLog.route,
+    method: errorLog.method,
+    userId: errorLog.user?.toString(),
+    userEmail: errorLog.userEmail,
+    details: errorLog.details,
+    createdAt: dateToIso(errorLog.createdAt),
+  };
+}
+
 async function getTokenTotalsByUser(
   Transaction: Model<TransactionDoc>,
   userIds: Types.ObjectId[],
@@ -247,22 +300,24 @@ async function ensureFamilyPlan({
   deps,
   user,
   expiresAt,
+  status,
 }: {
   deps: Pick<AdminConsoleDeps, 'FamilyPlan'>;
   user: UserLean;
   expiresAt?: Date;
+  status: 'active' | 'trialing';
 }): Promise<void> {
   const owner = user._id;
   let plan = await deps.FamilyPlan.findOne({ owner });
   if (!plan) {
     plan = new deps.FamilyPlan({
       owner,
-      status: 'active',
+      status,
       currentPeriodEnd: expiresAt,
       members: [{ user: owner, email: user.email, role: 'parent', addedAt: new Date() }],
     });
   } else {
-    plan.status = 'active';
+    plan.status = status;
     plan.currentPeriodEnd = expiresAt;
     if (!plan.members.some((member) => member.user.toString() === owner.toString())) {
       plan.members.push({ user: owner, email: user.email, role: 'parent', addedAt: new Date() });
@@ -277,6 +332,7 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
   upsertSubscription: (req: ServerRequest, res: Response) => Promise<Response>;
   models: (req: ServerRequest, res: Response) => Promise<Response>;
   updateModel: (req: ServerRequest, res: Response) => Promise<Response>;
+  errorLogs: (req: ServerRequest, res: Response) => Promise<Response>;
   supportTickets: (req: ServerRequest, res: Response) => Promise<Response>;
   updateSupportTicket: (req: ServerRequest, res: Response) => Promise<Response>;
   getPlans: (req: ServerRequest, res: Response) => Promise<Response>;
@@ -294,7 +350,10 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
         await Promise.all([
           deps.User.countDocuments(),
           deps.Session.countDocuments({ expiration: { $gt: new Date() } }),
-          deps.Subscription.countDocuments({ plan: { $ne: 'free' }, status: { $in: ACTIVE_STATUSES } }),
+          deps.Subscription.countDocuments({
+            plan: { $ne: 'free' },
+            status: { $in: ACTIVE_STATUSES },
+          }),
           deps.FamilyPlan.countDocuments({ status: { $in: ACTIVE_STATUSES } }),
         ]);
 
@@ -362,7 +421,11 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
       const { limit, offset } = parsePagination(req.query);
       const filter = createUserFilter(req.query.search);
       const [usersList, total] = await Promise.all([
-        deps.User.find(filter).select(USER_FIELDS).sort({ createdAt: -1 }).skip(offset).limit(limit)
+        deps.User.find(filter)
+          .select(USER_FIELDS)
+          .sort({ createdAt: -1 })
+          .skip(offset)
+          .limit(limit)
           .lean<UserLean[]>(),
         deps.User.countDocuments(filter),
       ]);
@@ -379,9 +442,7 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
         deps.Balance.find({ user: { $in: userIds } }).lean<IBalance[]>(),
       ]);
 
-      const balanceMap = new Map(
-        balances.map((b) => [b.user.toString(), b.tokenCredits]),
-      );
+      const balanceMap = new Map(balances.map((b) => [b.user.toString(), b.tokenCredits]));
 
       const subscriptionMap = new Map(
         subscriptions.map((subscription) => [subscription.user.toString(), subscription]),
@@ -403,15 +464,15 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
           familyPlan == null
             ? undefined
             : {
-              id: familyPlan._id.toString(),
-              userId: id,
-              plan: 'family',
-              status: familyPlan.status,
-              source: 'family',
-              expiresAt: dateToIso(familyPlan.currentPeriodEnd),
-              createdAt: dateToIso(familyPlan.createdAt),
-              updatedAt: dateToIso(familyPlan.updatedAt),
-            };
+                id: familyPlan._id.toString(),
+                userId: id,
+                plan: 'family',
+                status: familyPlan.status,
+                source: 'family',
+                expiresAt: dateToIso(familyPlan.currentPeriodEnd),
+                createdAt: dateToIso(familyPlan.createdAt),
+                updatedAt: dateToIso(familyPlan.updatedAt),
+              };
 
         return {
           id,
@@ -434,7 +495,6 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
         };
       });
 
-
       return res.status(200).json({ users: mapped, total, limit, offset });
     } catch (error) {
       logger.error('[adminConsole] users error:', error);
@@ -455,16 +515,25 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
       if (!isSubscriptionStatus(status)) {
         return res.status(400).json({ error: 'Valid status is required' });
       }
+      if (!hasValidOptionalDate(body.expiresAt)) {
+        return res.status(400).json({ error: 'Expiration date must be a valid date' });
+      }
+      if (
+        body.tokenBalance !== undefined &&
+        (!Number.isFinite(body.tokenBalance) || body.tokenBalance < 0)
+      ) {
+        return res.status(400).json({ error: 'Token balance must be a non-negative number' });
+      }
 
-      const user = await deps.User.findById(body.userId).select(USER_FIELDS).lean<UserLean | null>();
+      const user = await deps.User.findById(body.userId)
+        .select(USER_FIELDS)
+        .lean<UserLean | null>();
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
       }
 
-      const currentSubscription = await deps.Subscription.findOne({ user: user._id }).lean<ISubscription | null>();
-      const planChanged = !currentSubscription || currentSubscription.plan !== body.plan;
-
       const expiresAt = parseOptionalDate(body.expiresAt);
+      const previousEffective = await getEffectiveSubscription(user._id.toString(), deps);
       const subscription = await deps.Subscription.findOneAndUpdate(
         { user: user._id },
         {
@@ -483,23 +552,32 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
         { new: true, upsert: true },
       ).lean<ISubscription>();
 
-      if (body.plan === 'family' && status !== 'cancelled') {
-        await ensureFamilyPlan({ deps, user, expiresAt });
+      if (body.plan === 'family' && isActiveSubscription(status, expiresAt)) {
+        await ensureFamilyPlan({ deps, user, expiresAt, status });
       } else {
         await deps.FamilyPlan.updateMany({ owner: user._id }, { $set: { status: 'cancelled' } });
       }
 
-      let planConfig = await deps.PlanConfig.findOne({ plan: body.plan }).lean();
-      let tokenCredits = typeof body.tokenBalance === 'number' && body.tokenBalance > 0 ? body.tokenBalance : undefined;
-
-      if (tokenCredits === undefined || planChanged) {
-        tokenCredits = planConfig?.tokenQuota ?? (
-          body.plan === 'free' ? 50000 :
-          body.plan === 'individual' ? 500000 :
-          body.plan === 'family' ? 1000000 :
-          body.plan === 'developer' ? 2000000 : 50000
-        );
-      }
+      const effective = await getEffectiveSubscription(user._id.toString(), deps);
+      const planConfig = await deps.PlanConfig.findOne({
+        plan: effective.plan,
+      }).lean<IPlanConfig | null>();
+      const effectivePlanChanged = previousEffective.plan !== effective.plan;
+      const fallbackQuota =
+        effective.plan === 'free'
+          ? 50000
+          : effective.plan === 'individual'
+            ? 500000
+            : effective.plan === 'family'
+              ? 1000000
+              : 2000000;
+      const defaultTokenCredits = planConfig?.tokenQuota ?? fallbackQuota;
+      const tokenCredits =
+        !effectivePlanChanged &&
+        isActiveSubscription(status, expiresAt) &&
+        typeof body.tokenBalance === 'number'
+          ? body.tokenBalance
+          : defaultTokenCredits;
 
       const renewalPeriod = planConfig?.renewalPeriod ?? 'monthly';
       let renewalUnit = 'months';
@@ -510,27 +588,25 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
 
       await deps.Balance.findOneAndUpdate(
         { user: user._id },
-        { 
-          $set: { 
+        {
+          $set: {
             tokenCredits,
             autoRefillEnabled: true,
-            refillAmount: planConfig?.tokenQuota ?? tokenCredits,
+            refillAmount: defaultTokenCredits,
             refillIntervalUnit: renewalUnit,
             refillIntervalValue: renewalValue,
-            ...(planChanged ? { lastRefill: new Date() } : {}),
+            ...(effectivePlanChanged ? { lastRefill: new Date() } : {}),
           },
-          $setOnInsert: { lastRefill: new Date() }
+          $setOnInsert: { lastRefill: new Date() },
         },
         { new: true, upsert: true },
       );
 
-      const effective = await getEffectiveSubscription(user._id.toString(), deps);
       return res.status(200).json({ subscription: mapSubscription(subscription), effective });
     } catch (error) {
       logger.error('[adminConsole] upsertSubscription error:', error);
       return res.status(500).json({ error: 'Failed to save subscription' });
     }
-
   }
 
   async function models(req: ServerRequest, res: Response): Promise<Response> {
@@ -560,32 +636,37 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
         Object.keys(modelsConfig).map((ep) => {
           const rule = providerRules.find((r) => r.endpoint === ep);
           return [ep, rule?.enabled === false];
-        })
+        }),
       );
 
       const mapped = Object.entries(modelsConfig).flatMap(([endpoint, modelNames]) => {
         const isEndpointDisabled = isEndpointDisabledMap.get(endpoint) === true;
-        return modelNames.map((model) => {
-          const key = modelKey(endpoint, model);
-          const rule = rulesByKey.get(key);
-          const modelUsage = usageByModel.get(model);
-          seen.add(key);
+        return modelNames
+          .map((model, index) => {
+            const key = modelKey(endpoint, model);
+            const rule = rulesByKey.get(key);
+            const modelUsage = usageByModel.get(model);
+            seen.add(key);
 
-          const isEnabled = isEndpointDisabled ? false : (rule?.enabled ?? true);
+            const isEnabled = isEndpointDisabled ? false : (rule?.enabled ?? true);
 
-          return {
-            endpoint,
-            model,
-            enabled: isEnabled,
-            label: rule?.label,
-            allowedPlans:
-              rule && rule.allowedPlans.length > 0 ? rule.allowedPlans : getDefaultAllowedPlans(model),
-            notes: rule?.notes,
-            apiStatus: isEnabled === false ? 'hidden' : 'available',
-            totalTokens: modelUsage?.totalTokens ?? 0,
-            requests: modelUsage?.requests ?? 0,
-          };
-        });
+            return {
+              endpoint,
+              model,
+              enabled: isEnabled,
+              showInChat: rule?.showInChat ?? true,
+              isDefault: rule?.isDefault ?? false,
+              label: rule?.label,
+              sortOrder: rule?.sortOrder ?? index,
+              capabilities: rule?.capabilities ?? [],
+              allowedPlans: rule ? rule.allowedPlans : getDefaultAllowedPlans(model),
+              notes: rule?.notes,
+              apiStatus: isEnabled === false ? 'hidden' : 'available',
+              totalTokens: modelUsage?.totalTokens ?? 0,
+              requests: modelUsage?.requests ?? 0,
+            };
+          })
+          .sort((left, right) => left.sortOrder - right.sortOrder);
       });
 
       const orphanRules = rules
@@ -597,7 +678,11 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
             endpoint: rule.endpoint,
             model: rule.model,
             enabled: isEnabled,
+            showInChat: rule.showInChat ?? true,
+            isDefault: rule.isDefault ?? false,
             label: rule.label,
+            sortOrder: rule.sortOrder ?? 0,
+            capabilities: rule.capabilities ?? [],
             allowedPlans: rule.allowedPlans,
             notes: rule.notes,
             apiStatus: 'missing',
@@ -609,8 +694,8 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
       const providersStatus = Object.fromEntries(
         Array.from(isEndpointDisabledMap.entries()).map(([endpoint, isDisabled]) => [
           endpoint,
-          { enabled: !isDisabled }
-        ])
+          { enabled: !isDisabled },
+        ]),
       );
 
       return res.status(200).json({
@@ -631,6 +716,30 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
       if (!endpoint || !model) {
         return res.status(400).json({ error: 'endpoint and model are required' });
       }
+      if (model === '*' && body.isDefault === true) {
+        return res.status(400).json({ error: 'A provider cannot be the default model' });
+      }
+      if (body.isDefault === true && (body.enabled === false || body.showInChat === false)) {
+        return res.status(400).json({ error: 'The default model must be enabled and visible in chat' });
+      }
+      if (
+        body.sortOrder !== undefined &&
+        (!Number.isInteger(body.sortOrder) || body.sortOrder < 0 || body.sortOrder > 1000000)
+      ) {
+        return res
+          .status(400)
+          .json({ error: 'Display order must be a whole number between 0 and 1000000' });
+      }
+      if (
+        body.capabilities &&
+        !body.capabilities.every((capability) => MODEL_CAPABILITIES.includes(capability))
+      ) {
+        return res.status(400).json({ error: 'One or more selected capabilities are invalid' });
+      }
+
+      if (body.isDefault === true) {
+        await deps.ModelAccess.updateMany({ model: { $ne: '*' } }, { $set: { isDefault: false } });
+      }
 
       const rule = await deps.ModelAccess.findOneAndUpdate(
         { endpoint, model },
@@ -639,7 +748,11 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
             endpoint,
             model,
             enabled: body.enabled ?? true,
+            showInChat: body.showInChat ?? true,
+            isDefault: body.isDefault ?? false,
             label: body.label?.trim(),
+            sortOrder: body.sortOrder ?? 0,
+            capabilities: normalizeModelCapabilities(body.capabilities),
             allowedPlans: normalizeAllowedPlans(body.allowedPlans),
             notes: body.notes,
           },
@@ -652,7 +765,11 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
           endpoint: rule.endpoint,
           model: rule.model,
           enabled: rule.enabled,
+          showInChat: rule.showInChat,
+          isDefault: rule.isDefault,
           label: rule.label,
+          sortOrder: rule.sortOrder,
+          capabilities: rule.capabilities,
           allowedPlans: rule.allowedPlans,
           notes: rule.notes,
         },
@@ -660,6 +777,32 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
     } catch (error) {
       logger.error('[adminConsole] updateModel error:', error);
       return res.status(500).json({ error: 'Failed to save model access' });
+    }
+  }
+
+  async function errorLogs(req: ServerRequest, res: Response): Promise<Response> {
+    try {
+      const { limit, offset } = parsePagination(req.query);
+      const code = asString(req.query.code)?.trim();
+      const filter: FilterQuery<ISystemErrorLog> = code ? { code } : {};
+      const [entries, total] = await Promise.all([
+        deps.SystemErrorLog.find(filter)
+          .sort({ createdAt: -1 })
+          .skip(offset)
+          .limit(limit)
+          .lean<ISystemErrorLog[]>(),
+        deps.SystemErrorLog.countDocuments(filter),
+      ]);
+
+      return res.status(200).json({
+        errors: entries.map(mapSystemErrorLog),
+        total,
+        limit,
+        offset,
+      });
+    } catch (error) {
+      logger.error('[adminConsole] errorLogs error:', error);
+      return res.status(500).json({ error: 'Failed to load error activity' });
     }
   }
 
@@ -673,7 +816,10 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
       }
 
       const [tickets, total] = await Promise.all([
-        deps.SupportTicket.find(filter).sort({ createdAt: -1 }).skip(offset).limit(limit)
+        deps.SupportTicket.find(filter)
+          .sort({ createdAt: -1 })
+          .skip(offset)
+          .limit(limit)
           .lean<ISupportTicket[]>(),
         deps.SupportTicket.countDocuments(filter),
       ]);
@@ -716,7 +862,11 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
 
   async function getPlans(_req: ServerRequest, res: Response): Promise<Response> {
     try {
-      const defaultConfigs: Array<{ plan: SubscriptionPlan; tokenQuota: number; renewalPeriod: string }> = [
+      const defaultConfigs: Array<{
+        plan: SubscriptionPlan;
+        tokenQuota: number;
+        renewalPeriod: string;
+      }> = [
         { plan: 'free', tokenQuota: 50000, renewalPeriod: 'monthly' },
         { plan: 'individual', tokenQuota: 500000, renewalPeriod: 'monthly' },
         { plan: 'family', tokenQuota: 1000000, renewalPeriod: 'monthly' },
@@ -730,19 +880,28 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
         const config = existingByPlan.get(plan);
         return config
           ? {
-            plan: config.plan,
-            displayName: config.displayName,
-            description: config.description,
-            priceText: config.priceText,
-            features: config.features,
-            tokenQuota: config.tokenQuota,
-            renewalPeriod: config.renewalPeriod,
-            familyMinMembers: config.familyMinMembers,
-            familyMemberTokenQuota: config.familyMemberTokenQuota,
-            familyMemberRenewalPeriod: config.familyMemberRenewalPeriod,
-            modelTokenLimits: config.modelTokenLimits,
-          }
-          : { plan, tokenQuota, renewalPeriod, familyMinMembers: plan === 'family' ? 2 : undefined, familyMemberTokenQuota: undefined, familyMemberRenewalPeriod: undefined, modelTokenLimits: [], features: [] };
+              plan: config.plan,
+              displayName: config.displayName,
+              description: config.description,
+              priceText: config.priceText,
+              features: config.features,
+              tokenQuota: config.tokenQuota,
+              renewalPeriod: config.renewalPeriod,
+              familyMinMembers: config.familyMinMembers,
+              familyMemberTokenQuota: config.familyMemberTokenQuota,
+              familyMemberRenewalPeriod: config.familyMemberRenewalPeriod,
+              modelTokenLimits: config.modelTokenLimits,
+            }
+          : {
+              plan,
+              tokenQuota,
+              renewalPeriod,
+              familyMinMembers: plan === 'family' ? 2 : undefined,
+              familyMemberTokenQuota: undefined,
+              familyMemberRenewalPeriod: undefined,
+              modelTokenLimits: [],
+              features: [],
+            };
       });
 
       return res.status(200).json({ plans });
@@ -788,9 +947,12 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
         $set.priceText = body.priceText.trim();
       }
       if (Array.isArray(body.features)) {
-        $set.features = body.features.map(f => String(f).trim());
+        $set.features = body.features.map((f) => String(f).trim());
       }
       if (typeof body.tokenQuota === 'number') {
+        if (!Number.isFinite(body.tokenQuota) || body.tokenQuota < 0) {
+          return res.status(400).json({ error: 'Token quota must be a non-negative number' });
+        }
         $set.tokenQuota = Math.max(0, body.tokenQuota);
       }
       if (renewalPeriod) {
@@ -798,9 +960,17 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
       }
       if (plan === 'family') {
         if (typeof body.familyMinMembers === 'number') {
+          if (!Number.isFinite(body.familyMinMembers)) {
+            return res.status(400).json({ error: 'Family member count must be a valid number' });
+          }
           $set.familyMinMembers = Math.max(2, body.familyMinMembers);
         }
         if (typeof body.familyMemberTokenQuota === 'number') {
+          if (!Number.isFinite(body.familyMemberTokenQuota) || body.familyMemberTokenQuota < 0) {
+            return res
+              .status(400)
+              .json({ error: 'Family member token quota must be a non-negative number' });
+          }
           $set.familyMemberTokenQuota = Math.max(0, body.familyMemberTokenQuota);
         }
         const familyMemberRenewalPeriod = asString(body.familyMemberRenewalPeriod);
@@ -809,11 +979,23 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
         }
       }
       if (Array.isArray(body.modelTokenLimits)) {
-        $set.modelTokenLimits = body.modelTokenLimits.map((m) => ({
-          endpoint: String(m.endpoint).trim(),
-          model: String(m.model).trim(),
-          tokensPerPeriod: Math.max(0, Number(m.tokensPerPeriod) || 0),
-        }));
+        const modelTokenLimits = [];
+        for (const limit of body.modelTokenLimits) {
+          const endpoint = asString(limit.endpoint)?.trim();
+          const model = asString(limit.model)?.trim();
+          if (!endpoint || !model) {
+            return res
+              .status(400)
+              .json({ error: 'Every model limit requires an endpoint and model' });
+          }
+          if (!Number.isFinite(limit.tokensPerPeriod) || limit.tokensPerPeriod < 0) {
+            return res
+              .status(400)
+              .json({ error: 'Every model token limit must be a non-negative number' });
+          }
+          modelTokenLimits.push({ endpoint, model, tokensPerPeriod: limit.tokensPerPeriod });
+        }
+        $set.modelTokenLimits = modelTokenLimits;
       }
       const updated = await deps.PlanConfig.findOneAndUpdate(
         { plan },
@@ -822,24 +1004,29 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
       ).lean<IPlanConfig>();
 
       // Update balances for all users with this plan
-      const targetRenewalPeriod = (plan === 'family' && updated?.familyMemberRenewalPeriod)
-        ? updated.familyMemberRenewalPeriod
-        : (updated?.renewalPeriod ?? 'monthly');
+      const targetRenewalPeriod =
+        plan === 'family' && updated?.familyMemberRenewalPeriod
+          ? updated.familyMemberRenewalPeriod
+          : (updated?.renewalPeriod ?? 'monthly');
 
       let renewalUnit = 'months';
       if (targetRenewalPeriod === 'weekly') renewalUnit = 'weeks';
       if (targetRenewalPeriod === 'daily') renewalUnit = 'days';
       if (targetRenewalPeriod === 'yearly') renewalUnit = 'years';
 
-      const newQuota = plan === 'family' && typeof updated?.familyMemberTokenQuota === 'number'
-        ? updated.familyMemberTokenQuota
-        : updated?.tokenQuota;
+      const newQuota =
+        plan === 'family' && typeof updated?.familyMemberTokenQuota === 'number'
+          ? updated.familyMemberTokenQuota
+          : updated?.tokenQuota;
 
       const balanceUpdate: Record<string, any> = {
         refillIntervalUnit: renewalUnit,
         refillIntervalValue: 1,
       };
-      if (typeof body.tokenQuota === 'number' || (plan === 'family' && typeof body.familyMemberTokenQuota === 'number')) {
+      if (
+        typeof body.tokenQuota === 'number' ||
+        (plan === 'family' && typeof body.familyMemberTokenQuota === 'number')
+      ) {
         balanceUpdate.tokenCredits = newQuota;
         balanceUpdate.refillAmount = newQuota;
       } else if (typeof newQuota === 'number') {
@@ -870,17 +1057,11 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
         }
 
         const excludedUserIds = Array.from(
-          new Set([
-            ...nonFreeDirectUsers.map((id) => id.toString()),
-            ...Array.from(familyUserIds),
-          ])
+          new Set([...nonFreeDirectUsers.map((id) => id.toString()), ...Array.from(familyUserIds)]),
         ).map((id) => new Types.ObjectId(id));
 
         // Update balance for free users (those who don't have non-free plans/subscriptions)
-        await deps.Balance.updateMany(
-          { user: { $nin: excludedUserIds } },
-          { $set: balanceUpdate },
-        );
+        await deps.Balance.updateMany({ user: { $nin: excludedUserIds } }, { $set: balanceUpdate });
       } else if (plan === 'family') {
         // Find direct family subscribers
         const directUserIds = await deps.Subscription.find({
@@ -905,16 +1086,10 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
         }
 
         const allFamilyUsers = Array.from(
-          new Set([
-            ...directUserIds.map((id) => id.toString()),
-            ...Array.from(familyUserIds),
-          ])
+          new Set([...directUserIds.map((id) => id.toString()), ...Array.from(familyUserIds)]),
         ).map((id) => new Types.ObjectId(id));
 
-        await deps.Balance.updateMany(
-          { user: { $in: allFamilyUsers } },
-          { $set: balanceUpdate },
-        );
+        await deps.Balance.updateMany({ user: { $in: allFamilyUsers } }, { $set: balanceUpdate });
       } else {
         // For individual / developer plans
         const activeSubscribedUsers = await deps.Subscription.find({
@@ -1108,7 +1283,10 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
         typeof spreadsheet !== 'boolean' ||
         typeof research !== 'boolean'
       ) {
-        return res.status(400).json({ error: 'All feature toggles (slides, audio, document, spreadsheet, research) must be boolean values' });
+        return res.status(400).json({
+          error:
+            'All feature toggles (slides, audio, document, spreadsheet, research) must be boolean values',
+        });
       }
 
       await deps.Config.findOneAndUpdate(
@@ -1132,9 +1310,11 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
 
       const tenantId = (req.user as { tenantId?: string })?.tenantId;
       if (deps.invalidateConfigCaches) {
-        await deps.invalidateConfigCaches(tenantId).catch((err) =>
-          logger.error('[adminConsole] Cache invalidation failed after updateFeatures:', err),
-        );
+        await deps
+          .invalidateConfigCaches(tenantId)
+          .catch((err) =>
+            logger.error('[adminConsole] Cache invalidation failed after updateFeatures:', err),
+          );
       }
 
       return res.status(200).json({ message: 'Features toggle configuration saved successfully' });
@@ -1150,6 +1330,7 @@ export function createAdminConsoleHandlers(deps: AdminConsoleDeps): {
     upsertSubscription,
     models,
     updateModel,
+    errorLogs,
     supportTickets,
     updateSupportTicket,
     getPlans,

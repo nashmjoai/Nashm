@@ -78,6 +78,11 @@ const loadAdminConsoleTickets = () =>
     Component: m.default,
   }));
 
+const loadAdminConsoleErrors = () =>
+  import('~/components/AdminConsole/Errors').then((m) => ({
+    Component: m.default,
+  }));
+
 const loadAdminConsolePlans = () =>
   import('~/components/AdminConsole/Plans').then((m) => ({
     Component: m.default,
@@ -92,7 +97,6 @@ const loadAdminConsoleFeatures = () =>
   import('~/components/AdminConsole/Features').then((m) => ({
     Component: m.default,
   }));
-
 
 const baseEl = document.querySelector('base');
 const baseHref = baseEl?.getAttribute('href') || '/';
@@ -205,6 +209,10 @@ export const router = createBrowserRouter(
             {
               path: 'tickets',
               lazy: loadAdminConsoleTickets,
+            },
+            {
+              path: 'errors',
+              lazy: loadAdminConsoleErrors,
             },
             {
               path: 'features',

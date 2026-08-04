@@ -1171,6 +1171,7 @@ export const useUpdateAdminConsoleModelMutation = (
       onSuccess: (data, variables, context) => {
         queryClient.invalidateQueries(['adminConsoleModels']);
         queryClient.invalidateQueries(['models']);
+        queryClient.invalidateQueries(['modelCatalog']);
         options?.onSuccess?.(data, variables, context);
       },
     },

@@ -12,6 +12,7 @@ import {
 import type * as t from 'nashm-data-provider';
 import type { LocalizeFunction, IconsRecord } from '~/common';
 import { getTimestampedValue } from './timestamps';
+import { getUserModelSelection } from './modelSelection';
 
 /**
  * Clears model for non-ephemeral agent conversations.
@@ -423,6 +424,7 @@ export function applyModelSpecEphemeralAgent({
 export function getDefaultModelSpec(
   startupConfig?: t.TStartupConfig,
   endpointsConfig?: t.TEndpointsConfig,
+  userId?: string,
 ):
   | {
       default?: t.TModelSpec;
@@ -433,6 +435,9 @@ export function getDefaultModelSpec(
   const { modelSpecs, interface: interfaceConfig } = startupConfig ?? {};
   const { list, prioritize, addedEndpoints } = modelSpecs ?? {};
   if (!list) {
+    return;
+  }
+  if (getUserModelSelection(userId)) {
     return;
   }
   const defaultSpec = list?.find((spec) => spec.default);

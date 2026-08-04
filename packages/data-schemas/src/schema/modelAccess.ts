@@ -1,5 +1,6 @@
 import { Schema } from 'mongoose';
 import type { IModelAccess } from '~/types';
+import { modelCapabilities } from '~/types/modelAccess';
 import { subscriptionPlans } from '~/types/subscription';
 
 const modelAccessSchema: Schema<IModelAccess> = new Schema<IModelAccess>(
@@ -24,10 +25,33 @@ const modelAccessSchema: Schema<IModelAccess> = new Schema<IModelAccess>(
       default: true,
       index: true,
     },
+    showInChat: {
+      type: Boolean,
+      required: true,
+      default: true,
+      index: true,
+    },
+    isDefault: {
+      type: Boolean,
+      required: true,
+      default: false,
+      index: true,
+    },
     label: {
       type: String,
       trim: true,
       maxlength: 160,
+    },
+    sortOrder: {
+      type: Number,
+      required: true,
+      default: 0,
+      min: 0,
+      max: 1000000,
+    },
+    capabilities: {
+      type: [{ type: String, enum: modelCapabilities }],
+      default: [],
     },
     allowedPlans: {
       type: [{ type: String, enum: subscriptionPlans }],

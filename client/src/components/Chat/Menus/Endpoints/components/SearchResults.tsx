@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { VisuallyHidden } from '@ariakit/react';
-import { CheckCircle2, EarthIcon } from 'lucide-react';
+import { CheckCircle2, EarthIcon, LockKeyhole } from 'lucide-react';
 import { isAgentsEndpoint, isAssistantsEndpoint } from 'nashm-data-provider';
 import type { TModelSpec } from 'nashm-data-provider';
 import type { Endpoint } from '~/common';
@@ -117,7 +117,7 @@ export function SearchResults({ results, localize, searchValue }: SearchResultsP
             const filteredModels = endpointMatches
               ? models
               : models.filter((model) => {
-                  let modelName = model.name;
+                  let modelName = model.label || model.name;
                   if (
                     isAgentsEndpoint(endpoint.value) &&
                     endpoint.agentNames &&
@@ -158,7 +158,7 @@ export function SearchResults({ results, localize, searchValue }: SearchResultsP
                   const modelId = model.name;
 
                   let isGlobal = false;
-                  let modelName = modelId;
+                  let modelName = model.label || modelId;
                   if (
                     isAgentsEndpoint(endpoint.value) &&
                     endpoint.agentNames &&
@@ -179,12 +179,16 @@ export function SearchResults({ results, localize, searchValue }: SearchResultsP
                     !selectedSpec &&
                     selectedEndpoint === endpoint.value &&
                     selectedModel === modelId;
+                  const isLocked = model.available === false;
                   return (
                     <MenuItem
                       key={`${endpoint.value}-${modelId}-search-${i}`}
                       onClick={() => handleSelectModel(endpoint, modelId)}
                       aria-selected={isModelSelected || undefined}
-                      className="flex w-full cursor-pointer items-center justify-start rounded-lg px-3 py-2 pl-6 text-sm"
+                      className={cn(
+                        'flex w-full cursor-pointer items-center justify-start rounded-lg px-3 py-2 pl-6 text-sm',
+                        isLocked && 'bg-surface-secondary/40',
+                      )}
                     >
                       <div className="flex items-center gap-2">
                         {endpoint.modelIcons?.[modelId] && (
@@ -197,6 +201,12 @@ export function SearchResults({ results, localize, searchValue }: SearchResultsP
                           </div>
                         )}
                         <span>{modelName}</span>
+                        {isLocked && (
+                          <LockKeyhole
+                            className="size-3.5 text-text-secondary"
+                            aria-hidden="true"
+                          />
+                        )}
                       </div>
                       {isGlobal && (
                         <EarthIcon className="ml-auto size-4 text-green-400" aria-hidden="true" />

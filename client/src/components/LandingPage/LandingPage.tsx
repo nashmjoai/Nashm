@@ -137,6 +137,62 @@ const FEATURE_CARDS: FeatureCard[] = [
   },
 ];
 
+type FeatureShowcase = {
+  id: string;
+  eyebrow: string;
+  eyebrowAr: string;
+  title: string;
+  titleAr: string;
+  description: string;
+  descriptionAr: string;
+  image: string;
+  imageAlt: string;
+  imageAltAr: string;
+  accent: string;
+};
+
+const FEATURE_SHOWCASES: FeatureShowcase[] = [
+  {
+    id: 'workspace',
+    eyebrow: 'One intelligent workspace',
+    eyebrowAr: 'مساحة عمل ذكية واحدة',
+    title: 'Choose the right AI for every task.',
+    titleAr: 'اختر الذكاء المناسب لكل مهمة.',
+    description: 'Bring search, code execution, files, and the models you trust into one focused conversation.',
+    descriptionAr: 'اجمع البحث وتشغيل الكود والملفات والنماذج التي تثق بها داخل محادثة واحدة مركّزة.',
+    image: '/assets/features/workspace-tools.png',
+    imageAlt: 'Nashm workspace with Search and Run Code tools enabled',
+    imageAltAr: 'مساحة عمل نشم مع تفعيل البحث وتشغيل الكود',
+    accent: 'from-[#C41E3A]/25 via-[#C41E3A]/5 to-transparent',
+  },
+  {
+    id: 'research',
+    eyebrow: 'Source-aware research',
+    eyebrowAr: 'بحث موثّق بالمصادر',
+    title: 'Research the web with evidence in view.',
+    titleAr: 'ابحث في الويب والمصادر أمامك.',
+    description: 'Nashm searches, reads, and compares sources while your answer takes shape — so every decision starts with context.',
+    descriptionAr: 'يبحث نشم ويقرأ ويقارن المصادر أثناء بناء الإجابة، لتبدأ كل خطوة بسياق واضح.',
+    image: '/assets/features/deep-research.png',
+    imageAlt: 'Nashm deep research collecting web sources',
+    imageAltAr: 'البحث العميق في نشم أثناء جمع مصادر الويب',
+    accent: 'from-emerald-500/25 via-emerald-500/5 to-transparent',
+  },
+  {
+    id: 'tools',
+    eyebrow: 'Work beyond chat',
+    eyebrowAr: 'أكثر من مجرد محادثة',
+    title: 'Turn a prompt into work you can use.',
+    titleAr: 'حوّل الطلب إلى عمل قابل للاستخدام.',
+    description: 'Create slides, documents, spreadsheets, images, and code from the same place — without breaking your flow.',
+    descriptionAr: 'أنشئ عروضاً ومستندات وجداول وصوراً وكوداً من المكان نفسه، من دون أن تقطع سير العمل.',
+    image: '/assets/features/tools-menu.png',
+    imageAlt: 'Nashm tool picker showing file search, web search, image generation, skills, code, and artifacts',
+    imageAltAr: 'قائمة أدوات نشم: البحث والملفات والصور والمهارات والكود والمخرجات',
+    accent: 'from-amber-400/25 via-amber-400/5 to-transparent',
+  },
+];
+
 const BASE_PLANS = [
   {
     id: 'free',
@@ -819,22 +875,69 @@ export default function LandingPage() {
             >
               <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-[#C41E3A]/20 bg-[#C41E3A]/8 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider text-[#C41E3A]">
                 <span className="size-1.5 rounded-full bg-[#C41E3A] animate-pulse" />
-                {isRTL ? 'بيئات عمل مخصصة' : 'Custom Workspaces'}
+                {isRTL ? 'ميزات نشم' : 'Nashm capabilities'}
               </div>
               <h2 className="text-3xl font-black tracking-tight text-[var(--text-primary)] md:text-5xl">
-                {isRTL ? 'مصمم ليناسب' : 'Built for'}{' '}
-                <span className="text-[#C41E3A]">{isRTL ? 'جميع اهتماماتك.' : 'everyone.'}</span>
+                {isRTL ? 'كل ما تحتاجه لإنجاز' : 'Everything you need to'}{' '}
+                <span className="text-[#C41E3A]">{isRTL ? 'عملٍ أذكى.' : 'do smarter work.'}</span>
               </h2>
               <p className="mx-auto mt-4 max-w-2xl text-sm text-[var(--text-secondary)] leading-relaxed md:text-base">
                 {isRTL 
-                  ? 'من الأفراد والعائلات إلى المطورين وفرق العمل. اختر الخطة التي توفر لك الأدوات والبيئة المناسبة لتنجز مشاريعك بسرعة وكفاءة.'
-                  : 'From individuals and families to developers and teams. Choose the workspace environment designed to help you accomplish more.'}
+                  ? 'ابحث واكتب وأنشئ وحلّل داخل مساحة عمل واحدة مصممة لتبقيك في حالة تركيز.'
+                  : 'Research, create, code, and analyze in one focused workspace that keeps your best tools close.'}
               </p>
             </motion.div>
 
-            {/* Asymmetrical Grid layout inspired by Replit Agent 4 */}
+            <div className="space-y-8 lg:space-y-12">
+              {FEATURE_SHOWCASES.map((feature, index) => {
+                const eyebrow = isRTL ? feature.eyebrowAr : feature.eyebrow;
+                const title = isRTL ? feature.titleAr : feature.title;
+                const description = isRTL ? feature.descriptionAr : feature.description;
+                const imageAlt = isRTL ? feature.imageAltAr : feature.imageAlt;
+                const mediaOrder = index % 2 === 0 ? 'lg:order-2' : 'lg:order-1';
+                const contentOrder = index % 2 === 0 ? 'lg:order-1' : 'lg:order-2';
+
+                return (
+                  <motion.article
+                    key={feature.id}
+                    initial={reduceMotion ? false : { opacity: 0, y: 52 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.15 }}
+                    transition={{ duration: 0.6, ease: 'easeOut' }}
+                    className="group grid overflow-hidden rounded-[32px] border border-[var(--border-light)] bg-[var(--surface-primary)] shadow-sm lg:grid-cols-2"
+                  >
+                    <div className={`flex min-h-[320px] flex-col justify-between p-7 sm:p-10 lg:min-h-[460px] ${contentOrder}`}>
+                      <span className="text-xs font-bold tracking-[0.16em] text-[#C41E3A]">0{index + 1} / NASHM</span>
+                      <div className="max-w-md text-left rtl:text-right">
+                        <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.14em] text-[#C41E3A]">{eyebrow}</p>
+                        <h3 className="text-3xl font-black tracking-tight text-[var(--text-primary)] sm:text-4xl">{title}</h3>
+                        <p className="mt-5 text-sm leading-relaxed text-[var(--text-secondary)] sm:text-base">{description}</p>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)] rtl:flex-row-reverse">
+                        <span className="size-2 rounded-full bg-[#C41E3A]" />
+                        {isRTL ? 'واجهة فعلية من نشم' : 'A real Nashm workflow'}
+                      </div>
+                    </div>
+                    <div className={`relative min-h-[320px] overflow-hidden bg-[#181513] lg:min-h-[460px] ${mediaOrder}`}>
+                      <img
+                        src={feature.image}
+                        alt={imageAlt}
+                        className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.025]"
+                        loading="lazy"
+                      />
+                      <div className={`pointer-events-none absolute inset-0 bg-gradient-to-t ${feature.accent}`} />
+                      <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between rounded-2xl border border-white/10 bg-black/55 px-3.5 py-2.5 text-[10px] font-semibold text-white backdrop-blur-md rtl:flex-row-reverse">
+                        <span>NASHM</span>
+                        <span className="flex items-center gap-1.5"><span className="size-1.5 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(74,222,128,.9)]" />{isRTL ? 'مباشر' : 'LIVE'}</span>
+                      </div>
+                    </div>
+                  </motion.article>
+                );
+              })}
+            </div>
+
             <motion.div 
-              className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-stretch"
+              className="hidden grid-cols-1 items-stretch gap-6 md:grid-cols-12 lg:gap-8"
               style={{ perspective: 1200 }}
             >
               {FEATURE_CARDS.map((card, i) => {

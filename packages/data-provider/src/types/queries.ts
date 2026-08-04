@@ -115,6 +115,78 @@ export type AllPromptGroupsResponse = t.TPromptGroup[];
 
 export type ConversationTagsResponse = s.TConversationTag[];
 
+export type SubscriptionPlan = 'free' | 'individual' | 'family' | 'developer';
+
+export type ModelCapability =
+  | 'vision'
+  | 'file_upload'
+  | 'web_search'
+  | 'code_execution'
+  | 'artifacts'
+  | 'image_generation'
+  | 'tools';
+
+export type ModelCatalogItem = {
+  model: string;
+  label?: string;
+  sortOrder: number;
+  isDefault: boolean;
+  capabilities: ModelCapability[];
+  available: boolean;
+  requiredPlans: SubscriptionPlan[];
+};
+
+export type ModelCatalogSelection = {
+  endpoint: string;
+  model: string;
+};
+
+export type ModelCatalogResponse = {
+  models: Record<string, ModelCatalogItem[]>;
+  currentPlan: SubscriptionPlan;
+  defaultModel: ModelCatalogSelection | null;
+};
+
+export type SystemErrorSeverity = 'warning' | 'error' | 'critical';
+
+export type SystemErrorDetails = {
+  endpoint?: string;
+  model?: string;
+  currentPlan?: SubscriptionPlan;
+  requiredPlans?: SubscriptionPlan[];
+  tokensUsed?: number;
+  tokenLimit?: number;
+};
+
+export type SystemErrorLogItem = {
+  id: string;
+  reference: string;
+  code: string;
+  title: string;
+  message: string;
+  severity: SystemErrorSeverity;
+  statusCode: number;
+  route: string;
+  method: string;
+  userId?: string;
+  userEmail?: string;
+  details?: SystemErrorDetails;
+  createdAt?: string;
+};
+
+export type SystemErrorLogResponse = {
+  errors: SystemErrorLogItem[];
+  total: number;
+  limit: number;
+  offset: number;
+};
+
+export type SystemErrorLogParams = {
+  limit?: number;
+  offset?: number;
+  code?: string;
+};
+
 /* MCP Types */
 export type MCPTool = {
   name: string;

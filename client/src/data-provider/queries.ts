@@ -550,11 +550,15 @@ export const useGetAdminConsoleUsersQuery = (
   params?: Record<string, unknown>,
   config?: UseQueryOptions<any>,
 ): QueryObserverResult<any> => {
-  return useQuery<any>(['adminConsoleUsers', params], () => dataService.getAdminConsoleUsers(params), {
-    refetchOnWindowFocus: false,
-    keepPreviousData: true,
-    ...config,
-  });
+  return useQuery<any>(
+    ['adminConsoleUsers', params],
+    () => dataService.getAdminConsoleUsers(params),
+    {
+      refetchOnWindowFocus: false,
+      keepPreviousData: true,
+      ...config,
+    },
+  );
 };
 
 export const useGetAdminConsoleModelsQuery = (
@@ -566,15 +570,34 @@ export const useGetAdminConsoleModelsQuery = (
   });
 };
 
+export const useGetAdminConsoleErrorsQuery = (
+  params?: t.SystemErrorLogParams,
+  config?: UseQueryOptions<t.SystemErrorLogResponse>,
+): QueryObserverResult<t.SystemErrorLogResponse> => {
+  return useQuery<t.SystemErrorLogResponse>(
+    ['adminConsoleErrors', params],
+    () => dataService.getAdminConsoleErrors(params),
+    {
+      refetchOnWindowFocus: false,
+      keepPreviousData: true,
+      ...config,
+    },
+  );
+};
+
 export const useGetAdminConsoleTicketsQuery = (
   params?: Record<string, unknown>,
   config?: UseQueryOptions<any>,
 ): QueryObserverResult<any> => {
-  return useQuery<any>(['adminConsoleTickets', params], () => dataService.getAdminConsoleTickets(params), {
-    refetchOnWindowFocus: false,
-    keepPreviousData: true,
-    ...config,
-  });
+  return useQuery<any>(
+    ['adminConsoleTickets', params],
+    () => dataService.getAdminConsoleTickets(params),
+    {
+      refetchOnWindowFocus: false,
+      keepPreviousData: true,
+      ...config,
+    },
+  );
 };
 
 export const useGetAdminConsolePlansQuery = (
@@ -586,9 +609,7 @@ export const useGetAdminConsolePlansQuery = (
   });
 };
 
-export const useGetPublicPlansQuery = (
-  config?: UseQueryOptions<any>,
-): QueryObserverResult<any> => {
+export const useGetPublicPlansQuery = (config?: UseQueryOptions<any>): QueryObserverResult<any> => {
   return useQuery<any>(['publicPlans'], () => dataService.getPublicPlans(), {
     refetchOnWindowFocus: false,
     ...config,
@@ -613,10 +634,7 @@ export const useGetAdminConsoleFeaturesQuery = (
   });
 };
 
-
-export const useGetFamilyPlanQuery = (
-  config?: UseQueryOptions<any>,
-): QueryObserverResult<any> => {
+export const useGetFamilyPlanQuery = (config?: UseQueryOptions<any>): QueryObserverResult<any> => {
   return useQuery<any>(['familyPlan'], () => dataService.getFamilyPlan(), {
     refetchOnWindowFocus: false,
     retry: false,
@@ -638,12 +656,16 @@ export const useGetFamilyPlanMemberConversationsQuery = (
   userId: string,
   config?: UseQueryOptions<any>,
 ): QueryObserverResult<any> => {
-  return useQuery<any>(['familyPlanMemberConversations', userId], () => dataService.getFamilyPlanMemberConversations(userId), {
-    refetchOnWindowFocus: false,
-    retry: false,
-    enabled: !!userId,
-    ...config,
-  });
+  return useQuery<any>(
+    ['familyPlanMemberConversations', userId],
+    () => dataService.getFamilyPlanMemberConversations(userId),
+    {
+      refetchOnWindowFocus: false,
+      retry: false,
+      enabled: !!userId,
+      ...config,
+    },
+  );
 };
 
 export const useGetFamilyPlanMemberConversationMessagesQuery = (
@@ -659,21 +681,16 @@ export const useGetFamilyPlanMemberConversationMessagesQuery = (
       retry: false,
       enabled: !!userId && !!conversationId,
       ...config,
-    }
+    },
   );
 };
 
 export const useGetPendingInvitationsQuery = (
   config?: UseQueryOptions<any>,
 ): QueryObserverResult<any> => {
-  return useQuery<any>(
-    ['pendingInvitations'],
-    async () => [],
-    {
-      refetchOnWindowFocus: false,
-      retry: false,
-      ...config,
-    },
-  );
+  return useQuery<any>(['pendingInvitations'], async () => [], {
+    refetchOnWindowFocus: false,
+    retry: false,
+    ...config,
+  });
 };
-

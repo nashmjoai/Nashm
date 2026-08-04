@@ -2,7 +2,13 @@ import type { Document, Types } from 'mongoose';
 
 export const subscriptionPlans = ['free', 'individual', 'family', 'developer'] as const;
 export const subscriptionStatuses = ['active', 'trialing', 'past_due', 'cancelled'] as const;
-export const subscriptionSources = ['manual', 'family', 'stripe', 'paddle'] as const;
+export const subscriptionSources = [
+  'manual',
+  'registration',
+  'family',
+  'stripe',
+  'paddle',
+] as const;
 
 export type SubscriptionPlan = (typeof subscriptionPlans)[number];
 export type SubscriptionStatus = (typeof subscriptionStatuses)[number];

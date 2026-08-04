@@ -132,6 +132,47 @@ describe('web.ts', () => {
       expect(result.authResult.safeSearch).toBe(SafeSearchTypes.MODERATE);
     });
 
+    it('starts independent authentication categories concurrently', async () => {
+      const pending = new Map<string, () => void>();
+      const configuredServices = {
+        ...webSearchConfig,
+        searchProvider: 'serper' as SearchProviders,
+        scraperProvider: 'firecrawl' as ScraperProviders,
+        rerankerType: 'jina' as RerankerTypes,
+      };
+
+      mockLoadAuthValues.mockImplementation(
+        ({ authFields }: { authFields: string[] }) =>
+          new Promise<Record<string, string>>((resolve) => {
+            pending.set(authFields[0], () => {
+              const authValues = Object.fromEntries(
+                authFields.map((field) => [
+                  field,
+                  field.endsWith('_URL') ? 'https://api.example.com' : 'test-api-key',
+                ]),
+              );
+              resolve(authValues);
+            });
+          }),
+      );
+
+      const authPromise = loadWebSearchAuth({
+        userId,
+        webSearchConfig: configuredServices,
+        loadAuthValues: mockLoadAuthValues,
+      });
+
+      expect([...pending.keys()].sort()).toEqual(
+        ['SERPER_API_KEY', 'FIRECRAWL_API_KEY', 'JINA_API_KEY'].sort(),
+      );
+
+      for (const resolve of pending.values()) {
+        resolve();
+      }
+
+      await expect(authPromise).resolves.toMatchObject({ authenticated: true });
+    });
+
     it('should return authenticated=false when a required category is not authenticated', async () => {
       // Mock authentication failure for the providers category
       mockLoadAuthValues.mockImplementation(({ authFields }) => {

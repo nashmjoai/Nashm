@@ -198,6 +198,21 @@ export const useGetModelsQuery = (
   });
 };
 
+export const useGetModelCatalogQuery = (
+  config?: UseQueryOptions<q.ModelCatalogResponse>,
+): QueryObserverResult<q.ModelCatalogResponse> => {
+  return useQuery<q.ModelCatalogResponse>(
+    [QueryKeys.modelCatalog],
+    () => dataService.getModelCatalog(),
+    {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: true,
+      staleTime: 30000,
+      ...config,
+    },
+  );
+};
+
 export const useCreatePresetMutation = (): UseMutationResult<
   s.TPreset,
   unknown,

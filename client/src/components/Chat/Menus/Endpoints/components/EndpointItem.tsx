@@ -9,7 +9,7 @@ import { CustomMenu as Menu, CustomMenuItem as MenuItem, CustomMenuSeparator } f
 import MarketplaceItem, { marketplaceSearchMatches } from './Marketplace';
 import { filterModels, shouldRenderEndpointOption } from '../utils';
 import { useModelSelectorContext } from '../ModelSelectorContext';
-import { renderEndpointModels } from './EndpointModelItem';
+import { EndpointModelItem, renderEndpointModels } from './EndpointModelItem';
 import { ModelSpecItem } from './ModelSpecItem';
 import { useLocalize } from '~/hooks';
 import { cn } from '~/utils';
@@ -157,6 +157,7 @@ export function EndpointItem({ endpoint, endpointIndex }: EndpointItemProps) {
     endpointSearchValues,
     setEndpointSearchValue,
     endpointRequiresUserKey,
+    modelSpecs,
   } = useModelSelectorContext();
   const { endpoint: selectedEndpoint, modelSpec: selectedSpec } = selectedValues;
 
@@ -181,9 +182,24 @@ export function EndpointItem({ endpoint, endpointIndex }: EndpointItemProps) {
   );
 
   const isEndpointSelected = !selectedSpec && selectedEndpoint === endpoint.value;
+  const singleVisibleModel =
+    !isAgentsEndpoint(endpoint.value) &&
+    !isAssistantsEndpoint(endpoint.value) &&
+    endpoint.models?.length === 1 &&
+    !modelSpecs.some((spec) => spec.group === endpoint.value);
 
   if (!shouldRenderEndpointOption(endpoint)) {
     return null;
+  }
+
+  if (singleVisibleModel) {
+    return (
+      <EndpointModelItem
+        endpoint={endpoint}
+        modelId={endpoint.models?.[0]?.name ?? null}
+        showEndpointIcon={true}
+      />
+    );
   }
 
   if (endpoint.hasModels) {

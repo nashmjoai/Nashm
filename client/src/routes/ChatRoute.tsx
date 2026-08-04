@@ -4,13 +4,15 @@ import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { Spinner, useToastContext } from '@nashm/client';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { Constants, EModelEndpoint } from 'nashm-data-provider';
-import { useGetModelsQuery } from 'nashm-data-provider/react-query';
+import { useGetModelCatalogQuery, useGetModelsQuery } from 'nashm-data-provider/react-query';
 import type { TPreset } from 'nashm-data-provider';
 import {
   mergeQuerySettingsWithSpec,
   processValidSettings,
   getDefaultModelSpec,
   getModelSpecPreset,
+  getPreferredModelSelection,
+  mapEndpoints,
   isNotFoundError,
   isTemporaryConversation,
   logger,
@@ -118,6 +120,7 @@ export default function ChatRoute() {
     enabled: isAuthenticated,
     refetchOnMount: 'always',
   });
+  const modelCatalogQuery = useGetModelCatalogQuery({ enabled: isAuthenticated });
   const initialConvoQuery = useGetConvoIdQuery(conversationId, {
     enabled:
       isAuthenticated && conversationId !== Constants.NEW_CONVO && !hasSetConversation.current,
@@ -164,9 +167,12 @@ export default function ChatRoute() {
     if (isNewConvo && chatProjectId && projectQuery.isLoading) {
       return;
     }
+    if (isNewConvo && !modelCatalogQuery.data && !modelCatalogQuery.isError) {
+      return;
+    }
 
     const getNewConvoPreset = () => {
-      const result = getDefaultModelSpec(startupConfig, endpointsQuery.data);
+      const result = getDefaultModelSpec(startupConfig, endpointsQuery.data, user?.id);
       const spec = result?.default ?? result?.last ?? result?.softDefault;
       const specPreset = spec ? getModelSpecPreset(spec) : undefined;
 
@@ -180,6 +186,21 @@ export default function ChatRoute() {
 
       if (Object.keys(querySettings).length > 0) {
         return mergeQuerySettingsWithSpec(specPreset, querySettings);
+      }
+      const visibleEndpointNames = new Set(startupConfig?.modelSpecs?.addedEndpoints ?? []);
+      const endpointOrder = mapEndpoints(endpointsQuery.data ?? {}).filter(
+        (endpoint) =>
+          endpoint !== EModelEndpoint.agents &&
+          endpoint !== EModelEndpoint.assistants &&
+          (visibleEndpointNames.size === 0 || visibleEndpointNames.has(endpoint)),
+      );
+      const preferredModelSelection = getPreferredModelSelection(
+        modelCatalogQuery.data,
+        endpointOrder,
+        user?.id,
+      );
+      if (preferredModelSelection) {
+        return preferredModelSelection;
       }
       return specPreset;
     };
@@ -212,8 +233,7 @@ export default function ChatRoute() {
       initialConvoQuery.isError &&
       isNotFoundError(initialConvoQuery.error)
     ) {
-      const result = getDefaultModelSpec(startupConfig, endpointsQuery.data);
-      const spec = result?.default ?? result?.last ?? result?.softDefault;
+      const preset = getNewConvoPreset();
       showToast({
         message: localize('com_ui_conversation_not_found'),
         severity: NotificationSeverity.WARNING,
@@ -225,7 +245,7 @@ export default function ChatRoute() {
       );
       newConversation({
         modelsData: modelsQuery.data,
-        ...(spec ? { preset: getModelSpecPreset(spec) } : {}),
+        ...(preset ? { preset } : {}),
       });
       hasSetConversation.current = true;
     } else if (
@@ -268,6 +288,9 @@ export default function ChatRoute() {
     chatProjectId,
     projectQuery.data?._id,
     projectQuery.isLoading,
+    modelCatalogQuery.data,
+    modelCatalogQuery.isLoading,
+    user?.id,
     projectTemplate,
     queryClient,
     conversation?.chatProjectId,

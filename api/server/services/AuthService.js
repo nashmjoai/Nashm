@@ -436,43 +436,40 @@ const registerUser = async (user, additionalData = {}) => {
         family: 1000000,
         developer: 2000000,
       };
-      
-      // If the app config has balance enabled but startBalance is 0 or undefined, 
-      // automatically assign the free plan quota instead of 0 tokens.
-      if (appConfig?.balance?.enabled && !appConfig.balance.startBalance) {
-        const quota = planConfig?.tokenQuota ?? planLimits[plan] ?? 50000;
-        const renewalPeriod = planConfig?.renewalPeriod ?? 'monthly';
-        let renewalUnit = 'months';
-        let renewalValue = 1;
-        if (renewalPeriod === 'weekly') renewalUnit = 'weeks';
-        if (renewalPeriod === 'daily') renewalUnit = 'days';
-        if (renewalPeriod === 'yearly') renewalUnit = 'years';
+      const quota = planConfig?.tokenQuota ?? planLimits[plan] ?? 50000;
+      const renewalPeriod = planConfig?.renewalPeriod ?? 'monthly';
+      let renewalUnit = 'months';
+      let renewalValue = 1;
+      if (renewalPeriod === 'weekly') renewalUnit = 'weeks';
+      if (renewalPeriod === 'daily') renewalUnit = 'days';
+      if (renewalPeriod === 'yearly') renewalUnit = 'years';
 
-        await Subscription.findOneAndUpdate(
+      await Subscription.findOneAndUpdate(
+        { user: newUserId },
+        {
+          $set: {
+            user: newUserId,
+            plan,
+            status: 'active',
+            source: 'registration',
+          },
+          $setOnInsert: { startsAt: new Date() },
+        },
+        { new: true, upsert: true },
+      );
+
+      if (appConfig?.balance?.enabled !== false) {
+        await Balance.findOneAndUpdate(
           { user: newUserId },
           {
             $set: {
-              user: newUserId,
-              plan: plan,
-              status: 'active',
-              source: 'registration',
-            },
-            $setOnInsert: { startsAt: new Date() },
-          },
-          { new: true, upsert: true },
-        );
-
-        await Balance.findOneAndUpdate(
-          { user: newUserId },
-          { 
-            $set: { 
               tokenCredits: quota,
               autoRefillEnabled: true,
               refillAmount: quota,
               refillIntervalUnit: renewalUnit,
               refillIntervalValue: renewalValue,
             },
-            $setOnInsert: { lastRefill: new Date() }
+            $setOnInsert: { lastRefill: new Date() },
           },
           { new: true, upsert: true },
         );
@@ -610,7 +607,8 @@ const requestPasswordReset = async (req) => {
 
   return {
     userId: user._id,
-    message: 'If an account with that email exists, a password reset verification code has been sent to it.',
+    message:
+      'If an account with that email exists, a password reset verification code has been sent to it.',
   };
 };
 

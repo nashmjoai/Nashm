@@ -9,6 +9,7 @@ const {
   GenerationJobManager,
   filterPersistableAbortContent,
   decrementPendingRequest,
+  recordGenerationLatency,
   sanitizeMessageForTransmit,
   checkAndIncrementPendingRequest,
   isUnpersistedPreliminaryParent,
@@ -173,6 +174,7 @@ function rejectPreliminaryParentMessageId(res) {
  * Returns streamId immediately, client subscribes separately via SSE.
  */
 const ResumableAgentController = async (req, res, next, initializeClient, addTitle) => {
+  const initializationStartedAt = performance.now();
   const {
     text,
     isRegenerate,
@@ -336,6 +338,7 @@ const ResumableAgentController = async (req, res, next, initializeClient, addTit
       // Use the job's abort controller signal - allows abort via GenerationJobManager.abortJob()
       signal: job.abortController.signal,
     });
+    recordGenerationLatency('initialization', (performance.now() - initializationStartedAt) / 1000);
 
     if (job.abortController.signal.aborted) {
       GenerationJobManager.completeJob(streamId, 'Request aborted during initialization');

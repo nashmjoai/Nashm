@@ -130,6 +130,10 @@ export interface PrometheusMetrics {
 export type OpenIDUserLookupResult = 'found' | 'not_found' | 'migration' | 'auth_failed' | 'error';
 export type GenerationJobStore = 'memory' | 'redis';
 export type GenerationJobResult = 'created' | 'completed' | 'error' | 'aborted' | 'abort_failed';
+export type GenerationLatencyPhase =
+  | 'initialization'
+  | 'time_to_first_model_delta'
+  | 'time_to_first_text_delta';
 export type GenerationStreamSubscriptionType = 'initial' | 'resume' | 'resume_state';
 export type GenerationStreamSubscriptionResult =
   | 'success'
@@ -175,6 +179,7 @@ let mongooseQueryMetrics: MongooseQueryMetrics = {
 type GenerationJobMetrics = {
   recordJob: (store: GenerationJobStore, result: GenerationJobResult) => void;
   setJobsInFlight: (store: GenerationJobStore, count: number) => void;
+  recordLatency: (phase: GenerationLatencyPhase, durationSeconds: number) => void;
   recordSubscription: (
     store: GenerationJobStore,
     type: GenerationStreamSubscriptionType,
@@ -186,6 +191,7 @@ type GenerationJobMetrics = {
 let generationJobMetrics: GenerationJobMetrics = {
   recordJob: () => undefined,
   setJobsInFlight: () => undefined,
+  recordLatency: () => undefined,
   recordSubscription: () => undefined,
   recordResumePendingEvents: () => undefined,
 };
@@ -208,6 +214,7 @@ const resetMetricRecorders = (): void => {
   generationJobMetrics = {
     recordJob: () => undefined,
     setJobsInFlight: () => undefined,
+    recordLatency: () => undefined,
     recordSubscription: () => undefined,
     recordResumePendingEvents: () => undefined,
   };
@@ -222,6 +229,17 @@ export function recordGenerationJob(store: GenerationJobStore, result: Generatio
 
 export function setGenerationJobsInFlight(store: GenerationJobStore, count: number): void {
   generationJobMetrics.setJobsInFlight(store, count);
+}
+
+export function recordGenerationLatency(
+  phase: GenerationLatencyPhase,
+  durationSeconds: number,
+): void {
+  if (!Number.isFinite(durationSeconds) || durationSeconds < 0) {
+    return;
+  }
+
+  generationJobMetrics.recordLatency(phase, durationSeconds);
 }
 
 export function recordGenerationStreamSubscription(
@@ -505,6 +523,14 @@ export function createMetrics(): PrometheusMetrics {
     registers: [registry],
   });
 
+  const generationLatency = new Histogram({
+    name: 'generation_latency_seconds',
+    help: 'Generation initialization and time-to-first-output latency in seconds',
+    labelNames: ['phase'] as const,
+    buckets: [0.025, 0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10, 20, 30, 60, 120],
+    registers: [registry],
+  });
+
   const generationStreamSubscriptions = new Counter({
     name: 'generation_stream_subscriptions_total',
     help: 'Generation stream subscription attempts by backing store, type, and result',
@@ -529,6 +555,8 @@ export function createMetrics(): PrometheusMetrics {
   generationJobMetrics = {
     recordJob: (store, result) => generationJobs.inc({ store, result }),
     setJobsInFlight: (store, count) => generationJobsInFlight.set({ store }, count),
+    recordLatency: (phase, durationSeconds) =>
+      generationLatency.observe({ phase }, durationSeconds),
     recordSubscription: (store, type, result) =>
       generationStreamSubscriptions.inc({ store, type, result }),
     recordResumePendingEvents: (store, count) =>

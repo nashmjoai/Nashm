@@ -260,9 +260,15 @@ export async function loadWebSearchAuth({
     SearchCategories.SCRAPERS,
     SearchCategories.RERANKERS,
   ] as const;
+  const authChecks = await Promise.all(
+    categories.map(async (category) => ({
+      category,
+      result: await checkAuth(category),
+    })),
+  );
   const authTypes: [TWebSearchCategories, AuthType][] = [];
-  for (const category of categories) {
-    const [isCategoryAuthenticated, isUserProvided] = await checkAuth(category);
+  for (const { category, result } of authChecks) {
+    const [isCategoryAuthenticated, isUserProvided] = result;
     if (!isCategoryAuthenticated) {
       authenticated = false;
       authTypes.push([category, AuthType.USER_PROVIDED]);

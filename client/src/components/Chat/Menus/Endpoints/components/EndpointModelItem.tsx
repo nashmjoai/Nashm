@@ -1,6 +1,6 @@
 import React from 'react';
 import { VisuallyHidden } from '@ariakit/react';
-import { CheckCircle2, EarthIcon, Pin, PinOff } from 'lucide-react';
+import { CheckCircle2, EarthIcon, LockKeyhole, Pin, PinOff } from 'lucide-react';
 import { isAgentsEndpoint, isAssistantsEndpoint } from 'nashm-data-provider';
 import type { Endpoint } from '~/common';
 import { useFavorites, useLocalize, useIsActiveItem } from '~/hooks';
@@ -11,9 +11,14 @@ import { cn } from '~/utils';
 interface EndpointModelItemProps {
   modelId: string | null;
   endpoint: Endpoint;
+  showEndpointIcon?: boolean;
 }
 
-export function EndpointModelItem({ modelId, endpoint }: EndpointModelItemProps) {
+export function EndpointModelItem({
+  modelId,
+  endpoint,
+  showEndpointIcon = false,
+}: EndpointModelItemProps) {
   const localize = useLocalize();
   const { handleSelectModel, selectedValues } = useModelSelectorContext();
   const {
@@ -23,13 +28,14 @@ export function EndpointModelItem({ modelId, endpoint }: EndpointModelItemProps)
   } = selectedValues;
   const isSelected =
     !selectedSpec && selectedEndpoint === endpoint.value && selectedModel === modelId;
+  const isLocked = endpoint.models?.find((model) => model.name === modelId)?.available === false;
   const { isFavoriteModel, toggleFavoriteModel, isFavoriteAgent, toggleFavoriteAgent } =
     useFavorites();
 
   const { ref: itemRef, isActive } = useIsActiveItem<HTMLDivElement>();
 
   let isGlobal = false;
-  let modelName = modelId;
+  let modelName = endpoint.models?.find((model) => model.name === modelId)?.label || modelId;
   const avatarUrl = endpoint?.modelIcons?.[modelId ?? ''] || null;
 
   // Use custom names if available
@@ -72,13 +78,13 @@ export function EndpointModelItem({ modelId, endpoint }: EndpointModelItemProps)
   const renderAvatar = () => {
     const isAgentOrAssistant =
       isAgentsEndpoint(endpoint.value) || isAssistantsEndpoint(endpoint.value);
-    const showEndpointIcon = isAgentOrAssistant && endpoint.icon;
+    const shouldShowEndpointIcon = (isAgentOrAssistant || showEndpointIcon) && endpoint.icon;
 
     const getContent = () => {
       if (avatarUrl) {
         return <img src={avatarUrl} alt={modelName ?? ''} className="h-full w-full object-cover" />;
       }
-      if (showEndpointIcon) {
+      if (shouldShowEndpointIcon) {
         return endpoint.icon;
       }
       return null;
@@ -101,12 +107,18 @@ export function EndpointModelItem({ modelId, endpoint }: EndpointModelItemProps)
       ref={itemRef}
       onClick={() => handleSelectModel(endpoint, modelId ?? '')}
       aria-selected={isSelected || undefined}
-      className="group flex w-full cursor-pointer items-center justify-between rounded-lg px-2 text-sm"
+      className={cn(
+        'group flex w-full cursor-pointer items-center justify-between rounded-lg px-2 text-sm',
+        isLocked && 'bg-surface-secondary/40',
+      )}
     >
       <div className="flex w-full min-w-0 items-center gap-2 px-1 py-1">
         {renderAvatar()}
         <span className="truncate">{modelName}</span>
         {isGlobal && <EarthIcon className="ml-1 size-4 text-surface-submit" />}
+        {isLocked && (
+          <LockKeyhole className="ml-1 size-3.5 text-text-secondary" aria-hidden="true" />
+        )}
       </div>
       <button
         type="button"
@@ -138,7 +150,7 @@ export function EndpointModelItem({ modelId, endpoint }: EndpointModelItemProps)
 
 export function renderEndpointModels(
   endpoint: Endpoint | null,
-  models: Array<{ name: string; isGlobal?: boolean }>,
+  models: Array<{ name: string; isGlobal?: boolean; available?: boolean }>,
   filteredModels?: string[],
   endpointIndex?: number,
 ) {

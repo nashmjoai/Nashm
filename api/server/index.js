@@ -5,9 +5,7 @@ require('module-alias')({ base: path.resolve(__dirname, '..') });
 
 // Map Nashm-branded code interpreter environment variables to their internal names
 const codeApiKey =
-  process.env.CODE_API_KEY ||
-  process.env.LIBRECHAT_CODE_API_KEY ||
-  process.env.NASHM_CODE_API_KEY;
+  process.env.CODE_API_KEY || process.env.LIBRECHAT_CODE_API_KEY || process.env.NASHM_CODE_API_KEY;
 if (codeApiKey) {
   process.env.CODE_API_KEY = codeApiKey;
   process.env.LIBRECHAT_CODE_API_KEY = codeApiKey;
@@ -15,9 +13,7 @@ if (codeApiKey) {
 }
 
 const codeBaseUrl =
-  process.env.CODE_BASEURL ||
-  process.env.LIBRECHAT_CODE_BASEURL ||
-  process.env.NASHM_CODE_BASEURL;
+  process.env.CODE_BASEURL || process.env.LIBRECHAT_CODE_BASEURL || process.env.NASHM_CODE_BASEURL;
 if (codeBaseUrl) {
   process.env.CODE_BASEURL = codeBaseUrl;
   process.env.LIBRECHAT_CODE_BASEURL = codeBaseUrl;
@@ -30,6 +26,7 @@ const express = require('express');
 const passport = require('passport');
 const compression = require('compression');
 const cookieParser = require('cookie-parser');
+const errorActivity = require('~/server/middleware/errorActivity');
 const mongoSanitize = require('express-mongo-sanitize');
 const { logger, runAsSystem } = require('@nashm/data-schemas');
 const {
@@ -129,7 +126,7 @@ const startServer = async () => {
   if (isEnabled(process.env.TENANT_ISOLATION_STRICT)) {
     logger.warn(
       '[Security] TENANT_ISOLATION_STRICT is active. Ensure your reverse proxy strips or sets ' +
-      'the X-Tenant-Id header — untrusted clients must not be able to set it directly.',
+        'the X-Tenant-Id header — untrusted clients must not be able to set it directly.',
     );
   }
 
@@ -214,11 +211,14 @@ const startServer = async () => {
   });
 
   app.use(mongoSanitize());
-  app.use(cors({
-    origin: process.env.DOMAIN_CLIENT || 'http://localhost:3080',
-    credentials: true,
-  }));
+  app.use(
+    cors({
+      origin: process.env.DOMAIN_CLIENT || 'http://localhost:3080',
+      credentials: true,
+    }),
+  );
   app.use(cookieParser());
+  app.use(errorActivity);
 
   if (!isEnabled(DISABLE_COMPRESSION)) {
     app.use(compression());
@@ -316,7 +316,9 @@ const startServer = async () => {
             fs.mkdirSync(dir, { recursive: true });
           }
           fs.writeFileSync(fullPath, fileRecord.data);
-          logger.info(`[restoreImageFromDB] Lazily restored missing image from DB to disk: ${fullPath}`);
+          logger.info(
+            `[restoreImageFromDB] Lazily restored missing image from DB to disk: ${fullPath}`,
+          );
         }
       }
       next();

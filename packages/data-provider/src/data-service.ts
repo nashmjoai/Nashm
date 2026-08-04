@@ -1399,6 +1399,12 @@ export function updateAdminConsoleModel(payload: any): Promise<any> {
   return request.post(endpoints.adminConsoleModel(), payload);
 }
 
+export function getAdminConsoleErrors(
+  params?: q.SystemErrorLogParams,
+): Promise<q.SystemErrorLogResponse> {
+  return request.get(endpoints.adminConsoleErrors(params));
+}
+
 export function getAdminConsoleTickets(params?: Record<string, unknown>): Promise<any> {
   return request.get(endpoints.adminConsoleTickets(params));
 }
@@ -1438,10 +1444,13 @@ export function getAdminConsoleFeatures(): Promise<any> {
   return request.get(endpoints.adminConsoleFeatures());
 }
 
+export function getModelCatalog(): Promise<q.ModelCatalogResponse> {
+  return request.get(endpoints.modelCatalog());
+}
+
 export function updateAdminConsoleFeatures(payload: any): Promise<any> {
   return request.post(endpoints.adminConsoleFeatures(), payload);
 }
-
 
 // Support Ticket Request
 export function createSupportTicket(payload: { subject: string; message: string }): Promise<any> {
@@ -1469,6 +1478,9 @@ export function getFamilyPlanMemberConversations(userId: string): Promise<any> {
   return request.get(endpoints.familyPlanMemberConversations(userId));
 }
 
-export function getFamilyPlanMemberConversationMessages(userId: string, conversationId: string): Promise<any> {
+export function getFamilyPlanMemberConversationMessages(
+  userId: string,
+  conversationId: string,
+): Promise<any> {
   return request.get(endpoints.familyPlanMemberConversationMessages(userId, conversationId));
 }

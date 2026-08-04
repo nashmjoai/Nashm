@@ -20,12 +20,12 @@ const validateModel = async (req, res, next) => {
   const rawModel = req.body.model;
 
   if (!rawModel || typeof rawModel !== 'string') {
-    return handleError(res, { text: 'Model not provided' });
+    return handleError(res, { text: 'Choose a model before sending your message.' });
   }
 
   const model = rawModel.trim();
   if (!model || model.length > MAX_MODEL_STRING_LENGTH || !MODEL_PATTERN.test(model)) {
-    return handleError(res, { text: 'Invalid model identifier' });
+    return handleError(res, { text: 'Choose a valid model and try again.' });
   }
 
   req.body.model = model;
@@ -40,12 +40,12 @@ const validateModel = async (req, res, next) => {
   const modelsConfig = await getModelsConfig(req);
 
   if (!modelsConfig) {
-    return handleError(res, { text: 'Models not loaded' });
+    return handleError(res, { text: 'Models are temporarily unavailable. Please try again.' });
   }
 
   const availableModels = modelsConfig[endpoint];
   if (!availableModels) {
-    return handleError(res, { text: 'Endpoint models not loaded' });
+    return handleError(res, { text: 'Models are temporarily unavailable. Please try again.' });
   }
 
   let validModel = !!availableModels.find((availableModel) => availableModel === model);
@@ -62,7 +62,9 @@ const validateModel = async (req, res, next) => {
   };
 
   await logViolation(req, res, type, errorMessage, score);
-  return handleError(res, { text: 'Illegal model request' });
+  return handleError(res, {
+    text: 'This model is not available to your account. Please choose another model.',
+  });
 };
 
 module.exports = validateModel;

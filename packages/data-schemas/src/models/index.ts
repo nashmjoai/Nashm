@@ -4,6 +4,7 @@ import { createSubscriptionModel } from './subscription';
 import { createSupportTicketModel } from './supportTicket';
 import { createModelAccessModel } from './modelAccess';
 import { createPlanConfigModel } from './planConfig';
+import { createSystemErrorLogModel } from './systemError';
 import { createSkillSyncStatusModel } from './skillSyncStatus';
 import { createConversationTagModel } from './conversationTag';
 import { createAgentCategoryModel } from './agentCategory';
@@ -86,6 +87,7 @@ export function createModels(mongoose: typeof import('mongoose')): {
   SupportTicket: ReturnType<typeof createSupportTicketModel>;
   ModelAccess: ReturnType<typeof createModelAccessModel>;
   PlanConfig: ReturnType<typeof createPlanConfigModel>;
+  SystemErrorLog: ReturnType<typeof createSystemErrorLogModel>;
   ExportJob: ReturnType<typeof createExportJobModel>;
 } {
   return {
@@ -130,6 +132,7 @@ export function createModels(mongoose: typeof import('mongoose')): {
     SupportTicket: createSupportTicketModel(mongoose),
     ModelAccess: createModelAccessModel(mongoose),
     PlanConfig: createPlanConfigModel(mongoose),
+    SystemErrorLog: createSystemErrorLogModel(mongoose),
     ExportJob: createExportJobModel(mongoose),
   };
 }

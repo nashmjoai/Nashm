@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback } from 'react';
-import { useGetModelsQuery } from 'nashm-data-provider/react-query';
+import { useGetModelCatalogQuery, useGetModelsQuery } from 'nashm-data-provider/react-query';
 import {
   Permissions,
   alternateName,
@@ -35,6 +35,7 @@ export const useEndpoints = ({
   startupConfig: TStartupConfig | undefined;
 }) => {
   const modelsQuery = useGetModelsQuery();
+  const modelCatalogQuery = useGetModelCatalogQuery();
   const { data: endpoints = [] } = useGetEndpointsQuery({ select: mapEndpoints });
   const interfaceConfig = startupConfig?.interface ?? defaultInterface;
   const includedEndpoints = useMemo(
@@ -89,12 +90,22 @@ export const useEndpoints = ({
       const iconKey = getIconKey({ endpoint: ep, endpointsConfig, endpointType });
       const Icon = icons[iconKey];
       const endpointIconURL = getEndpointField(endpointsConfig, ep, 'iconURL');
+      const catalogModels = modelCatalogQuery.data?.models[ep];
+      const visibleModels =
+        catalogModels ??
+        modelsQuery.data?.[ep]?.map((model) => ({
+          model,
+          available: true,
+          requiredPlans: [],
+          capabilities: [],
+        })) ??
+        [];
       const hasModels =
         (ep === EModelEndpoint.agents && ((agents?.length ?? 0) > 0 || showAgentMarketplace)) ||
         (ep === EModelEndpoint.assistants && assistants?.length > 0) ||
         (ep !== EModelEndpoint.assistants &&
           ep !== EModelEndpoint.agents &&
-          (modelsQuery.data?.[ep]?.length ?? 0) > 0);
+          visibleModels.length > 0);
 
       if (ep === EModelEndpoint.agents && !hasModels) {
         return acc;
@@ -107,11 +118,11 @@ export const useEndpoints = ({
         hasModels,
         icon: Icon
           ? React.createElement(Icon, {
-            size: 20,
-            className: 'text-text-primary shrink-0 icon-md',
-            iconURL: endpointIconURL,
-            endpoint: ep,
-          })
+              size: 20,
+              className: 'text-text-primary shrink-0 icon-md',
+              iconURL: endpointIconURL,
+              endpoint: ep,
+            })
           : null,
       };
 
@@ -181,11 +192,15 @@ export const useEndpoints = ({
       else if (
         ep !== EModelEndpoint.agents &&
         ep !== EModelEndpoint.assistants &&
-        (modelsQuery.data?.[ep]?.length ?? 0) > 0
+        visibleModels.length > 0
       ) {
-        result.models = modelsQuery.data?.[ep]?.map((model) => ({
-          name: model,
+        result.models = visibleModels.map((model) => ({
+          name: model.model,
+          label: model.label,
           isGlobal: false,
+          available: model.available,
+          requiredPlans: model.requiredPlans,
+          capabilities: model.capabilities,
         }));
       }
 
@@ -198,6 +213,7 @@ export const useEndpoints = ({
     azureAssistants,
     endpointsConfig,
     filteredEndpoints,
+    modelCatalogQuery.data,
     modelsQuery.data,
     showAgentMarketplace,
   ]);
