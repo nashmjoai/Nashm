@@ -3,6 +3,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import type * as t from './types';
 import { setTokenHeader } from './headers-helpers';
 import * as endpoints from './api-endpoints';
+import { getActiveEncryptedInvite } from './crypto/invitations';
 
 async function _get<T>(url: string, options?: AxiosRequestConfig): Promise<T> {
   const response = await axios.get(url, { ...options });
@@ -115,6 +116,37 @@ const getRequestPathname = (url?: string) => {
   } catch {
     return url.split(/[?#]/)[0] ?? '';
   }
+};
+
+const getConversationIdFromRequest = (url?: string) => {
+  if (typeof url !== 'string') {
+    return null;
+  }
+  try {
+    const parsed = new URL(url, window.location.origin);
+    const conversationMatch = parsed.pathname.match(/\/api\/(?:convos|messages)\/([^/]+)$/);
+    if (conversationMatch?.[1]) {
+      return decodeURIComponent(conversationMatch[1]);
+    }
+    return parsed.searchParams.get('conversationId');
+  } catch {
+    return null;
+  }
+};
+
+const setEncryptedInviteHeaders = (config: AxiosRequestConfig) => {
+  const conversationId = getConversationIdFromRequest(config.url);
+  if (!conversationId) {
+    return;
+  }
+  const invite = getActiveEncryptedInvite(conversationId);
+  if (!invite) {
+    return;
+  }
+  const headers = (config.headers ?? {}) as Record<string, string>;
+  headers['X-Nashm-Encrypted-Invite-Id'] = invite.inviteId;
+  headers['X-Nashm-Encrypted-Invite-Secret'] = invite.secret;
+  config.headers = headers;
 };
 
 const isSharedMessagesRequest = (url?: string, method?: string) =>
@@ -273,6 +305,7 @@ const shouldRefreshBeforeRequest = (url?: string) => {
 
 if (typeof window !== 'undefined') {
   axios.interceptors.request.use(async (config) => {
+    setEncryptedInviteHeaders(config);
     const state = getAuthRecoveryState();
     if (state.refreshPromise && !isAuthRecoveryEndpoint(config.url)) {
       const token = await state.refreshPromise.catch(() => null);

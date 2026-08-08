@@ -218,7 +218,11 @@ class BaseClient {
       overrideUserMessageId ?? opts.overrideParentMessageId ?? crypto.randomUUID();
     let responseMessageId = opts.responseMessageId ?? crypto.randomUUID();
     let head = isEdited ? responseMessageId : parentMessageId;
-    this.currentMessages = (await this.loadHistory(conversationId, head)) ?? [];
+    const zeroKnowledgeStorage = this.options?.req?.body?.zeroKnowledgeStorage === true;
+    const clientHistory = this.options?.req?.body?.messages;
+    this.currentMessages = zeroKnowledgeStorage && Array.isArray(clientHistory)
+      ? this.loadClientHistory(clientHistory, conversationId, head)
+      : (await this.loadHistory(conversationId, head)) ?? [];
     this.conversationId = conversationId;
 
     if (isEdited && !isContinued) {
@@ -794,6 +798,31 @@ class BaseClient {
     return _messages;
   }
 
+  /** Uses the browser's decrypted history only for the active model request. */
+  loadClientHistory(messages, conversationId, parentMessageId) {
+    if (messages.length > 1000) {
+      throw new Error('Encrypted conversation history exceeds the allowed size');
+    }
+    if (
+      messages.some(
+        (message) =>
+          !message ||
+          typeof message.messageId !== 'string' ||
+          message.conversationId !== conversationId ||
+          typeof message.text !== 'string',
+      )
+    ) {
+      throw new Error('Invalid encrypted conversation history');
+    }
+
+    const mapMethod = this.getMessageMapMethod ? this.getMessageMapMethod() : null;
+    return this.constructor.getMessagesForConversation({
+      messages,
+      parentMessageId,
+      mapMethod,
+    });
+  }
+
   /**
    * Save a message to the database.
    * @param {TMessage} message
@@ -808,6 +837,13 @@ class BaseClient {
     if (!options) {
       logger.error('[BaseClient] saveMessageToDatabase: client disposed before save, skipping');
       return {};
+    }
+
+    if (options.req?.body?.zeroKnowledgeStorage === true) {
+      return {
+        message,
+        conversation: { conversationId: message.conversationId },
+      };
     }
 
     if (this.user && user !== this.user) {
@@ -904,6 +940,9 @@ class BaseClient {
    * @param {Partial<TMessage>} message
    */
   async updateMessageInDatabase(message) {
+    if (this.options?.req?.body?.zeroKnowledgeStorage === true) {
+      return;
+    }
     await db.updateMessage(this.options?.req?.user?.id, message);
   }
 

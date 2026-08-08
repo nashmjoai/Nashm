@@ -53,6 +53,10 @@ function bufToBase64(buf: ArrayBuffer | Uint8Array): string {
   return btoa(binary);
 }
 
+function bufToBase64Url(buf: ArrayBuffer | Uint8Array): string {
+  return bufToBase64(buf).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+}
+
 function base64ToBuf(b64: string): Uint8Array {
   const binary = atob(b64);
   const bytes = new Uint8Array(binary.length);
@@ -60,6 +64,11 @@ function base64ToBuf(b64: string): Uint8Array {
     bytes[i] = binary.charCodeAt(i);
   }
   return bytes;
+}
+
+function base64UrlToBuf(value: string): Uint8Array {
+  const base64 = value.replace(/-/g, '+').replace(/_/g, '/');
+  return base64ToBuf(base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), '='));
 }
 
 function randomBytes(length: number): Uint8Array {
@@ -105,7 +114,7 @@ export async function deriveLockKey(
   salt: string,
 ): Promise<CryptoKey> {
   const enc = new TextEncoder();
-  const normalized = textInput.trim().toLowerCase();
+  const normalized = textInput.trim();
   const rawKey = await crypto.subtle.importKey(
     'raw',
     enc.encode(normalized),
@@ -285,6 +294,51 @@ export async function unwrapConversationKey(
   );
 }
 
+export function createEncryptedInviteSecret(): string {
+  return bufToBase64Url(randomBytes(32));
+}
+
+export async function hashEncryptedInviteSecret(secret: string): Promise<string> {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(secret));
+  return bufToBase64Url(digest);
+}
+
+async function encryptedInviteKey(secret: string): Promise<CryptoKey> {
+  const raw = base64UrlToBuf(secret);
+  if (raw.byteLength !== 32) {
+    throw new Error('Invalid encrypted invitation secret');
+  }
+  return crypto.subtle.importKey('raw', raw as unknown as BufferSource, 'AES-GCM', false, [
+    'encrypt',
+    'decrypt',
+  ]);
+}
+
+export async function encryptConversationKeyForInvite(
+  conversationKey: CryptoKey,
+  secret: string,
+): Promise<EncryptedPayload> {
+  const rawConversationKey = await crypto.subtle.exportKey('raw', conversationKey);
+  return encryptText(bufToBase64(rawConversationKey), await encryptedInviteKey(secret));
+}
+
+export async function decryptConversationKeyFromInvite(
+  payload: EncryptedPayload,
+  secret: string,
+): Promise<CryptoKey> {
+  const rawConversationKey = base64ToBuf(await decryptText(payload, await encryptedInviteKey(secret)));
+  if (rawConversationKey.byteLength !== 32) {
+    throw new Error('Invalid encrypted invitation key');
+  }
+  return crypto.subtle.importKey(
+    'raw',
+    rawConversationKey as unknown as BufferSource,
+    { name: 'AES-GCM', length: 256 },
+    true,
+    ['encrypt', 'decrypt'],
+  );
+}
+
 export function isEncryptedPayload(value: unknown): value is EncryptedPayload {
   return (
     typeof value === 'object' &&
@@ -313,6 +367,8 @@ export interface EncryptedFileChunk {
   totalChunks: number;
   ct: string;
   iv: string;
+  /** Encrypted original name and media type, present only on chunk zero. */
+  metadata?: EncryptedPayload;
 }
 
 export async function encryptFileChunked(
@@ -320,6 +376,7 @@ export async function encryptFileChunked(
   fileId: string,
   key: CryptoKey,
   chunkSize = 1024 * 1024,
+  metadata?: { filename: string; mimeType: string },
 ): Promise<EncryptedFileChunk[]> {
   const totalChunks = Math.ceil(fileData.byteLength / chunkSize);
   const chunks: EncryptedFileChunk[] = [];
@@ -349,10 +406,27 @@ export async function encryptFileChunked(
       totalChunks,
       ct: bufToBase64(ciphertext),
       iv: bufToBase64(iv),
+      ...(i === 0 && metadata ? { metadata: await encryptValue(metadata, key) } : {}),
     });
   }
 
   return chunks;
+}
+
+export async function decryptFileMetadata(
+  chunks: EncryptedFileChunk[],
+  key: CryptoKey,
+): Promise<{ filename: string; mimeType: string } | null> {
+  const metadata = chunks.find((chunk) => chunk.chunkIndex === 0)?.metadata;
+  if (!metadata || !isEncryptedPayload(metadata)) {
+    return null;
+  }
+
+  const decrypted = await decryptValue<{ filename?: string; mimeType?: string }>(metadata, key, true);
+  if (typeof decrypted.filename !== 'string' || typeof decrypted.mimeType !== 'string') {
+    return null;
+  }
+  return { filename: decrypted.filename, mimeType: decrypted.mimeType };
 }
 
 export async function decryptFileChunked(

@@ -62,4 +62,5 @@ export interface IMessage extends Document {
   tenantId?: string;
   /** E2EE: هل محتوى الرسالة مشفّر بالكامل على جانب العميل؟ */
   isEncrypted?: boolean;
+  encryptedData?: unknown;
 }

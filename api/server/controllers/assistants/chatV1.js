@@ -58,6 +58,12 @@ const { getOpenAIClient } = require('./helpers');
  * @returns {void}
  */
 const chatV1 = async (req, res) => {
+  if (req.body?.zeroKnowledgeStorage === true) {
+    return res.status(409).json({
+      message: 'Assistant threads cannot be used with private encrypted storage',
+    });
+  }
+
   const appConfig = req.config;
   logger.debug('[/assistants/chat/] req.body', req.body);
 

@@ -8,7 +8,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { Shield, Lock, KeyRound, CheckCircle2, AlertTriangle, Loader2, X, Copy, RefreshCw } from 'lucide-react';
-import { generateRecoveryPhrase } from 'nashm-data-provider/src/crypto/nashm-crypto';
+import { generateRecoveryPhrase } from 'nashm-data-provider';
 
 interface SetupWizardProps {
   onClose: () => void;

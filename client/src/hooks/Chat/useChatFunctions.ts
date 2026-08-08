@@ -17,6 +17,7 @@ import {
   replaceSpecialVars,
   isAssistantsEndpoint,
   getDefaultParamsEndpoint,
+  getActiveEncryptedInvite,
 } from 'nashm-data-provider';
 import type {
   TMessage,
@@ -47,6 +48,7 @@ import store, { useGetEphemeralAgent } from '~/store';
 import { startupConfigKey } from '~/data-provider';
 import useUserKey from '~/hooks/Input/useUserKey';
 import { useAuthContext } from '~/hooks';
+import useE2EE from '~/hooks/useE2EE';
 import type { QuickArtifactActionState } from '~/utils/quickActions';
 
 const logChatRequest = (request: Record<string, unknown>) => {
@@ -238,6 +240,7 @@ export default function useChatFunctions({
   const navigate = useNavigate();
   const getSender = useGetSender();
   const { user } = useAuthContext();
+  const { isEnabled: isE2EEEnabled, isUnlocked: isE2EEUnlocked } = useE2EE();
   const queryClient = useQueryClient();
   const setFilesToDelete = useSetFilesToDelete();
   const getEphemeralAgent = useGetEphemeralAgent();
@@ -349,7 +352,19 @@ export default function useChatFunctions({
       return;
     }
 
+    if (isE2EEEnabled && (!isE2EEUnlocked || isAssistantsEndpoint(endpoint))) {
+      console.warn(
+        '[E2EE] Refusing to send while encrypted storage is locked or an Assistants endpoint is selected.',
+      );
+      return false;
+    }
+
     conversationId = conversationId ?? conversation?.conversationId ?? null;
+    const activeInvite = conversationId ? getActiveEncryptedInvite(conversationId) : null;
+    if (activeInvite?.role === 'read') {
+      console.warn('[E2EE] Refusing to send from a read-only encrypted invitation.');
+      return false;
+    }
     if (conversationId == 'search') {
       console.error('cannot send any message under search view!');
       return;
@@ -555,7 +570,7 @@ export default function useChatFunctions({
        * field on the message schema, and `SkillPills` reads straight
        * off the message so there's no Recoil state to clean up. Runtime
        * skill resolution reads the top-level `manualSkills` payload field.
-       */
+      */
       manualSkills: manualSkills.length > 0 ? manualSkills : undefined,
       /**
        * Quoted excerpts the user referenced this turn. Persisted on the
@@ -705,6 +720,7 @@ export default function useChatFunctions({
       editedContent,
       addedConvo,
       manualSkills: manualSkills.length > 0 ? manualSkills : undefined,
+      zeroKnowledgeStorage: isE2EEEnabled,
     };
 
     if (isRegenerate) {

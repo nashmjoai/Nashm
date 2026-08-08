@@ -131,7 +131,7 @@ export function useNextcloudSync(): UseNextcloudSyncReturn {
 
       try {
         // 1. تشفير App Token محلياً بالمفتاح الرئيسي قبل إرساله للسيرفر
-        const { encryptText } = await import('nashm-data-provider/src/crypto/nashm-crypto');
+        const { encryptText } = await import('nashm-data-provider');
         const encryptedTokenPayload = await encryptText(opts.appToken, masterKey);
         const encryptedToken = JSON.stringify(encryptedTokenPayload);
 
@@ -212,11 +212,11 @@ export function useNextcloudSync(): UseNextcloudSyncReturn {
 
       try {
         // فك تشفير App Token محلياً
-        const { decryptText } = await import('nashm-data-provider/src/crypto/nashm-crypto');
+        const { decryptText } = await import('nashm-data-provider');
         const tokenPayload = JSON.parse(opts.encryptedTokenB64);
         const appToken = await decryptText(tokenPayload, masterKey);
 
-        const { fullSync } = await import('nashm-data-provider/src/nextcloud/nextcloud-sync');
+        const { fullSync } = await import('nashm-data-provider');
 
         // جلب المحادثات المشفرة من الـ API
         const convosRes = await fetch('/api/convos?isEncrypted=true&limit=100', {

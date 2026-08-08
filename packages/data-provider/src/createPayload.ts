@@ -1,5 +1,6 @@
 import type * as t from './types';
 import { EndpointURLs } from './config';
+import { getActiveEncryptedInvite } from './crypto/invitations';
 import * as s from './schemas';
 
 /** Resolves the browser's IANA timezone so the server can localize prompt variables. */
@@ -24,8 +25,11 @@ export default function createPayload(submission: t.TSubmission) {
     ephemeralAgent,
     endpointOption,
     manualSkills,
+    messages,
+    zeroKnowledgeStorage,
   } = submission;
   const { conversationId } = s.tConvoUpdateSchema.parse(conversation);
+  const encryptedInvite = conversationId ? getActiveEncryptedInvite(conversationId) : null;
   const { endpoint: _e, endpointType } = endpointOption as {
     endpoint: s.EModelEndpoint;
     endpointType?: s.EModelEndpoint;
@@ -51,6 +55,11 @@ export default function createPayload(submission: t.TSubmission) {
     isContinued: !!(isEdited && isContinued),
     ephemeralAgent: s.isAssistantsEndpoint(endpoint) ? undefined : ephemeralAgent,
     manualSkills: s.isAssistantsEndpoint(endpoint) ? undefined : manualSkills,
+    zeroKnowledgeStorage,
+    encryptedInvite: encryptedInvite
+      ? { inviteId: encryptedInvite.inviteId, secret: encryptedInvite.secret }
+      : undefined,
+    messages: zeroKnowledgeStorage ? messages : undefined,
     timezone: getUserTimezone(),
   };
 

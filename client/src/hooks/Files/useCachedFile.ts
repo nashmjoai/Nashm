@@ -28,7 +28,7 @@ export function useCachedFile({
   const [displayUrl, setDisplayUrl] = useState<string>(url ?? '');
   const [cachedRecord, setCachedRecord] = useState<CachedFileRecord | null>(null);
   const objectUrlRef = useRef<string | null>(null);
-  const { isEnabled, isUnlocked, decryptFile } = useE2EE();
+  const { isEnabled, isUnlocked, decryptFile, decryptFileInfo } = useE2EE();
 
   useEffect(() => {
     let isMounted = true;
@@ -51,10 +51,16 @@ export function useCachedFile({
                 return res.text();
               })
               .then((text) => JSON.parse(text))
-              .then((chunks) => decryptFile(chunks))
-              .then((decryptedBuffer) => {
+              .then(async (chunks) => {
+                const [decryptedBuffer, encryptedInfo] = await Promise.all([
+                  decryptFile(chunks),
+                  decryptFileInfo(chunks),
+                ]);
+                return { decryptedBuffer, encryptedInfo };
+              })
+              .then(({ decryptedBuffer, encryptedInfo }) => {
                 if (decryptedBuffer) {
-                  let inferredMime = mimeType;
+                  let inferredMime = encryptedInfo?.mimeType || mimeType;
                   if (!inferredMime) {
                     const nameToCheck = filename || url.split('?')[0];
                     if (nameToCheck.includes('.png')) inferredMime = 'image/png';
@@ -67,7 +73,10 @@ export function useCachedFile({
                   }
 
                   const newBlob = new Blob([decryptedBuffer], { type: inferredMime });
-                  cacheFileBlob(cacheKey, newBlob, { filename: filename?.replace('.enc', ''), mimeType: inferredMime });
+                  cacheFileBlob(cacheKey, newBlob, {
+                    filename: encryptedInfo?.filename ?? filename?.replace('.enc', ''),
+                    mimeType: inferredMime,
+                  });
                   if (isMounted) {
                     const blobUrl = URL.createObjectURL(newBlob);
                     objectUrlRef.current = blobUrl;
@@ -107,7 +116,7 @@ export function useCachedFile({
     return () => {
       isMounted = false;
     };
-  }, [fileId, url, filename, mimeType]);
+  }, [decryptFile, decryptFileInfo, fileId, filename, isEnabled, isUnlocked, mimeType, url]);
 
   useEffect(() => {
     return () => {

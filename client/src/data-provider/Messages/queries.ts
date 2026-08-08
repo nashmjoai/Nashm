@@ -5,6 +5,7 @@ import type { UseQueryOptions, QueryObserverResult, QueryClient } from '@tanstac
 import { Constants, QueryKeys, dataService } from 'nashm-data-provider';
 import type * as t from 'nashm-data-provider';
 import { isNotFoundError, logger } from '~/utils';
+import useE2EE from '~/hooks/useE2EE';
 
 type StableMessagesParams = {
   pathname: string;
@@ -89,6 +90,7 @@ export const useGetMessagesByConvoId = <TData = t.TMessage[]>(
 ): QueryObserverResult<TData> => {
   const location = useLocation();
   const queryClient = useQueryClient();
+  const { decryptStoredMessages } = useE2EE();
   const isStreaming = options?.isStreaming === true;
   const isStreamingRef = useRef(isStreaming);
 
@@ -142,7 +144,7 @@ export const useGetMessagesByConvoId = <TData = t.TMessage[]>(
         );
       }
 
-      return stableMessages;
+      return decryptStoredMessages(stableMessages);
     },
     {
       refetchOnWindowFocus: false,

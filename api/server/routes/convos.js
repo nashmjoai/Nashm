@@ -22,6 +22,7 @@ const requireJwtAuth = require('~/server/middleware/requireJwtAuth');
 const { importConversations } = require('~/server/utils/import');
 const getLogStores = require('~/cache/getLogStores');
 const db = require('~/models');
+const { authorizeEncryptedInvite } = require('~/server/utils/encryptedInvite');
 
 const assistantClients = {
   [EModelEndpoint.azureAssistants]: require('~/server/services/Endpoints/azureAssistants'),
@@ -74,7 +75,17 @@ router.get('/', async (req, res) => {
 
 router.get('/:conversationId', async (req, res) => {
   const { conversationId } = req.params;
-  const convo = await db.getConvo(req.user.id, conversationId);
+  let convo = await db.getConvo(req.user.id, conversationId);
+  if (!convo) {
+    const invite = await authorizeEncryptedInvite(req, conversationId);
+    if (invite) {
+      const Conversation = require('mongoose').models.Conversation;
+      convo = await Conversation.findOne({
+        conversationId,
+        user: invite.ownerUserId,
+      }).lean();
+    }
+  }
 
   if (convo) {
     res.status(200).json(convo);
@@ -258,6 +269,13 @@ router.post('/update', validateConvoAccess, async (req, res) => {
   const sanitizedTitle = title.trim().slice(0, MAX_CONVO_TITLE_LENGTH);
 
   try {
+    const existingConversation = await db.getConvo(req.user.id, conversationId);
+    if (existingConversation?.isEncrypted) {
+      return res.status(409).json({
+        error: 'Encrypted conversation titles can only be changed by the browser encryption flow',
+      });
+    }
+
     const dbResponse = await db.saveConvo(
       {
         userId: req?.user?.id,

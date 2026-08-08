@@ -73,6 +73,7 @@ jest.mock('~/models', () => ({
   getSharedLinkFile: jest.fn(),
   backfillSharedLinkFiles: jest.fn(),
   getRoleByName: jest.fn(),
+  getConvo: jest.fn(),
 }));
 
 const mockGetStrategyFunctions = jest.fn();
@@ -107,6 +108,7 @@ const {
   getSharedLinkFile,
   backfillSharedLinkFiles,
   getRoleByName,
+  getConvo,
 } = require('~/models');
 const shareRouter = require('../share');
 
@@ -132,6 +134,7 @@ const buildApp = ({ retentionMode = RetentionMode.TEMPORARY } = {}) => {
 describe('share routes retention', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    getConvo.mockResolvedValue(null);
     getRoleByName.mockResolvedValue({
       permissions: {
         SHARED_LINKS: {

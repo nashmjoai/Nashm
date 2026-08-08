@@ -308,15 +308,17 @@ const ResumableAgentController = async (req, res, next, initializeClient, addTit
           partialMessage.agent_id = req.body.agent_id;
         }
 
-        await saveMessage(
-          {
-            userId: req?.user?.id,
-            isTemporary: req?.body?.isTemporary,
-            interfaceConfig: req?.config?.interfaceConfig,
-          },
-          partialMessage,
-          { context: 'api/server/controllers/agents/request.js - partial response on disconnect' },
-        );
+        if (req.body?.zeroKnowledgeStorage !== true) {
+          await saveMessage(
+            {
+              userId: req?.user?.id,
+              isTemporary: req?.body?.isTemporary,
+              interfaceConfig: req?.config?.interfaceConfig,
+            },
+            partialMessage,
+            { context: 'api/server/controllers/agents/request.js - partial response on disconnect' },
+          );
+        }
 
         logger.debug(
           `[ResumableAgentController] Saved partial response for ${streamId}, content parts: ${persistableContent.length}`,
@@ -529,7 +531,8 @@ const ResumableAgentController = async (req, res, next, initializeClient, addTit
           addTitle &&
           parentMessageId === Constants.NO_PARENT &&
           isNewConvo &&
-          !wasAbortedBeforeComplete;
+          !wasAbortedBeforeComplete &&
+          req.body?.zeroKnowledgeStorage !== true;
 
         // Save user message BEFORE sending final event to avoid race condition
         // where client refetch happens before database is updated
@@ -539,7 +542,7 @@ const ResumableAgentController = async (req, res, next, initializeClient, addTit
           interfaceConfig: req?.config?.interfaceConfig,
         };
 
-        if (!client.skipSaveUserMessage && userMessage) {
+        if (req.body?.zeroKnowledgeStorage !== true && !client.skipSaveUserMessage && userMessage) {
           await saveMessage(reqCtx, userMessage, {
             context: 'api/server/controllers/agents/request.js - resumable user message',
           });
@@ -548,7 +551,11 @@ const ResumableAgentController = async (req, res, next, initializeClient, addTit
         // CRITICAL: Save response message BEFORE emitting final event.
         // This prevents race conditions where the client sends a follow-up message
         // before the response is saved to the database, causing orphaned parentMessageIds.
-        if (client.savedMessageIds && !client.savedMessageIds.has(messageId)) {
+        if (
+          req.body?.zeroKnowledgeStorage !== true &&
+          client.savedMessageIds &&
+          !client.savedMessageIds.has(messageId)
+        ) {
           await saveMessage(
             reqCtx,
             { ...response, user: userId, unfinished: wasAbortedBeforeComplete },
@@ -1005,7 +1012,11 @@ const _LegacyAgentController = async (req, res, next, initializeClient, addTitle
       res.end();
 
       // Save the message if needed
-      if (client.savedMessageIds && !client.savedMessageIds.has(messageId)) {
+      if (
+        req.body?.zeroKnowledgeStorage !== true &&
+        client.savedMessageIds &&
+        !client.savedMessageIds.has(messageId)
+      ) {
         await saveMessage(
           {
             userId: req?.user?.id,
@@ -1039,7 +1050,7 @@ const _LegacyAgentController = async (req, res, next, initializeClient, addTitle
     }
 
     // Save user message if needed
-    if (!client.skipSaveUserMessage) {
+    if (req.body?.zeroKnowledgeStorage !== true && !client.skipSaveUserMessage) {
       await saveMessage(
         {
           userId: req?.user?.id,
@@ -1052,7 +1063,12 @@ const _LegacyAgentController = async (req, res, next, initializeClient, addTitle
     }
 
     // Add title if needed - extract minimal data
-    if (addTitle && parentMessageId === Constants.NO_PARENT && isNewConvo) {
+    if (
+      req.body?.zeroKnowledgeStorage !== true &&
+      addTitle &&
+      parentMessageId === Constants.NO_PARENT &&
+      isNewConvo
+    ) {
       addTitle(req, {
         text,
         response: { ...response },

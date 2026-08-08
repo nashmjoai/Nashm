@@ -200,10 +200,15 @@ const useFileHandlingCore = (params: UseFileHandling | undefined, fileState: Fil
     if (isEnabled && isUnlocked && extendedFile.file) {
       try {
         const arrayBuffer = await extendedFile.file.arrayBuffer();
-        const encryptedChunks = await encryptFile(arrayBuffer, extendedFile.file_id);
+        const encryptedChunks = await encryptFile(arrayBuffer, extendedFile.file_id, {
+          filename,
+          mimeType: extendedFile.file.type,
+        });
         if (encryptedChunks) {
-          filename = `${filename}.enc`;
-          fileToUpload = new Blob([JSON.stringify(encryptedChunks)], { type: 'application/json' });
+          filename = `${extendedFile.file_id}.enc`;
+          fileToUpload = new Blob([JSON.stringify(encryptedChunks)], {
+            type: 'application/octet-stream',
+          });
           isEncryptedUpload = true;
           formData.append('is_encrypted', 'true');
         }

@@ -18,6 +18,7 @@ import {
 import DisplayUsernameMessages from '../SettingsTabs/Account/DisplayUsernameMessages';
 import ConversationModeSwitch from '../SettingsTabs/Speech/ConversationModeSwitch';
 import EnableTwoFactorItem from '../SettingsTabs/Account/TwoFactorAuthentication';
+import ZeroKnowledgeStorage from '../SettingsTabs/Account/ZeroKnowledgeStorage';
 import ImportConversations from '../SettingsTabs/Data/ImportConversations';
 import { toggleControl, ThemeSetting, LangSetting } from './controls';
 import BackupCodesItem from '../SettingsTabs/Account/BackupCodesItem';
@@ -517,6 +518,14 @@ export const registry: SettingEntry[] = [
     Component: Avatar,
   },
   // Account · Security
+  {
+    id: 'zeroKnowledgeStorage',
+    tab: ACCOUNT,
+    section: 'security',
+    labelKey: 'com_ui_settings_label_zero_knowledge_storage',
+    keywords: ['privacy', 'encryption', 'encrypted storage'],
+    Component: ZeroKnowledgeStorage,
+  },
   {
     id: 'twoFactor',
     tab: ACCOUNT,

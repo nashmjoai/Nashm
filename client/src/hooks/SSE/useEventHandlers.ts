@@ -45,6 +45,7 @@ import useContentHandler from '~/hooks/SSE/useContentHandler';
 import useStepHandler from '~/hooks/SSE/useStepHandler';
 import { useApplyAgentTemplate } from '~/hooks/Agents';
 import { useAuthContext } from '~/hooks/AuthContext';
+import useE2EE from '~/hooks/useE2EE';
 import { MESSAGE_UPDATE_INTERVAL } from '~/common';
 import { useLiveAnnouncer } from '~/Providers';
 import store from '~/store';
@@ -299,6 +300,8 @@ export default function useEventHandlers({
   const lastAnnouncementTimeRef = useRef(Date.now());
   const { conversationId: paramId } = useParams();
   const { token } = useAuthContext();
+  const { isEnabled: isE2EEEnabled, isUnlocked: isE2EEUnlocked, protectStoredConversation } =
+    useE2EE();
 
   const { contentHandler, resetContentHandler } = useContentHandler({ setMessages, getMessages });
   /** `refetchType: 'all'` so cached-but-unmounted skill queries refresh too —
@@ -721,7 +724,12 @@ export default function useEventHandlers({
         const isNewConvo = conversation.conversationId !== submissionConvo.conversationId;
 
         // Skip temporary conversations — the server never generates titles for them.
-        if (isNewConvo && conversation.conversationId && !_isTemporary) {
+        if (
+          isNewConvo &&
+          conversation.conversationId &&
+          !_isTemporary &&
+          !submission.zeroKnowledgeStorage
+        ) {
           queueTitleGeneration(conversation.conversationId);
         }
 
@@ -796,6 +804,38 @@ export default function useEventHandlers({
           queryClient.setQueryData<TMessage[]>(
             [QueryKeys.messages, conversation.conversationId],
             [...currentMessages],
+          );
+        }
+
+        if (isE2EEEnabled && isE2EEUnlocked && requestMessage != null && responseMessage != null) {
+          const requestMessageForStorage =
+            finalMessages.find((message) => message.messageId === requestMessage.messageId) ??
+            requestMessage;
+          const responseMessageForStorage =
+            finalMessages.find((message) => message.messageId === responseMessage.messageId) ??
+            responseMessage;
+          const messagesForStorage =
+            finalMessages.length > 0
+              ? finalMessages
+              : [requestMessageForStorage, responseMessageForStorage];
+          const protectedConversation = {
+            conversationId: conversation.conversationId,
+            title: conversation.title,
+            endpoint: conversation.endpoint,
+            endpointType: conversation.endpointType,
+            model: conversation.model,
+            agent_id: conversation.agent_id,
+            assistant_id: conversation.assistant_id,
+            chatProjectId: conversation.chatProjectId,
+            isTemporary: _isTemporary,
+          };
+          void protectStoredConversation(
+            protectedConversation,
+            messagesForStorage,
+          ).catch(
+            (error) => {
+              console.error('[E2EE] Failed to replace persisted plaintext messages:', error);
+            },
           );
         }
 
@@ -878,6 +918,9 @@ export default function useEventHandlers({
       setIsSubmitting,
       setShowStopButton,
       location.pathname,
+      isE2EEEnabled,
+      isE2EEUnlocked,
+      protectStoredConversation,
       applyAgentTemplate,
       attachmentHandler,
       restorePendingQuotes,

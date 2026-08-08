@@ -63,6 +63,12 @@ const messageSchema: Schema<IMessage> = new Schema(
       type: Boolean,
       default: false,
     },
+    /** Client-encrypted message text, content, summaries, and quoted excerpts. */
+    encryptedData: {
+      type: mongoose.Schema.Types.Mixed,
+      default: undefined,
+      select: true,
+    },
     isCreatedByUser: {
       type: Boolean,
       required: true,

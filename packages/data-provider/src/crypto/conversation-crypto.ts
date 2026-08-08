@@ -28,6 +28,11 @@ export interface EncryptedMessageFields {
   isEncrypted: boolean;
 }
 
+export interface EncryptedMessageRecord {
+  encryptedData: EncryptedPayload;
+  isEncrypted: true;
+}
+
 /** الحقول المشفرة في المحادثة */
 export interface EncryptedConvoFields {
   /** عنوان المحادثة مشفر */
@@ -129,6 +134,51 @@ export async function decryptMessage(
   }
 
   return result;
+}
+
+/** Encrypts every private field persisted for a message in one authenticated payload. */
+export async function encryptMessageRecord(
+  conversationId: string,
+  masterKey: CryptoKey,
+  fields: {
+    text: string;
+    summary?: string;
+    content?: unknown[];
+    quotes?: string[];
+    files?: unknown[];
+  },
+): Promise<EncryptedMessageRecord> {
+  const key = await getOrCreateConversationKey(conversationId, masterKey);
+  return {
+    encryptedData: await encryptValue(fields, key),
+    isEncrypted: true,
+  };
+}
+
+/** Decrypts a stored message payload after the conversation key is available locally. */
+export async function decryptMessageRecord(
+  conversationId: string,
+  masterKey: CryptoKey,
+  encryptedData: EncryptedPayload,
+): Promise<{
+  text: string;
+  summary?: string;
+  content?: unknown[];
+  quotes?: string[];
+  files?: unknown[];
+}> {
+  const key = await getConversationKey(conversationId, masterKey);
+  if (!key) {
+    throw new Error('Conversation key is unavailable on this device');
+  }
+
+  return decryptValue<{
+    text: string;
+    summary?: string;
+    content?: unknown[];
+    quotes?: string[];
+    files?: unknown[];
+  }>(encryptedData, key, true);
 }
 
 // ─── Conversation Encryption ─────────────────────────────────────────────────

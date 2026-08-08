@@ -11,13 +11,14 @@ const {
 const { findAllArtifacts, replaceArtifactContent } = require('~/server/services/Artifacts/update');
 const { requireJwtAuth, validateMessageReq } = require('~/server/middleware');
 const db = require('~/models');
+const { authorizeEncryptedInvite } = require('~/server/utils/encryptedInvite');
 
 const router = express.Router();
 router.use(requireJwtAuth);
 
 router.get('/', async (req, res) => {
   try {
-    const user = req.user.id ?? '';
+    let user = req.user.id ?? '';
     const {
       cursor = null,
       sortBy = 'updatedAt',
@@ -34,6 +35,13 @@ router.get('/', async (req, res) => {
       ? sortBy
       : 'createdAt';
     const sortOrder = sortDirection === 'asc' ? 1 : -1;
+
+    if (conversationId) {
+      const invite = await authorizeEncryptedInvite(req, conversationId);
+      if (invite) {
+        user = invite.ownerUserId;
+      }
+    }
 
     if (conversationId && messageId) {
       const messages = await db.getMessages({ conversationId, messageId, user });

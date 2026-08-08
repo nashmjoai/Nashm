@@ -22,6 +22,7 @@ import ShareRoute from './ShareRoute';
 import FamilyShareRoute from './FamilyShareRoute';
 import ChatRoute from './ChatRoute';
 import Search from './Search';
+import InviteRoute from './InviteRoute';
 import Root from './Root';
 
 const AuthLayout = () => (
@@ -159,6 +160,10 @@ export const router = createBrowserRouter(
       element: <AuthLayout />,
       errorElement: <RouteErrorBoundary />,
       children: [
+        {
+          path: 'invite/:inviteId',
+          element: <InviteRoute />,
+        },
         {
           path: 'share/family/:userId/:conversationId',
           element: <FamilyShareRoute />,

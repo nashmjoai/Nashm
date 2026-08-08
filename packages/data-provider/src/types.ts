@@ -131,6 +131,12 @@ export type TPayload = Partial<TMessage> &
     manualSkills?: string[];
     /** Browser IANA timezone (e.g. `America/New_York`) used to resolve local-time prompt variables server-side. */
     timezone?: string;
+    /** Signals that persisted message bodies must be supplied by, and returned to, the browser only. */
+    zeroKnowledgeStorage?: boolean;
+    encryptedInvite?: {
+      inviteId: string;
+      secret: string;
+    };
   };
 
 export type TEditedContent =
@@ -164,6 +170,8 @@ export type TSubmission = {
   addedConvo?: TConversation;
   /** Skills the user invoked via the `$` popover for this submission. */
   manualSkills?: string[];
+  /** Keep database storage encrypted while the browser supplies model context for this request. */
+  zeroKnowledgeStorage?: boolean;
 };
 
 export type EventSubmission = Omit<TSubmission, 'initialResponse'> & { initialResponse: TMessage };

@@ -80,6 +80,32 @@ export async function storeConversationKey(
   );
 }
 
+/** Returns the locally stored, master-key-wrapped conversation key. */
+export async function getWrappedConversationKey(conversationId: string): Promise<string | null> {
+  const record = await dbOp<{ conversationId: string; wrappedKey: string } | undefined>(
+    STORE_CONV_KEYS,
+    'readonly',
+    (store) => store.get(conversationId),
+  );
+
+  return record?.wrappedKey ?? null;
+}
+
+/** Restores a server-held wrapped conversation key into this device's encrypted key store. */
+export async function restoreConversationKey(
+  conversationId: string,
+  wrappedKey: string,
+  masterKey: CryptoKey,
+): Promise<boolean> {
+  try {
+    const key = await unwrapConversationKey(wrappedKey, masterKey);
+    await storeConversationKey(conversationId, key, masterKey);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /**
  * استرجاع مفتاح محادثة من IndexedDB
  *

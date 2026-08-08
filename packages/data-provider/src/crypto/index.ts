@@ -5,3 +5,4 @@
 export * from './nashm-crypto';
 export * from './key-manager';
 export * from './conversation-crypto';
+export * from './invitations';

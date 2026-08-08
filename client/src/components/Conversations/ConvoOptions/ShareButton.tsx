@@ -8,6 +8,8 @@ import { useLocalize, useCopyToClipboard } from '~/hooks';
 import { useGetStartupConfig } from '~/data-provider';
 import SharedLinkButton from './SharedLinkButton';
 import { buildShareLinkUrl, cn } from '~/utils';
+import EncryptedInviteButton from './EncryptedInviteButton';
+import useE2EE from '~/hooks/useE2EE';
 
 export default function ShareButton({
   conversationId,
@@ -23,6 +25,7 @@ export default function ShareButton({
   children?: React.ReactNode;
 }) {
   const localize = useLocalize();
+  const { isEnabled: encryptedStorageEnabled } = useE2EE();
   const { data: startupConfig } = useGetStartupConfig();
   const canSnapshotFiles = startupConfig?.sharedLinksSnapshotFilesEnabled === true;
   const [showQR, setShowQR] = useState(false);
@@ -68,6 +71,19 @@ export default function ShareButton({
         snapshotFiles={canSnapshotFiles ? snapshotFiles : undefined}
       />
     );
+
+  if (encryptedStorageEnabled) {
+    return (
+      <EncryptedInviteButton
+        conversationId={conversationId}
+        open={open}
+        onOpenChange={onOpenChange}
+        triggerRef={triggerRef}
+      >
+        {children}
+      </EncryptedInviteButton>
+    );
+  }
 
   return (
     <OGDialog open={open} onOpenChange={onOpenChange} triggerRef={triggerRef}>

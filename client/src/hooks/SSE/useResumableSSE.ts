@@ -1262,7 +1262,7 @@ export default function useResumableSSE(
           // Skip temporary conversations — the server never generates titles for
           // them, so polling would 404 indefinitely.
           const isNewConvo = isInitialNewConversation(submission);
-          if (isNewConvo && !submission.isTemporary) {
+          if (isNewConvo && !submission.isTemporary && !submission.zeroKnowledgeStorage) {
             queueTitleGeneration(newStreamId);
           }
           if (isInitialNewConversation(submission)) {

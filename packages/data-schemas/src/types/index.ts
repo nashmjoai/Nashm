@@ -50,3 +50,4 @@ export * from './modelAccess';
 export * from './planConfig';
 export * from './systemError';
 export * from './exportJob';
+export * from '~/schema/encryptedInvite';

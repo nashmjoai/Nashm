@@ -15,11 +15,72 @@
  */
 
 const express = require('express');
+const crypto = require('crypto');
 const { requireJwtAuth } = require('~/server/middleware');
-const { updateUser, getUserById } = require('~/models');
+const { updateUser } = require('~/models');
+const { deleteConvoSharedLinksWithCleanup } = require('@nashm/api');
 const { logger } = require('@nashm/data-schemas');
+const db = require('~/models');
+const { authorizeEncryptedInvite, SECRET_HASH_PATTERN } = require('~/server/utils/encryptedInvite');
 
 const router = express.Router();
+
+const MAX_ENCRYPTED_PAYLOAD_BYTES = 10 * 1024 * 1024;
+const MAX_ENCRYPTED_SNAPSHOT_MESSAGES = 1000;
+const BASE64_PATTERN = /^[A-Za-z0-9+/]+={0,2}$/;
+
+function isEncryptedPayload(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return false;
+  }
+
+  const { v, ct, iv } = value;
+  return (
+    v === 'zk-v1' &&
+    typeof ct === 'string' &&
+    typeof iv === 'string' &&
+    ct.length > 0 &&
+    ct.length <= MAX_ENCRYPTED_PAYLOAD_BYTES &&
+    iv.length === 16 &&
+    BASE64_PATTERN.test(ct) &&
+    BASE64_PATTERN.test(iv)
+  );
+}
+
+function isWrappedConversationKey(value) {
+  return (
+    typeof value === 'string' &&
+    value.length >= 80 &&
+    value.length <= 512 &&
+    BASE64_PATTERN.test(value)
+  );
+}
+
+function optionalString(value, maxLength = 512) {
+  return typeof value === 'string' && value.length <= maxLength ? value : undefined;
+}
+
+function validInviteRole(value) {
+  return value === 'read' || value === 'write';
+}
+
+/** Keep only non-sensitive message metadata needed to render a conversation tree. */
+function publicMessageMetadata(message) {
+  const data = message.message ?? {};
+  return {
+    parentMessageId: optionalString(data.parentMessageId, 128),
+    isCreatedByUser: data.isCreatedByUser,
+    sender: optionalString(data.sender, 128),
+    model: optionalString(data.model, 512),
+    endpoint: optionalString(data.endpoint, 128),
+    tokenCount: Number.isSafeInteger(data.tokenCount) && data.tokenCount >= 0 ? data.tokenCount : undefined,
+    iconURL: optionalString(data.iconURL, 2048),
+    finish_reason: optionalString(data.finish_reason, 128),
+    error: typeof data.error === 'boolean' ? data.error : undefined,
+    unfinished: typeof data.unfinished === 'boolean' ? data.unfinished : undefined,
+    thread_id: optionalString(data.thread_id, 512),
+  };
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -48,7 +109,7 @@ router.get('/status', requireJwtAuth, async (req, res) => {
     }
 
     return res.json({
-      e2eeEnabled: user.e2eeEnabled ?? false,
+      enabled: user.e2eeEnabled ?? false,
       hasSalt: !!user.keySalt,
       hasPublicKey: !!user.publicKey,
       nextcloudSync: user.nextcloudSync
@@ -110,11 +171,11 @@ router.post('/setup', requireJwtAuth, async (req, res) => {
   try {
     const { salt, wrappedKeyRecovery, wrappedKeyPassphrase, publicKey } = req.body;
 
-    if (!salt || typeof salt !== 'string') {
+    if (!salt || typeof salt !== 'string' || salt.length !== 24 || !BASE64_PATTERN.test(salt)) {
       return res.status(400).json({ message: 'Salt is required' });
     }
 
-    if (!wrappedKeyRecovery || !wrappedKeyPassphrase) {
+    if (!isEncryptedPayload(wrappedKeyRecovery) || !isEncryptedPayload(wrappedKeyPassphrase)) {
       return res.status(400).json({ message: 'wrappedKeyRecovery and wrappedKeyPassphrase are required' });
     }
 
@@ -144,6 +205,209 @@ router.post('/setup', requireJwtAuth, async (req, res) => {
     return res.status(201).json({ success: true, message: 'E2EE enabled successfully' });
   } catch (err) {
     logger.error('[E2EE] Setup failed:', err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+/** Stores a client-wrapped per-conversation key. The server never receives the key material. */
+router.put('/conversations/:conversationId/key', requireJwtAuth, async (req, res) => {
+  try {
+    const { conversationId } = req.params;
+    const { wrappedKey } = req.body ?? {};
+    if (conversationId.length > 128 || !isWrappedConversationKey(wrappedKey)) {
+      return res.status(400).json({ message: 'Invalid wrapped conversation key' });
+    }
+
+    const conversation = await db.getConvo(req.user.id, conversationId);
+    if (!conversation) {
+      return res.status(404).json({ message: 'Conversation not found' });
+    }
+
+    await db.saveConvo(
+      { userId: req.user.id },
+      { conversationId, isEncrypted: true, encryptedKeyRef: wrappedKey },
+      { context: 'PUT /api/e2ee/conversations/:conversationId/key' },
+    );
+    return res.status(204).end();
+  } catch (err) {
+    logger.error('[E2EE] Failed to save wrapped conversation key:', err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+/** Retrieves a wrapped key only for the authenticated conversation owner. */
+router.get('/conversations/:conversationId/key', requireJwtAuth, async (req, res) => {
+  try {
+    const conversation = await db.getConvo(req.user.id, req.params.conversationId);
+    if (!conversation?.isEncrypted || !isWrappedConversationKey(conversation.encryptedKeyRef)) {
+      return res.status(404).json({ message: 'Encrypted conversation key not found' });
+    }
+
+    return res.json({ wrappedKey: conversation.encryptedKeyRef });
+  } catch (err) {
+    logger.error('[E2EE] Failed to retrieve wrapped conversation key:', err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+router.post('/conversations/:conversationId/invitations', requireJwtAuth, async (req, res) => {
+  try {
+    const { conversationId } = req.params;
+    const { role, recipientEmail, secretHash, encryptedConversationKey } = req.body ?? {};
+    if (
+      conversationId.length > 128 ||
+      !validInviteRole(role) ||
+      !isEncryptedPayload(encryptedConversationKey) ||
+      typeof secretHash !== 'string' ||
+      !SECRET_HASH_PATTERN.test(secretHash) ||
+      (recipientEmail !== undefined &&
+        (typeof recipientEmail !== 'string' || recipientEmail.length > 320 || !/^\S+@\S+\.\S+$/.test(recipientEmail)))
+    ) {
+      return res.status(400).json({ message: 'Invalid encrypted invitation' });
+    }
+
+    const conversation = await db.getConvo(req.user.id, conversationId);
+    if (!conversation?.isEncrypted) {
+      return res.status(404).json({ message: 'Encrypted conversation not found' });
+    }
+
+    const Invite = mongoose.models.EncryptedConversationInvite;
+    const inviteId = crypto.randomUUID();
+    await Invite.create({
+      inviteId,
+      conversationId,
+      ownerUserId: req.user.id,
+      recipientEmail: recipientEmail?.trim().toLowerCase() || undefined,
+      role,
+      secretHash,
+      encryptedConversationKey,
+      tenantId: req.user.tenantId,
+      active: true,
+    });
+    return res.status(201).json({ inviteId });
+  } catch (err) {
+    logger.error('[E2EE] Failed to create encrypted invitation:', err);
+    return res.status(500).json({ message: 'Failed to create encrypted invitation' });
+  }
+});
+
+router.get('/invitations/:inviteId', requireJwtAuth, async (req, res) => {
+  try {
+    const { inviteId } = req.params;
+    const Invite = mongoose.models.EncryptedConversationInvite;
+    const candidate = await Invite.findOne({ inviteId, active: true }, 'conversationId').lean();
+    if (!candidate) {
+      return res.status(404).json({ message: 'Invitation not found' });
+    }
+    const invite = await authorizeEncryptedInvite(req, candidate.conversationId);
+    if (!invite) {
+      return res.status(403).json({ message: 'Invitation access denied' });
+    }
+    return res.json({
+      conversationId: invite.conversationId,
+      role: invite.role,
+      encryptedConversationKey: invite.encryptedConversationKey,
+    });
+  } catch (err) {
+    logger.error('[E2EE] Failed to open encrypted invitation:', err);
+    return res.status(500).json({ message: 'Failed to open encrypted invitation' });
+  }
+});
+
+/**
+ * Replaces persisted plaintext message bodies with browser-encrypted payloads.
+ * Only cryptographic envelopes are accepted; the server cannot decrypt them.
+ */
+router.post('/conversations/:conversationId/snapshot', requireJwtAuth, async (req, res) => {
+  try {
+    const { conversationId } = req.params;
+    const { wrappedKey, messages, conversation: conversationData } = req.body ?? {};
+    const invite = await authorizeEncryptedInvite(req, conversationId, 'write');
+    if (req.body?.encryptedInvite && !invite) {
+      return res.status(403).json({ message: 'Invitation write access denied' });
+    }
+    const ownerUserId = invite?.ownerUserId ?? req.user.id;
+    if (
+      conversationId.length > 128 ||
+      (!invite && !isWrappedConversationKey(wrappedKey)) ||
+      !Array.isArray(messages) ||
+      messages.length === 0
+    ) {
+      return res.status(400).json({ message: 'Invalid encrypted conversation snapshot' });
+    }
+    if (messages.length > MAX_ENCRYPTED_SNAPSHOT_MESSAGES || messages.some((message) =>
+      !message ||
+      typeof message.messageId !== 'string' ||
+      !isEncryptedPayload(message.encryptedData) ||
+      !message.message ||
+      typeof message.message.isCreatedByUser !== 'boolean',
+    )) {
+      return res.status(400).json({ message: 'Invalid encrypted message payload' });
+    }
+
+    const messageIds = messages.map((message) => message.messageId);
+    if (new Set(messageIds).size !== messageIds.length || messageIds.some((id) => id.length > 128)) {
+      return res.status(400).json({ message: 'Invalid encrypted message identifiers' });
+    }
+    const storedMessages = await db.getMessages({
+      conversationId,
+      user: ownerUserId,
+      messageId: { $in: messageIds },
+    });
+    const storedMessageIds = new Set(storedMessages.map((message) => message.messageId));
+    await Promise.all(
+      messages.map((message) => {
+        if (storedMessageIds.has(message.messageId)) {
+          return db.updateMessage(ownerUserId, {
+            messageId: message.messageId,
+            text: '',
+            summary: '',
+            content: [],
+            quotes: [],
+            encryptedData: message.encryptedData,
+            isEncrypted: true,
+          });
+        }
+
+        return db.saveMessage(
+          { userId: ownerUserId },
+          {
+            ...publicMessageMetadata(message),
+            messageId: message.messageId,
+            conversationId,
+            text: '',
+            summary: '',
+            content: [],
+            quotes: [],
+            encryptedData: message.encryptedData,
+            isEncrypted: true,
+          },
+          { context: 'POST /api/e2ee/conversations/:conversationId/snapshot' },
+        );
+      }),
+    );
+    await db.saveConvo(
+      { userId: ownerUserId },
+      {
+        conversationId,
+        title: 'Encrypted conversation',
+        endpoint: optionalString(conversationData?.endpoint, 128),
+        endpointType: optionalString(conversationData?.endpointType, 128),
+        model: optionalString(conversationData?.model, 512),
+        agent_id: optionalString(conversationData?.agent_id, 512),
+        assistant_id: optionalString(conversationData?.assistant_id, 512),
+        chatProjectId: optionalString(conversationData?.chatProjectId, 128),
+        isTemporary: conversationData?.isTemporary === true,
+        isEncrypted: true,
+        encryptedKeyRef: invite ? undefined : wrappedKey,
+      },
+      { context: 'POST /api/e2ee/conversations/:conversationId/snapshot' },
+    );
+    await deleteConvoSharedLinksWithCleanup(ownerUserId, conversationId);
+
+    return res.status(204).end();
+  } catch (err) {
+    logger.error('[E2EE] Failed to save encrypted conversation snapshot:', err);
     return res.status(500).json({ message: 'Internal server error' });
   }
 });

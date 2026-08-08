@@ -30,6 +30,7 @@ const {
   getSharedLinkFile,
   backfillSharedLinkFiles,
   getRoleByName,
+  getConvo,
 } = require('~/models');
 const { getStrategyFunctions } = require('~/server/services/Files/strategies');
 const { cleanFileName, getContentDisposition } = require('~/server/utils/files');
@@ -397,6 +398,10 @@ router.post(
   async (req, res) => {
     try {
       const { targetMessageId } = req.body;
+      const conversation = await getConvo(req.user.id, req.params.conversationId);
+      if (conversation?.isEncrypted) {
+        return res.status(409).json({ message: 'Encrypted conversations cannot be shared' });
+      }
       const expiredAt = await resolveSharedLinkExpiration(req, req.params.conversationId);
       if (expiredAt != null && !isActiveExpirationDate(expiredAt)) {
         return res.status(404).end();
@@ -443,6 +448,10 @@ router.patch('/:shareId', requireJwtAuth, configMiddleware, async (req, res) => 
       'conversationId',
     ).lean();
     if (existing?.conversationId) {
+      const conversation = await getConvo(req.user.id, existing.conversationId);
+      if (conversation?.isEncrypted) {
+        return res.status(409).json({ message: 'Encrypted conversations cannot be shared' });
+      }
       expiredAt = await resolveSharedLinkExpiration(req, existing.conversationId);
     }
     if (expiredAt != null && !isActiveExpirationDate(expiredAt)) {

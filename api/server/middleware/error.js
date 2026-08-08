@@ -46,7 +46,7 @@ const sendError = async (req, res, options, callback) => {
     await callback();
   }
 
-  if (shouldSaveMessage) {
+  if (shouldSaveMessage && req?.body?.zeroKnowledgeStorage !== true) {
     await saveMessage(
       {
         userId: req?.user?.id,
