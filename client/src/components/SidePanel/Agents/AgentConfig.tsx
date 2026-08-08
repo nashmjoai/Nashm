@@ -29,6 +29,7 @@ import { SkillSelectDialog } from '~/components/Skills/dialogs';
 import AgentCategorySelector from './AgentCategorySelector';
 import Action from '~/components/SidePanel/Builder/Action';
 import { Panel, isEphemeralAgent } from '~/common';
+import Templates from './Templates';
 import { icons } from '~/hooks/Endpoint/Icons';
 import Instructions from './Instructions';
 import AgentAvatar from './AgentAvatar';
@@ -258,6 +259,7 @@ export default function AgentConfig() {
   return (
     <>
       <div className="h-auto pt-1">
+        {!agent_id && <Templates />}
         {/* Avatar & Name */}
         <div className="mb-4">
           <AgentAvatar avatar={agent?.['avatar'] ?? null} />
