@@ -34,6 +34,7 @@ const {
   TavilySearchResults,
   createGeminiImageTool,
   createOpenAIImageTools,
+  CalendarTool,
 } = require('../');
 const {
   createMCPTool,
@@ -178,6 +179,7 @@ const loadTools = async ({
   const toolConstructors = {
     flux: FluxAPI,
     calculator: Calculator,
+    calendar: CalendarTool,
     google: GoogleSearchAPI,
     open_weather: OpenWeather,
     wolfram: StructuredWolfram,

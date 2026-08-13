@@ -42,6 +42,7 @@ const rum = require('./rum');
 const artifacts = require('./artifacts');
 const plans = require('./plans');
 const e2ee = require('./e2ee');
+const calendar = require('./calendar');
 
 
 module.exports = {
@@ -89,4 +90,5 @@ module.exports = {
   familyPlan,
   plans,
   e2ee,
+  calendar,
 };

@@ -1,16 +1,17 @@
-import { memo, useCallback, lazy, Suspense } from 'react';
+import { memo, useCallback, lazy, Suspense, useEffect, useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRecoilValue } from 'recoil';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { SquarePen, LayoutDashboard } from 'lucide-react';
 import { QueryKeys } from 'nashm-data-provider';
-import { Skeleton, Sidebar, Button, TooltipAnchor } from '@nashm/client';
+import { Skeleton, Sidebar, Button, TooltipAnchor, useToastContext } from '@nashm/client';
 import type { NavLink } from '~/common';
 import { CLOSE_SIDEBAR_ID } from '~/components/Chat/Menus/OpenSidebar';
 import { useActivePanel, resolveActivePanel, DEFAULT_PANEL } from '~/Providers';
 import { useLocalize, useNewConvo, useAuthContext } from '~/hooks';
 import { clearMessagesCache, cn } from '~/utils';
 import store from '~/store';
+import { useCalendarEventsQuery } from '~/data-provider/Calendar';
 
 const AccountSettings = lazy(() => import('~/components/Nav/AccountSettings'));
 
@@ -56,6 +57,45 @@ const NewChatButton = memo(function NewChatButton({
         </a>
       }
     />
+  );
+});
+
+const CalendarBadge = memo(function CalendarBadge() {
+  const { data } = useCalendarEventsQuery();
+  const events = data?.events || [];
+  const { showToast } = useToastContext();
+  
+  const nearEvents = useMemo(() => {
+    return events.filter(e => {
+      if (e.status === 'completed') return false;
+      const now = new Date();
+      const d = new Date(e.startDate);
+      const diff = d.getTime() - now.getTime();
+      // Check if event is within the next 24 hours (or past 24 hours if missed)
+      return diff >= -86400000 && diff <= 86400000;
+    });
+  }, [events]);
+
+  useEffect(() => {
+    if (nearEvents.length > 0 && !sessionStorage.getItem('calendar_toast_shown')) {
+      sessionStorage.setItem('calendar_toast_shown', 'true');
+      const titles = nearEvents.map(e => e.title).join(', ');
+      showToast({
+        message: `🔔 Upcoming: ${titles}`,
+        severity: 'info',
+        showIcon: true,
+        duration: 10000,
+      });
+    }
+  }, [nearEvents, showToast]);
+  
+  if (nearEvents.length === 0) return null;
+  
+  return (
+    <span className="absolute right-1 top-1 flex h-2.5 w-2.5">
+      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+      <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-red-500"></span>
+    </span>
   );
 });
 
@@ -107,12 +147,13 @@ const NavIconButton = memo(function NavIconButton({
           aria-label={localize(link.title)}
           aria-pressed={isActive}
           className={cn(
-            'h-9 w-9 rounded-lg',
+            'relative h-9 w-9 rounded-lg',
             isActive ? 'bg-surface-active-alt text-text-primary' : 'text-text-secondary',
           )}
           onClick={handleClick}
         >
           <link.icon className="h-5 w-5" aria-hidden="true" />
+          {link.id === 'calendar' && <CalendarBadge />}
         </Button>
       }
     />

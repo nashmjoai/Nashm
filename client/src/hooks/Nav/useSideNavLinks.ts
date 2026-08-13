@@ -8,6 +8,7 @@ import {
   ScrollText,
   ArrowRightToLine,
   SlidersHorizontal,
+  CalendarDays,
 } from 'lucide-react';
 import {
   Permissions,
@@ -27,6 +28,7 @@ import {
 } from '~/hooks';
 import MCPBuilderPanel from '~/components/SidePanel/MCPBuilder/MCPBuilderPanel';
 import AgentPanelSwitch from '~/components/SidePanel/Agents/AgentPanelSwitch';
+import CalendarPanel from '~/components/SidePanel/Calendar/CalendarPanel';
 import BookmarkPanel from '~/components/SidePanel/Bookmarks/BookmarkPanel';
 import PanelSwitch from '~/components/SidePanel/Builder/PanelSwitch';
 import Parameters from '~/components/SidePanel/Parameters/Panel';
@@ -108,6 +110,14 @@ export default function useSideNavLinks({
         icon: Bot,
         id: EModelEndpoint.agents,
         Component: AgentPanelSwitch,
+      });
+
+      links.push({
+        title: 'com_sidepanel_calendar',
+        label: '',
+        icon: CalendarDays,
+        id: 'calendar',
+        Component: CalendarPanel,
       });
     }
 

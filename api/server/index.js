@@ -350,6 +350,7 @@ const startServer = async () => {
   app.use('/api/mcp', routes.mcp);
   app.use('/api/rum', routes.rum);
   app.use('/api/e2ee', routes.e2ee);
+  app.use('/api/calendar', routes.calendar);
 
   app.use('/metrics', metricsRouter);
 
@@ -396,6 +397,10 @@ const startServer = async () => {
         await initializeOAuthReconnectManager();
       });
       await checkMigrations();
+
+      // Start the calendar background scheduler
+      const { startCalendarScheduler } = require('./services/calendarScheduler');
+      startCalendarScheduler();
 
       const inspectFlags = process.execArgv.some((arg) => arg.startsWith('--inspect'));
       if (inspectFlags || isEnabled(process.env.MEM_DIAG)) {

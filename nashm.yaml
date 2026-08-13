@@ -36,6 +36,7 @@ modelSpecs:
         model: "kimi-k2.5"
         tools:
           - "open_weather"
+          - "calendar"
         promptPrefix: >-
           When a provided tool can answer a request using current or external data,
           call that tool through native tool calling. Never invent tool names or

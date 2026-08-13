@@ -91,6 +91,13 @@
     "authConfig": []
   },
   {
+    "name": "Calendar",
+    "pluginKey": "calendar",
+    "description": "Access and manage user's calendar events and actions.",
+    "icon": "assets/calendar.svg",
+    "authConfig": []
+  },
+  {
     "name": "Stable Diffusion",
     "pluginKey": "stable-diffusion",
     "description": "Generate photo-realistic images given any text input.",

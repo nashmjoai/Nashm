@@ -42,6 +42,7 @@ import { createFileModel } from './file';
 import { createKeyModel } from './key';
 import { createExportJobModel } from './exportJob';
 import { createEncryptedConversationInviteModel } from './encryptedInvite';
+import { createCalendarEventModel } from './calendarEvent';
 
 /**
  * Creates all database models for all collections
@@ -91,6 +92,7 @@ export function createModels(mongoose: typeof import('mongoose')): {
   SystemErrorLog: ReturnType<typeof createSystemErrorLogModel>;
   ExportJob: ReturnType<typeof createExportJobModel>;
   EncryptedConversationInvite: ReturnType<typeof createEncryptedConversationInviteModel>;
+  CalendarEvent: ReturnType<typeof createCalendarEventModel>;
 } {
   return {
     User: createUserModel(mongoose),
@@ -137,5 +139,6 @@ export function createModels(mongoose: typeof import('mongoose')): {
     SystemErrorLog: createSystemErrorLogModel(mongoose),
     ExportJob: createExportJobModel(mongoose),
     EncryptedConversationInvite: createEncryptedConversationInviteModel(mongoose),
+    CalendarEvent: createCalendarEventModel(mongoose),
   };
 }
