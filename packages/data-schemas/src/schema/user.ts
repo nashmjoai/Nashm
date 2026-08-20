@@ -95,6 +95,10 @@ const userSchema: Schema<IUser> = new Schema<IUser>(
     plugins: {
       type: Array,
     },
+    disabledMCPServers: {
+      type: [String],
+      default: [],
+    },
     twoFactorEnabled: {
       type: Boolean,
       default: false,

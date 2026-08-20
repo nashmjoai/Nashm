@@ -29,6 +29,7 @@ export interface IUser extends Document {
   discordId?: string;
   appleId?: string;
   plugins?: string[];
+  disabledMCPServers?: string[];
   openidIssuer?: string;
   twoFactorEnabled?: boolean;
   totpSecret?: string;

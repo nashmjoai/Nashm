@@ -5,13 +5,20 @@ import { Button, Spinner, FilterInput, OGDialogTrigger, TooltipAnchor } from '@n
 import { useLocalize, useMCPServerManager, useHasAccess } from '~/hooks';
 import MCPConfigDialog from '~/components/MCP/MCPConfigDialog';
 import MCPAdminSettings from './MCPAdminSettings';
+import IntegrationCatalog from './IntegrationCatalog';
 import MCPServerDialog from './MCPServerDialog';
 import MCPServerList from './MCPServerList';
 
 export default function MCPBuilderPanel() {
   const localize = useLocalize();
-  const { availableMCPServers, isLoading, getServerStatusIconProps, getConfigDialogProps } =
-    useMCPServerManager();
+  const {
+    availableMCPServers,
+    isLoading,
+    connectionStatus,
+    getServerStatusIconProps,
+    getConfigDialogProps,
+    initializeServer,
+  } = useMCPServerManager();
 
   const hasCreateAccess = useHasAccess({
     permissionType: PermissionTypes.MCP_SERVERS,
@@ -74,6 +81,17 @@ export default function MCPBuilderPanel() {
             </MCPServerDialog>
           )}
         </div>
+
+        {/* Quick Connect — Popular Integrations */}
+        {hasCreateAccess && !searchQuery.trim() && !isLoading && (
+          <IntegrationCatalog
+            connectedServers={availableMCPServers}
+            connectionStatus={connectionStatus}
+            onInitializeServer={(serverName, oauthWindow) =>
+              initializeServer(serverName, true, oauthWindow)
+            }
+          />
+        )}
 
         {/* Server Cards List */}
         {isLoading ? (

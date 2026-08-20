@@ -300,6 +300,8 @@ export const mcp = {
 };
 
 export const mcpServer = (serverName: string) => `${BASE_URL}/api/mcp/servers/${serverName}`;
+export const mcpServerConnection = (serverName: string) =>
+  `${BASE_URL}/api/mcp/${encodeURIComponent(serverName)}/connection`;
 
 export const revertAgentVersion = (agent_id: string) => `${agents({ path: `${agent_id}/revert` })}`;
 

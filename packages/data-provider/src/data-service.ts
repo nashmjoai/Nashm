@@ -684,6 +684,10 @@ export const deleteMCPServer = async (serverName: string): Promise<{ success: bo
   return request.delete(endpoints.mcpServer(serverName));
 };
 
+export const removeMCPConnection = async (serverName: string): Promise<{ success: boolean }> => {
+  return request.delete(endpoints.mcpServerConnection(serverName));
+};
+
 /**
  * Imports a conversations file.
  *

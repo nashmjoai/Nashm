@@ -142,3 +142,26 @@ export const useDeleteMCPServerMutation = (options?: {
     },
   });
 };
+
+export const useRemoveMCPConnectionMutation = (): UseMutationResult<
+  { success: boolean },
+  Error,
+  string
+> => {
+  const queryClient = useQueryClient();
+
+  return useMutation((serverName: string) => dataService.removeMCPConnection(serverName), {
+    onSuccess: (_data, serverName) => {
+      const listRes = queryClient.getQueryData<t.MCPServersListResponse>([QueryKeys.mcpServers]);
+      if (listRes) {
+        const { [serverName]: _removed, ...remaining } = listRes;
+        queryClient.setQueryData<t.MCPServersListResponse>([QueryKeys.mcpServers], remaining);
+      }
+
+      queryClient.invalidateQueries([QueryKeys.mcpServers]);
+      queryClient.invalidateQueries([QueryKeys.mcpTools]);
+      queryClient.invalidateQueries([QueryKeys.mcpAuthValues]);
+      queryClient.invalidateQueries([QueryKeys.mcpConnectionStatus]);
+    },
+  });
+};

@@ -14,6 +14,7 @@ const {
   buildMCPAuthStepId,
   buildMCPAuthToolCall,
   processMCPEnv,
+  filterDisabledMCPServers,
   buildMCPAuthRunStepEvent,
   buildMCPAuthRunStepDeltaEvent,
   buildMCPAuthRunStepEndDeltaEvent,
@@ -163,10 +164,16 @@ async function resolveAllMcpConfigs(userId, user) {
     );
   }
   if (user?.role) {
-    return await registry.getAllServerConfigs(userId, configServers, user.role);
+    return filterDisabledMCPServers(
+      await registry.getAllServerConfigs(userId, configServers, user.role),
+      user?.disabledMCPServers,
+    );
   }
 
-  return await registry.getAllServerConfigs(userId, configServers);
+  return filterDisabledMCPServers(
+    await registry.getAllServerConfigs(userId, configServers),
+    user?.disabledMCPServers,
+  );
 }
 
 function getServerCustomUserVars(userMCPAuthMap, serverName) {

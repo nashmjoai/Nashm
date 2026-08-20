@@ -232,6 +232,7 @@ export type TUser = {
   provider: string;
   tenantId?: string;
   plugins?: string[];
+  disabledMCPServers?: string[];
   twoFactorEnabled?: boolean;
   backupCodes?: TBackupCode[];
   personalization?: {

@@ -1,11 +1,12 @@
 import { useState, useRef } from 'react';
-import { MCPIcon } from '@nashm/client';
+import { MCPIcon, useToastContext } from '@nashm/client';
 import { PermissionBits, hasPermissions } from 'nashm-data-provider';
 import type { MCPServerStatusIconProps } from '~/components/MCP/MCPServerStatusIcon';
 import type { MCPServerDefinition } from '~/hooks';
 import MCPServerDialog from './MCPServerDialog';
 import { getStatusDotColor } from './MCPStatusBadge';
 import MCPCardActions from './MCPCardActions';
+import { useDeleteMCPServerMutation, useRemoveMCPConnectionMutation } from '~/data-provider/MCP';
 import { useMCPServerManager, useLocalize } from '~/hooks';
 import { cn } from '~/utils';
 
@@ -29,8 +30,11 @@ export default function MCPServerCard({
   canCreateEditMCPs,
 }: MCPServerCardProps) {
   const localize = useLocalize();
+  const { showToast } = useToastContext();
   const triggerRef = useRef<HTMLDivElement>(null);
-  const { initializeServer, revokeOAuthForServer } = useMCPServerManager();
+  const { initializeServer } = useMCPServerManager();
+  const deleteMutation = useDeleteMCPServerMutation();
+  const removeConnectionMutation = useRemoveMCPConnectionMutation();
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const statusIconProps = getServerStatusIconProps(server.serverName);
@@ -48,6 +52,10 @@ export default function MCPServerCard({
   const description = server.config?.description;
   const statusDotColor = getStatusDotColor(serverStatus, isInitializing);
   const canEdit = canCreateEditMCPs && canEditThisServer;
+  const canDelete =
+    canCreateEditMCPs &&
+    server.dbId != null &&
+    hasPermissions(server.effectivePermissions, PermissionBits.DELETE);
 
   const handleInitialize = () => {
     /** If server has custom user vars and is not already connected, show config dialog first
@@ -61,7 +69,25 @@ export default function MCPServerCard({
   };
 
   const handleRevoke = () => {
-    revokeOAuthForServer(server.serverName);
+    removeConnectionMutation.mutate(server.serverName, {
+      onSuccess: () => {
+        showToast({ message: localize('com_ui_mcp_server_deleted'), status: 'success' });
+      },
+      onError: () => {
+        showToast({ message: localize('com_ui_error'), status: 'error' });
+      },
+    });
+  };
+
+  const handleDelete = () => {
+    deleteMutation.mutate(server.serverName, {
+      onSuccess: () => {
+        showToast({ message: localize('com_ui_mcp_server_deleted'), status: 'success' });
+      },
+      onError: () => {
+        showToast({ message: localize('com_ui_error'), status: 'error' });
+      },
+    });
   };
 
   const handleEditClick = (e: React.MouseEvent) => {
@@ -141,7 +167,8 @@ export default function MCPServerCard({
             onConfigClick={onConfigClick}
             onInitialize={handleInitialize}
             onCancel={onCancel}
-            onRevoke={handleRevoke}
+            onDelete={canDelete ? handleDelete : undefined}
+            onRevoke={canDelete ? undefined : handleRevoke}
           />
         </div>
       </div>

@@ -32,6 +32,12 @@ jest.mock('@nashm/api', () => ({
   GenerationJobManager: jest.fn(),
   resolveJsonSchemaRefs: jest.fn((schema) => schema),
   buildOAuthToolCallName: jest.fn((name) => name),
+  filterDisabledMCPServers: (servers, disabledServerNames) => {
+    const disabled = new Set(disabledServerNames ?? []);
+    return Object.fromEntries(
+      Object.entries(servers).filter(([serverName]) => !disabled.has(serverName)),
+    );
+  },
 }));
 
 jest.mock('~/cache', () => ({ getLogStores: jest.fn() }));
@@ -152,6 +158,22 @@ describe('resolveAllMcpConfigs', () => {
       },
       'user',
     );
+  });
+
+  it('excludes MCP servers removed by the current user', async () => {
+    getAppConfig.mockResolvedValue({ mcpConfig: {} });
+    mockRegistry.ensureConfigServers.mockResolvedValue({});
+    mockRegistry.getAllServerConfigs.mockResolvedValue({
+      google_drive: { name: 'google_drive' },
+      github: { name: 'github' },
+    });
+
+    const result = await resolveAllMcpConfigs('u1', {
+      id: 'u1',
+      disabledMCPServers: ['google_drive'],
+    });
+
+    expect(result).toEqual({ github: { name: 'github' } });
   });
 
   it('continues with empty configServers when ensureConfigServers fails', async () => {

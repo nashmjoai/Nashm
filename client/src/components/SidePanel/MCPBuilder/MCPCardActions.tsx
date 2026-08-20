@@ -17,6 +17,7 @@ interface MCPCardActionsProps {
   onConfigClick: (e: React.MouseEvent) => void;
   onInitialize: () => void;
   onCancel: (e: React.MouseEvent) => void;
+  onDelete?: () => void;
   onRevoke?: () => void;
 }
 
@@ -27,7 +28,7 @@ interface MCPCardActionsProps {
  * - Pencil: Edit server definition (Settings panel only)
  * - PlugZap: Connect/Authenticate (for disconnected/error servers)
  * - SlidersHorizontal: Configure custom variables (for connected servers with vars)
- * - Trash2: Revoke OAuth access (for connected OAuth servers)
+ * - Trash2: Delete a user-managed MCP, or remove a system-managed connection for the current user
  * - RefreshCw: Reconnect/Refresh (for connected servers)
  * - Spinner: Loading state (with X on hover for cancel)
  */
@@ -43,6 +44,7 @@ export default function MCPCardActions({
   onConfigClick,
   onInitialize,
   onCancel,
+  onDelete,
   onRevoke,
 }: MCPCardActionsProps) {
   const localize = useLocalize();
@@ -166,15 +168,15 @@ export default function MCPCardActions({
         </TooltipAnchor>
       )}
 
-      {/* Revoke button - for OAuth servers (available regardless of connection state) */}
-      {serverStatus?.requiresOAuth && onRevoke && (
+      {/* Delete user-managed servers; system-managed connections are removed only for this user. */}
+      {(onDelete || (serverStatus?.requiresOAuth && onRevoke)) && (
         <TooltipAnchor
-          description={localize('com_ui_revoke')}
+          description={localize('com_ui_delete')}
           side="top"
           className={cn(buttonBaseClass, 'text-red-500 hover:text-red-600')}
-          aria-label={localize('com_ui_revoke')}
+          aria-label={localize('com_ui_delete')}
           role="button"
-          onClick={onRevoke}
+          onClick={onDelete ?? onRevoke}
         >
           <Trash2 className="size-3.5" aria-hidden="true" />
         </TooltipAnchor>

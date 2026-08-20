@@ -117,6 +117,7 @@ jest.mock('~/models', () => ({
   deleteTokens: jest.fn(),
   findPluginAuthsByKeys: jest.fn(),
   getRoleByName: jest.fn(),
+  updateUser: jest.fn(),
 }));
 
 jest.mock('~/server/services/Config', () => ({
@@ -143,6 +144,11 @@ jest.mock('~/server/services/MCP', () => ({
 
 jest.mock('~/server/services/PluginService', () => ({
   getUserPluginAuthValue: jest.fn(),
+  deleteUserPluginAuth: jest.fn().mockResolvedValue(undefined),
+}));
+
+jest.mock('~/server/services/Config/getCachedTools', () => ({
+  invalidateCachedTools: jest.fn().mockResolvedValue(undefined),
 }));
 
 jest.mock('~/config', () => ({
@@ -254,6 +260,7 @@ describe('MCP Routes', () => {
      * `getServerConfig` lookup in updateMCPServerController.
      */
     mockRegistryInstance.getServerConfig.mockReset().mockResolvedValue(undefined);
+    mockRegistryInstance.getOAuthServers.mockReset().mockResolvedValue(new Set());
     mockRegistryInstance.addServer.mockReset();
     mockRegistryInstance.updateServer.mockReset();
     mockRegistryInstance.removeServer.mockReset();
@@ -3302,13 +3309,28 @@ describe('MCP Routes', () => {
   });
 
   describe('DELETE /servers/:serverName', () => {
-    it('should delete server successfully', async () => {
+    it('should disconnect and delete all user connection data before deleting the server', async () => {
       mockRegistryInstance.removeServer.mockResolvedValue(undefined);
+      const disconnectUserConnection = jest.fn().mockResolvedValue(undefined);
+      require('~/config').getMCPManager.mockReturnValue({ disconnectUserConnection });
 
       const response = await request(app).delete('/api/mcp/servers/test-server');
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual({ message: 'MCP server deleted successfully' });
+      expect(disconnectUserConnection).toHaveBeenCalledWith('test-user-id', 'test-server');
+      expect(require('@nashm/api').MCPTokenStorage.deleteUserTokens).toHaveBeenCalledWith(
+        expect.objectContaining({ userId: 'test-user-id', serverName: 'test-server' }),
+      );
+      expect(require('~/server/services/PluginService').deleteUserPluginAuth).toHaveBeenCalledWith(
+        'test-user-id',
+        null,
+        true,
+        'mcp_test-server',
+      );
+      expect(
+        require('~/server/services/Config/getCachedTools').invalidateCachedTools,
+      ).toHaveBeenCalledWith({ userId: 'test-user-id', serverName: 'test-server' });
       expect(mockRegistryInstance.removeServer).toHaveBeenCalledWith(
         'test-server',
         'DB',
@@ -3323,6 +3345,29 @@ describe('MCP Routes', () => {
 
       expect(response.status).toBe(500);
       expect(response.body).toEqual({ message: 'Deletion failed' });
+    });
+  });
+
+  describe('DELETE /:serverName/connection', () => {
+    it('removes a system MCP connection only for the current user', async () => {
+      mockRegistryInstance.getServerConfig.mockResolvedValue({ source: 'yaml' });
+      require('~/models').updateUser.mockResolvedValue({ id: 'test-user-id' });
+
+      const response = await request(app).delete('/api/mcp/google_drive/connection');
+
+      expect(response.status).toBe(200);
+      expect(require('~/models').updateUser).toHaveBeenCalledWith('test-user-id', {
+        disabledMCPServers: ['google_drive'],
+      });
+      expect(require('@nashm/api').MCPTokenStorage.deleteUserTokens).toHaveBeenCalledWith(
+        expect.objectContaining({ userId: 'test-user-id', serverName: 'google_drive' }),
+      );
+      expect(require('~/server/services/PluginService').deleteUserPluginAuth).toHaveBeenCalledWith(
+        'test-user-id',
+        null,
+        true,
+        'mcp_google_drive',
+      );
     });
   });
 });

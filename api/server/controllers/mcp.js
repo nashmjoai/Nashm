@@ -33,6 +33,9 @@ const { cacheMCPServerTools, getMCPServerTools } = require('~/server/services/Co
 const { getResourcePermissionsMap } = require('~/server/services/PermissionService');
 const { hasCapability } = require('~/server/middleware/roles/capabilities');
 const { getMCPManager, getMCPServersRegistry } = require('~/config');
+const { maybeUninstallOAuthMCP } = require('~/server/controllers/UserController');
+const { invalidateCachedTools } = require('~/server/services/Config/getCachedTools');
+const { deleteUserPluginAuth } = require('~/server/services/PluginService');
 const db = require('~/models');
 
 /**
@@ -476,11 +479,71 @@ const deleteMCPServerController = async (req, res) => {
   try {
     const userId = req.user?.id;
     const { serverName } = req.params;
+    if (!userId) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const pluginKey = `${Constants.mcp_prefix}${serverName}`;
+    const mcpManager = getMCPManager();
+
+    await mcpManager?.disconnectUserConnection?.(userId, serverName);
+    await maybeUninstallOAuthMCP(userId, pluginKey, req.config);
+
+    const deleteAuthResult = await deleteUserPluginAuth(userId, null, true, pluginKey);
+    if (deleteAuthResult instanceof Error) {
+      throw deleteAuthResult;
+    }
+
+    await invalidateCachedTools({ userId, serverName });
     await getMCPServersRegistry().removeServer(serverName, 'DB', userId);
     res.status(200).json({ message: 'MCP server deleted successfully' });
   } catch (error) {
     logger.error('[deleteMCPServer]', error);
     res.status(500).json({ message: error.message });
+  }
+};
+
+/** Removes a system-managed MCP connection for only the current user. */
+const removeMCPConnectionController = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    const { serverName } = req.params;
+    if (!userId) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const configServers = await resolveConfigServers(req);
+    const serverConfig = await getMCPServersRegistry().getServerConfig(
+      serverName,
+      userId,
+      configServers,
+    );
+    if (!serverConfig) {
+      return res.status(404).json({ message: 'MCP server not found' });
+    }
+    if (isUserSourced(serverConfig)) {
+      return res.status(400).json({ message: 'Use the MCP server delete endpoint' });
+    }
+
+    const pluginKey = `${Constants.mcp_prefix}${serverName}`;
+    await getMCPManager()?.disconnectUserConnection?.(userId, serverName);
+    await maybeUninstallOAuthMCP(userId, pluginKey, req.config);
+
+    const deleteAuthResult = await deleteUserPluginAuth(userId, null, true, pluginKey);
+    if (deleteAuthResult instanceof Error) {
+      throw deleteAuthResult;
+    }
+
+    const disabledMCPServers = new Set(req.user?.disabledMCPServers ?? []);
+    disabledMCPServers.add(serverName);
+    await db.updateUser(userId, { disabledMCPServers: [...disabledMCPServers] });
+    await invalidateCachedTools({ userId, serverName });
+    await getMCPServersRegistry().removeServer(serverName, 'DB', userId);
+
+    return res.status(200).json({ message: 'MCP connection removed successfully' });
+  } catch (error) {
+    logger.error('[removeMCPConnection]', error);
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -491,4 +554,5 @@ module.exports = {
   getMCPServerById,
   updateMCPServerController,
   deleteMCPServerController,
+  removeMCPConnectionController,
 };

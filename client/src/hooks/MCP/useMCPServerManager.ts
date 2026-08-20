@@ -344,7 +344,11 @@ export function useMCPServerManager({
   );
 
   const initializeServer = useCallback(
-    async (serverName: string, autoOpenOAuth: boolean = true) => {
+    async (
+      serverName: string,
+      autoOpenOAuth: boolean = true,
+      oauthWindow: Window | null = null,
+    ) => {
       updateServerInitState(serverName, { isInitializing: true });
       try {
         const response = await reinitializeMutation.mutateAsync(serverName);
@@ -366,7 +370,11 @@ export function useMCPServerManager({
           });
 
           if (autoOpenOAuth) {
-            window.open(response.oauthUrl, '_blank', 'noopener,noreferrer');
+            if (oauthWindow && !oauthWindow.closed) {
+              oauthWindow.location.assign(response.oauthUrl);
+            } else {
+              window.open(response.oauthUrl, '_blank', 'noopener,noreferrer');
+            }
           }
 
           startServerPolling(serverName);
@@ -389,6 +397,7 @@ export function useMCPServerManager({
           }
 
           cleanupServerState(serverName);
+          oauthWindow?.close();
         }
         return response;
       } catch (error) {
@@ -398,6 +407,7 @@ export function useMCPServerManager({
           status: 'error',
         });
         cleanupServerState(serverName);
+        oauthWindow?.close();
       }
     },
     [

@@ -5,3 +5,5 @@ export { default as MCPServerDialog } from './MCPServerDialog';
 export { default as MCPServerCard } from './MCPServerCard';
 export { default as MCPStatusBadge, getStatusDotColor } from './MCPStatusBadge';
 export { default as MCPCardActions } from './MCPCardActions';
+export { default as IntegrationCatalog } from './IntegrationCatalog';
+export { default as IntegrationCard } from './IntegrationCard';
