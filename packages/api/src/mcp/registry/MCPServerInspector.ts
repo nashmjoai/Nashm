@@ -120,6 +120,10 @@ export class MCPServerInspector {
 
   private async detectOAuth(): Promise<void> {
     if (this.config.requiresOAuth != null) return;
+    if (this.config.oauth != null) {
+      this.config.requiresOAuth = true;
+      return;
+    }
     if (hasRuntimeUrlPlaceholders(this.config)) return;
     if (this.config.url == null || this.config.startup === false) {
       this.config.requiresOAuth = false;
