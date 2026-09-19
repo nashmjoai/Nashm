@@ -23,6 +23,9 @@ import {
   decryptConversationKeyFromInvite,
   decryptMessageRecord,
   decryptFileMetadata,
+  FileContext,
+  FileSources,
+  dataService,
   deriveLockKey,
   encryptMessageRecord,
   getConversationKey,
@@ -45,7 +48,172 @@ import {
   storeConversationKey,
 } from 'nashm-data-provider';
 import type { ReactNode } from 'react';
-import type { TConversation, TMessage } from 'nashm-data-provider';
+import type { TAttachment, TConversation, TFile, TFileUpload, TMessage } from 'nashm-data-provider';
+import { cacheFileBlob } from '~/utils/fileDB';
+
+type ProtectedGeneratedImage = {
+  original: TFile;
+  encrypted: TFileUpload;
+  attachment: TAttachment;
+};
+
+type GeneratedImageCandidate = {
+  attachment: TAttachment;
+  endpoint?: string;
+};
+
+const isEncryptedFileReference = (file: Partial<TFile>): boolean =>
+  file.filename?.endsWith('.enc') === true || file.filepath?.includes('.enc') === true;
+
+const isGeneratedImage = (attachment: TAttachment): boolean => {
+  const file = attachment as TFile;
+  return (
+    file.context === FileContext.image_generation &&
+    file.type?.startsWith('image/') === true &&
+    !!file.file_id &&
+    !!file.filepath &&
+    !!file.user &&
+    !isEncryptedFileReference(file)
+  );
+};
+
+const toDeletePayload = (file: TFile | TFileUpload) => ({
+  file_id: file.file_id,
+  filepath: file.filepath,
+  source: file.source ?? FileSources.local,
+  embedded: file.embedded ?? false,
+  storageKey: file.storageKey,
+  storageRegion: file.storageRegion,
+});
+
+async function deleteStoredFiles(files: Array<TFile | TFileUpload>): Promise<void> {
+  if (files.length === 0) {
+    return;
+  }
+  await dataService.deleteFiles({ files: files.map(toDeletePayload) });
+}
+
+async function readDownloadedFile(file: TFile): Promise<{ data: ArrayBuffer; blob: Blob }> {
+  const response = await dataService.getFileDownload(file.user, file.file_id);
+  const downloaded = response.data as Blob | ArrayBuffer;
+  if (downloaded instanceof Blob) {
+    return { data: await downloaded.arrayBuffer(), blob: downloaded };
+  }
+  if (downloaded instanceof ArrayBuffer) {
+    return { data: downloaded, blob: new Blob([downloaded], { type: file.type }) };
+  }
+  throw new Error('Generated image download returned an unsupported payload');
+}
+
+async function encryptGeneratedImage({
+  candidate,
+  conversation,
+  key,
+}: {
+  candidate: GeneratedImageCandidate;
+  conversation: Partial<TConversation> & Pick<TConversation, 'conversationId'>;
+  key: CryptoKey;
+}): Promise<ProtectedGeneratedImage> {
+  const original = candidate.attachment as TFile;
+  const { data, blob } = await readDownloadedFile(original);
+  const encryptedFileId = crypto.randomUUID();
+  const chunks = await encryptFileChunked(data, encryptedFileId, key, undefined, {
+    filename: original.filename,
+    mimeType: original.type,
+  });
+  const encryptedFilename = `${encryptedFileId}.enc`;
+  const body = new FormData();
+  body.append('endpoint', candidate.endpoint ?? conversation.endpoint ?? 'default');
+  body.append('endpointType', conversation.endpointType ?? '');
+  body.append(
+    'file',
+    new Blob([JSON.stringify(chunks)], { type: 'application/octet-stream' }),
+    encodeURIComponent(encryptedFilename),
+  );
+  body.append('file_id', encryptedFileId);
+  body.append('conversationId', conversation.conversationId ?? '');
+  body.append('message_file', 'true');
+  body.append('is_encrypted', 'true');
+  if (conversation.agent_id) {
+    body.append('agent_id', conversation.agent_id);
+  }
+
+  const encrypted = await dataService.uploadFile(body);
+  await cacheFileBlob(encrypted.file_id, blob, {
+    filename: original.filename,
+    mimeType: original.type,
+  });
+
+  return {
+    original,
+    encrypted,
+    attachment: {
+      ...candidate.attachment,
+      ...encrypted,
+      filename: original.filename,
+      type: original.type,
+      context: FileContext.image_generation,
+      width: original.width,
+      height: original.height,
+    } as TAttachment,
+  };
+}
+
+async function protectGeneratedImages({
+  conversation,
+  messages,
+  key,
+}: {
+  conversation: Partial<TConversation> & Pick<TConversation, 'conversationId'>;
+  messages: TMessage[];
+  key: CryptoKey;
+}): Promise<{ messages: TMessage[]; files: ProtectedGeneratedImage[] }> {
+  const candidates = new Map<string, GeneratedImageCandidate>();
+  for (const message of messages) {
+    for (const attachment of message.attachments ?? []) {
+      const file = attachment as TFile;
+      if (isGeneratedImage(attachment) && !candidates.has(file.file_id)) {
+        candidates.set(file.file_id, { attachment, endpoint: message.endpoint });
+      }
+    }
+  }
+  if (candidates.size === 0) {
+    return { messages, files: [] };
+  }
+
+  const results = await Promise.allSettled(
+    [...candidates.values()].map((candidate) =>
+      encryptGeneratedImage({ candidate, conversation, key }),
+    ),
+  );
+  const protectedFiles: ProtectedGeneratedImage[] = [];
+  let failure: PromiseRejectedResult | undefined;
+  for (const result of results) {
+    if (result.status === 'fulfilled') {
+      protectedFiles.push(result.value);
+    } else if (!failure) {
+      failure = result;
+    }
+  }
+  if (failure) {
+    await deleteStoredFiles(protectedFiles.map((file) => file.encrypted)).catch((error) => {
+      console.error('[E2EE] Failed to clean up an incomplete encrypted image upload:', error);
+    });
+    throw failure.reason;
+  }
+
+  const replacements = new Map(
+    protectedFiles.map((file) => [file.original.file_id, file.attachment]),
+  );
+  const protectedMessages = messages.map((message) => ({
+    ...message,
+    attachments: message.attachments?.map((attachment) => {
+      const fileId = (attachment as Partial<TFile>).file_id;
+      return (fileId && replacements.get(fileId)) || attachment;
+    }),
+  }));
+  return { messages: protectedMessages, files: protectedFiles };
+}
 
 export interface E2EEStatus {
   enabled: boolean;
@@ -72,7 +240,10 @@ export interface UseE2EEReturn {
   recoverWith12Words: (recoveryWords: string[]) => Promise<boolean>;
   lockE2EE: () => void;
 
-  encryptMsg: (conversationId: string, fields: { text?: string; summary?: string }) => Promise<{
+  encryptMsg: (
+    conversationId: string,
+    fields: { text?: string; summary?: string },
+  ) => Promise<{
     text?: EncryptedPayload;
     summary?: EncryptedPayload;
     isEncrypted: boolean;
@@ -109,7 +280,7 @@ export interface UseE2EEReturn {
   protectStoredConversation: (
     conversation: Partial<TConversation> & Pick<TConversation, 'conversationId'>,
     messages: TMessage[],
-  ) => Promise<void>;
+  ) => Promise<TMessage[]>;
   decryptStoredMessages: (messages: TMessage[]) => Promise<TMessage[]>;
   createEncryptedInvite: (
     conversationId: string,
@@ -265,12 +436,15 @@ function useE2EEState(): UseE2EEReturn {
       if (!wrappedKey) {
         throw new Error('Conversation key was not created');
       }
-      const response = await fetch(`/api/e2ee/conversations/${encodeURIComponent(conversationId)}/key`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ wrappedKey }),
-      });
+      const response = await fetch(
+        `/api/e2ee/conversations/${encodeURIComponent(conversationId)}/key`,
+        {
+          method: 'PUT',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ wrappedKey }),
+        },
+      );
       if (!response.ok) {
         throw new Error('Failed to back up the encrypted conversation key');
       }
@@ -282,15 +456,22 @@ function useE2EEState(): UseE2EEReturn {
   const decryptMsg = useCallback(
     async (
       conversationId: string,
-      fields: { text?: EncryptedPayload | string; summary?: EncryptedPayload | string; isEncrypted?: boolean },
+      fields: {
+        text?: EncryptedPayload | string;
+        summary?: EncryptedPayload | string;
+        isEncrypted?: boolean;
+      },
     ) => {
       const key = masterKeyRef.current;
       if (!key) return null;
       const localKey = await getConversationKey(conversationId, key);
       if (!localKey) {
-        const response = await fetch(`/api/e2ee/conversations/${encodeURIComponent(conversationId)}/key`, {
-          credentials: 'include',
-        });
+        const response = await fetch(
+          `/api/e2ee/conversations/${encodeURIComponent(conversationId)}/key`,
+          {
+            credentials: 'include',
+          },
+        );
         if (!response.ok) return null;
         const { wrappedKey } = (await response.json()) as { wrappedKey?: string };
         if (!wrappedKey || !(await restoreConversationKey(conversationId, wrappedKey, key))) {
@@ -311,12 +492,15 @@ function useE2EEState(): UseE2EEReturn {
       if (!wrappedKey) {
         throw new Error('Conversation key was not created');
       }
-      const response = await fetch(`/api/e2ee/conversations/${encodeURIComponent(conversationId)}/key`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ wrappedKey }),
-      });
+      const response = await fetch(
+        `/api/e2ee/conversations/${encodeURIComponent(conversationId)}/key`,
+        {
+          method: 'PUT',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ wrappedKey }),
+        },
+      );
       if (!response.ok) {
         throw new Error('Failed to back up the encrypted conversation key');
       }
@@ -334,9 +518,12 @@ function useE2EEState(): UseE2EEReturn {
       if (!key) return null;
       const localKey = await getConversationKey(conversationId, key);
       if (!localKey) {
-        const response = await fetch(`/api/e2ee/conversations/${encodeURIComponent(conversationId)}/key`, {
-          credentials: 'include',
-        });
+        const response = await fetch(
+          `/api/e2ee/conversations/${encodeURIComponent(conversationId)}/key`,
+          {
+            credentials: 'include',
+          },
+        );
         if (!response.ok) return null;
         const { wrappedKey } = (await response.json()) as { wrappedKey?: string };
         if (!wrappedKey || !(await restoreConversationKey(conversationId, wrappedKey, key))) {
@@ -349,7 +536,11 @@ function useE2EEState(): UseE2EEReturn {
   );
 
   const encryptFile = useCallback(
-    async (fileData: ArrayBuffer, fileId: string, metadata?: { filename: string; mimeType: string }) => {
+    async (
+      fileData: ArrayBuffer,
+      fileId: string,
+      metadata?: { filename: string; mimeType: string },
+    ) => {
       const key = masterKeyRef.current;
       if (!key || !status?.enabled) return null;
       return encryptFileChunked(fileData, fileId, key, undefined, metadata);
@@ -357,14 +548,11 @@ function useE2EEState(): UseE2EEReturn {
     [status?.enabled],
   );
 
-  const decryptFile = useCallback(
-    async (chunks: EncryptedFileChunk[]) => {
-      const key = masterKeyRef.current;
-      if (!key) return null;
-      return decryptFileChunked(chunks, key);
-    },
-    [],
-  );
+  const decryptFile = useCallback(async (chunks: EncryptedFileChunk[]) => {
+    const key = masterKeyRef.current;
+    if (!key) return null;
+    return decryptFileChunked(chunks, key);
+  }, []);
 
   const decryptFileInfo = useCallback(async (chunks: EncryptedFileChunk[]) => {
     const key = masterKeyRef.current;
@@ -372,87 +560,114 @@ function useE2EEState(): UseE2EEReturn {
     return decryptFileMetadata(chunks, key);
   }, []);
 
-  const ensureConversationKey = useCallback(async (conversationId: string, masterKey: CryptoKey) => {
-    if (await getConversationKey(conversationId, masterKey)) {
-      return true;
-    }
+  const ensureConversationKey = useCallback(
+    async (conversationId: string, masterKey: CryptoKey) => {
+      if (await getConversationKey(conversationId, masterKey)) {
+        return true;
+      }
 
-    const response = await fetch(`/api/e2ee/conversations/${encodeURIComponent(conversationId)}/key`, {
-      credentials: 'include',
-    });
-    if (!response.ok) {
-      return false;
-    }
-    const { wrappedKey } = (await response.json()) as { wrappedKey?: string };
-    return !!wrappedKey && restoreConversationKey(conversationId, wrappedKey, masterKey);
-  }, []);
+      const response = await fetch(
+        `/api/e2ee/conversations/${encodeURIComponent(conversationId)}/key`,
+        {
+          credentials: 'include',
+        },
+      );
+      if (!response.ok) {
+        return false;
+      }
+      const { wrappedKey } = (await response.json()) as { wrappedKey?: string };
+      return !!wrappedKey && restoreConversationKey(conversationId, wrappedKey, masterKey);
+    },
+    [],
+  );
 
   const protectStoredConversation = useCallback(
     async (
       conversation: Partial<TConversation> & Pick<TConversation, 'conversationId'>,
       messages: TMessage[],
-    ): Promise<void> => {
+    ): Promise<TMessage[]> => {
       const conversationId = conversation.conversationId;
       const key = masterKeyRef.current;
       if (!conversationId || !key || !status?.enabled) {
         throw new Error('Encryption is locked or unavailable');
       }
 
-      const encryptedMessages = await Promise.all(
-        messages.map(async (message) => ({
-          messageId: message.messageId,
-          message: {
-            parentMessageId: message.parentMessageId,
-            isCreatedByUser: message.isCreatedByUser,
-            sender: message.sender,
-            model: message.model,
-            endpoint: message.endpoint,
-            tokenCount: message.tokenCount,
-            iconURL: message.iconURL,
-            finish_reason: message.finish_reason,
-            error: message.error,
-            unfinished: message.unfinished,
-            thread_id: message.thread_id,
-          },
-          ...(await encryptMessageRecord(conversationId, key, {
-            text: message.text,
-            summary: (message as TMessage & { summary?: string }).summary,
-            content: message.content,
-            quotes: message.quotes,
-            files: message.files,
+      const protectedImages = await protectGeneratedImages({ conversation, messages, key });
+      const protectedMessages = protectedImages.messages;
+
+      try {
+        const encryptedMessages = await Promise.all(
+          protectedMessages.map(async (message) => ({
+            messageId: message.messageId,
+            message: {
+              parentMessageId: message.parentMessageId,
+              isCreatedByUser: message.isCreatedByUser,
+              sender: message.sender,
+              model: message.model,
+              endpoint: message.endpoint,
+              tokenCount: message.tokenCount,
+              iconURL: message.iconURL,
+              finish_reason: message.finish_reason,
+              error: message.error,
+              unfinished: message.unfinished,
+              thread_id: message.thread_id,
+            },
+            ...(await encryptMessageRecord(conversationId, key, {
+              text: message.text,
+              summary: (message as TMessage & { summary?: string }).summary,
+              content: message.content,
+              quotes: message.quotes,
+              files: message.files,
+              attachments: message.attachments,
+            })),
           })),
-        })),
-      );
-      const wrappedKey = await getWrappedConversationKey(conversationId);
-      if (!wrappedKey) {
-        throw new Error('Conversation key was not created');
+        );
+        const wrappedKey = await getWrappedConversationKey(conversationId);
+        if (!wrappedKey) {
+          throw new Error('Conversation key was not created');
+        }
+
+        const invite = getActiveEncryptedInvite(conversationId);
+        const response = await fetch(
+          `/api/e2ee/conversations/${encodeURIComponent(conversationId)}/snapshot`,
+          {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              wrappedKey,
+              encryptedInvite: invite
+                ? { inviteId: invite.inviteId, secret: invite.secret }
+                : undefined,
+              conversation: {
+                endpoint: conversation.endpoint,
+                endpointType: conversation.endpointType,
+                model: conversation.model,
+                agent_id: conversation.agent_id,
+                assistant_id: conversation.assistant_id,
+                chatProjectId: conversation.chatProjectId,
+                isTemporary: conversation.isTemporary,
+              },
+              messages: encryptedMessages,
+            }),
+          },
+        );
+        if (!response.ok) {
+          throw new Error('Failed to store encrypted conversation data');
+        }
+      } catch (error) {
+        await deleteStoredFiles(protectedImages.files.map((file) => file.encrypted)).catch(
+          (cleanupError) => {
+            console.error('[E2EE] Failed to clean up encrypted image uploads:', cleanupError);
+          },
+        );
+        throw error;
       }
 
-      const invite = getActiveEncryptedInvite(conversationId);
-      const response = await fetch(`/api/e2ee/conversations/${encodeURIComponent(conversationId)}/snapshot`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          wrappedKey,
-          encryptedInvite: invite
-            ? { inviteId: invite.inviteId, secret: invite.secret }
-            : undefined,
-          conversation: {
-            endpoint: conversation.endpoint,
-            endpointType: conversation.endpointType,
-            model: conversation.model,
-            agent_id: conversation.agent_id,
-            assistant_id: conversation.assistant_id,
-            chatProjectId: conversation.chatProjectId,
-            isTemporary: conversation.isTemporary,
-          },
-          messages: encryptedMessages,
-        }),
+      await deleteStoredFiles(protectedImages.files.map((file) => file.original)).catch((error) => {
+        console.error('[E2EE] Failed to delete plaintext generated images:', error);
       });
-      if (!response.ok) {
-        throw new Error('Failed to store encrypted conversation data');
-      }
+      return protectedMessages;
     },
     [status?.enabled],
   );
@@ -520,7 +735,10 @@ function useE2EEState(): UseE2EEReturn {
             role: options.role,
             recipientEmail: options.recipientEmail?.trim().toLowerCase() || undefined,
             secretHash: await hashEncryptedInviteSecret(accessSecret),
-            encryptedConversationKey: await encryptConversationKeyForInvite(conversationKey, keySecret),
+            encryptedConversationKey: await encryptConversationKeyForInvite(
+              conversationKey,
+              keySecret,
+            ),
           }),
         },
       );
@@ -534,87 +752,93 @@ function useE2EEState(): UseE2EEReturn {
     [status?.enabled],
   );
 
-  const activateEncryptedInvite = useCallback(async (inviteId: string, secret: string) => {
-    const masterKey = masterKeyRef.current;
-    if (!masterKey || !status?.enabled) {
-      throw new Error('Unlock encrypted storage before opening this invitation');
-    }
-    const [accessSecret, keySecret] = secret.split('.');
-    if (!accessSecret || !keySecret || secret.split('.').length !== 2) {
-      throw new Error('Invalid encrypted invitation link');
-    }
-    const response = await fetch(`/api/e2ee/invitations/${encodeURIComponent(inviteId)}`, {
-      credentials: 'include',
-      headers: {
-        'X-Nashm-Encrypted-Invite-Id': inviteId,
-        'X-Nashm-Encrypted-Invite-Secret': accessSecret,
-      },
-    });
-    if (!response.ok) {
-      const data = (await response.json().catch(() => ({}))) as { message?: string };
-      throw new Error(data.message || 'This invitation is unavailable');
-    }
-    const data = (await response.json()) as {
-      conversationId: string;
-      role: 'read' | 'write';
-      encryptedConversationKey: EncryptedPayload;
-    };
-    const conversationKey = await decryptConversationKeyFromInvite(
-      data.encryptedConversationKey,
-      keySecret,
-    );
-    await storeConversationKey(data.conversationId, conversationKey, masterKey);
-    setActiveEncryptedInvite({
-      conversationId: data.conversationId,
-      inviteId,
-      secret: accessSecret,
-      role: data.role,
-    });
-    return { conversationId: data.conversationId, role: data.role };
-  }, [status?.enabled]);
+  const activateEncryptedInvite = useCallback(
+    async (inviteId: string, secret: string) => {
+      const masterKey = masterKeyRef.current;
+      if (!masterKey || !status?.enabled) {
+        throw new Error('Unlock encrypted storage before opening this invitation');
+      }
+      const [accessSecret, keySecret] = secret.split('.');
+      if (!accessSecret || !keySecret || secret.split('.').length !== 2) {
+        throw new Error('Invalid encrypted invitation link');
+      }
+      const response = await fetch(`/api/e2ee/invitations/${encodeURIComponent(inviteId)}`, {
+        credentials: 'include',
+        headers: {
+          'X-Nashm-Encrypted-Invite-Id': inviteId,
+          'X-Nashm-Encrypted-Invite-Secret': accessSecret,
+        },
+      });
+      if (!response.ok) {
+        const data = (await response.json().catch(() => ({}))) as { message?: string };
+        throw new Error(data.message || 'This invitation is unavailable');
+      }
+      const data = (await response.json()) as {
+        conversationId: string;
+        role: 'read' | 'write';
+        encryptedConversationKey: EncryptedPayload;
+      };
+      const conversationKey = await decryptConversationKeyFromInvite(
+        data.encryptedConversationKey,
+        keySecret,
+      );
+      await storeConversationKey(data.conversationId, conversationKey, masterKey);
+      setActiveEncryptedInvite({
+        conversationId: data.conversationId,
+        inviteId,
+        secret: accessSecret,
+        role: data.role,
+      });
+      return { conversationId: data.conversationId, role: data.role };
+    },
+    [status?.enabled],
+  );
 
-  return useMemo(() => ({
-    isEnabled: status?.enabled ?? false,
-    isUnlocked,
-    isLoading,
-    error,
-    status,
-    setupE2EE,
-    unlockE2EE,
-    recoverWith12Words,
-    lockE2EE,
-    encryptMsg,
-    decryptMsg,
-    encryptConvo,
-    decryptConvo,
-    encryptFile,
-    decryptFile,
-    decryptFileInfo,
-    protectStoredConversation,
-    decryptStoredMessages,
-    createEncryptedInvite,
-    activateEncryptedInvite,
-  }), [
-    decryptConvo,
-    decryptFile,
-    decryptFileInfo,
-    decryptMsg,
-    decryptStoredMessages,
-    createEncryptedInvite,
-    activateEncryptedInvite,
-    encryptConvo,
-    encryptFile,
-    encryptMsg,
-    error,
-    isLoading,
-    isUnlocked,
-    protectStoredConversation,
-    recoverWith12Words,
-    setupE2EE,
-    status,
-    unlockE2EE,
-    lockE2EE,
-  ]);
+  return useMemo(
+    () => ({
+      isEnabled: status?.enabled ?? false,
+      isUnlocked,
+      isLoading,
+      error,
+      status,
+      setupE2EE,
+      unlockE2EE,
+      recoverWith12Words,
+      lockE2EE,
+      encryptMsg,
+      decryptMsg,
+      encryptConvo,
+      decryptConvo,
+      encryptFile,
+      decryptFile,
+      decryptFileInfo,
+      protectStoredConversation,
+      decryptStoredMessages,
+      createEncryptedInvite,
+      activateEncryptedInvite,
+    }),
+    [
+      decryptConvo,
+      decryptFile,
+      decryptFileInfo,
+      decryptMsg,
+      decryptStoredMessages,
+      createEncryptedInvite,
+      activateEncryptedInvite,
+      encryptConvo,
+      encryptFile,
+      encryptMsg,
+      error,
+      isLoading,
+      isUnlocked,
+      protectStoredConversation,
+      recoverWith12Words,
+      setupE2EE,
+      status,
+      unlockE2EE,
+      lockE2EE,
+    ],
+  );
 }
 
 const disabledE2EE: UseE2EEReturn = {
@@ -634,7 +858,7 @@ const disabledE2EE: UseE2EEReturn = {
   encryptFile: async () => null,
   decryptFile: async () => null,
   decryptFileInfo: async () => null,
-  protectStoredConversation: async () => undefined,
+  protectStoredConversation: async (_conversation, messages) => messages,
   decryptStoredMessages: async (messages) => messages,
   createEncryptedInvite: async () => {
     throw new Error('Encrypted storage is unavailable');

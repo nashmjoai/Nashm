@@ -98,13 +98,13 @@ async function convertImageFormat(inputBuffer, targetFormat) {
  * @returns {Promise<GoogleGenAI>} - The initialized client
  */
 async function initializeGeminiClient(options = {}) {
-  const geminiKey = options.GEMINI_API_KEY;
+  const geminiKey = options.GEMINI_API_KEY || process.env.GEMINI_API_KEY;
   if (geminiKey) {
     logger.debug('[GeminiImageGen] Using Gemini API with GEMINI_API_KEY');
     return new GoogleGenAI({ apiKey: geminiKey });
   }
 
-  const googleKey = options.GOOGLE_KEY;
+  const googleKey = options.GOOGLE_KEY || process.env.GOOGLE_KEY;
   if (googleKey) {
     logger.debug('[GeminiImageGen] Using Gemini API with GOOGLE_KEY');
     return new GoogleGenAI({ apiKey: googleKey });
@@ -480,134 +480,194 @@ function createGeminiImageTool(fields = {}) {
 
       logger.debug('[GeminiImageGen] Generating image', { aspectRatio, imageSize });
 
-      let ai;
-      try {
-        ai = await initializeGeminiClient({
-          GEMINI_API_KEY,
-          GOOGLE_KEY,
-        });
-      } catch (error) {
-        logger.error('[GeminiImageGen] Failed to initialize client:', error);
-        return [
-          [{ type: ContentTypes.TEXT, text: `Failed to initialize Gemini: ${error.message}` }],
-          { content: [], file_ids: [] },
-        ];
-      }
-
       const sanitizedPrompt = replaceUnwantedChars(prompt);
-      const contents = [{ text: sanitizedPrompt }];
-      let contextImages = [];
+      const preferOpenAI =
+        process.env.USE_OPENAI_IMAGE_GEN === 'true' ||
+        process.env.PREFER_OPENAI_IMAGE_GEN === 'true';
 
-      if (image_ids?.length > 0) {
-        contextImages = await convertImagesToInlineData({
-          imageFiles,
-          image_ids,
-          req,
-          fileStrategy,
+      const isOpenAIAvailable = Boolean(
+        process.env.OPENAI_API_KEY || process.env.IMAGE_GEN_OAI_API_KEY,
+      );
+
+      const generateWithOpenAI = async () => {
+        const OpenAI = require('openai');
+        const apiKey = process.env.IMAGE_GEN_OAI_API_KEY || process.env.OPENAI_API_KEY;
+        const openaiClient = new OpenAI({ apiKey });
+        const oaiRes = await openaiClient.images.generate({
+          model: process.env.IMAGE_GEN_OAI_MODEL || 'gpt-image-1',
+          prompt: sanitizedPrompt,
+          n: 1,
+          size: '1024x1024',
         });
-        contents.push(...contextImages);
-        logger.debug('[GeminiImageGen] Added', contextImages.length, 'context images');
+        const b64 = oaiRes.data?.[0]?.b64_json;
+        if (b64) {
+          return { data: b64 };
+        } else if (oaiRes.data?.[0]?.url) {
+          const fetchRes = await fetch(oaiRes.data[0].url);
+          const arrayBuf = await fetchRes.arrayBuffer();
+          return { data: Buffer.from(arrayBuf).toString('base64') };
+        }
+        return null;
+      };
+
+      let rawImage;
+      if (preferOpenAI && isOpenAIAvailable) {
+        logger.info('[GeminiImageGen] Using OpenAI (ChatGPT / gpt-image-1) for image generation');
+        try {
+          rawImage = await generateWithOpenAI();
+        } catch (oaiErr) {
+          logger.error('[GeminiImageGen] OpenAI image generation failed:', oaiErr);
+        }
       }
 
       let apiResponse;
-      let rawImage;
       const geminiModel = process.env.GEMINI_IMAGE_MODEL || DEFAULT_GEMINI_IMAGE_MODEL;
-      const config = {
-        responseModalities: ['TEXT', 'IMAGE'],
-      };
 
-      const supportsImageSize = !geminiModel.includes('gemini-2.5-flash-image');
-      if (aspectRatio || (imageSize && supportsImageSize)) {
-        config.imageConfig = {};
-        if (aspectRatio) {
-          config.imageConfig.aspectRatio = aspectRatio;
-        }
-        if (imageSize && supportsImageSize) {
-          config.imageConfig.imageSize = imageSize;
-        }
-      }
-
-      let derivedSignal = null;
-      let abortHandler = null;
-
-      if (runnableConfig?.signal) {
-        derivedSignal = AbortSignal.any([runnableConfig.signal]);
-        abortHandler = () => logger.debug('[GeminiImageGen] Image generation aborted');
-        derivedSignal.addEventListener('abort', abortHandler, { once: true });
-        config.abortSignal = derivedSignal;
-      }
-
-      try {
-        if (isImagenModel(geminiModel)) {
-          if (contextImages.length > 0) {
+      if (!rawImage?.data) {
+        let ai;
+        try {
+          ai = await initializeGeminiClient({
+            GEMINI_API_KEY,
+            GOOGLE_KEY,
+          });
+        } catch (error) {
+          logger.error('[GeminiImageGen] Failed to initialize client:', error);
+          if (isOpenAIAvailable) {
+            try {
+              rawImage = await generateWithOpenAI();
+            } catch (oaiErr) {
+              logger.error('[GeminiImageGen] OpenAI fallback failed:', oaiErr);
+            }
+          }
+          if (!rawImage?.data) {
             return [
-              [
-                {
-                  type: ContentTypes.TEXT,
-                  text:
-                    'This image model only supports text-to-image. Use a Gemini image model to edit or reference existing images.',
-                },
-              ],
+              [{ type: ContentTypes.TEXT, text: `Failed to initialize Gemini: ${error.message}` }],
               { content: [], file_ids: [] },
             ];
           }
+        }
 
-          apiResponse = await ai.models.generateImages({
-            model: geminiModel,
-            prompt: sanitizedPrompt,
-            config: {
-              numberOfImages: 1,
-              aspectRatio,
-              imageSize,
-              abortSignal: derivedSignal,
-            },
-          });
-          rawImage = extractGenerateImagesImage(apiResponse);
-        } else if (ai.interactions?.create && !GEMINI_API_KEY && !GOOGLE_KEY) {
-          apiResponse = await ai.interactions.create(
-            {
-              model: geminiModel,
-              input: [
-                { type: 'text', text: sanitizedPrompt },
-                ...convertInlineDataToInteractionInput(contextImages),
-              ],
-              response_modalities: ['image'],
-              response_format: buildImageResponseFormat({ aspectRatio, imageSize }),
-            },
-            derivedSignal ? { signal: derivedSignal } : undefined,
-          );
+        if (!rawImage?.data && ai) {
+          const contents = [{ text: sanitizedPrompt }];
+          let contextImages = [];
 
-          if (
-            apiResponse?.status &&
-            !['completed', 'incomplete'].includes(apiResponse.status) &&
-            apiResponse.status !== 'in_progress'
-          ) {
-            logger.warn('[GeminiImageGen] Interaction ended without completion:', {
-              status: apiResponse.status,
-              model: geminiModel,
+          if (image_ids?.length > 0) {
+            contextImages = await convertImagesToInlineData({
+              imageFiles,
+              image_ids,
+              req,
+              fileStrategy,
             });
+            contents.push(...contextImages);
+            logger.debug('[GeminiImageGen] Added', contextImages.length, 'context images');
           }
 
-          rawImage = extractInteractionImage(apiResponse);
-        } else {
-          apiResponse = await ai.models.generateContent({
-            model: geminiModel,
-            contents,
-            config,
-          });
-          rawImage = extractGenerateContentImage(apiResponse);
-        }
-      } catch (error) {
-        logger.error('[GeminiImageGen] API error:', error);
-        return [
-          [{ type: ContentTypes.TEXT, text: getSafeGeminiErrorMessage(error) }],
-          { content: [], file_ids: [] },
-        ];
-      } finally {
-        if (abortHandler && derivedSignal) {
-          derivedSignal.removeEventListener('abort', abortHandler);
+          const config = {
+            responseModalities: ['TEXT', 'IMAGE'],
+          };
+
+          const supportsImageSize = !geminiModel.includes('gemini-2.5-flash-image');
+          if (aspectRatio || (imageSize && supportsImageSize)) {
+            config.imageConfig = {};
+            if (aspectRatio) {
+              config.imageConfig.aspectRatio = aspectRatio;
+            }
+            if (imageSize && supportsImageSize) {
+              config.imageConfig.imageSize = imageSize;
+            }
+          }
+
+          let derivedSignal = null;
+          let abortHandler = null;
+
+          if (runnableConfig?.signal) {
+            derivedSignal = AbortSignal.any([runnableConfig.signal]);
+            abortHandler = () => logger.debug('[GeminiImageGen] Image generation aborted');
+            derivedSignal.addEventListener('abort', abortHandler, { once: true });
+            config.abortSignal = derivedSignal;
+          }
+        try {
+          if (isImagenModel(geminiModel)) {
+            if (contextImages.length > 0) {
+              return [
+                [
+                  {
+                    type: ContentTypes.TEXT,
+                    text:
+                      'This image model only supports text-to-image. Use a Gemini image model to edit or reference existing images.',
+                  },
+                ],
+                { content: [], file_ids: [] },
+              ];
+            }
+
+            apiResponse = await ai.models.generateImages({
+              model: geminiModel,
+              prompt: sanitizedPrompt,
+              config: {
+                numberOfImages: 1,
+                aspectRatio,
+                imageSize,
+                abortSignal: derivedSignal,
+              },
+            });
+            rawImage = extractGenerateImagesImage(apiResponse);
+          } else if (ai.interactions?.create && !GEMINI_API_KEY && !GOOGLE_KEY) {
+            apiResponse = await ai.interactions.create(
+              {
+                model: geminiModel,
+                input: [
+                  { type: 'text', text: sanitizedPrompt },
+                  ...convertInlineDataToInteractionInput(contextImages),
+                ],
+                response_modalities: ['image'],
+                response_format: buildImageResponseFormat({ aspectRatio, imageSize }),
+              },
+              derivedSignal ? { signal: derivedSignal } : undefined,
+            );
+
+            if (
+              apiResponse?.status &&
+              !['completed', 'incomplete'].includes(apiResponse.status) &&
+              apiResponse.status !== 'in_progress'
+            ) {
+              logger.warn('[GeminiImageGen] Interaction ended without completion:', {
+                status: apiResponse.status,
+                model: geminiModel,
+              });
+            }
+
+            rawImage = extractInteractionImage(apiResponse);
+          } else {
+            apiResponse = await ai.models.generateContent({
+              model: geminiModel,
+              contents,
+              config,
+            });
+            rawImage = extractGenerateContentImage(apiResponse);
+          }
+        } catch (error) {
+          logger.error('[GeminiImageGen] Gemini API error, attempting OpenAI fallback:', error);
+          if (isOpenAIAvailable) {
+            try {
+              rawImage = await generateWithOpenAI();
+            } catch (oaiErr) {
+              logger.error('[GeminiImageGen] OpenAI fallback failed:', oaiErr);
+            }
+          }
+          if (!rawImage?.data) {
+            return [
+              [{ type: ContentTypes.TEXT, text: getSafeGeminiErrorMessage(error) }],
+              { content: [], file_ids: [] },
+            ];
+          }
+        } finally {
+          if (abortHandler && derivedSignal) {
+            derivedSignal.removeEventListener('abort', abortHandler);
+          }
         }
       }
+    }
 
       const safetyBlock = isImagenModel(geminiModel) ? null : checkForSafetyBlock(apiResponse);
       if (!rawImage?.data && safetyBlock) {
@@ -656,7 +716,7 @@ function createGeminiImageTool(fields = {}) {
         runnableConfig?.configurable?.run_id ??
         runnableConfig?.configurable?.requestBody?.messageId;
       recordTokenUsage({
-        usageMetadata: apiResponse.usageMetadata || apiResponse.usage,
+        usageMetadata: apiResponse?.usageMetadata || apiResponse?.usage,
         req,
         userId,
         messageId,

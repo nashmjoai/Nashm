@@ -23,7 +23,6 @@ import { useAttachmentLink } from './LogLink';
 import { useLocalize, useAttachmentPreviewSync, useExpandCollapse, useCachedFile } from '~/hooks';
 import { cn, getFileType } from '~/utils';
 
-
 const COLLAPSED_MAX_HEIGHT = 320;
 
 /**
@@ -126,6 +125,8 @@ const FileAttachment = memo(({ attachment }: { attachment: Partial<TAttachment> 
     fileId: file.file_id,
     url: attachment.filepath,
     filename: attachment.filename,
+    mimeType: file.type,
+    userId: file.user,
   });
   const { handleDownload } = useAttachmentLink({
     href: displayUrl || attachment.filepath || '',
@@ -432,7 +433,15 @@ const TextAttachment = memo(
 
 const ImageAttachment = memo(({ attachment }: { attachment: TAttachment }) => {
   const [isLoaded, setIsLoaded] = useState(false);
-  const { width, height, filepath = null } = attachment as TFile & TAttachmentMetadata;
+  const {
+    width,
+    height,
+    filepath = null,
+    file_id: fileId,
+    filename,
+    type: mimeType,
+    user: userId,
+  } = attachment as TFile & TAttachmentMetadata;
 
   useEffect(() => {
     setIsLoaded(false);
@@ -459,6 +468,10 @@ const ImageAttachment = memo(({ attachment }: { attachment: TAttachment }) => {
         width={width}
         height={height}
         className="mb-4"
+        fileId={fileId}
+        filename={filename}
+        mimeType={mimeType}
+        userId={userId}
       />
     </div>
   );

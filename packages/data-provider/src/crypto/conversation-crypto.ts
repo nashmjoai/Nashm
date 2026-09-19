@@ -146,6 +146,7 @@ export async function encryptMessageRecord(
     content?: unknown[];
     quotes?: string[];
     files?: unknown[];
+    attachments?: unknown[];
   },
 ): Promise<EncryptedMessageRecord> {
   const key = await getOrCreateConversationKey(conversationId, masterKey);
@@ -166,6 +167,7 @@ export async function decryptMessageRecord(
   content?: unknown[];
   quotes?: string[];
   files?: unknown[];
+  attachments?: unknown[];
 }> {
   const key = await getConversationKey(conversationId, masterKey);
   if (!key) {
@@ -178,6 +180,7 @@ export async function decryptMessageRecord(
     content?: unknown[];
     quotes?: string[];
     files?: unknown[];
+    attachments?: unknown[];
   }>(encryptedData, key, true);
 }
 

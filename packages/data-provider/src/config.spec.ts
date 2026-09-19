@@ -57,6 +57,22 @@ describe('bedrockEndpointSchema', () => {
   });
 });
 
+describe('openAIEndpointSchema', () => {
+  it('preserves an explicit OpenAI model catalog', () => {
+    const models = ['gpt-5.6-sol', 'gpt-5.6-terra', 'gpt-5.6-luna'];
+    const result = configSchema.safeParse({
+      version: '1.0',
+      endpoints: { openAI: { models } },
+    });
+
+    expect(result.success).toBe(true);
+    if (!result.success) {
+      return;
+    }
+    expect(result.data.endpoints?.openAI?.models).toEqual(models);
+  });
+});
+
 describe('resolveEndpointType', () => {
   describe('non-agents endpoints', () => {
     it('returns the config type for a custom endpoint', () => {

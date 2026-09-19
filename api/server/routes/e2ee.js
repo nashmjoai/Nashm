@@ -16,6 +16,7 @@
 
 const express = require('express');
 const crypto = require('crypto');
+const mongoose = require('mongoose');
 const { requireJwtAuth } = require('~/server/middleware');
 const { updateUser } = require('~/models');
 const { deleteConvoSharedLinksWithCleanup } = require('@nashm/api');
@@ -73,7 +74,8 @@ function publicMessageMetadata(message) {
     sender: optionalString(data.sender, 128),
     model: optionalString(data.model, 512),
     endpoint: optionalString(data.endpoint, 128),
-    tokenCount: Number.isSafeInteger(data.tokenCount) && data.tokenCount >= 0 ? data.tokenCount : undefined,
+    tokenCount:
+      Number.isSafeInteger(data.tokenCount) && data.tokenCount >= 0 ? data.tokenCount : undefined,
     iconURL: optionalString(data.iconURL, 2048),
     finish_reason: optionalString(data.finish_reason, 128),
     error: typeof data.error === 'boolean' ? data.error : undefined,
@@ -89,9 +91,7 @@ function publicMessageMetadata(message) {
  */
 async function getUserE2EESettings(userId) {
   const { User } = require('@nashm/data-schemas');
-  return User.findById(userId)
-    .select('+keySalt nextcloudSync e2eeEnabled publicKey')
-    .lean();
+  return User.findById(userId).select('+keySalt nextcloudSync e2eeEnabled publicKey').lean();
 }
 
 // ─── Routes ──────────────────────────────────────────────────────────────────
@@ -176,7 +176,9 @@ router.post('/setup', requireJwtAuth, async (req, res) => {
     }
 
     if (!isEncryptedPayload(wrappedKeyRecovery) || !isEncryptedPayload(wrappedKeyPassphrase)) {
-      return res.status(400).json({ message: 'wrappedKeyRecovery and wrappedKeyPassphrase are required' });
+      return res
+        .status(400)
+        .json({ message: 'wrappedKeyRecovery and wrappedKeyPassphrase are required' });
     }
 
     const existingUser = await getUserE2EESettings(req.user.id);
@@ -261,7 +263,9 @@ router.post('/conversations/:conversationId/invitations', requireJwtAuth, async 
       typeof secretHash !== 'string' ||
       !SECRET_HASH_PATTERN.test(secretHash) ||
       (recipientEmail !== undefined &&
-        (typeof recipientEmail !== 'string' || recipientEmail.length > 320 || !/^\S+@\S+\.\S+$/.test(recipientEmail)))
+        (typeof recipientEmail !== 'string' ||
+          recipientEmail.length > 320 ||
+          !/^\S+@\S+\.\S+$/.test(recipientEmail)))
     ) {
       return res.status(400).json({ message: 'Invalid encrypted invitation' });
     }
@@ -335,18 +339,25 @@ router.post('/conversations/:conversationId/snapshot', requireJwtAuth, async (re
     ) {
       return res.status(400).json({ message: 'Invalid encrypted conversation snapshot' });
     }
-    if (messages.length > MAX_ENCRYPTED_SNAPSHOT_MESSAGES || messages.some((message) =>
-      !message ||
-      typeof message.messageId !== 'string' ||
-      !isEncryptedPayload(message.encryptedData) ||
-      !message.message ||
-      typeof message.message.isCreatedByUser !== 'boolean',
-    )) {
+    if (
+      messages.length > MAX_ENCRYPTED_SNAPSHOT_MESSAGES ||
+      messages.some(
+        (message) =>
+          !message ||
+          typeof message.messageId !== 'string' ||
+          !isEncryptedPayload(message.encryptedData) ||
+          !message.message ||
+          typeof message.message.isCreatedByUser !== 'boolean',
+      )
+    ) {
       return res.status(400).json({ message: 'Invalid encrypted message payload' });
     }
 
     const messageIds = messages.map((message) => message.messageId);
-    if (new Set(messageIds).size !== messageIds.length || messageIds.some((id) => id.length > 128)) {
+    if (
+      new Set(messageIds).size !== messageIds.length ||
+      messageIds.some((id) => id.length > 128)
+    ) {
       return res.status(400).json({ message: 'Invalid encrypted message identifiers' });
     }
     const storedMessages = await db.getMessages({
@@ -364,6 +375,8 @@ router.post('/conversations/:conversationId/snapshot', requireJwtAuth, async (re
             summary: '',
             content: [],
             quotes: [],
+            files: [],
+            attachments: [],
             encryptedData: message.encryptedData,
             isEncrypted: true,
           });
@@ -379,6 +392,8 @@ router.post('/conversations/:conversationId/snapshot', requireJwtAuth, async (re
             summary: '',
             content: [],
             quotes: [],
+            files: [],
+            attachments: [],
             encryptedData: message.encryptedData,
             isEncrypted: true,
           },

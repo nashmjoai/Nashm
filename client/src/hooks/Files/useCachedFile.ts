@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { apiBaseUrl } from 'nashm-data-provider';
 import { cacheFileUrl, getCachedFile, CachedFileRecord, cacheFileBlob } from '~/utils/fileDB';
 import useE2EE from '~/hooks/useE2EE';
 
@@ -7,6 +8,7 @@ interface UseCachedFileOptions {
   url?: string;
   filename?: string;
   mimeType?: string;
+  userId?: string;
 }
 
 interface UseCachedFileResult {
@@ -24,6 +26,7 @@ export function useCachedFile({
   url,
   filename,
   mimeType,
+  userId,
 }: UseCachedFileOptions): UseCachedFileResult {
   const [displayUrl, setDisplayUrl] = useState<string>(url ?? '');
   const [cachedRecord, setCachedRecord] = useState<CachedFileRecord | null>(null);
@@ -37,15 +40,30 @@ export function useCachedFile({
       const cacheKey = fileId || (url && !url.startsWith('blob:') ? url : undefined);
 
       if (url) {
+        const isEncrypted = filename?.endsWith('.enc') || url.includes('.enc');
+        const downloadUrl =
+          fileId && userId
+            ? `${apiBaseUrl()}/api/files/download/${encodeURIComponent(userId)}/${encodeURIComponent(fileId)}`
+            : url;
+        const accessibleUrl = url.includes('/uploads/') ? downloadUrl : url;
         if (isMounted) {
-          setDisplayUrl(url);
+          setDisplayUrl(isEncrypted ? '' : accessibleUrl);
         }
         if (cacheKey && !url.startsWith('blob:') && !url.startsWith('data:')) {
-          const isEncrypted = filename?.endsWith('.enc') || url.includes('.enc');
-
           if (isEncrypted && isEnabled && isUnlocked) {
+            const cached = await getCachedFile(cacheKey);
+            if (cached?.blob) {
+              if (isMounted) {
+                const blobUrl = URL.createObjectURL(cached.blob);
+                objectUrlRef.current = blobUrl;
+                setDisplayUrl(blobUrl);
+                setCachedRecord(cached);
+              }
+              return;
+            }
+
             // Background caching with decryption
-            fetch(url, { credentials: 'same-origin' })
+            fetch(downloadUrl, { credentials: 'same-origin' })
               .then((res) => {
                 if (!res.ok) throw new Error('Fetch failed');
                 return res.text();
@@ -64,7 +82,8 @@ export function useCachedFile({
                   if (!inferredMime) {
                     const nameToCheck = filename || url.split('?')[0];
                     if (nameToCheck.includes('.png')) inferredMime = 'image/png';
-                    else if (nameToCheck.includes('.jpg') || nameToCheck.includes('.jpeg')) inferredMime = 'image/jpeg';
+                    else if (nameToCheck.includes('.jpg') || nameToCheck.includes('.jpeg'))
+                      inferredMime = 'image/jpeg';
                     else if (nameToCheck.includes('.gif')) inferredMime = 'image/gif';
                     else if (nameToCheck.includes('.webp')) inferredMime = 'image/webp';
                     else if (nameToCheck.includes('.svg')) inferredMime = 'image/svg+xml';
@@ -81,7 +100,13 @@ export function useCachedFile({
                     const blobUrl = URL.createObjectURL(newBlob);
                     objectUrlRef.current = blobUrl;
                     setDisplayUrl(blobUrl);
-                    setCachedRecord({ fileId: cacheKey, blob: newBlob, cachedAt: Date.now() });
+                    setCachedRecord({
+                      fileId: cacheKey,
+                      blob: newBlob,
+                      filename: encryptedInfo?.filename ?? filename?.replace('.enc', ''),
+                      mimeType: inferredMime,
+                      cachedAt: Date.now(),
+                    });
                   }
                 }
               })
@@ -90,7 +115,7 @@ export function useCachedFile({
               });
           } else if (!isEncrypted) {
             // Normal background caching
-            cacheFileUrl(cacheKey, url, { filename, mimeType }).catch(() => {});
+            cacheFileUrl(cacheKey, accessibleUrl, { filename, mimeType }).catch(() => {});
           }
         }
         return;
@@ -116,7 +141,17 @@ export function useCachedFile({
     return () => {
       isMounted = false;
     };
-  }, [decryptFile, decryptFileInfo, fileId, filename, isEnabled, isUnlocked, mimeType, url]);
+  }, [
+    decryptFile,
+    decryptFileInfo,
+    fileId,
+    filename,
+    isEnabled,
+    isUnlocked,
+    mimeType,
+    url,
+    userId,
+  ]);
 
   useEffect(() => {
     return () => {

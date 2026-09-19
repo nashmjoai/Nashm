@@ -449,6 +449,15 @@ describe('getMultiplier', () => {
     );
   });
 
+  it.each([
+    ['gpt-5.6-sol', 4, 20],
+    ['gpt-5.6-terra', 2, 12],
+    ['gpt-5.6-luna', 0.2, 1.2],
+  ])('uses the documented token prices for %s', (model, prompt, completion) => {
+    expect(getMultiplier({ model, tokenType: 'prompt' })).toBe(prompt);
+    expect(getMultiplier({ model, tokenType: 'completion' })).toBe(completion);
+  });
+
   it('should return the correct multiplier for gpt-4o', () => {
     const valueKey = getValueKey('gpt-4o-2024-08-06');
     expect(getMultiplier({ valueKey, tokenType: 'prompt' })).toBe(tokenValues['gpt-4o'].prompt);
@@ -1428,6 +1437,9 @@ describe('getCacheMultiplier', () => {
       'gpt-5.2',
       'gpt-5.3',
       'gpt-5.4',
+      'gpt-5.6-sol',
+      'gpt-5.6-terra',
+      'gpt-5.6-luna',
       'gpt-5-mini',
       'gpt-5-nano',
       'o1',
@@ -1481,6 +1493,15 @@ describe('getCacheMultiplier', () => {
     for (const model of gpt5CacheModels) {
       expect(cacheTokenValues[model].read).toBeCloseTo(cacheTokenValues[model].write * 0.1, 10);
     }
+  });
+
+  it.each([
+    ['gpt-5.6-sol', 5, 0.4],
+    ['gpt-5.6-terra', 2.5, 0.2],
+    ['gpt-5.6-luna', 0.25, 0.02],
+  ])('uses the documented cache prices for %s', (model, write, read) => {
+    expect(getCacheMultiplier({ model, cacheType: 'write' })).toBe(write);
+    expect(getCacheMultiplier({ model, cacheType: 'read' })).toBe(read);
   });
 
   it('should handle models with "bedrock/" prefix', () => {

@@ -134,6 +134,9 @@ export const tokenValues: Record<string, { prompt: number; completion: number }>
     'gpt-5.4-nano': { prompt: 0.2, completion: 1.25 },
     'gpt-5.5': { prompt: 5, completion: 30 },
     'gpt-5.5-pro': { prompt: 30, completion: 180 },
+    'gpt-5.6-sol': { prompt: 4, completion: 20 },
+    'gpt-5.6-terra': { prompt: 2, completion: 12 },
+    'gpt-5.6-luna': { prompt: 0.2, completion: 1.2 },
     'chat-latest': { prompt: 5, completion: 30 },
     'gpt-5-chat-latest': { prompt: 1.25, completion: 10 },
     'gpt-5.1-chat-latest': { prompt: 1.25, completion: 10 },
@@ -230,6 +233,9 @@ export const tokenValues: Record<string, { prompt: number; completion: number }>
     'mixtral-8x22b': { prompt: 0.65, completion: 0.65 },
     kimi: { prompt: 0.6, completion: 2.5 },
     moonshot: { prompt: 2.0, completion: 5.0 },
+    humain: { prompt: 1.0, completion: 3.0 },
+    'humain-m3': { prompt: 1.0, completion: 3.0 },
+    'humain-m3-preview': { prompt: 1.0, completion: 3.0 },
     'kimi-latest': { prompt: 0.2, completion: 2.0 },
     'kimi-k2': { prompt: 0.6, completion: 2.5 },
     'kimi-k2.5': { prompt: 0.6, completion: 3.0 },
@@ -325,6 +331,9 @@ export const cacheTokenValues: Record<string, { write: number; read: number }> =
   'gpt-5.4-mini': { write: 0.75, read: 0.075 },
   'gpt-5.4-nano': { write: 0.2, read: 0.02 },
   'gpt-5.5': { write: 5, read: 0.5 },
+  'gpt-5.6-sol': { write: 5, read: 0.4 },
+  'gpt-5.6-terra': { write: 2.5, read: 0.2 },
+  'gpt-5.6-luna': { write: 0.25, read: 0.02 },
   'chat-latest': { write: 5, read: 0.5 },
   'gpt-5-chat-latest': { write: 1.25, read: 0.125 },
   'gpt-5.1-chat-latest': { write: 1.25, read: 0.125 },
@@ -358,6 +367,10 @@ export const cacheTokenValues: Record<string, { write: number; read: number }> =
   'gemini-3.1-flash-lite': { write: 0.25, read: 0.025 },
   // Gemini 3.5 Flash - cache write: $1.50/1M, cache read: $0.15/1M
   'gemini-3.5-flash': { write: 1.5, read: 0.15 },
+  // HUMAIN models
+  humain: { write: 0.5, read: 0.1 },
+  'humain-m3': { write: 0.5, read: 0.1 },
+  'humain-m3-preview': { write: 0.5, read: 0.1 },
 };
 
 /**
@@ -372,6 +385,9 @@ export const premiumTokenValues: Record<
   'gpt-5.4-pro': { threshold: 272000, prompt: 60, completion: 270 },
   'gpt-5.5': { threshold: 272000, prompt: 10, completion: 45 },
   'gpt-5.5-pro': { threshold: 272000, prompt: 60, completion: 270 },
+  'gpt-5.6-sol': { threshold: 272000, prompt: 8, completion: 30 },
+  'gpt-5.6-terra': { threshold: 272000, prompt: 4, completion: 18 },
+  'gpt-5.6-luna': { threshold: 272000, prompt: 0.4, completion: 1.8 },
 };
 
 export function createTxMethods(

@@ -37,15 +37,20 @@ async function loadDefaultModels(req) {
       allHeaders,
       appConfig?.endpoints?.[EModelEndpoint.anthropic]?.headers,
     );
+    const configuredOpenAIModels = appConfig?.endpoints?.[EModelEndpoint.openAI]?.models;
 
     const [openAI, anthropic, azureOpenAI, assistants, azureAssistants, google, bedrock] =
       await Promise.all([
-        getOpenAIModels({ user: req.user.id, headers: openAIHeaders, userObject: req.user }).catch(
-          (error) => {
-            logger.error('Error fetching OpenAI models:', error);
-            return [];
-          },
-        ),
+        configuredOpenAIModels?.length
+          ? Promise.resolve(configuredOpenAIModels)
+          : getOpenAIModels({
+              user: req.user.id,
+              headers: openAIHeaders,
+              userObject: req.user,
+            }).catch((error) => {
+              logger.error('Error fetching OpenAI models:', error);
+              return [];
+            }),
         getAnthropicModels({
           user: req.user.id,
           vertexModels: vertexConfig?.modelNames,

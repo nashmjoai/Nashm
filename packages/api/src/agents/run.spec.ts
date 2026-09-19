@@ -242,6 +242,12 @@ describe('isDeepSeekReasoningProvider', () => {
     expect(isDeepSeekReasoningProvider(undefined, '~deepseek-chat')).toBe(true);
   });
 
+  it('recognizes HUMAIN reasoning responses for provider and model aliases', () => {
+    expect(isDeepSeekReasoningProvider('HUMAIN', 'humain-m3-preview')).toBe(true);
+    expect(isDeepSeekReasoningProvider(Providers.OPENAI, 'humain-m3-preview')).toBe(true);
+    expect(isDeepSeekReasoningProvider(undefined, 'humain-m3')).toBe(true);
+  });
+
   it('returns false for openrouter with non-deepseek models', () => {
     expect(isDeepSeekReasoningProvider(Providers.OPENROUTER, 'anthropic/claude-opus-4-7')).toBe(
       false,

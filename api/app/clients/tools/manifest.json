@@ -38,7 +38,7 @@
     "icon": "assets/image_gen_oai.png",
     "authConfig": [
       {
-        "authField": "IMAGE_GEN_OAI_API_KEY",
+        "authField": "IMAGE_GEN_OAI_API_KEY||OPENAI_API_KEY",
         "label": "OpenAI Image Tools API Key",
         "description": "Your OpenAI API Key for Image Generation and Editing"
       }

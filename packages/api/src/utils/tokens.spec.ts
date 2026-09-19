@@ -31,3 +31,20 @@ describe('getModelMaxOutputTokens partial-override fallback', () => {
     expect(fallback).toBeGreaterThan(0);
   });
 });
+
+describe('HUMAIN Node token limits', () => {
+  it('uses the limits advertised by the HUMAIN models endpoint', () => {
+    expect(getModelMaxTokens('humain-m3-preview', EModelEndpoint.openAI)).toBe(204800);
+    expect(getModelMaxOutputTokens('humain-m3-preview', EModelEndpoint.openAI)).toBe(16384);
+  });
+});
+
+describe('GPT-5.6 token limits', () => {
+  it.each(['gpt-5.6-sol', 'gpt-5.6-terra', 'gpt-5.6-luna'])(
+    'uses the documented context and output limits for %s',
+    (model) => {
+      expect(getModelMaxTokens(model, EModelEndpoint.openAI)).toBe(1050000);
+      expect(getModelMaxOutputTokens(model, EModelEndpoint.openAI)).toBe(128000);
+    },
+  );
+});

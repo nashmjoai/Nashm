@@ -131,7 +131,12 @@ function getRequestModelSpec(req, endpointOption) {
 }
 
 function getModelSpecIconURL(modelSpec) {
-  return modelSpec?.iconURL ?? modelSpec?.preset?.iconURL ?? modelSpec?.preset?.endpoint ?? '';
+  if (modelSpec?.iconURL) return modelSpec.iconURL;
+  if (modelSpec?.preset?.iconURL) return modelSpec.preset.iconURL;
+  const endpoint = modelSpec?.preset?.endpoint?.toLowerCase();
+  if (endpoint === 'humain') return '/assets/humain.svg';
+  if (endpoint === 'kimi') return '/assets/kimi.svg';
+  return modelSpec?.preset?.endpoint ?? '';
 }
 
 function getEndpointIconURL(req, endpointOption) {
@@ -316,7 +321,9 @@ const ResumableAgentController = async (req, res, next, initializeClient, addTit
               interfaceConfig: req?.config?.interfaceConfig,
             },
             partialMessage,
-            { context: 'api/server/controllers/agents/request.js - partial response on disconnect' },
+            {
+              context: 'api/server/controllers/agents/request.js - partial response on disconnect',
+            },
           );
         }
 

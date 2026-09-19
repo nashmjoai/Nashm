@@ -61,6 +61,9 @@ const openAIModels = {
   'gpt-5.4-nano': 400000,
   'gpt-5.5': 1050000,
   'gpt-5.5-pro': 1050000,
+  'gpt-5.6-sol': 1050000,
+  'gpt-5.6-terra': 1050000,
+  'gpt-5.6-luna': 1050000,
   'chat-latest': 400000,
   'gpt-5-mini': 400000,
   'gpt-5-nano': 400000,
@@ -207,6 +210,10 @@ const moonshotModels = {
   'moonshotai.kimi': 262144,
   'moonshot.kimi-k2.5': 262144,
   'moonshotai.kimi-k2.5': 262144,
+  // HUMAIN models
+  humain: 204800,
+  'humain-m3': 204800,
+  'humain-m3-preview': 204800,
 };
 
 const metaModels = {
@@ -390,6 +397,9 @@ export const modelMaxOutputs = {
   'gpt-5.4-nano': 128000,
   'gpt-5.5': 128000,
   'gpt-5.5-pro': 128000,
+  'gpt-5.6-sol': 128000,
+  'gpt-5.6-terra': 128000,
+  'gpt-5.6-luna': 128000,
   'chat-latest': 128000,
   'gpt-5-mini': 128000,
   'gpt-5-nano': 128000,
@@ -397,6 +407,9 @@ export const modelMaxOutputs = {
   'gpt-5.2-pro': 128000,
   'gpt-oss-20b': 131000,
   'gpt-oss-120b': 131000,
+  humain: 16384,
+  'humain-m3': 16384,
+  'humain-m3-preview': 16384,
   system_default: 32000,
 };
 

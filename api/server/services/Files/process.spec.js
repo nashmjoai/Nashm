@@ -141,12 +141,14 @@ const {
 const { mergeFileConfig } = require('nashm-data-provider');
 const { checkCapability } = require('~/server/services/Config');
 const { getStrategyFunctions } = require('~/server/services/Files/strategies');
+const { resizeImageBuffer } = require('~/server/services/Files/images');
 const { uploadVectors } = require('./VectorDB/crud');
 const db = require('~/models');
 const {
   processAgentFileUpload,
   processDeleteRequest,
   processFileURL,
+  saveBase64Image,
   sweepExpiredFiles,
   startExpiredFileSweep,
 } = require('./process');
@@ -205,6 +207,56 @@ const setupStoredFileUpload = (result = {}) => {
   getStrategyFunctions.mockReturnValue({ handleFileUpload });
   return handleFileUpload;
 };
+
+describe('saveBase64Image', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('stores generated images with durable upload storage and recovery data', async () => {
+    const imageBuffer = Buffer.from('resized-image');
+    const saveBuffer = jest.fn().mockResolvedValue('/uploads/user-123/mock-uuid-generated.png');
+    resizeImageBuffer.mockResolvedValue({
+      buffer: imageBuffer,
+      bytes: imageBuffer.length,
+      width: 1024,
+      height: 1024,
+    });
+    getStrategyFunctions.mockReturnValue({ saveBuffer });
+    db.createFile.mockImplementation(async (file) => ({ ...file }));
+
+    const req = {
+      user: { id: 'user-123', tenantId: 'tenant-a' },
+      config: { fileConfig: { imageGeneration: 'high' } },
+    };
+
+    const result = await saveBase64Image('data:image/png;base64,aGVsbG8=', {
+      req,
+      filename: 'generated',
+      endpoint: 'agents',
+      context: FileContext.image_generation,
+    });
+
+    expect(saveBuffer).toHaveBeenCalledWith({
+      userId: 'user-123',
+      fileName: 'mock-uuid-generated.png',
+      buffer: imageBuffer,
+      basePath: 'uploads',
+      tenantId: 'tenant-a',
+    });
+    expect(db.createFile).toHaveBeenCalledWith(
+      expect.objectContaining({
+        file_id: 'mock-uuid',
+        filepath: '/uploads/user-123/mock-uuid-generated.png',
+        filename: 'mock-uuid-generated.png',
+        context: FileContext.image_generation,
+        data: imageBuffer,
+      }),
+      true,
+    );
+    expect(result.data).toBeUndefined();
+  });
+});
 
 describe('processAgentFileUpload', () => {
   beforeEach(() => {

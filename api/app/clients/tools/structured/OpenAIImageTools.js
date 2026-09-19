@@ -72,14 +72,14 @@ function createOpenAIImageTools(fields = {}) {
   const appFileStrategy = fields.fileStrategy;
 
   const getApiKey = () => {
-    const apiKey = process.env.IMAGE_GEN_OAI_API_KEY ?? '';
+    const apiKey = process.env.IMAGE_GEN_OAI_API_KEY ?? process.env.OPENAI_API_KEY ?? '';
     if (!apiKey && !override) {
-      throw new Error('Missing IMAGE_GEN_OAI_API_KEY environment variable.');
+      throw new Error('Missing IMAGE_GEN_OAI_API_KEY or OPENAI_API_KEY environment variable.');
     }
     return apiKey;
   };
 
-  let apiKey = fields.IMAGE_GEN_OAI_API_KEY ?? getApiKey();
+  let apiKey = fields.IMAGE_GEN_OAI_API_KEY ?? fields.OPENAI_API_KEY ?? getApiKey();
   const closureConfig = { apiKey };
 
   const imageModel = process.env.IMAGE_GEN_OAI_MODEL || 'gpt-image-1';

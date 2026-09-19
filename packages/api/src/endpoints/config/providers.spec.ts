@@ -154,6 +154,24 @@ describe('getProviderConfig', () => {
     const result2 = getProviderConfig({ provider: 'kimi', appConfig });
     expect(result2.overrideProvider).toBe(Providers.MOONSHOT);
   });
+
+  it('resolves HUMAIN case-insensitively through the OpenAI-compatible client', () => {
+    const appConfig = buildAppConfig([
+      {
+        name: 'HUMAIN',
+        baseURL: 'https://api.node.humain.com/v1',
+        apiKey: 'sk-humain',
+      },
+    ]);
+
+    const result = getProviderConfig({ provider: 'HUMAIN', appConfig });
+    const normalizedResult = getProviderConfig({ provider: 'humain', appConfig });
+
+    expect(result.overrideProvider).toBe(Providers.OPENAI);
+    expect(result.customEndpointConfig?.name).toBe('HUMAIN');
+    expect(normalizedResult.overrideProvider).toBe(Providers.OPENAI);
+    expect(normalizedResult.customEndpointConfig?.name).toBe('HUMAIN');
+  });
 });
 
 describe('resolveTitleTiming', () => {

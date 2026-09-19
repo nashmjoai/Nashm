@@ -13,12 +13,7 @@ import {
   tConvoUpdateSchema,
   isAssistantsEndpoint,
 } from 'nashm-data-provider';
-import type {
-  TMessage,
-  TConversation,
-  EventSubmission,
-  TStartupConfig,
-} from 'nashm-data-provider';
+import type { TMessage, TConversation, EventSubmission, TStartupConfig } from 'nashm-data-provider';
 import type { InfiniteData } from '@tanstack/react-query';
 import type { SetterOrUpdater } from 'recoil';
 import type { TResData, TFinalResData, ConvoGenerator } from '~/common';
@@ -300,8 +295,11 @@ export default function useEventHandlers({
   const lastAnnouncementTimeRef = useRef(Date.now());
   const { conversationId: paramId } = useParams();
   const { token } = useAuthContext();
-  const { isEnabled: isE2EEEnabled, isUnlocked: isE2EEUnlocked, protectStoredConversation } =
-    useE2EE();
+  const {
+    isEnabled: isE2EEEnabled,
+    isUnlocked: isE2EEUnlocked,
+    protectStoredConversation,
+  } = useE2EE();
 
   const { contentHandler, resetContentHandler } = useContentHandler({ setMessages, getMessages });
   /** `refetchType: 'all'` so cached-but-unmounted skill queries refresh too —
@@ -829,14 +827,23 @@ export default function useEventHandlers({
             chatProjectId: conversation.chatProjectId,
             isTemporary: _isTemporary,
           };
-          void protectStoredConversation(
-            protectedConversation,
-            messagesForStorage,
-          ).catch(
-            (error) => {
+          void protectStoredConversation(protectedConversation, messagesForStorage)
+            .then((protectedMessages) => {
+              const replacements = new Map(
+                protectedMessages.map((message) => [message.messageId, message]),
+              );
+              const latestMessages = getMessages();
+              if (!latestMessages || latestMessages.length === 0) {
+                return;
+              }
+              const updatedMessages = latestMessages.map(
+                (message) => replacements.get(message.messageId) ?? message,
+              );
+              setFinalMessages(conversation.conversationId, updatedMessages);
+            })
+            .catch((error) => {
               console.error('[E2EE] Failed to replace persisted plaintext messages:', error);
-            },
-          );
+            });
         }
 
         if (isNewConvo && submissionConvo.conversationId) {

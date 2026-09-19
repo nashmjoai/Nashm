@@ -252,18 +252,21 @@ export function getReasoningKey(
   return reasoningKey;
 }
 
-const REASONING_MODEL_PATTERN = /^(deepseek|kimi|moonshot)(?:[-/]|$)/i;
+const REASONING_MODEL_PATTERN = /^(deepseek|kimi|moonshot|humain)(?:[-/]|$)/i;
 const OPENROUTER_LATEST_ROUTING_PREFIX = /^~/;
 
 function matchesReasoningModel(model?: string | null): boolean {
   if (typeof model !== 'string' || model.length === 0) {
     return false;
   }
-  return REASONING_MODEL_PATTERN.test(model.replace(OPENROUTER_LATEST_ROUTING_PREFIX, '')) || /kimi/i.test(model);
+  return (
+    REASONING_MODEL_PATTERN.test(model.replace(OPENROUTER_LATEST_ROUTING_PREFIX, '')) ||
+    /(kimi|humain)/i.test(model)
+  );
 }
 
 /**
- * Whether the (provider, model) pair targets DeepSeek or Kimi's thinking-mode
+ * Whether the (provider, model) pair targets DeepSeek, Kimi, or HUMAIN's thinking-mode
  * tool-calling contract, which requires `reasoning_content` to be replayed
  * on every prior assistant message that emitted `tool_calls`.
  * @see https://api-docs.deepseek.com/guides/thinking_mode#tool-calls
@@ -277,7 +280,8 @@ export function isDeepSeekReasoningProvider(
     if (
       normalized === Providers.DEEPSEEK ||
       normalized === Providers.MOONSHOT ||
-      normalized === 'kimi'
+      normalized === 'kimi' ||
+      normalized === 'humain'
     ) {
       return true;
     }
@@ -960,6 +964,27 @@ export async function createRun({
         llmConfig.streamUsage = false;
       }
       llmConfig.usage = true;
+    }
+
+    const isHumain =
+      agent.provider?.toLowerCase() === 'humain' ||
+      agent.endpoint?.toLowerCase() === 'humain' ||
+      selfModel?.toLowerCase()?.includes('humain');
+
+    if (isHumain) {
+      llmConfig.streamUsage = false;
+      llmConfig.usage = true;
+    }
+
+    const isGPT56 =
+      typeof selfModel === 'string' &&
+      /gpt-5\.6/i.test(selfModel) &&
+      (provider === Providers.OPENAI || agent.endpoint === Providers.OPENAI);
+
+    if (isGPT56 && !llmConfig.useResponsesApi) {
+      llmConfig.modelKwargs = Object.assign({}, llmConfig.modelKwargs, {
+        reasoning_effort: 'none',
+      });
     }
 
     /**

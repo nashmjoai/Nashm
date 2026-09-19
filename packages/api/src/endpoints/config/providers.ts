@@ -22,9 +22,13 @@ export type InitializeFn = (params: BaseInitializeParams) => Promise<InitializeR
  */
 export function isKnownCustomProvider(provider?: string): boolean {
   const normalized = provider?.toLowerCase() ?? '';
-  return [Providers.XAI, Providers.DEEPSEEK, Providers.OPENROUTER, Providers.MOONSHOT].includes(
-    normalized as Providers,
-  ) || normalized === 'kimi';
+  return (
+    [Providers.XAI, Providers.DEEPSEEK, Providers.OPENROUTER, Providers.MOONSHOT].includes(
+      normalized as Providers,
+    ) ||
+    normalized === 'kimi' ||
+    normalized === 'humain'
+  );
 }
 
 /**
@@ -49,6 +53,7 @@ export const providerConfigMap: Record<string, InitializeFn> = {
   [EModelEndpoint.azureOpenAI]: initializeOpenAI,
   [EModelEndpoint.anthropic]: initializeAnthropic,
   kimi: initializeCustom,
+  humain: initializeCustom,
 };
 
 export type TitleTiming = 'immediate' | 'final';
@@ -214,6 +219,10 @@ export function getProviderConfig({
 
   if (overrideProvider.toLowerCase() === 'kimi') {
     overrideProvider = Providers.MOONSHOT;
+  }
+
+  if (overrideProvider.toLowerCase() === 'humain') {
+    overrideProvider = Providers.OPENAI;
   }
 
   return {

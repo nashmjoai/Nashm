@@ -100,6 +100,9 @@ export default function OpenAIImageGen({
     height: imageHeight,
     filepath = null,
     filename = '',
+    file_id: fileId,
+    type: mimeType,
+    user: userId,
   } = (attachment as TFile & TAttachmentMetadata) || {};
 
   let origWidth = width ?? imageWidth;
@@ -247,6 +250,10 @@ export default function OpenAIImageGen({
                 width={Number(dimensions.width?.split('px')[0])}
                 height={Number(dimensions.height?.split('px')[0])}
                 args={parsedArgs}
+                fileId={fileId}
+                filename={filename}
+                mimeType={mimeType}
+                userId={userId}
               />
             )}
           </div>

@@ -236,6 +236,27 @@ describe('custom endpoint stream usage defaults', () => {
     expect(clientOptions.streamUsage).toBe(true);
     expect(clientOptions.usage).toBe(true);
   });
+
+  it('forces HUMAIN guarded access through the non-streaming compatibility path', async () => {
+    const agents = await callAndCapture({
+      agents: [
+        makeAgent({
+          endpoint: 'HUMAIN',
+          model: 'humain-m3-preview',
+          model_parameters: {
+            model: 'humain-m3-preview',
+            streaming: true,
+            streamUsage: true,
+          },
+        }),
+      ],
+    });
+    const clientOptions = agents[0].clientOptions as Record<string, unknown>;
+
+    expect(clientOptions.streaming).toBe(false);
+    expect(clientOptions.disableStreaming).toBe(true);
+    expect(clientOptions.streamUsage).toBe(false);
+  });
 });
 
 // ---------------------------------------------------------------------------

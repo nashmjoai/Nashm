@@ -666,11 +666,11 @@ export function getOpenAILLMConfig({
       }) || hasModelKwargs;
   }
 
-  /** DeepSeek and Moonshot/Kimi thinking-modes require `reasoning_content` replay on tool turns (#13366). */
+  /** DeepSeek, Moonshot/Kimi, and HUMAIN thinking-modes require `reasoning_content` replay on tool turns (#13366). */
   if (
     typeof modelOptions.model === 'string' &&
-    (/^(deepseek|kimi|moonshot)(?:[-/]|$)/i.test(modelOptions.model.replace(/^~/, '')) ||
-      /kimi/i.test(modelOptions.model))
+    (/^(deepseek|kimi|moonshot|humain)(?:[-/]|$)/i.test(modelOptions.model.replace(/^~/, '')) ||
+      /(kimi|humain)/i.test(modelOptions.model))
   ) {
     llmConfig.includeReasoningContent = true;
   }

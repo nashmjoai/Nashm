@@ -192,7 +192,7 @@ const loadTools = async ({
   const customConstructors = {
     image_gen_oai: async (_toolContextMap, dynamicToolContextMap) => {
       const authFields = getAuthFields('image_gen_oai');
-      const authValues = await loadAuthValues({ userId: user, authFields });
+      const authValues = await loadAuthValues({ userId: user, authFields, throwError: false });
       const imageFiles = options.tool_resources?.[EToolResources.image_edit]?.files ?? [];
       const toolContext = buildImageToolContext({
         imageFiles,

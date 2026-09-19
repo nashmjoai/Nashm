@@ -10,7 +10,7 @@ import type {
 } from '@nashm/data-schemas';
 
 const ACTIVE_STATUSES = ['active', 'trialing'] as const;
-const FREE_MODEL_RE = /(?:^|[-_./\s])(kimi|gemini|gimini)(?:$|[-_./\s0-9])/i;
+const FREE_MODEL_RE = /(?:^|[-_./\s])(kimi|gemini|gimini|humain)(?:$|[-_./\s0-9])/i;
 const DEVELOPER_MODEL_RE = /gpt[-_ ]?5[.-]?5(?:[-_ ]?pro)?/i;
 
 export type SubscriptionUser = {

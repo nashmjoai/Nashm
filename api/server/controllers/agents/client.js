@@ -29,7 +29,9 @@ const {
   computeSummaryUsedTokens,
   priorRunOutputTokens,
   createSubagentUsageSink,
+  getAgentErrorMessage,
   isDeepSeekReasoningProvider,
+  isAgentAbortError,
   GenerationJobManager,
   getTransactionsConfig,
   resolveRecursionLimit,
@@ -1450,18 +1452,17 @@ class AgentClient extends BaseClient {
         });
       }
     } catch (err) {
-      logger.error(
-        '[api/server/controllers/agents/client.js #sendCompletion] Operation aborted',
-        err,
-      );
-      if (!abortController.signal.aborted) {
+      const wasAborted = abortController.signal.aborted || isAgentAbortError(err);
+      if (wasAborted) {
+        logger.info('[api/server/controllers/agents/client.js #sendCompletion] Operation aborted');
+      } else {
         logger.error(
-          '[api/server/controllers/agents/client.js #sendCompletion] Unhandled error type',
+          '[api/server/controllers/agents/client.js #sendCompletion] Request failed',
           err,
         );
         this.contentParts.push({
           type: ContentTypes.ERROR,
-          [ContentTypes.ERROR]: `An error occurred while processing the request${err?.message ? `: ${err.message}` : ''}`,
+          [ContentTypes.ERROR]: getAgentErrorMessage(err),
         });
       }
     } finally {

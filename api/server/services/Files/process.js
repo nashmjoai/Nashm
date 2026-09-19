@@ -1227,10 +1227,11 @@ async function saveBase64Image(
     userId: req.user.id,
     fileName: filename,
     buffer: image.buffer,
+    basePath: 'uploads',
     tenantId: req.user.tenantId,
   });
   const storageMetadata = getStorageMetadata({ filepath, source });
-  return await db.createFile(
+  const savedFile = await db.createFile(
     {
       type,
       source,
@@ -1245,9 +1246,14 @@ async function saveBase64Image(
       ...(await getRetentionExpiry(req)),
       height: image.height,
       tenantId: req.user.tenantId,
+      data: image.buffer,
     },
     true,
   );
+  if (savedFile) {
+    savedFile.data = undefined;
+  }
+  return savedFile;
 }
 
 /**

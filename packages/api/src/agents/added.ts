@@ -110,6 +110,7 @@ export async function loadAddedAgent(
   }
 
   const appConfig = req.config as AppConfig | undefined;
+  const modelSpecs = (appConfig?.modelSpecs as { list?: TModelSpec[] })?.list;
   const ephemeralAgent = rest.ephemeralAgent as
     | {
         mcp?: string[];
@@ -136,8 +137,8 @@ export async function loadAddedAgent(
       }
     }
 
-    const modelSpecs = (appConfig?.modelSpecs as { list?: TModelSpec[] })?.list;
-    const modelSpec = spec != null && spec !== '' ? modelSpecs?.find((s) => s.name === spec) : null;
+    const modelSpec =
+      spec != null && spec !== '' ? (modelSpecs?.find((s) => s.name === spec) ?? null) : null;
     const sender =
       rest.modelLabel ??
       modelSpec?.label ??
@@ -166,8 +167,7 @@ export async function loadAddedAgent(
   const mcpServers = new Set<string>(ephemeralAgent?.mcp);
   const userId = req.user?.id ?? '';
 
-  const modelSpecs = (appConfig?.modelSpecs as { list?: TModelSpec[] })?.list;
-  let modelSpec: (typeof modelSpecs extends Array<infer T> | undefined ? T : never) | null = null;
+  let modelSpec: TModelSpec | null = null;
   if (spec != null && spec !== '') {
     modelSpec = modelSpecs?.find((s) => s.name === spec) ?? null;
   }
@@ -191,7 +191,16 @@ export async function loadAddedAgent(
     tools.add(Tools.web_search);
   }
   if (ephemeralAgent?.gemini_image_gen === true || modelSpec?.geminiImageGen === true) {
-    tools.add(Tools.gemini_image_gen);
+    const useOpenAI =
+      process.env.USE_OPENAI_IMAGE_GEN === 'true' ||
+      (typeof endpoint === 'string' && /openai/i.test(endpoint)) ||
+      (typeof model === 'string' && /gpt|chatgpt/i.test(model));
+
+    if (useOpenAI) {
+      tools.add(Tools.image_gen_oai);
+    } else {
+      tools.add(Tools.gemini_image_gen);
+    }
   }
 
   const addedServers = new Set<string>();

@@ -32,6 +32,10 @@ const Image = ({
   args,
   width,
   height,
+  fileId,
+  filename,
+  mimeType,
+  userId,
 }: {
   imagePath: string;
   altText: string;
@@ -45,6 +49,10 @@ const Image = ({
   };
   width?: number;
   height?: number;
+  fileId?: string;
+  filename?: string;
+  mimeType?: string;
+  userId?: string;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -58,14 +66,24 @@ const Image = ({
 
     // Root-relative server paths (`/images/...` static, `/api/share/...` share
     // routes) are resolved against the API base so they load under a subpath.
-    if (imagePath.startsWith('/images/') || imagePath.startsWith('/api/')) {
+    if (
+      imagePath.startsWith('/images/') ||
+      imagePath.startsWith('/uploads/') ||
+      imagePath.startsWith('/api/')
+    ) {
       return `${apiBaseUrl()}${imagePath}`;
     }
 
     return imagePath;
   }, [imagePath]);
 
-  const displayUrl = useCachedImage({ url: absoluteImageUrl });
+  const displayUrl = useCachedImage({
+    fileId,
+    url: absoluteImageUrl,
+    filename,
+    mimeType,
+    userId,
+  });
 
   const downloadImage = async () => {
     try {

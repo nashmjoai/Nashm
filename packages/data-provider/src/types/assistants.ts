@@ -21,6 +21,7 @@ export enum Tools {
   file_search = 'file_search',
   web_search = 'web_search',
   gemini_image_gen = 'gemini_image_gen',
+  image_gen_oai = 'image_gen_oai',
   retrieval = 'retrieval',
   function = 'function',
   memory = 'memory',

@@ -1212,6 +1212,19 @@ describe('getOpenAILLMConfig', () => {
       expect(customProxy.llmConfig).toHaveProperty('includeReasoningContent', true);
     });
 
+    it('should preserve reasoning_content for HUMAIN tool-call round trips', () => {
+      const result = getOpenAILLMConfig({
+        apiKey: 'test-api-key',
+        streaming: false,
+        useOpenRouter: false,
+        modelOptions: {
+          model: 'humain-m3-preview',
+        },
+      });
+
+      expect(result.llmConfig).toHaveProperty('includeReasoningContent', true);
+    });
+
     it('should not set includeReasoningContent for non-DeepSeek models outside OpenRouter', () => {
       const result = getOpenAILLMConfig({
         apiKey: 'test-api-key',

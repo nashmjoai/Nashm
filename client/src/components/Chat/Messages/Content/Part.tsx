@@ -370,6 +370,10 @@ const Part = memo(function Part({
         altText={imageFile.filename ?? 'Uploaded Image'}
         width={imageFile.width}
         height={imageFile.height}
+        fileId={imageFile.file_id}
+        filename={imageFile.filename}
+        mimeType={imageFile.type}
+        userId={imageFile.user}
       />
     );
   }

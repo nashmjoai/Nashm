@@ -615,6 +615,11 @@ export const baseEndpointSchema = z.object({
 
 export type TBaseEndpoint = z.infer<typeof baseEndpointSchema>;
 
+export const openAIEndpointSchema = baseEndpointSchema.extend({
+  /** Restricts the built-in OpenAI catalog exposed to Model Access and chat. */
+  models: z.array(z.string().min(1)).min(1).optional(),
+});
+
 export const bedrockGuardrailConfigSchema = z.object({
   guardrailIdentifier: z.string(),
   guardrailVersion: z.string(),
@@ -1751,7 +1756,7 @@ export const configSchema = z.object({
     .object({
       allowedAddresses: allowedAddressesSchema,
       all: baseEndpointSchema.omit({ baseURL: true }).optional(),
-      [EModelEndpoint.openAI]: baseEndpointSchema.optional(),
+      [EModelEndpoint.openAI]: openAIEndpointSchema.optional(),
       [EModelEndpoint.google]: baseEndpointSchema.optional(),
       [EModelEndpoint.anthropic]: anthropicEndpointSchema.optional(),
       [EModelEndpoint.azureOpenAI]: azureEndpointSchema.optional(),

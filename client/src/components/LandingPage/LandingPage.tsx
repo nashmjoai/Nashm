@@ -64,6 +64,7 @@ const AI_MODELS = [
   { name: 'Cohere', logo: '/assets/cohere.png', color: '#39594D' },
   { name: 'HuggingFace', logo: '/assets/huggingface.svg', color: '#FF9D00' },
   { name: 'Kimi', logo: '/assets/kimi.svg', color: '#1A1A1A' },
+  { name: 'HUMAIN', logo: '/assets/humain.svg', color: '#007A3D' },
   { name: 'OpenRouter', logo: '/assets/openrouter.png', color: '#6C47FF' },
   { name: 'Together AI', logo: '/assets/together.png', color: '#0B0B0B' },
 ];

@@ -15,38 +15,6 @@ webSearch:
   searchProvider: "nashmsearch"
   nashmsearchInstanceUrl: "${NASHMSEARCH_INSTANCE_URL}"
 
-# Default Model Specifications
-modelSpecs:
-  list:
-    - name: "gemini-3.5-flash"
-      label: "Gemini 3.5 Flash"
-      description: "نموذج Google المتقدم والسريع"
-      default: false
-      preset:
-        endpoint: "google"
-        model: "gemini-3.5-flash"
-      executeCode: true
-      artifacts: false
-      geminiImageGen: true
-    - name: "kimi-agent"
-      label: "Kimi Agent"
-      description: "نموذج Kimi مع أدوات التفكير والبحث والصور (مثل Gemini)"
-      preset:
-        endpoint: "Kimi"
-        model: "kimi-k2.5"
-        tools:
-          - "open_weather"
-          - "calendar"
-        promptPrefix: >-
-          When a provided tool can answer a request using current or external data,
-          call that tool through native tool calling. Never invent tool names or
-          output XML, JSON, or pseudo function calls as visible text.
-      webSearch: true
-      executeCode: true
-      artifacts: false
-      geminiImageGen: true
-      fileSearch: true
-
 # Custom interface configuration
 interface:
   customWelcome: "مرحباً بك في نشم!"
@@ -61,6 +29,11 @@ interface:
 #                  API Endpoints                    #
 #==================================================#
 endpoints:
+  openAI:
+    models:
+      - "gpt-5.6-sol"
+      - "gpt-5.6-terra"
+      - "gpt-5.6-luna"
   agents:
     capabilities:
       - "deferred_tools"
@@ -105,6 +78,30 @@ endpoints:
         - "frequency_penalty"
         - "presence_penalty"
 
+    # HUMAIN Node
+    - name: "HUMAIN"
+      apiKey: "${HUMAIN_API_KEY}"
+      baseURL: "https://api.node.humain.com/v1"
+      models:
+        default:
+          - "humain-m3-preview"
+        fetch: false
+      titleConvo: true
+      titleModel: "humain-m3-preview"
+      summarize: false
+      summaryModel: "humain-m3-preview"
+      forcePrompt: false
+      modelDisplayLabel: "HUMAIN"
+      iconURL: "/assets/humain.svg"
+      streamRate: 20
+      customParams:
+        reasoningKey: "reasoning_content"
+      addParams:
+        maxRetries: 5
+      dropParams:
+        - "user"
+        - "frequency_penalty"
+        - "presence_penalty"
 #==================================================#
 #                   MCP Servers                    #
 #==================================================#
