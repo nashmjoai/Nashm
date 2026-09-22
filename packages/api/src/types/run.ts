@@ -9,5 +9,6 @@ export type RunLLMConfig = {
   usage?: boolean;
   configuration?: OpenAIConfiguration;
   modelKwargs?: Record<string, unknown>;
+  disableStreaming?: boolean;
 } & AgentModelParameters &
   ClientOptions;
