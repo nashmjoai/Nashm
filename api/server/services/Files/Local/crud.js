@@ -142,10 +142,13 @@ async function saveFileFromURL({ userId, URL, fileName, basePath = 'images' }) {
     const outputFilePath = path.join(outputPath, fileName);
     fs.writeFileSync(outputFilePath, buffer);
 
+    const filepath = path.posix.join('/', basePath, userId.toString(), fileName);
+
     return {
       bytes,
       type,
       dimensions,
+      filepath,
       data: buffer,
     };
   } catch (error) {

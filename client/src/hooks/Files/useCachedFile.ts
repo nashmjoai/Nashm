@@ -41,13 +41,8 @@ export function useCachedFile({
 
       if (url) {
         const isEncrypted = filename?.endsWith('.enc') || url.includes('.enc');
-        const downloadUrl =
-          fileId && userId
-            ? `${apiBaseUrl()}/api/files/download/${encodeURIComponent(userId)}/${encodeURIComponent(fileId)}`
-            : url;
-        const accessibleUrl = url.includes('/uploads/') ? downloadUrl : url;
         if (isMounted) {
-          setDisplayUrl(isEncrypted ? '' : accessibleUrl);
+          setDisplayUrl(isEncrypted ? '' : url);
         }
         if (cacheKey && !url.startsWith('blob:') && !url.startsWith('data:')) {
           if (isEncrypted && isEnabled && isUnlocked) {
@@ -61,6 +56,11 @@ export function useCachedFile({
               }
               return;
             }
+
+            const downloadUrl =
+              fileId && userId
+                ? `${apiBaseUrl()}/api/files/download/${encodeURIComponent(userId)}/${encodeURIComponent(fileId)}`
+                : url;
 
             // Background caching with decryption
             fetch(downloadUrl, { credentials: 'same-origin' })
@@ -115,7 +115,7 @@ export function useCachedFile({
               });
           } else if (!isEncrypted) {
             // Normal background caching
-            cacheFileUrl(cacheKey, accessibleUrl, { filename, mimeType }).catch(() => {});
+            cacheFileUrl(cacheKey, url, { filename, mimeType }).catch(() => {});
           }
         }
         return;

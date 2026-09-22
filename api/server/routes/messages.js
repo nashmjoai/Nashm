@@ -7,6 +7,8 @@ const {
   countTokens,
   sendFeedbackScore,
   traceIdForMessage,
+  refreshS3Url,
+  needsRefresh,
 } = require('@nashm/api');
 const { findAllArtifacts, replaceArtifactContent } = require('~/server/services/Artifacts/update');
 const { requireJwtAuth, validateMessageReq } = require('~/server/middleware');
@@ -15,6 +17,87 @@ const { authorizeEncryptedInvite } = require('~/server/utils/encryptedInvite');
 
 const router = express.Router();
 router.use(requireJwtAuth);
+
+/**
+ * Refreshes expired or near-expiry S3 presigned URLs on messages,
+ * ensuring images display reliably even after original presigned URLs expire.
+ *
+ * @param {Array<object>} messages
+ * @param {string} [fallbackUserId]
+ */
+const refreshMessagesS3Urls = async (messages, fallbackUserId) => {
+  if (!messages || !Array.isArray(messages) || messages.length === 0) {
+    return;
+  }
+
+  for (const message of messages) {
+    let messageUpdated = false;
+
+    if (Array.isArray(message.attachments) && message.attachments.length > 0) {
+      for (let i = 0; i < message.attachments.length; i++) {
+        const attachment = message.attachments[i];
+        if (
+          attachment &&
+          (attachment.source === 's3' || attachment.filepath?.includes('X-Amz-Signature')) &&
+          needsRefresh(attachment.filepath, 3600)
+        ) {
+          try {
+            const s3Ref = {
+              ...attachment,
+              source: attachment.source || 's3',
+            };
+            const newUrl = await refreshS3Url(s3Ref);
+            if (newUrl && newUrl !== attachment.filepath) {
+              attachment.filepath = newUrl;
+              messageUpdated = true;
+            }
+          } catch (err) {
+            logger.error('[refreshMessagesS3Urls] Error refreshing attachment S3 URL:', err);
+          }
+        }
+      }
+    }
+
+    if (Array.isArray(message.files) && message.files.length > 0) {
+      for (let i = 0; i < message.files.length; i++) {
+        const file = message.files[i];
+        if (
+          file &&
+          typeof file === 'object' &&
+          (file.source === 's3' || file.filepath?.includes('X-Amz-Signature')) &&
+          needsRefresh(file.filepath, 3600)
+        ) {
+          try {
+            const s3Ref = {
+              ...file,
+              source: file.source || 's3',
+            };
+            const newUrl = await refreshS3Url(s3Ref);
+            if (newUrl && newUrl !== file.filepath) {
+              file.filepath = newUrl;
+              messageUpdated = true;
+            }
+          } catch (err) {
+            logger.error('[refreshMessagesS3Urls] Error refreshing file S3 URL:', err);
+          }
+        }
+      }
+    }
+
+    if (messageUpdated && message.messageId) {
+      const userId = message.user?.toString() || fallbackUserId;
+      if (userId) {
+        db.updateMessage(userId, {
+          messageId: message.messageId,
+          attachments: message.attachments,
+          files: message.files,
+        }).catch((err) => {
+          logger.error('[refreshMessagesS3Urls] Error updating message in DB:', err);
+        });
+      }
+    }
+  }
+};
 
 router.get('/', async (req, res) => {
   try {
@@ -97,6 +180,10 @@ router.get('/', async (req, res) => {
       response = { messages: activeMessages, nextCursor: null };
     } else {
       response = { messages: [], nextCursor: null };
+    }
+
+    if (response?.messages?.length) {
+      await refreshMessagesS3Urls(response.messages, user);
     }
 
     res.status(200).json(response);
@@ -278,11 +365,11 @@ router.post('/artifact/:messageId', async (req, res) => {
   }
 });
 
-/* Note: It's necessary to add `validateMessageReq` within route definition for correct params */
 router.get('/:conversationId', validateMessageReq, async (req, res) => {
   try {
     const { conversationId } = req.params;
     const messages = await db.getMessages({ conversationId, user: req.user.id }, '-_id -__v -user');
+    await refreshMessagesS3Urls(messages, req.user.id);
     res.status(200).json(messages);
   } catch (error) {
     logger.error('Error fetching messages:', error);
@@ -324,6 +411,7 @@ router.get('/:conversationId/:messageId', validateMessageReq, async (req, res) =
     if (!message) {
       return res.status(404).json({ error: 'Message not found' });
     }
+    await refreshMessagesS3Urls(Array.isArray(message) ? message : [message], req.user.id);
     res.status(200).json(message);
   } catch (error) {
     logger.error('Error fetching message:', error);

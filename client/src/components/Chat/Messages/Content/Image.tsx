@@ -1,9 +1,10 @@
-import React, { useState, useRef, useMemo, useEffect } from 'react';
+import React, { useState, useRef, useMemo, useEffect, useCallback } from 'react';
 import { Skeleton } from '@nashm/client';
 import { apiBaseUrl } from 'nashm-data-provider';
 import DialogImage from './DialogImage';
 import { cn } from '~/utils';
 import { useCachedImage } from '~/hooks/Files/useCachedImage';
+import { getCachedFile } from '~/utils/fileDB';
 
 /** Max display height for chat images (Tailwind JIT class) */
 export const IMAGE_MAX_H = 'max-h-[45vh]' as const;
@@ -122,10 +123,32 @@ const Image = ({
     }
   }, [absoluteImageUrl, width, height]);
 
+  const [fallbackUrl, setFallbackUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    setFallbackUrl(null);
+  }, [displayUrl, absoluteImageUrl]);
+
+  const handleError = useCallback(async () => {
+    if (fileId && !fallbackUrl) {
+      try {
+        const cached = await getCachedFile(fileId);
+        if (cached?.blob) {
+          const blobUrl = URL.createObjectURL(cached.blob);
+          setFallbackUrl(blobUrl);
+        }
+      } catch (e) {
+        console.warn('[Image] Fallback to cached file failed:', e);
+      }
+    }
+  }, [fileId, fallbackUrl]);
+
+  const activeSrc = fallbackUrl || displayUrl || absoluteImageUrl;
+
   const dims = width && height ? { width, height } : dimensionCache.get(displayUrl);
   const hasDimensions = !!(dims?.width && dims?.height);
   const heightStyle = hasDimensions ? computeHeightStyle(dims.width, dims.height) : undefined;
-  const showSkeleton = hasDimensions && !paintedUrls.has(displayUrl);
+  const showSkeleton = hasDimensions && !paintedUrls.has(displayUrl) && !fallbackUrl;
 
   return (
     <div>
@@ -145,8 +168,9 @@ const Image = ({
         {showSkeleton && <Skeleton className="absolute inset-0" aria-hidden="true" />}
         <img
           alt={altText}
-          src={displayUrl || absoluteImageUrl}
+          src={activeSrc}
           onLoad={() => paintedUrls.add(displayUrl)}
+          onError={handleError}
           className={cn(
             'relative block text-transparent',
             hasDimensions
@@ -158,7 +182,7 @@ const Image = ({
       <DialogImage
         isOpen={isOpen}
         onOpenChange={setIsOpen}
-        src={displayUrl || absoluteImageUrl}
+        src={activeSrc}
         downloadImage={downloadImage}
         args={args}
         triggerRef={triggerRef}
