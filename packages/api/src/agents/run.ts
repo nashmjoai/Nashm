@@ -972,6 +972,8 @@ export async function createRun({
       selfModel?.toLowerCase()?.includes('humain');
 
     if (isHumain) {
+      llmConfig.streaming = false;
+      llmConfig.disableStreaming = true;
       llmConfig.streamUsage = false;
       llmConfig.usage = true;
     }

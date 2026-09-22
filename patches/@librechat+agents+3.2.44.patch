@@ -1,0 +1,588 @@
+diff --git a/node_modules/@librechat/agents/dist/cjs/llm/openai/index.cjs b/node_modules/@librechat/agents/dist/cjs/llm/openai/index.cjs
+index 6a3c59c..7e96548 100644
+--- a/node_modules/@librechat/agents/dist/cjs/llm/openai/index.cjs
++++ b/node_modules/@librechat/agents/dist/cjs/llm/openai/index.cjs
+@@ -125,10 +125,182 @@ async function* filterOpenAIChatCompletionStream(stream) {
+ 		yield chunk;
+ 	}
+ }
++
++async function* convertNonStreamingToStreamChunks(completion) {
++	const choice = completion?.choices?.[0];
++	const message = choice?.message || {};
++	const reasoning = message.reasoning_content || message.reasoning || '';
++	const content = message.content || '';
++	const toolCalls = message.tool_calls;
++	const finishReason = choice?.finish_reason || 'stop';
++	const id = completion?.id || ('chatcmpl-' + Date.now());
++	const model = completion?.model || 'humain-m3-preview';
++	const created = completion?.created || Math.floor(Date.now() / 1000);
++
++	if (reasoning) {
++		const words = reasoning.split(' ');
++		for (let i = 0; i < words.length; i += 4) {
++			const piece = words.slice(i, i + 4).join(' ') + (i + 4 < words.length ? ' ' : '');
++			yield {
++				id,
++				created,
++				model,
++				choices: [
++					{
++						index: 0,
++						delta: {
++							role: 'assistant',
++							reasoning_content: piece,
++							reasoning: piece,
++						},
++						finish_reason: null,
++					},
++				],
++			};
++		}
++	}
++
++	if (content) {
++		const words = content.split(' ');
++		for (let i = 0; i < words.length; i += 5) {
++			const piece = words.slice(i, i + 5).join(' ') + (i + 5 < words.length ? ' ' : '');
++			yield {
++				id,
++				created,
++				model,
++				choices: [
++					{
++						index: 0,
++						delta: {
++							role: 'assistant',
++							content: piece,
++						},
++						finish_reason: null,
++					},
++				],
++			};
++		}
++	}
++
++	if (Array.isArray(toolCalls) && toolCalls.length > 0) {
++		for (let idx = 0; idx < toolCalls.length; idx++) {
++			const tc = toolCalls[idx];
++			yield {
++				id,
++				created,
++				model,
++				choices: [
++					{
++						index: 0,
++						delta: {
++							tool_calls: [
++								{
++									index: idx,
++									id: tc.id,
++									type: tc.type || 'function',
++									function: {
++										name: tc.function?.name,
++										arguments: tc.function?.arguments || '',
++									},
++								},
++							],
++						},
++						finish_reason: null,
++					},
++				],
++			};
++		}
++	}
++
++	yield {
++		id,
++		created,
++		model,
++		choices: [
++			{
++				index: 0,
++				delta: {},
++				finish_reason: finishReason,
++			},
++		],
++		usage: completion?.usage,
++	};
++}
++
+ async function completionWithFilteredOpenAIStream(request, requestOptions, completionWithRetry) {
+-	if (request.stream !== true) return await completionWithRetry(request, requestOptions);
+-	return filterOpenAIChatCompletionStream(await completionWithRetry(request, requestOptions));
++	const isHumain =
++		request?.model?.toLowerCase()?.includes('humain') ||
++		requestOptions?.baseURL?.toLowerCase()?.includes('humain');
++
++	if (isHumain) {
++		const { stream_options, ...rest } = request; const nonStreamReq = { ...rest, stream: false };
++		let completion;
++		const maxRetries = 3;
++		let lastErr;
++		for (let i = 0; i < maxRetries; i++) {
++			try {
++				completion = await completionWithRetry(nonStreamReq, requestOptions);
++				break;
++			} catch (err) {
++				lastErr = err;
++				const errMsg = String(err?.message || err?.error?.message || err || '');
++				const errCode = String(err?.code || err?.error?.code || '');
++				if (
++					errCode === 'guardrail_unavailable' ||
++					errMsg.includes('guardrail_unavailable') ||
++					errMsg.includes('safety service') ||
++					err?.status === 503
++				) {
++					if (i < maxRetries - 1) {
++						await new Promise((resolve) => setTimeout(resolve, 1500 * (i + 1)));
++						continue;
++					}
++				}
++				throw err;
++			}
++		}
++		if (!completion && lastErr) throw lastErr;
++		if (request.stream !== true) {
++			return completion;
++		}
++		return convertNonStreamingToStreamChunks(completion);
++	}
++
++	if (request?.model?.toLowerCase()?.includes('gpt-5.6') && Array.isArray(request?.tools) && request.tools.length > 0) {
++		if (request.reasoning_effort === undefined) {
++			request.reasoning_effort = 'none';
++		}
++	}
++
++	if (request.stream !== true) {
++		try {
++			return await completionWithRetry(request, requestOptions);
++		} catch (err) {
++			const errMsg = String(err?.message || err || '');
++			if (errMsg.includes('Function tools with reasoning_effort are not supported')) {
++				return await completionWithRetry({ ...request, reasoning_effort: 'none' }, requestOptions);
++			}
++			throw err;
++		}
++	}
++
++	try {
++		return filterOpenAIChatCompletionStream(await completionWithRetry(request, requestOptions));
++	} catch (err) {
++		const errMsg = String(err?.message || err || '');
++		if (errMsg.includes('Function tools with reasoning_effort are not supported')) {
++			const nonReasoningReq = { ...request, reasoning_effort: 'none' };
++			return filterOpenAIChatCompletionStream(await completionWithRetry(nonReasoningReq, requestOptions));
++		}
++		if (errMsg.includes('Streaming is not supported') || errMsg.includes('non_stream_required')) {
++			const { stream_options, ...rest } = request; const nonStreamReq = { ...rest, stream: false };
++			const completion = await completionWithRetry(nonStreamReq, requestOptions);
++			return convertNonStreamingToStreamChunks(completion);
++		}
++		throw err;
++	}
+ }
++
+ function attachLibreChatDeltaFields(chunk, delta) {
+ 	if (!_langchain_core_messages.AIMessageChunk.isInstance(chunk)) return chunk;
+ 	const libreChatDelta = delta;
+diff --git a/node_modules/@librechat/agents/dist/cjs/tools/search/search.cjs b/node_modules/@librechat/agents/dist/cjs/tools/search/search.cjs
+index fc5f851..28ff417 100644
+--- a/node_modules/@librechat/agents/dist/cjs/tools/search/search.cjs
++++ b/node_modules/@librechat/agents/dist/cjs/tools/search/search.cjs
+@@ -160,7 +160,7 @@ const createSearXNGAPI = (instanceUrl, apiKey) => {
+ 				pageno: 1,
+ 				categories: category,
+ 				language: "all",
+-				safesearch: safeSearch,
++				safesearch: safeSearch === "strict" ? 2 : (safeSearch === "moderate" ? 1 : 0),
+ 				engines: "google,bing,duckduckgo"
+ 			};
+ 			const headers = { "Content-Type": "application/json" };
+diff --git a/node_modules/@librechat/agents/dist/cjs/tools/search/tool.cjs b/node_modules/@librechat/agents/dist/cjs/tools/search/tool.cjs
+index af6a78a..b17bf95 100644
+--- a/node_modules/@librechat/agents/dist/cjs/tools/search/tool.cjs
++++ b/node_modules/@librechat/agents/dist/cjs/tools/search/tool.cjs
+@@ -244,7 +244,7 @@ const createSearchTool = (config = {}) => {
+ 		reranker: selectedReranker,
+ 		topResults,
+ 		maxContentLength,
+-		strategies,
++		strategies: ["no_extraction"],
+ 		filterContent,
+ 		logger
+ 	}, scraperInstance);
+diff --git a/node_modules/@librechat/agents/dist/esm/llm/openai/index.mjs b/node_modules/@librechat/agents/dist/esm/llm/openai/index.mjs
+index 30601cf..4dc94e0 100644
+--- a/node_modules/@librechat/agents/dist/esm/llm/openai/index.mjs
++++ b/node_modules/@librechat/agents/dist/esm/llm/openai/index.mjs
+@@ -125,10 +125,182 @@ async function* filterOpenAIChatCompletionStream(stream) {
+ 		yield chunk;
+ 	}
+ }
++
++async function* convertNonStreamingToStreamChunks(completion) {
++	const choice = completion?.choices?.[0];
++	const message = choice?.message || {};
++	const reasoning = message.reasoning_content || message.reasoning || '';
++	const content = message.content || '';
++	const toolCalls = message.tool_calls;
++	const finishReason = choice?.finish_reason || 'stop';
++	const id = completion?.id || ('chatcmpl-' + Date.now());
++	const model = completion?.model || 'humain-m3-preview';
++	const created = completion?.created || Math.floor(Date.now() / 1000);
++
++	if (reasoning) {
++		const words = reasoning.split(' ');
++		for (let i = 0; i < words.length; i += 4) {
++			const piece = words.slice(i, i + 4).join(' ') + (i + 4 < words.length ? ' ' : '');
++			yield {
++				id,
++				created,
++				model,
++				choices: [
++					{
++						index: 0,
++						delta: {
++							role: 'assistant',
++							reasoning_content: piece,
++							reasoning: piece,
++						},
++						finish_reason: null,
++					},
++				],
++			};
++		}
++	}
++
++	if (content) {
++		const words = content.split(' ');
++		for (let i = 0; i < words.length; i += 5) {
++			const piece = words.slice(i, i + 5).join(' ') + (i + 5 < words.length ? ' ' : '');
++			yield {
++				id,
++				created,
++				model,
++				choices: [
++					{
++						index: 0,
++						delta: {
++							role: 'assistant',
++							content: piece,
++						},
++						finish_reason: null,
++					},
++				],
++			};
++		}
++	}
++
++	if (Array.isArray(toolCalls) && toolCalls.length > 0) {
++		for (let idx = 0; idx < toolCalls.length; idx++) {
++			const tc = toolCalls[idx];
++			yield {
++				id,
++				created,
++				model,
++				choices: [
++					{
++						index: 0,
++						delta: {
++							tool_calls: [
++								{
++									index: idx,
++									id: tc.id,
++									type: tc.type || 'function',
++									function: {
++										name: tc.function?.name,
++										arguments: tc.function?.arguments || '',
++									},
++								},
++							],
++						},
++						finish_reason: null,
++					},
++				],
++			};
++		}
++	}
++
++	yield {
++		id,
++		created,
++		model,
++		choices: [
++			{
++				index: 0,
++				delta: {},
++				finish_reason: finishReason,
++			},
++		],
++		usage: completion?.usage,
++	};
++}
++
+ async function completionWithFilteredOpenAIStream(request, requestOptions, completionWithRetry) {
+-	if (request.stream !== true) return await completionWithRetry(request, requestOptions);
+-	return filterOpenAIChatCompletionStream(await completionWithRetry(request, requestOptions));
++	const isHumain =
++		request?.model?.toLowerCase()?.includes('humain') ||
++		requestOptions?.baseURL?.toLowerCase()?.includes('humain');
++
++	if (isHumain) {
++		const { stream_options, ...rest } = request; const nonStreamReq = { ...rest, stream: false };
++		let completion;
++		const maxRetries = 3;
++		let lastErr;
++		for (let i = 0; i < maxRetries; i++) {
++			try {
++				completion = await completionWithRetry(nonStreamReq, requestOptions);
++				break;
++			} catch (err) {
++				lastErr = err;
++				const errMsg = String(err?.message || err?.error?.message || err || '');
++				const errCode = String(err?.code || err?.error?.code || '');
++				if (
++					errCode === 'guardrail_unavailable' ||
++					errMsg.includes('guardrail_unavailable') ||
++					errMsg.includes('safety service') ||
++					err?.status === 503
++				) {
++					if (i < maxRetries - 1) {
++						await new Promise((resolve) => setTimeout(resolve, 1500 * (i + 1)));
++						continue;
++					}
++				}
++				throw err;
++			}
++		}
++		if (!completion && lastErr) throw lastErr;
++		if (request.stream !== true) {
++			return completion;
++		}
++		return convertNonStreamingToStreamChunks(completion);
++	}
++
++	if (request?.model?.toLowerCase()?.includes('gpt-5.6') && Array.isArray(request?.tools) && request.tools.length > 0) {
++		if (request.reasoning_effort === undefined) {
++			request.reasoning_effort = 'none';
++		}
++	}
++
++	if (request.stream !== true) {
++		try {
++			return await completionWithRetry(request, requestOptions);
++		} catch (err) {
++			const errMsg = String(err?.message || err || '');
++			if (errMsg.includes('Function tools with reasoning_effort are not supported')) {
++				return await completionWithRetry({ ...request, reasoning_effort: 'none' }, requestOptions);
++			}
++			throw err;
++		}
++	}
++
++	try {
++		return filterOpenAIChatCompletionStream(await completionWithRetry(request, requestOptions));
++	} catch (err) {
++		const errMsg = String(err?.message || err || '');
++		if (errMsg.includes('Function tools with reasoning_effort are not supported')) {
++			const nonReasoningReq = { ...request, reasoning_effort: 'none' };
++			return filterOpenAIChatCompletionStream(await completionWithRetry(nonReasoningReq, requestOptions));
++		}
++		if (errMsg.includes('Streaming is not supported') || errMsg.includes('non_stream_required')) {
++			const { stream_options, ...rest } = request; const nonStreamReq = { ...rest, stream: false };
++			const completion = await completionWithRetry(nonStreamReq, requestOptions);
++			return convertNonStreamingToStreamChunks(completion);
++		}
++		throw err;
++	}
+ }
++
+ function attachLibreChatDeltaFields(chunk, delta) {
+ 	if (!AIMessageChunk.isInstance(chunk)) return chunk;
+ 	const libreChatDelta = delta;
+diff --git a/node_modules/@librechat/agents/dist/esm/tools/search/search.mjs b/node_modules/@librechat/agents/dist/esm/tools/search/search.mjs
+index eb2383b..011b0f7 100644
+--- a/node_modules/@librechat/agents/dist/esm/tools/search/search.mjs
++++ b/node_modules/@librechat/agents/dist/esm/tools/search/search.mjs
+@@ -158,7 +158,7 @@ const createSearXNGAPI = (instanceUrl, apiKey) => {
+ 				pageno: 1,
+ 				categories: category,
+ 				language: "all",
+-				safesearch: safeSearch,
++				safesearch: safeSearch === "strict" ? 2 : (safeSearch === "moderate" ? 1 : 0),
+ 				engines: "google,bing,duckduckgo"
+ 			};
+ 			const headers = { "Content-Type": "application/json" };
+diff --git a/node_modules/@librechat/agents/dist/esm/tools/search/tool.mjs b/node_modules/@librechat/agents/dist/esm/tools/search/tool.mjs
+index ae7e96d..257913c 100644
+--- a/node_modules/@librechat/agents/dist/esm/tools/search/tool.mjs
++++ b/node_modules/@librechat/agents/dist/esm/tools/search/tool.mjs
+@@ -244,7 +244,7 @@ const createSearchTool = (config = {}) => {
+ 		reranker: selectedReranker,
+ 		topResults,
+ 		maxContentLength,
+-		strategies,
++		strategies: ["no_extraction"],
+ 		filterContent,
+ 		logger
+ 	}, scraperInstance);
+diff --git a/node_modules/@librechat/agents/src/llm/openai/index.ts b/node_modules/@librechat/agents/src/llm/openai/index.ts
+index 8f1662f..e09de54 100644
+--- a/node_modules/@librechat/agents/src/llm/openai/index.ts
++++ b/node_modules/@librechat/agents/src/llm/openai/index.ts
+@@ -312,11 +312,128 @@ async function* filterOpenAIChatCompletionStream(
+   }
+ }
+ 
++async function* convertNonStreamingToStreamChunks(
++  completion: OpenAIChatCompletion
++): AsyncIterable<OpenAIChatCompletionStreamItem> {
++  const choice = completion?.choices?.[0];
++  const message = choice?.message || ({} as any);
++  const reasoning = (message as any)?.reasoning_content || (message as any)?.reasoning || '';
++  const content = message?.content || '';
++  const toolCalls = message?.tool_calls;
++  const finishReason = choice?.finish_reason || 'stop';
++  const id = completion?.id || `chatcmpl-${Date.now()}`;
++  const model = completion?.model || 'humain-m3-preview';
++  const created = completion?.created || Math.floor(Date.now() / 1000);
++
++  if (reasoning) {
++    const words = reasoning.split(' ');
++    for (let i = 0; i < words.length; i += 4) {
++      const piece = words.slice(i, i + 4).join(' ') + (i + 4 < words.length ? ' ' : '');
++      yield {
++        id,
++        created,
++        model,
++        choices: [
++          {
++            index: 0,
++            delta: {
++              role: 'assistant',
++              reasoning_content: piece,
++              reasoning: piece,
++            } as any,
++            finish_reason: null,
++          },
++        ],
++      } as any;
++    }
++  }
++
++  if (content) {
++    const words = content.split(' ');
++    for (let i = 0; i < words.length; i += 5) {
++      const piece = words.slice(i, i + 5).join(' ') + (i + 5 < words.length ? ' ' : '');
++      yield {
++        id,
++        created,
++        model,
++        choices: [
++          {
++            index: 0,
++            delta: {
++              role: 'assistant',
++              content: piece,
++            },
++            finish_reason: null,
++          },
++        ],
++      } as any;
++    }
++  }
++
++  if (Array.isArray(toolCalls) && toolCalls.length > 0) {
++    for (let idx = 0; idx < toolCalls.length; idx++) {
++      const tc = toolCalls[idx];
++      yield {
++        id,
++        created,
++        model,
++        choices: [
++          {
++            index: 0,
++            delta: {
++              tool_calls: [
++                {
++                  index: idx,
++                  id: tc.id,
++                  type: tc.type || 'function',
++                  function: {
++                    name: tc.function?.name,
++                    arguments: tc.function?.arguments || '',
++                  },
++                },
++              ],
++            },
++            finish_reason: null,
++          },
++        ],
++      } as any;
++    }
++  }
++
++  yield {
++    id,
++    created,
++    model,
++    choices: [
++      {
++        index: 0,
++        delta: {},
++        finish_reason: finishReason,
++      },
++    ],
++    usage: completion?.usage,
++  } as any;
++}
++
+ async function completionWithFilteredOpenAIStream(
+   request: OpenAIChatCompletionRequest,
+   requestOptions: OpenAICoreRequestOptions | undefined,
+   completionWithRetry: OpenAIChatCompletionRetry
+ ): Promise<OpenAIChatCompletionResult> {
++  const isHumain =
++    request?.model?.toLowerCase()?.includes('humain') ||
++    requestOptions?.baseURL?.toLowerCase()?.includes('humain') ||
++    Boolean((requestOptions as any)?.disableStreaming);
++
++  if (isHumain) {
++    const { stream_options, ...rest } = request; const nonStreamReq = { ...rest, stream: false as const };
++    const completion = (await completionWithRetry(nonStreamReq as any, requestOptions)) as OpenAIChatCompletion;
++    if (request.stream !== true) {
++      return completion;
++    }
++    return convertNonStreamingToStreamChunks(completion);
++  }
++
+   if (request.stream !== true) {
+     return (await completionWithRetry(
+       request,
+@@ -324,10 +441,20 @@ async function completionWithFilteredOpenAIStream(
+     )) as OpenAIChatCompletion;
+   }
+ 
+-  const stream = await completionWithRetry(request, requestOptions);
+-  return filterOpenAIChatCompletionStream(
+-    stream as AsyncIterable<OpenAIChatCompletionStreamItem>
+-  );
++  try {
++    const stream = await completionWithRetry(request, requestOptions);
++    return filterOpenAIChatCompletionStream(
++      stream as AsyncIterable<OpenAIChatCompletionStreamItem>
++    );
++  } catch (err: any) {
++    const errMsg = String(err?.message || err || '');
++    if (errMsg.includes('Streaming is not supported') || errMsg.includes('non_stream_required')) {
++      const { stream_options, ...rest } = request; const nonStreamReq = { ...rest, stream: false as const };
++      const completion = (await completionWithRetry(nonStreamReq as any, requestOptions)) as OpenAIChatCompletion;
++      return convertNonStreamingToStreamChunks(completion);
++    }
++    throw err;
++  }
+ }
+ 
+ function attachLibreChatDeltaFields(
