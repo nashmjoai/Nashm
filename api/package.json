@@ -1,7 +1,7 @@
 {
   "name": "@nashm/backend",
   "version": "v0.8.7-rc1",
-  "description": "",
+  "description": "Backend services for Nashm",
   "scripts": {
     "start": "echo 'please run this from the root directory'",
     "server-dev": "echo 'please run this from the root directory'",
