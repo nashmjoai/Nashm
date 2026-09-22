@@ -1,7 +1,7 @@
 import { EModelEndpoint, extractEnvVariable, normalizeEndpointName } from 'nashm-data-provider';
 import type { TCustomEndpoints, TEndpoint } from 'nashm-data-provider';
 import type { TCustomEndpointsConfig } from '~/types/endpoints';
-import { isUserProvided } from '~/utils';
+import { isUserProvided, isMissingCredential } from '~/utils';
 
 /**
  * Load config endpoints from the cached configuration object
@@ -42,10 +42,7 @@ export function loadCustomEndpointsConfig(
       const resolvedApiKey = extractEnvVariable(apiKey ?? '');
       const resolvedBaseURL = extractEnvVariable(baseURL ?? '');
 
-      if (!resolvedApiKey && !isUserProvided(resolvedApiKey)) {
-        continue;
-      }
-      if (!resolvedBaseURL && !isUserProvided(resolvedBaseURL)) {
+      if (isMissingCredential(resolvedApiKey) || isMissingCredential(resolvedBaseURL)) {
         continue;
       }
 

@@ -41,4 +41,58 @@ describe('loadCustomEndpointsConfig – native provider param set', () => {
       EModelEndpoint.google,
     );
   });
+
+  it('omits endpoints whose apiKey is an unexpanded env var template', () => {
+    delete process.env.TEST_KIMI_API_KEY;
+    const config = loadCustomEndpointsConfig([
+      {
+        ...baseEndpoint,
+        name: 'Kimi',
+        apiKey: '${TEST_KIMI_API_KEY}',
+      },
+    ] as unknown as TCustomEndpoints);
+
+    expect(config?.['Kimi']).toBeUndefined();
+  });
+
+  it('includes endpoints when the env var is defined in process.env', () => {
+    process.env.TEST_KIMI_API_KEY = 'sk-actual-kimi-key';
+    const config = loadCustomEndpointsConfig([
+      {
+        ...baseEndpoint,
+        name: 'Kimi',
+        apiKey: '${TEST_KIMI_API_KEY}',
+      },
+    ] as unknown as TCustomEndpoints);
+
+    expect(config?.['Kimi']).toBeDefined();
+    delete process.env.TEST_KIMI_API_KEY;
+  });
+
+  it('omits endpoints whose baseURL is an unexpanded env var template', () => {
+    delete process.env.TEST_KIMI_BASE_URL;
+    const config = loadCustomEndpointsConfig([
+      {
+        ...baseEndpoint,
+        name: 'Kimi',
+        baseURL: '${TEST_KIMI_BASE_URL}',
+      },
+    ] as unknown as TCustomEndpoints);
+
+    expect(config?.['Kimi']).toBeUndefined();
+  });
+
+  it('includes endpoints when apiKey is user_provided', () => {
+    const config = loadCustomEndpointsConfig([
+      {
+        ...baseEndpoint,
+        name: 'UserProvidedKimi',
+        apiKey: 'user_provided',
+      },
+    ] as unknown as TCustomEndpoints);
+
+    expect(config?.['UserProvidedKimi']).toBeDefined();
+    expect(config?.['UserProvidedKimi']?.userProvide).toBe(true);
+  });
 });
+

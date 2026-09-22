@@ -287,8 +287,8 @@ describe('createEndpointsConfigService', () => {
                       custom: [
                         {
                           name: 'FOO',
-                          apiKey: '${FOO_KEY}',
-                          baseURL: '${FOO_URL}',
+                          apiKey: 'foo-key',
+                          baseURL: 'https://foo.example.com',
                           models: { fetch: true },
                         },
                       ],

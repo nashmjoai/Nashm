@@ -13,7 +13,7 @@ import type { FetchModelsParams } from '~/endpoints/models';
 import { fetchModels as defaultFetchModels } from '~/endpoints/models';
 import { getTokenConfigKey } from '~/endpoints/custom/initialize';
 import { tokenConfigCache } from '~/cache';
-import { isUserProvided } from '~/utils';
+import { isUserProvided, isMissingCredential } from '~/utils';
 
 /**
  * Stable fingerprint of a headers object, used to disambiguate the
@@ -24,12 +24,13 @@ import { isUserProvided } from '~/utils';
  */
 function headersFingerprint(headers: Record<string, string> | undefined): string {
   if (!headers || Object.keys(headers).length === 0) {
-    return '';
+    return 'none';
   }
-  const ordered = Object.keys(headers)
+  const sorted = Object.keys(headers)
     .sort()
-    .map((k) => [k, headers[k]]);
-  return crypto.createHash('sha256').update(JSON.stringify(ordered)).digest('hex').slice(0, 16);
+    .map((k) => `${k}:${headers[k]}`)
+    .join('|');
+  return crypto.createHash('sha256').update(sorted).digest('hex').slice(0, 16);
 }
 
 interface ResolvedEndpoint {
@@ -112,23 +113,21 @@ export function createLoadConfigModels(deps: LoadConfigModelsDeps) {
       const { name: configName, baseURL, apiKey } = endpoint;
       const name = normalizeEndpointName(configName);
       endpointsMap[name] = endpoint;
-      modelsConfig[name] = [];
 
       const resolvedApiKey = extractEnvVariable(apiKey);
       const resolvedBaseURL = extractEnvVariable(baseURL);
 
-      if (!resolvedApiKey && !isUserProvided(resolvedApiKey)) {
+      if (isMissingCredential(resolvedApiKey) || isMissingCredential(resolvedBaseURL)) {
         continue;
       }
-      if (!resolvedBaseURL && !isUserProvided(resolvedBaseURL)) {
-        continue;
-      }
+
+      modelsConfig[name] = [];
 
       const entry: ResolvedEndpoint = {
         name,
         endpoint,
-        apiKey: resolvedApiKey,
-        baseURL: resolvedBaseURL,
+        apiKey: resolvedApiKey!,
+        baseURL: resolvedBaseURL!,
         apiKeyIsUserProvided: isUserProvided(resolvedApiKey),
         baseURLIsUserProvided: isUserProvided(resolvedBaseURL),
       };

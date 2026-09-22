@@ -5,12 +5,30 @@ const {
   getEffectiveSubscription,
 } = require('@nashm/api');
 const { Subscription, FamilyPlan, ModelAccess } = require('~/db/models');
-const { loadDefaultModels, loadConfigModels } = require('~/server/services/Config');
+const { loadDefaultModels, loadConfigModels, getEndpointsConfig } = require('~/server/services/Config');
 
 async function loadModels(req) {
   const defaultModelsConfig = await loadDefaultModels(req);
   const customModelsConfig = await loadConfigModels(req);
-  return { ...defaultModelsConfig, ...customModelsConfig };
+  const modelsConfig = { ...defaultModelsConfig, ...customModelsConfig };
+
+  try {
+    const endpointsConfig = await getEndpointsConfig(req);
+    if (endpointsConfig && typeof endpointsConfig === 'object') {
+      const enabledEndpoints = new Set(Object.keys(endpointsConfig));
+      const filtered = {};
+      for (const [endpoint, models] of Object.entries(modelsConfig)) {
+        if (enabledEndpoints.has(endpoint) && Array.isArray(models) && models.length > 0) {
+          filtered[endpoint] = models;
+        }
+      }
+      return filtered;
+    }
+  } catch (error) {
+    logger.warn('[loadModels] Failed to filter models by endpointsConfig:', error);
+  }
+
+  return modelsConfig;
 }
 
 async function getModelsConfig(req) {

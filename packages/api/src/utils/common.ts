@@ -36,6 +36,22 @@ export function isEnabled(value?: string | boolean | null | undefined): boolean 
 export const isUserProvided = (value?: string): boolean => value === AuthType.USER_PROVIDED;
 
 /**
+ * Checks if a credential or URL value is missing, empty, or an unresolved environment variable template.
+ * Returns true if value is empty or contains an unresolved environment variable like "${API_KEY}".
+ * Returns false if value is valid or is 'user_provided'.
+ */
+export function isMissingCredential(value?: string | null): boolean {
+  if (!value || !value.trim()) {
+    return true;
+  }
+  const trimmed = value.trim();
+  if (isUserProvided(trimmed)) {
+    return false;
+  }
+  return /\${[^}]+}/.test(trimmed);
+}
+
+/**
  * @param values
  */
 export function optionalChainWithEmptyCheck(

@@ -223,4 +223,34 @@ describe('createLoadConfigModels – in-request fetch coalescing', () => {
     // Same baseURL + apiKey + headers → one fetch shared across both endpoints.
     expect(fetchModels).toHaveBeenCalledTimes(1);
   });
+
+  it('omits endpoints and their models when apiKey is an unexpanded env var template', async () => {
+    delete process.env.TEST_MISSING_API_KEY;
+    const loadConfigModels = createLoadConfigModels({
+      getAppConfig: jest.fn().mockResolvedValue({
+        endpoints: {
+          [EModelEndpoint.custom]: [
+            {
+              name: 'Kimi',
+              baseURL: 'https://api.moonshot.ai/v1',
+              apiKey: '${TEST_MISSING_API_KEY}',
+              models: { default: ['kimi-k2.5'] },
+            },
+          ],
+        },
+      }),
+      getUserKeyValues: jest.fn(),
+      fetchModels,
+    });
+
+    const req = {
+      user: { id: 'user-1' },
+      config: undefined,
+    } as unknown as ServerRequest;
+
+    const result = await loadConfigModels(req);
+
+    expect(result['Kimi']).toBeUndefined();
+  });
 });
+
